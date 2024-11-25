@@ -1,0 +1,44 @@
+- name: Configure WSL settings and SSH
+  hosts: all
+  tasks:
+    - name: Ensure /etc/wsl.conf exists with systemd enabled
+      when: lookup('env', 'WSL_DISTRO_NAME') != ''
+      become: true
+      blockinfile:
+        path: /etc/wsl.conf
+        create: yes
+        block: |
+          [boot]
+          systemd=true
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - WSL CONFIGURATION"
+        
+    - name: Check if systemd is active
+      command: systemctl is-active systemd
+      register: systemd_check
+      failed_when: false
+      changed_when: false
+      when: lookup('env', 'WSL_DISTRO_NAME') != ''
+
+    - name: Restart WSL if systemd is not active
+      when: 
+        - lookup('env', 'WSL_DISTRO_NAME') != ''
+        - systemd_check.rc != 0
+      shell: |
+        echo "WSL restart required. Executing 'wsl.exe --shutdown' via Windows..."
+        /mnt/c/Windows/System32/wsl.exe --shutdown
+      args:
+        executable: /bin/bash
+      changed_when: true
+
+    - name: Wait for system to come back
+      when: systemd_check.rc != 0
+      wait_for_connection:
+        delay: 10
+        timeout: 60
+
+    - name: Enable and start SSH service
+      when: lookup('env', 'WSL_DISTRO_NAME') != ''
+      systemd:
+        name: ssh
+        enabled: yes
+        state: started

@@ -1,0 +1,56 @@
+---
+- name: System-level installations
+  hosts: all
+  become: true
+  tasks:
+    - name: Install required packages
+      apt:
+        name: 
+          - zsh
+          - git
+          - curl
+          - tmux
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+- name: User-level configurations
+  hosts: all
+  tasks:
+    - name: Check Oh My Zsh installation
+      command: test -d $HOME/.oh-my-zsh
+      register: ohmy_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install Oh My Zsh
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      when: ohmy_check.rc != 0
+
+    - name: Set Zsh as default shell
+      user:
+        name: "{{ ansible_user_id }}"
+        shell: /usr/bin/zsh
+      become: true
+
+    - name: Check existing tmux config
+      stat:
+        path: "{{ ansible_env.HOME }}/.tmux.conf"
+      register: tmux_conf
+
+    - name: Backup existing non-symlink config
+      command: mv {{ ansible_env.HOME }}/.tmux.conf {{ ansible_env.HOME }}/.tmux.conf.backup_{{ ansible_date_time.iso8601 }}
+      register: backup_result
+      when: tmux_conf.stat.exists and (not tmux_conf.stat.islnk or tmux_conf.stat.lnk_source != "{{ ansible_env.HOME }}/configs/.tmux.conf")
+      debug:
+        msg: "Existing .tmux.conf was backed up to {{ ansible_env.HOME }}/.tmux.conf.backup_{{ ansible_date_time.iso8601 }}"
+
+    - name: Create symlink for tmux config
+      file:
+        src: "{{ ansible_env.HOME }}/configs/.tmux.conf"
+        dest: "{{ ansible_env.HOME }}/.tmux.conf"
+        state: link
+      when: not tmux_conf.stat.exists or (not tmux_conf.stat.islnk or tmux_conf.stat.lnk_source != "{{ ansible_env.HOME }}/configs/.tmux.conf")
+
+    
+

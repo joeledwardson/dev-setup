@@ -1,0 +1,16 @@
+- name: Install Zsh and show environment variables
+  hosts: all
+  become: true
+  tasks:
+    - name: Display all Ansible special variables
+      debug:
+        msg:
+          - "Host Variables (hostvars): {{ hostvars }}"
+          - "Groups: {{ groups }}"
+          - "Group Names: {{ group_names }}"
+          - "Inventory Hostname: {{ inventory_hostname }}"
+          - "Inventory Hostname Short: {{ inventory_hostname_short }}"
+          - "Play Hosts: {{ play_hosts }}"
+          - "Ansible Version: {{ ansible_version }}"
+          - "Role Names: {{ role_names | default([]) }}"
+        verbosity: 0
