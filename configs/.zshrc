@@ -110,13 +110,9 @@ export NVM_DIR="$HOME/.nvm"
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+# dont use the standard add to path only if doesnt exist or WSL installations might break
+# command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH
+export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 # Created by `pipx` on 2024-10-16 11:06:59
