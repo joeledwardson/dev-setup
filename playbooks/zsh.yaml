@@ -10,6 +10,8 @@
           - git
           - curl
           - tmux
+          - xclip
+          - xsel
         state: present
         update_cache: yes
         cache_valid_time: 3600
@@ -33,6 +35,19 @@
         shell: /usr/bin/zsh
       become: true
 
+    - name: Check if current shell is zsh
+      shell: ps -p $$ -o comm=
+      register: current_shell
+      changed_when: false
+
+    - name: Notify user to log out and back in
+      debug:
+        msg: |
+          WARNING: Your default shell has been changed to zsh, but your current session is still using {{ current_shell.stdout }}.
+          Please log out and log back in for the changes to take effect.
+          Alternatively, you can run 'exec zsh' in your current terminal to switch immediately.
+      when: "'zsh' not in current_shell.stdout"
+
     - name: Check existing tmux config
       stat:
         path: "{{ ansible_env.HOME }}/.tmux.conf"
@@ -41,16 +56,30 @@
     - name: Backup existing non-symlink config
       command: mv {{ ansible_env.HOME }}/.tmux.conf {{ ansible_env.HOME }}/.tmux.conf.backup_{{ ansible_date_time.iso8601 }}
       register: backup_result
-      when: tmux_conf.stat.exists and (not tmux_conf.stat.islnk or tmux_conf.stat.lnk_source != "{{ ansible_env.HOME }}/configs/.tmux.conf")
-      debug:
-        msg: "Existing .tmux.conf was backed up to {{ ansible_env.HOME }}/.tmux.conf.backup_{{ ansible_date_time.iso8601 }}"
+      when: tmux_conf.stat.exists and not tmux_conf.stat.islnk
 
     - name: Create symlink for tmux config
       file:
-        src: "{{ ansible_env.HOME }}/configs/.tmux.conf"
+        src: "{{ (playbook_dir + '/../configs/.tmux.conf') | realpath }}"
         dest: "{{ ansible_env.HOME }}/.tmux.conf"
         state: link
-      when: not tmux_conf.stat.exists or (not tmux_conf.stat.islnk or tmux_conf.stat.lnk_source != "{{ ansible_env.HOME }}/configs/.tmux.conf")
+      when: not tmux_conf.stat.exists or not tmux_conf.stat.islnk
 
+    - name: Check existing zsh config
+      stat:
+        path: "{{ ansible_env.HOME }}/.zshrc"
+      register: zshrc_conf
+
+    - name: Backup existing non-symlink zsh config
+      command: mv {{ ansible_env.HOME }}/.zshrc {{ ansible_env.HOME }}/.zshrc.backup_{{ ansible_date_time.iso8601 }}
+      register: backup_result
+      when: zshrc_conf.stat.exists and not zshrc_conf.stat.islnk
+
+    - name: Create symlink for zsh config
+      file:
+        src: "{{ (playbook_dir + '/../configs/.zshrc') | realpath }}"
+        dest: "{{ ansible_env.HOME }}/.zshrc"
+        state: link
+      when: not zshrc_conf.stat.exists or not zshrc_conf.stat.islnk
     
 

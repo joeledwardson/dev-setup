@@ -5,6 +5,7 @@
     - name: Display all Ansible special variables
       debug:
         msg:
+          - "envs {{ ansible_env }}"
           - "Host Variables (hostvars): {{ hostvars }}"
           - "Groups: {{ groups }}"
           - "Group Names: {{ group_names }}"
