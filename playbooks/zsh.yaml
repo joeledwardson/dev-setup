@@ -60,6 +60,22 @@
       vars:
         dotfile: .zshrc
 
+    - name: Check if Homebrew is installed
+      shell: which brew
+      register: brew_exists
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install Homebrew
+      shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: brew_exists.rc != 0
+
+    - name: Install aichat using Homebrew
+      shell: brew install aichat
+      register: aichat_install
+      changed_when: "'Already installed' not in aichat_install.stderr"
+      when: brew_exists.rc == 0 or brew_exists.rc == 1
+
     - name: Configure vim
       include_tasks: tasks/manage_dotfile.yml
       vars:

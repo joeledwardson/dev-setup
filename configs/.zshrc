@@ -120,3 +120,8 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # added by pipx (https://github.com/pipxproject/pipx)
 export PATH="$HOME/.local/bin:$PATH"
+
+# print each path entry on a new line
+pretty_path() {
+    echo $PATH | sed "s/:/\n/g"
+}
