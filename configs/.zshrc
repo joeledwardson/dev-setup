@@ -115,7 +115,8 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-# Created by `pipx` on 2024-10-16 11:06:59
-export PATH="$PATH:/home/joelyboy/.local/bin"
+# setup brew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-
+# added by pipx (https://github.com/pipxproject/pipx)
+export PATH="$HOME/.local/bin:$PATH"
