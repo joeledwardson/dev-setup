@@ -50,40 +50,21 @@
           Alternatively, you can run 'exec zsh' in your current terminal to switch immediately.
       when: "'zsh' not in current_shell.stdout"
 
-    - name: Check existing tmux config
-      stat:
-        path: "{{ ansible_env.HOME }}/.tmux.conf"
-      register: tmux_conf
+    - name: Configure tmux
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: .tmux.conf
 
-    - name: Backup existing non-symlink config
-      command: mv {{ ansible_env.HOME }}/.tmux.conf {{ ansible_env.HOME }}/.tmux.conf.backup_{{ ansible_date_time.iso8601 }}
-      register: backup_result
-      when: tmux_conf.stat.exists and not tmux_conf.stat.islnk
+    - name: Configure zsh
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: .zshrc
 
-    - name: Create symlink for tmux config
-      file:
-        src: "{{ (playbook_dir + '/../configs/.tmux.conf') | realpath }}"
-        dest: "{{ ansible_env.HOME }}/.tmux.conf"
-        state: link
-      when: not tmux_conf.stat.exists or not tmux_conf.stat.islnk
+    - name: Configure vim
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: .vimrc
 
-    - name: Check existing zsh config
-      stat:
-        path: "{{ ansible_env.HOME }}/.zshrc"
-      register: zshrc_conf
-
-    - name: Backup existing non-symlink zsh config
-      command: mv {{ ansible_env.HOME }}/.zshrc {{ ansible_env.HOME }}/.zshrc.backup_{{ ansible_date_time.iso8601 }}
-      register: backup_result
-      when: zshrc_conf.stat.exists and not zshrc_conf.stat.islnk
-
-    - name: Create symlink for zsh config
-      file:
-        src: "{{ (playbook_dir + '/../configs/.zshrc') | realpath }}"
-        dest: "{{ ansible_env.HOME }}/.zshrc"
-        state: link
-      when: not zshrc_conf.stat.exists or not zshrc_conf.stat.islnk
-    
     - name: Check if pyenv is installed
       shell: which pyenv 
       register: pyenv_exists
