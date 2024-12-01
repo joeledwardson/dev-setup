@@ -12,6 +12,8 @@
           - tmux
           - xclip
           - xsel
+          - pipx
+          - vim-gtk3
         state: present
         update_cache: yes
         cache_valid_time: 3600
@@ -82,4 +84,12 @@
         state: link
       when: not zshrc_conf.stat.exists or not zshrc_conf.stat.islnk
     
+    - name: Check if pyenv is installed
+      shell: which pyenv 
+      register: pyenv_exists
+      ignore_errors: true
+      changed_when: false
 
+    - name: Install pyenv using install script
+      shell: curl https://pyenv.run | bash
+      when: pyenv_exists.rc != 0
