@@ -7,3 +7,10 @@ set tabstop=2
 " Keep selection when indenting in visual mode (commeting as seems to break indenting?)
 " vnoremap > >gv
 " vnoremap < <gv
+
+" Show line numbers
+set number
+
+" Show relative line numbers
+set relativenumber
+
