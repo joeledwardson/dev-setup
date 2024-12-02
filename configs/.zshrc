@@ -125,3 +125,7 @@ export PATH="$HOME/.local/bin:$PATH"
 pretty_path() {
     echo $PATH | sed "s/:/\n/g"
 }
+
+
+# Disable shared history between sessions
+unsetopt SHARE_HISTORY       
