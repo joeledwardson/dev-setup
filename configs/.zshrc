@@ -129,3 +129,10 @@ pretty_path() {
 
 # Disable shared history between sessions
 unsetopt SHARE_HISTORY       
+
+function cursor {
+  nohup "$HOME/.local/cursor.AppImage" "$@" >/dev/null 2>&1 &
+  disown
+}
+
+
