@@ -14,6 +14,10 @@
           - xsel
           - pipx
           - vim-gtk3
+          - copyq
+          # For CopyQ
+          - libdbi-perl
+          - libdbd-pg-perl
         state: present
         update_cache: yes
         cache_valid_time: 3600
@@ -82,11 +86,13 @@
       shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       when: brew_exists.rc != 0
 
-    - name: Install aichat using Homebrew
-      shell: brew install aichat
-      register: aichat_install
-      changed_when: "'Already installed' not in aichat_install.stderr"
-      when: brew_exists.rc == 0 or brew_exists.rc == 1
+    - name: Install aichat and pspg
+      homebrew:
+        name:
+          - aichat
+          - pspg
+        state: present
+        update_homebrew: true  # Optional: updates brew before installing
 
     - name: Configure vim
       include_tasks: tasks/manage_dotfile.yml
@@ -102,3 +108,10 @@
     - name: Install pyenv using install script
       shell: curl https://pyenv.run | bash
       when: pyenv_exists.rc != 0
+
+    - name: Configure CopyQ autostart
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: copyq.desktop
+        dest_dir: "{{ ansible_env.HOME }}/.config/autostart"
+        delete_existing: true

@@ -130,9 +130,16 @@ pretty_path() {
 # Disable shared history between sessions
 unsetopt SHARE_HISTORY       
 
+# allow calling "cusor ." from terminal to open cursor AI
 function cursor {
   nohup "$HOME/.local/cursor.AppImage" "$@" >/dev/null 2>&1 &
   disown
 }
 
+function reload-tmux {
+  tmux source-file ~/.tmux.conf
+}
+
+# set pager for psql
+export PSQL_PAGER=pspg
 

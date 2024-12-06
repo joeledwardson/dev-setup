@@ -1,0 +1,4 @@
+[custom0]
+binding=['<Super>v']
+command='copyq show'
+name='Open CopyQ'
