@@ -9,7 +9,6 @@
           - zsh
           - git
           - curl
-          - tmux
           - xclip
           - xsel
           - pipx
@@ -92,6 +91,7 @@
           - aichat
           - pspg
           - gh
+          - tmux
         state: present
         update_homebrew: true  # Optional: updates brew before installing
 
