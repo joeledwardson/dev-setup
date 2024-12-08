@@ -1,0 +1,7 @@
+# see https://github.com/sigoden/aichat/blob/main/config.example.yaml
+
+model: claude:claude-3-5-sonnet-latest  
+clients:
+- type: openai
+
+- type: claude

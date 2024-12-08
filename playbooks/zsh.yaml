@@ -91,6 +91,7 @@
         name:
           - aichat
           - pspg
+          - gh
         state: present
         update_homebrew: true  # Optional: updates brew before installing
 
@@ -115,3 +116,10 @@
         dotfile: copyq.desktop
         dest_dir: "{{ ansible_env.HOME }}/.config/autostart"
         delete_existing: true
+
+    - name: Copy aichat config
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: config.yaml
+        dest_dir: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
+
