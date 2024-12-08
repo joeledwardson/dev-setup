@@ -139,6 +139,9 @@ function cursor {
 function reload-tmux {
   tmux source-file ~/.tmux.conf
 }
+function reload-zsh {
+  source ~/.zshrc
+}
 
 # set pager for psql
 export PSQL_PAGER=pspg
