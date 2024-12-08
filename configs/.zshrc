@@ -145,4 +145,12 @@ function reload-zsh {
 
 # set pager for psql
 export PSQL_PAGER=pspg
+# Function that runs before each command
+function preexec() {
+  print -Pn '\e]133;A\a'
+}
 
+# Function that runs after each command
+function precmd() {
+  print -Pn '\e]133;B\a'
+}
