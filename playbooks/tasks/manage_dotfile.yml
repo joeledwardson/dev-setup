@@ -1,12 +1,20 @@
----
+- name: Set destination file path
+  set_fact:
+    computed_dest: "{{ dest_file | default(ansible_env.HOME + '/' + dotfile) }}"
+
+- name: Ensure parent directory exists
+  file:
+    path: "{{ computed_dest | dirname }}"
+    state: directory
+
 - name: Check existing config
   stat:
-    path: "{{ dest_dir | default(ansible_env.HOME) }}/{{ dotfile }}"
+    path: "{{ computed_dest }}"
   register: config_stat
 
 - name: Delete existing non-symlink config
   file:
-    path: "{{ dest_dir | default(ansible_env.HOME) }}/{{ dotfile }}"
+    path: "{{ computed_dest }}"
     state: absent
   when: 
     - config_stat.stat.exists 
@@ -14,7 +22,7 @@
     - delete_existing | default(false) | bool
 
 - name: Backup existing non-symlink config
-  command: mv {{ dest_dir | default(ansible_env.HOME) }}/{{ dotfile }} {{ dest_dir | default(ansible_env.HOME) }}/{{ dotfile }}.backup_{{ ansible_date_time.iso8601 }}
+  command: mv {{ computed_dest }} {{ computed_dest }}.backup_{{ ansible_date_time.iso8601 }}
   when: 
     - config_stat.stat.exists 
     - not config_stat.stat.islnk
@@ -23,6 +31,6 @@
 - name: Create symlink for config
   file:
     src: "{{ (playbook_dir + '/../configs/' + dotfile) | realpath }}"
-    dest: "{{ dest_dir | default(ansible_env.HOME) }}/{{ dotfile }}"
+    dest: "{{ computed_dest }}"
     state: link
   when: not config_stat.stat.exists or not config_stat.stat.islnk 

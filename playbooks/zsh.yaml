@@ -114,12 +114,12 @@
       include_tasks: tasks/manage_dotfile.yml
       vars:
         dotfile: copyq.desktop
-        dest_dir: "{{ ansible_env.HOME }}/.config/autostart"
+        dest_file: "{{ ansible_env.HOME }}/.config/autostart/copyq.desktop"
         delete_existing: true
 
     - name: Copy aichat config
       include_tasks: tasks/manage_dotfile.yml
       vars:
-        dotfile: config.yaml
-        dest_dir: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
+        dotfile: aichat.yaml
+        dest_file: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
 

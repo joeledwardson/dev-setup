@@ -12,3 +12,28 @@ sudo pipx ensurepath --global # optional to allow pipx actions with --global arg
 # install ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 pipx install --include-deps ansible
 ```
+
+# setup AI chat
+configuration is version controlled, but API keys are not.
+
+To add API keys (check they exist first, otherwise ignore):
+
+```bash
+RUN_SETUP=true
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "OPENAI_API_KEY is not set"
+    echo "Please set OPENAI_API_KEY and try again"
+    RUN_SETUP=false
+fi
+
+if [ -z "$CLAUDE_API_KEY" ]; then
+    echo "CLAUDE_API_KEY is not set"
+    echo "Please set CLAUDE_API_KEY and try again"
+    RUN_SETUP=false
+fi
+
+if [ "$RUN_SETUP" = true ]; then
+    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> ~/.config/aichat/.env
+    echo "CLAUDE_API_KEY=$CLAUDE_API_KEY" >> ~/.config/aichat/.env
+fi
+```

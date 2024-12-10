@@ -3,5 +3,4 @@
 model: claude:claude-3-5-sonnet-latest  
 clients:
 - type: openai
-
 - type: claude
