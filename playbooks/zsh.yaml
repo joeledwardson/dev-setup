@@ -13,6 +13,10 @@
           - xsel
           - pipx
           - vim-gtk3
+          # page to be used in man pages
+          - most 
+          # for fzf zsh extensions
+          - fzf
           - copyq
           # For CopyQ
           - libdbi-perl
@@ -91,6 +95,7 @@
           - aichat
           - pspg
           - gh
+          # at the moment, only brew has tmux v3.4+
           - tmux
         state: present
         update_homebrew: true  # Optional: updates brew before installing
@@ -122,4 +127,12 @@
       vars:
         dotfile: aichat.yaml
         dest_file: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
+
+
+    - name: Copy git config 
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: .gitconfig 
+        dest_file: "{{ ansible_env.HOME }}/.gitconfig"
+
 
