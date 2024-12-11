@@ -70,7 +70,12 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(
+    git
+    colored-man-pages
+    tldr
+    tmux
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -145,12 +150,37 @@ function reload-zsh {
 
 # set pager for psql
 export PSQL_PAGER=pspg
-# Function that runs before each command
+# tmux escape chars for `next-prompt` and `previous-prompt`
 function preexec() {
   print -Pn '\e]133;A\a'
 }
-
-# Function that runs after each command
 function precmd() {
   print -Pn '\e]133;B\a'
 }
+
+# Download Znap, if it's not there yet.
+mkdir -p ~/.znap
+[[ -r ~/.znap/zsh-snap/znap.zsh ]] ||
+    git clone --depth 1 -- \
+        https://github.com/marlonrichert/zsh-snap.git ~/.znap/zsh-snap
+source ~/.znap/zsh-snap/znap.zsh  # Start Znap
+
+autoload -U compinit; compinit
+
+# znap source zsh-users/zsh-completions
+znap source Aloxaf/fzf-tab
+# znap source zsh-users/zsh-autosuggestions
+# znap source zsh-users/zsh-syntax-highlighting
+# znap source zsh-users/zsh-history-substring-search
+# znap source zsh-users/zsh-completions
+# znap source zsh-users/zsh-autosuggestions
+# znap source zsh-users/zsh-syntax-highlighting
+# znap source zsh-users/zsh-history-substring-search
+# znap source zsh-users/zsh-completions
+# znap source zsh-users/zsh-autosuggestions
+# znap source zsh-users/zsh-syntax-highlighting
+# znap source zsh-users/zsh-history-substring-search
+
+# set pager for man
+export MANPAGER="most"
+
