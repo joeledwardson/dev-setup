@@ -1,0 +1,28 @@
+[user]
+    name = joel
+    email = joel.edwardson1@gmail.com
+
+[core]
+    editor = vim
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    light = false     # set to true if you're using a light terminal background
+    side-by-side = true
+    line-numbers = true
+    syntax-theme = Dracula
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+# Put includes at the bottom so they override the defaults above
+[include]
+    path = ~/.gitconfig.local
+
