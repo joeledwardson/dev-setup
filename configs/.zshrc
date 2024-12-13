@@ -72,10 +72,10 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    colored-man-pages
     tldr
     tmux
     aws
+    colored-man-pages
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -128,7 +128,7 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 export PATH="$HOME/.local/bin:$PATH"
 
 # print each path entry on a new line
-pretty_path() {
+pretty-path() {
     echo $PATH | sed "s/:/\n/g"
 }
 
@@ -170,18 +170,12 @@ autoload -U compinit; compinit
 
 # znap source zsh-users/zsh-completions
 znap source Aloxaf/fzf-tab
-# znap source zsh-users/zsh-autosuggestions
-# znap source zsh-users/zsh-syntax-highlighting
+znap source zsh-users/zsh-autosuggestions
+znap source zsh-users/zsh-syntax-highlighting
+# znap source const-void/rose-pine-man
 # znap source zsh-users/zsh-history-substring-search
 # znap source zsh-users/zsh-completions
-# znap source zsh-users/zsh-autosuggestions
-# znap source zsh-users/zsh-syntax-highlighting
-# znap source zsh-users/zsh-history-substring-search
-# znap source zsh-users/zsh-completions
-# znap source zsh-users/zsh-autosuggestions
-# znap source zsh-users/zsh-syntax-highlighting
-# znap source zsh-users/zsh-history-substring-search
 
 # set pager for man
-export MANPAGER="most"
+# export MANPAGER="less"
 
