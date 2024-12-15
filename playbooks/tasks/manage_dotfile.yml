@@ -32,5 +32,10 @@
   file:
     src: "{{ (playbook_dir + '/../configs/' + dotfile) | realpath }}"
     dest: "{{ computed_dest }}"
-    state: link
-  when: not config_stat.stat.exists or not config_stat.stat.islnk 
+    state: "{{ 'file' if use_copy  else 'link' }}"
+    force: "{{ overwrite_dest | default(false) }}"
+  when: >
+    not config_stat.stat.exists or
+    not config_stat.stat.islnk or
+    (overwrite_dest | default(false) | bool)
+

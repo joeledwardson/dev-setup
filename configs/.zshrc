@@ -79,6 +79,8 @@ plugins=(
     tmux
     aws
     colored-man-pages
+    z
+    thefuck
 )
 
 source $ZSH/oh-my-zsh.sh

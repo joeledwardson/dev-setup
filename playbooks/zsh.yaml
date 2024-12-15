@@ -108,6 +108,8 @@
           - tmux
           # for fzf zsh extensions
           - fzf
+          # for zsh ext
+          - thefuck
         state: present
         update_homebrew: true  # Optional: updates brew before installing
 
@@ -139,11 +141,27 @@
         dotfile: aichat.yaml
         dest_file: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
 
-
     - name: Copy git config 
       include_tasks: tasks/manage_dotfile.yml
       vars:
         dotfile: .gitconfig 
         dest_file: "{{ ansible_env.HOME }}/.gitconfig"
 
+    - name: Set Windows Terminal settings path
+      set_fact:
+        wt_settings_dir: "/mnt/c/Users/joele/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState"
+
+    - name: Check if Windows Terminal directory exists
+      stat:
+        path: "{{ wt_settings_dir }}"
+      register: wt_dir
+      ignore_errors: yes
+
+    - name: Copy windows terminal config
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile: windowsterminal.json 
+        dest_file: "{{ wt_settings_dir }}/settings.json"
+        overwrite_dest: true 
+        use_copy: true
 
