@@ -15,8 +15,6 @@
           - vim-gtk3
           # page to be used in man pages
           - most 
-          # for fzf zsh extensions
-          - fzf
           - copyq
           # For CopyQ
           - libdbi-perl
@@ -89,14 +87,27 @@
       shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       when: brew_exists.rc != 0
 
-    - name: Install aichat and pspg
+    - name: remove apt conflicting brew packages
+      apt:
+        name:
+          - pspg
+          - fzf
+          - tmux
+          - gh
+        state: absent
+      become: true
+
+    - name: Install brew packages
       homebrew:
         name:
           - aichat
           - pspg
           - gh
+          - git-delta
           # at the moment, only brew has tmux v3.4+
           - tmux
+          # for fzf zsh extensions
+          - fzf
         state: present
         update_homebrew: true  # Optional: updates brew before installing
 
