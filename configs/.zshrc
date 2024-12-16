@@ -67,6 +67,8 @@ zinit light sindresorhus/pure
 
 # Plugins
 zinit light Aloxaf/fzf-tab
+# Without wait because we want the tools immediately
+zinit light z-shell/zsh-navigation-tools
 
 # Use turbo mode for plugins that don't need immediate loading
 zinit ice wait'0' silent
@@ -78,6 +80,10 @@ zinit light catppuccin/zsh-syntax-highlighting
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
 zinit load davidde/git
+
+# control left/right because im lazy and dont want to un-learn
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
 
 # Adjust the suggestion delay in milliseconds (default is 0.15 seconds)
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
