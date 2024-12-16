@@ -1,3 +1,6 @@
+
+# must be at top for zsh analaysis
+zmodload zsh/zprof 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -73,15 +76,15 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-    git
-    tldr
-    tmux
-    aws
-    colored-man-pages
-    z
-    thefuck
-)
+# plugins=(
+#     git
+#     # tldr
+#     tmux
+#     aws
+#     colored-man-pages
+#     # z
+#     # thefuck
+# )
 
 source $ZSH/oh-my-zsh.sh
 
@@ -115,9 +118,19 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# lazy load nvm
+nvm() {
+  echo "🚨 NVM not loaded! Loading now..."
+  unset -f nvm
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  # [ -s "$NVM_PREFIX/nvm.sh" ] && . "$NVM_PREFIX/nvm.sh"
+  nvm "$@"
+}
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -162,23 +175,26 @@ function precmd() {
   print -Pn '\e]133;B\a'
 }
 
-# Download Znap, if it's not there yet.
-mkdir -p ~/.znap
-[[ -r ~/.znap/zsh-snap/znap.zsh ]] ||
-    git clone --depth 1 -- \
-        https://github.com/marlonrichert/zsh-snap.git ~/.znap/zsh-snap
-source ~/.znap/zsh-snap/znap.zsh  # Start Znap
+# install and load zinit
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
+# Oh My Zsh plugins with zinit
+zinit snippet OMZP::git
+zinit snippet OMZP::tmux
+zinit snippet OMZP::aws
+zinit snippet OMZP::colored-man-pages
+
+# Adjust the suggestion delay in milliseconds (default is 0.15 seconds)
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+export ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 autoload -U compinit; compinit
 
-# znap source zsh-users/zsh-completions
-znap source Aloxaf/fzf-tab
-znap source zsh-users/zsh-autosuggestions
-znap source zsh-users/zsh-syntax-highlighting
-# znap source const-void/rose-pine-man
-# znap source zsh-users/zsh-history-substring-search
-# znap source zsh-users/zsh-completions
-
-# set pager for man
-# export MANPAGER="less"
-
+# must be at bottom of zsh for analysis
+zprof 
