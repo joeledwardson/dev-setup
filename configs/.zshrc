@@ -73,15 +73,11 @@ zinit ice wait'0' silent
 zinit light zsh-users/zsh-autosuggestions
 
 zinit ice wait'0' silent
-zinit light zsh-users/zsh-syntax-highlighting
+zinit light catppuccin/zsh-syntax-highlighting
 
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
 zinit load davidde/git
-
-# Load additional functionality
-zinit light zsh-users/zsh-completions
-zinit light zdharma-continuum/fast-syntax-highlighting
 
 # Adjust the suggestion delay in milliseconds (default is 0.15 seconds)
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
