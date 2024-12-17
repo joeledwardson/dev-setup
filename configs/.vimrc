@@ -22,7 +22,8 @@ Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'vim-scripts/dbext.vim'      
-Plug 'tpope/vim-commentary'  
+" Plug 'tpope/vim-commentary'  
+Plug 'preservim/nerdcommenter'
 Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
 
