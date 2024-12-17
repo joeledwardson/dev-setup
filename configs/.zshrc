@@ -79,6 +79,7 @@ zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-completions
 
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
