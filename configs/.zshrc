@@ -2,6 +2,18 @@
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
+# history settings
+# Add these near the top of your .zshrc, before loading zinit
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+# History settings
+setopt SHARE_HISTORY          # Share history between sessions
+setopt INC_APPEND_HISTORY     # Add commands to history immediately
+setopt EXTENDED_HISTORY       # Add timestamps to history
+setopt HIST_FIND_NO_DUPS     # Don't display duplicates during searches
+setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
+
 
 # setup brew (must be before plugins so tmux can load)
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -25,11 +37,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # print each path entry on a new line
 pretty-path() {
-    echo $PATH | sed "s/:/\n/g"
+    echo "${1:-$PATH}" | sed "s/:/\n/g"
 }
-
-# Disable shared history between sessions
-unsetopt SHARE_HISTORY       
 
 # allow calling "cursor ." from terminal to open cursor AI
 function cursor {
@@ -69,14 +78,12 @@ zinit light sindresorhus/pure
 zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
-
-# Use turbo mode for plugins that don't need immediate loading
-zinit ice wait'0' silent
 zinit light zsh-users/zsh-autosuggestions
 
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
 
+# Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
 zinit load davidde/git
@@ -86,8 +93,8 @@ bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
 # Adjust the suggestion delay in milliseconds (default is 0.15 seconds)
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-export ZSH_AUTOSUGGEST_USE_ASYNC=true
+# export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+# export ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 # Load from cache immediately
 autoload -Uz compinit

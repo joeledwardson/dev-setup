@@ -37,3 +37,12 @@ if [ "$RUN_SETUP" = true ]; then
     echo "CLAUDE_API_KEY=$CLAUDE_API_KEY" >> ~/.config/aichat/.env
 fi
 ```
+
+# Configuration
+The `.zshrc` provides a debugging variable which uses `zprof` to log the load times when specified.
+
+To use it, set:
+```bash
+export ZSH_DEBUGRC=true
+```
+
