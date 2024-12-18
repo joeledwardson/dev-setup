@@ -13,19 +13,14 @@ setopt INC_APPEND_HISTORY     # Add commands to history immediately
 setopt EXTENDED_HISTORY       # Add timestamps to history
 setopt HIST_FIND_NO_DUPS     # Don't display duplicates during searches
 setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
-
+# other options
+setopt interactivecomments
 
 # setup brew (must be before plugins so tmux can load)
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-# lazy load nvm
-nvm() {
-  echo "🚨 NVM not loaded! Loading now..."
-  unset -f nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-  nvm "$@"
-}
+# setup nvm
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" 
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -70,6 +65,11 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
+
+# Load from cache immediately
+autoload -U compinit
+compinit
+
 # load pure theme
 zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
 zinit light sindresorhus/pure
@@ -81,8 +81,12 @@ zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
+zinit ice depth=1
+zinit light jeffreytse/zsh-vi-mode
+
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
+zinit light MichaelAquilina/zsh-you-should-use
 
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
@@ -93,22 +97,27 @@ zinit load davidde/git
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
-# Adjust the suggestion delay in milliseconds (default is 0.15 seconds)
-# export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-# export ZSH_AUTOSUGGEST_USE_ASYNC=true
+# install colours repo
+if [ ! -d "/tmp/LS_COLORS" ]; then
+  mkdir /tmp/LS_COLORS && curl -L https://api.github.com/repos/trapd00r/LS_COLORS/tarball/master | tar xzf - --directory=/tmp/LS_COLORS --strip=1
+  ( cd /tmp/LS_COLORS && make install )
+fi
+source ~/.local/share/lscolors.sh
 
-# Load from cache immediately
-autoload -Uz compinit
-compinit -C
+# aliases
+# stolen from (https://github.com/DarrinTisdale/zsh-aliases-ls)
+alias ls='ls --color=auto'
+alias l='ls -lFh'          #size,show type,human readable
+alias la='ls -lAFh'        #long list,show almost all,show type,human readable
+alias lr='ls -tRFh'        #sorted by date,recursive,show type,human readable
+alias lt='ls -ltFh'        #long list,sorted by date,show type,human readable
+alias ll='ls -l'           #long list
+alias ldot='ls -ld .*'
+alias lS='ls -1FSsh'
+alias lart='ls -1Fcart'
+alias lrt='ls -1Fcrt'
 
-# Check for new completions in background
-{
-  # Compile new completion files
-  for dump in ~/.zcompdump(N.mh+0); do
-    compinit
-    touch ~/.zcompdump
-  done
-} &!
+
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
