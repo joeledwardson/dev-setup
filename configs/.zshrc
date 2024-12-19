@@ -87,6 +87,7 @@ zinit light jeffreytse/zsh-vi-mode
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit light MichaelAquilina/zsh-you-should-use
+zinit snippet OMZP::tmux
 
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
