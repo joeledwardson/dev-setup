@@ -27,8 +27,8 @@ Plug 'preservim/nerdcommenter'
 Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
 
-
-
+" default ignore case in search
+set ignorecase
 " Use spaces instead of tabs
 set expandtab
 " Set shift width (for > and <) to 2 spaces
