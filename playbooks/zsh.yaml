@@ -161,11 +161,12 @@
       register: wt_dir
       ignore_errors: yes
 
-    - name: Copy windows terminal config
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: windowsterminal.json 
-        dest_file: "{{ wt_settings_dir }}/settings.json"
-        overwrite_dest: true 
-        use_copy: true
+    # TODO need to update this with powershell based link create
+    #- name: Copy windows terminal config
+      #include_tasks: tasks/manage_dotfile.yml
+      #vars:
+        #dotfile: windowsterminal.json 
+        #dest_file: "{{ wt_settings_dir }}/settings.json"
+        #overwrite_dest: true 
+        #use_copy: true
 
