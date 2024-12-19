@@ -145,7 +145,11 @@
       include_tasks: tasks/manage_dotfile.yml
       vars:
         dotfile: .gitconfig 
-        dest_file: "{{ ansible_env.HOME }}/.gitconfig"
+
+    - name: Copy powerlevel10k config
+      include_tasks: tasks/manage_dotfile.yml
+      vars:
+        dotfile:  .p10k.zsh
 
     - name: Set Windows Terminal settings path
       set_fact:
