@@ -116,7 +116,7 @@ alias ldot='ls -ld .*'
 alias lS='ls -1FSsh'
 alias lart='ls -1Fcart'
 alias lrt='ls -1Fcrt'
-
+alias lf='find "$PWD" -maxdepth 1' # show full path
 
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
