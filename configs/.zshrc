@@ -2,6 +2,14 @@
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # history settings
 # Add these near the top of your .zshrc, before loading zinit
 HISTFILE=~/.zsh_history
@@ -70,9 +78,9 @@ source "${ZINIT_HOME}/zinit.zsh"
 autoload -U compinit
 compinit
 
-# load pure theme
-zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
-zinit light sindresorhus/pure
+# Load powerlevel10k theme
+zinit ice depth"1" # git clone depth
+zinit light romkatv/powerlevel10k
 
 # Plugins
 zinit light Aloxaf/fzf-tab
@@ -81,6 +89,18 @@ zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
+# Fix clipboard and timeout issues
+export ZVM_VI_ESCAPE_BINDKEY='^['
+export ZVM_KEYTIMEOUT=0.1
+export ZVM_INIT_MODE=sourcing
+export ZVM_LAZY_KEYBINDINGS=false
+
+zvm_after_init() {
+    # Enable bracketed paste
+    autoload -Uz bracketed-paste-magic
+    zle -N bracketed-paste bracketed-paste-magic
+}
+
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
 
@@ -88,6 +108,7 @@ zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit light MichaelAquilina/zsh-you-should-use
 zinit snippet OMZP::tmux
+zinit snippet OMZP::colored-man-pages
 
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
@@ -119,6 +140,9 @@ alias lart='ls -1Fcart'
 alias lrt='ls -1Fcrt'
 alias lf='find "$PWD" -maxdepth 1' # show full path
 
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
