@@ -73,7 +73,6 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-
 # Load from cache immediately
 autoload -U compinit
 compinit
@@ -89,26 +88,11 @@ zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
-# Fix clipboard and timeout issues
-export ZVM_VI_ESCAPE_BINDKEY='^['
-export ZVM_KEYTIMEOUT=0.1
-export ZVM_INIT_MODE=sourcing
-export ZVM_LAZY_KEYBINDINGS=false
-
-zvm_after_init() {
-    # Enable bracketed paste
-    autoload -Uz bracketed-paste-magic
-    zle -N bracketed-paste bracketed-paste-magic
-}
-
-zinit ice depth=1
-zinit light jeffreytse/zsh-vi-mode
-
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit light MichaelAquilina/zsh-you-should-use
 zinit snippet OMZP::colored-man-pages
-
+zinit snippet OMZP::vi-mode
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
