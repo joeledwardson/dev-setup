@@ -107,7 +107,6 @@ zinit light jeffreytse/zsh-vi-mode
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit light MichaelAquilina/zsh-you-should-use
-zinit snippet OMZP::tmux
 zinit snippet OMZP::colored-man-pages
 
 # Use turbo mode for plugins that don't need immediate loading
@@ -139,7 +138,14 @@ alias lS='ls -1FSsh'
 alias lart='ls -1Fcart'
 alias lrt='ls -1Fcrt'
 alias lf='find "$PWD" -maxdepth 1' # show full path
-
+# stolen from OMZ tmux plugin
+# Essential tmux aliases
+alias ta='tmux attach -t'     # Attach to a session
+alias tad='tmux attach -d -t' # Attach to session in detached mode
+alias ts='tmux new-session -s' # Start new session with name
+alias tl='tmux list-sessions' # List all sessions
+alias tksv='tmux kill-server' # Kill the tmux server
+alias tkss='tmux kill-session -t' # Kill a specific session
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
