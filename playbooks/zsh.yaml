@@ -91,7 +91,6 @@
       apt:
         name:
           - pspg
-          - fzf
           - tmux
           - gh
         state: absent
@@ -100,14 +99,13 @@
     - name: Install brew packages
       homebrew:
         name:
+          - bat
           - aichat
           - pspg
           - gh
           - git-delta
           # at the moment, only brew has tmux v3.4+
           - tmux
-          # for fzf zsh extensions
-          - fzf
           # for zsh ext
           - thefuck
         state: present
