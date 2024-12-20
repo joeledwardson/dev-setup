@@ -26,16 +26,6 @@
 - name: User-level configurations
   hosts: all
   tasks:
-    - name: Check Oh My Zsh installation
-      command: test -d $HOME/.oh-my-zsh
-      register: ohmy_check
-      ignore_errors: true
-      changed_when: false
-
-    - name: Install Oh My Zsh
-      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-      when: ohmy_check.rc != 0
-
     - name: Set Zsh as default shell
       user:
         name: "{{ ansible_user_id }}"
@@ -54,18 +44,6 @@
           Please log out and log back in for the changes to take effect.
           Alternatively, you can run 'exec zsh' in your current terminal to switch immediately.
       when: "'zsh' not in current_shell.stdout"
-
-    - name: Check if TPM (Tmux Plugin Manager) exists
-      command: test -d $HOME/.tmux/plugins/tpm
-      register: tpm_check
-      ignore_errors: true
-      changed_when: false
-
-    - name: Clone TPM repository
-      git:
-        repo: https://github.com/tmux-plugins/tpm
-        dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
-      when: tpm_check.rc != 0
 
     - name: Configure tmux
       include_tasks: tasks/manage_dotfile.yml
