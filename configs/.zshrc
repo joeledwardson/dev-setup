@@ -70,6 +70,14 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
+# Set up fzf key bindings and fuzzy completion
+if [ ! -d "$HOME/.fzf" ]; then
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ("$HOME/.fzf/install" --all)
+fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source <(fzf --zsh)
+
 # Load from cache immediately
 autoload -U compinit
 compinit
@@ -79,21 +87,31 @@ zinit ice depth"1" # git clone depth
 zinit light romkatv/powerlevel10k
 
 # Plugins
-zinit light Aloxaf/fzf-tab
+#zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
-zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-autouggestions
 zinit light zsh-users/zsh-completions
 
 zinit ice wait'0' silent
 zinit light catppuccin/zsh-syntax-highlighting
+zinit ice wait'0' silent
 zinit light MichaelAquilina/zsh-you-should-use
+zinit ice wait'0' silent
 zinit snippet OMZP::colored-man-pages
 zinit snippet OMZP::vi-mode
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
 zinit load davidde/git
+
+
+# fnm
+FNM_PATH="/home/joel/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/joel/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi
 
 # control left/right because im lazy and dont want to un-learn
 bindkey "^[[1;5C" forward-word
@@ -121,7 +139,7 @@ alias lrt='ls -1Fcrt'
 alias lf='find "$PWD" -maxdepth 1' # show full path
 # stolen from OMZ tmux plugin
 # Essential tmux aliases
-alias ta='tmux attach -t'     # Attach to a session
+alias ta='tmux attach'     # Attach to a session
 alias tad='tmux attach -d -t' # Attach to session in detached mode
 alias ts='tmux new-session -s' # Start new session with name
 alias tl='tmux list-sessions' # List all sessions
@@ -135,9 +153,4 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
 
-# fnm
-FNM_PATH="/home/joel/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="/home/joel/.local/share/fnm:$PATH"
-  eval "`fnm env`"
-fi
+
