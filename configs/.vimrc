@@ -45,4 +45,10 @@ set number
 " Show relative line numbers
 set relativenumber
 
-set clipboard=unnamedplus
+" hack for clipboard on wsl
+if system('uname -r') =~ "Microsoft"
+  augroup Yank
+    autocmd!
+    autocmd TextYankPost * :call system('/mnt/c/windows/system32/clip.exe ',@")
+  augroup END
+endif
