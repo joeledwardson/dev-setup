@@ -90,7 +90,7 @@ zinit light romkatv/powerlevel10k
 #zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
-zinit light zsh-users/zsh-autouggestions
+zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
 zinit ice wait'0' silent
