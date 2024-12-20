@@ -26,9 +26,6 @@ setopt interactivecomments
 
 # setup brew (must be before plugins so tmux can load)
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-# setup nvm
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" 
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -136,4 +133,11 @@ alias tkss='tmux kill-session -t' # Kill a specific session
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
+fi
+
+# fnm
+FNM_PATH="/home/joel/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/joel/.local/share/fnm:$PATH"
+  eval "`fnm env`"
 fi
