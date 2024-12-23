@@ -85,9 +85,9 @@
         state: present
 
     - name: Install fnm
-      shell: curl -fsSL https://fnm.vercel.app/install | bash
+      shell: curl -fsSL https://fnm.vercel.app/install --skip-shell | bash
       args:
-        creates: "{{ ansible_env.HOME }}/.fnm"        
+        creates: "{{ ansible_env.HOME }}/.local/share/fnm"        
 
     - name: Install GitHub CLI
       shell: |
