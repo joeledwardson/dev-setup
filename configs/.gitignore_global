@@ -1,0 +1,8 @@
+# Temporary files #
+###################
+**/*.swp
+**/*.swo
+
+# IDE files #
+#############
+.vscode
