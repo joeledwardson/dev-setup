@@ -24,13 +24,13 @@ setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
 # other options
 setopt interactivecomments
 
-# setup brew (must be before plugins so tmux can load)
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+# rust path
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # added by pipx (https://github.com/pipxproject/pipx)
 export PATH="$HOME/.local/bin:$PATH"
@@ -70,7 +70,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Set up fzf key bindings and fuzzy completion
+# install fzf and setup completion
 if [ ! -d "$HOME/.fzf" ]; then
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ("$HOME/.fzf/install" --all)

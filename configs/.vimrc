@@ -14,7 +14,9 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \| PlugInstall --sync | source $MYVIMRC
 \| endif
 
-" copied from vim plug automatic installation: https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
+filetype plugin indent on
+set autoindent
+set smartindent
 
 " Plugins configuration
 call plug#begin()
@@ -22,9 +24,9 @@ Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'vim-scripts/dbext.vim'      
-" Plug 'tpope/vim-commentary'  
 Plug 'preservim/nerdcommenter'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'tpope/vim-unimpaired'
 call plug#end()
 
 " default ignore case in search

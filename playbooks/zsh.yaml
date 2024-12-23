@@ -7,7 +7,9 @@
       apt:
         name: 
           - zsh
+          - bat
           - git
+          - pspg # pager for psql
           - curl
           - xclip
           - xsel
@@ -19,12 +21,20 @@
           # For CopyQ
           - libdbi-perl
           - libdbd-pg-perl
+          - libncurses-dev # required for tmux
+          - libevent-dev # required for tmux
+          - build-essential  # Provides make, gcc, and basic build tools
+          - automake        # For generating Makefiles
+          - autoconf        # Works with automake
+          - pkg-config # required for tmux
         state: present
         update_cache: yes
         cache_valid_time: 3600
 
 - name: User-level configurations
   hosts: all
+  collections:
+    - community.general
   tasks:
     - name: Set Zsh as default shell
       user:
@@ -32,100 +42,86 @@
         shell: /usr/bin/zsh
       become: true
 
-    - name: Check if current shell is zsh
-      shell: ps -p $$ -o comm=
-      register: current_shell
-      changed_when: false
-
-    - name: Notify user to log out and back in
-      debug:
-        msg: |
-          WARNING: Your default shell has been changed to zsh, but your current session is still using {{ current_shell.stdout }}.
-          Please log out and log back in for the changes to take effect.
-          Alternatively, you can run 'exec zsh' in your current terminal to switch immediately.
-      when: "'zsh' not in current_shell.stdout"
-
-    - name: Configure tmux
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: .tmux.conf
-
-    - name: Configure zsh
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: .zshrc
-
-    - name: Check if Homebrew is installed
-      shell: which brew
-      register: brew_exists
-      ignore_errors: true
-      changed_when: false
-
-    - name: Install Homebrew
-      shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      when: brew_exists.rc != 0
-
-    - name: remove apt conflicting brew packages
-      apt:
-        name:
-          - pspg
-          - tmux
-          - gh
-        state: absent
+    - name: Install lazygit
+      shell: |
+        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+        curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        tar xf lazygit.tar.gz lazygit
+        install lazygit -D -t /usr/local/bin/
+        rm lazygit.tar.gz lazygit
+      args:
+        creates: /usr/local/bin/lazygit
       become: true
 
-    - name: Install brew packages
-      homebrew:
-        name:
-          - bat
-          - aichat
-          - pspg
-          - gh
-          - git-delta
-          # at the moment, only brew has tmux v3.4+
-          - tmux
-          # for zsh ext
-          - thefuck
+    - name: Install pyenv
+      git:
+        repo: https://github.com/pyenv/pyenv.git
+        dest: "{{ ansible_env.HOME }}/.pyenv"
+        update: "{{ update_if_exists | default(true) }}"
+
+    - name: Install Rust
+      shell: |
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source "$HOME/.cargo/env"
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/cargo"
+
+    - name: Update Rust if needed
+      shell: rustup update stable
+      when: '"Up to date" not in lookup("pipe", "rustup check")'
+
+    - name: Install aichat via cargo module
+      community.general.cargo:
+        name: aichat
         state: present
-        update_homebrew: true  # Optional: updates brew before installing
 
-    - name: Configure vim
+    - name: Install git-delta via cargo module
+      community.general.cargo:
+        name: git-delta
+        state: present
+
+
+    - name: Install GitHub CLI
+      shell: |
+        TEMPDIR=$(mktemp -d)
+        cd "$TEMPDIR"
+        VERSION=$(curl -s "https://api.github.com/repos/cli/cli/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+        curl -Lo gh.deb "https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_linux_amd64.deb"
+        dpkg -i gh.deb
+        rm -rf "$TEMPDIR"
+      args:
+        creates: /usr/bin/gh
+      become: true
+
+    - name: Clone and install tmux
+      shell: |
+        TMPDIR=$(mktemp -d) && \
+        git clone https://github.com/tmux/tmux.git $TMPDIR && \
+        cd $TMPDIR && \
+        sh autogen.sh && \
+        ./configure && \
+        make && \
+        make install && \
+        rm -rf $TMPDIR
+      args:
+        creates: /usr/local/bin/tmux
+      become: yes
+
+    - name: Configure dotfiles and autostart
       include_tasks: tasks/manage_dotfile.yml
+      loop:
+        - .tmux.conf
+        - .zshrc
+        - .vimrc
+        - .gitconfig
+        - .p10k.zsh
+        - file: copyq.desktop
+          dest_file: "{{ ansible_env.HOME }}/.config/autostart/copyq.desktop"
+          delete_existing: true
+        - file: aichat.yaml
+          dest_file: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
       vars:
-        dotfile: .vimrc
-
-    - name: Check if pyenv is installed
-      shell: which pyenv 
-      register: pyenv_exists
-      ignore_errors: true
-      changed_when: false
-
-    - name: Install pyenv using install script
-      shell: curl https://pyenv.run | bash
-      when: pyenv_exists.rc != 0
-
-    - name: Configure CopyQ autostart
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: copyq.desktop
-        dest_file: "{{ ansible_env.HOME }}/.config/autostart/copyq.desktop"
-        delete_existing: true
-
-    - name: Copy aichat config
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: aichat.yaml
-        dest_file: "{{ ansible_env.HOME }}/.config/aichat/config.yaml"
-
-    - name: Copy git config 
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile: .gitconfig 
-
-    - name: Copy powerlevel10k config
-      include_tasks: tasks/manage_dotfile.yml
-      vars:
-        dotfile:  .p10k.zsh
+        dotfile: "{{ item.file | default(item) }}"
 
     - name: Set Windows Terminal settings path
       set_fact:
