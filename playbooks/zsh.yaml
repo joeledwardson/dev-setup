@@ -83,7 +83,8 @@
 
     - name: Install fnm
       shell: curl -fsSL https://fnm.vercel.app/install | bash
-      creates: "{{ ansible_env.HOME }}/.fnm"        
+      args:
+        creates: "{{ ansible_env.HOME }}/.fnm"        
 
     - name: Install GitHub CLI
       shell: |
@@ -118,6 +119,7 @@
         - .zshrc
         - .vimrc
         - .gitconfig
+        - .gitignore_global
         - .p10k.zsh
         - file: copyq.desktop
           dest_file: "{{ ansible_env.HOME }}/.config/autostart/copyq.desktop"

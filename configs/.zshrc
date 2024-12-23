@@ -154,3 +154,10 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
 fi
 
 
+
+# fnm
+FNM_PATH="/home/joel/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/joel/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi
