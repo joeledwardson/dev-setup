@@ -9,6 +9,7 @@
           - zsh
           - bat
           - git
+          - tldr
           - pspg # pager for psql
           - curl
           - xclip
@@ -80,6 +81,9 @@
         name: git-delta
         state: present
 
+    - name: Install fnm
+      shell: curl -fsSL https://fnm.vercel.app/install | bash
+      creates: "{{ ansible_env.HOME }}/.fnm"        
 
     - name: Install GitHub CLI
       shell: |
