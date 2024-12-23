@@ -64,14 +64,11 @@
     - name: Install Rust
       shell: |
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        . "$HOME/.cargo/env"
       args:
         creates: "{{ ansible_env.HOME }}/.cargo/bin/cargo"
 
     - name: Update Rust if needed
-      shell: |
-        . "$HOME/.cargo/env"
-        rustup update stable
+      shell: "$HOME/.cargo/bin/rustup update stable"
       when: '"Up to date" not in lookup("pipe", "$HOME/.cargo/bin/rustup check")'
 
     - name: Install aichat via cargo module
@@ -114,6 +111,14 @@
       args:
         creates: /usr/local/bin/tmux
       become: yes
+
+    - name: Download and install Neovim AppImage
+      get_url:
+        url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+        dest: /usr/local/bin/nvim
+        mode: '0755'
+        force: false
+      become: true
 
     - name: Configure dotfiles and autostart
       include_tasks: tasks/manage_dotfile.yml
