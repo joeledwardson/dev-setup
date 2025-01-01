@@ -153,3 +153,5 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
 
+
+if [ -e /home/joel/.nix-profile/etc/profile.d/nix.sh ]; then . /home/joel/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
