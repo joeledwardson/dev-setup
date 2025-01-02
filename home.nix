@@ -1,17 +1,12 @@
   # home.nix
-{ config, pkgs, lib, username, ... }: {
+{ config, pkgs, lib, username ? "joelyboy", ... }: {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home = let
-    finalUsername = username or "joelyboy";
-  in {
-    username = finalUsername;
-    homeDirectory = "/home/${finalUsername}";
-  };
+  home.username = builtins.trace "Setting username to:" (lib.mkDefault "joelyboy");
+  home.homeDirectory = builtins.trace "Username from config is: ${config.home.username}" (
+    lib.mkDefault "/home/${config.home.username}"
+  );
   
-    # home.username = lib.mkDefault "joelyboy";  # default fallback
-    # home.homeDirectory = lib.mkDefault "/home/${config.home.username}";
-
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
