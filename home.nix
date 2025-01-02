@@ -1,10 +1,9 @@
-{ config, pkgs, ... }:
-
-{
+  # home.nix
+{ config, pkgs, lib, ... }: {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "joel";
-  home.homeDirectory = "/home/joel";
+  home.username = lib.mkDefault "joelyboy";  # default fallback
+  homeDirectory = lib.mkDefault "/home/${config.home.username}";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -17,7 +16,11 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
+     (nerdfonts.override { fonts = [ 
+      "JetBrainsMono"  # You can add/remove fonts from this list
+      "Hack"
+    ]; })
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
