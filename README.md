@@ -1,5 +1,22 @@
 # Development setup
 Before anything can be run, ansible must be installed
+# NixOS Setup
+If not using a Nix based OS, need to install NixOS (use `--daemon` as its nice to be able to view and restart it using `systemctl`)
+See instructions [here](https://nixos.org/download/)
+
+```bash
+$ sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+the experimental nix and flakes added (see [docs](https://nixos.wiki/wiki/Flakes))
+```bash
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+```
+
+then the daemon must be restarted 
+```bash
+sudo systemctl restart nix-daemon
+```
+
 
 # install pipx and ansible
 ```bash
