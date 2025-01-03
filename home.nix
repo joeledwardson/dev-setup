@@ -19,10 +19,6 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
-     (nerdfonts.override { fonts = [ 
-      "JetBrainsMono"  # You can add/remove fonts from this list
-      "Hack"
-    ]; })
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -40,7 +36,6 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-  fonts.fontconfig.enable = true;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -77,8 +72,36 @@
     # EDITOR = "emacs";
   };
 
-   programs.fish.enable = true;
+  programs.fish.enable = true;
+  programs.tmux = {
+    enable = true;
+    baseIndex = 1;
+    prefix = "C-Space";
 
+    plugins = [
+      pkgs.tmuxPlugins.sensible
+      pkgs.tmuxPlugins.cpu
+      pkgs.tmuxPlugins.battery
+      {
+          plugin= pkgs.tmuxPlugins.catppuccin;
+          extraConfig= ''
+          set -g @catppuccin_flavor "mocha"
+          set -g @catppuccin_window_status_style "rounded"
+
+          set -g status-right-length 100
+          set -g status-left-length 100
+          set -g status-left ""
+          set -g status-right "#{E:@catppuccin_status_application}"
+          set -agF status-right "#{E:@catppuccin_status_cpu}"
+          set -ag status-right "#{E:@catppuccin_status_session}"
+          set -ag status-right "#{E:@catppuccin_status_uptime}"
+          set -agF status-right "#{E:@catppuccin_status_battery}"
+          '';
+      }
+
+    ];
+    extraConfig = builtins.readFile ./configs/.tmux.conf;
+ };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
