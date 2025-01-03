@@ -1,12 +1,38 @@
-  # home.nix
-{ config, pkgs, lib, username ? "joelyboy", ... }: {
+# home.nix
+{ config, pkgs, lib, username, ... }: 
+let
+  # catppucin plugin doesnt render properly when using nixos package so build myself
+  catppuccin-tmux = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "catppuccin";
+    version = "unstable-2024-01-03";  # or whatever date you're building at
+    src = pkgs.fetchFromGitHub {
+      owner = "catppuccin";
+      repo = "tmux";
+      rev = "ba9bd88c98c81f25060f051ed983e40f82fdd3ba"; # Using the newer commit
+      sha256 = "sha256-HegD89d0HUJ7dHKWPkiJCIApPY/yqgYusn7e1LDYS6c=";
+      };
+    };
+
+  cpu-tmux = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "cpu";
+    version = "unstable-2024-01-03";  # or whatever date you're building at
+    src = pkgs.fetchFromGitHub {
+      owner = "tmux-plugins";
+      repo = "tmux-cpu";
+      rev = "bcb110d754ab2417de824c464730c412a3eb2769"; # Using the newer commit
+      sha256 = "sha256-OrQAPVJHM9ZACyN36tlUDO7l213tX2a5lewDon8lauc=";
+
+      };
+    };
+  in
+  {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = builtins.trace "Setting username to:" (lib.mkDefault "joelyboy");
   home.homeDirectory = builtins.trace "Username from config is: ${config.home.username}" (
     lib.mkDefault "/home/${config.home.username}"
   );
-  
+
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -80,11 +106,11 @@
 
     plugins = [
       pkgs.tmuxPlugins.sensible
-      pkgs.tmuxPlugins.cpu
-      pkgs.tmuxPlugins.battery
+      # pkgs.tmuxPlugins.battery
+      # pkgs.tmuxPlugins.cpu
       {
-          plugin= pkgs.tmuxPlugins.catppuccin;
-          extraConfig= ''
+        plugin = catppuccin-tmux;
+        extraConfig= ''
           set -g @catppuccin_flavor "mocha"
           set -g @catppuccin_window_status_style "rounded"
 
@@ -95,13 +121,14 @@
           set -agF status-right "#{E:@catppuccin_status_cpu}"
           set -ag status-right "#{E:@catppuccin_status_session}"
           set -ag status-right "#{E:@catppuccin_status_uptime}"
-          set -agF status-right "#{E:@catppuccin_status_battery}"
-          '';
+          # set -agF status-right "#{E:@catppuccin_status_battery}"
+        '';
       }
 
+      cpu-tmux
     ];
     extraConfig = builtins.readFile ./configs/.tmux.conf;
- };
+  };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
