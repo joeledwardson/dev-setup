@@ -13,7 +13,9 @@
   outputs = { nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+			pkgs = import nixpkgs {
+				inherit system;
+			};
     in {
       homeConfigurations = {
         "joelyboy" =  home-manager.lib.homeManagerConfiguration {
@@ -26,6 +28,8 @@
           # Optionally use extraSpecialArgs
           # to pass through arguments to home.nix
         };
+         	
+
         "joel" =  home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
 
