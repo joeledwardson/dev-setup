@@ -24,11 +24,6 @@ setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
 # other options
 setopt interactivecomments
 
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
 # rust path
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -51,6 +46,18 @@ function reload-tmux {
 }
 function reload-zsh {
   source ~/.zshrc
+}
+function copyfile {
+    # Resolve the full path of the file
+    local fullpath=$(realpath $1)
+		if [ ! -e $fullpath ]; then
+        echo "Error: Invalid file path" >&2
+        return 1
+    fi
+
+    # Copy the file path to the clipboard
+    echo "file://$fullpath" | xclip -selection clipboard -t text/uri-list
+    echo "File path copied to clipboard: $fullpath"
 }
 
 # set pager for psql
@@ -100,29 +107,22 @@ zinit light MichaelAquilina/zsh-you-should-use
 zinit ice wait'0' silent
 zinit snippet OMZP::colored-man-pages
 zinit snippet OMZP::vi-mode
+zinit ice wait'0' silent
+zinit light xPMo/zsh-ls-colors
 # Use turbo mode for plugins that don't need immediate loading
 # Load git plugin directly (not from Oh-My-Zsh)
 zinit ice wait'0' lucid
 zinit load davidde/git
 
 
-# fnm
-FNM_PATH="/home/joel/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="/home/joel/.local/share/fnm:$PATH"
-  eval "`fnm env`"
+# Check if fnm exists before trying to evaluate it
+if command -v fnm &> /dev/null; then
+    eval "$(fnm env --use-on-cd)"
 fi
 
 # control left/right because im lazy and dont want to un-learn
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
-
-# install colours repo
-if [ ! -d "/tmp/LS_COLORS" ]; then
-  mkdir /tmp/LS_COLORS && curl -L https://api.github.com/repos/trapd00r/LS_COLORS/tarball/master | tar xzf - --directory=/tmp/LS_COLORS --strip=1
-  ( cd /tmp/LS_COLORS && make install )
-fi
-source ~/.local/share/lscolors.sh
 
 # aliases
 # stolen from (https://github.com/DarrinTisdale/zsh-aliases-ls)
@@ -145,6 +145,12 @@ alias ts='tmux new-session -s' # Start new session with name
 alias tl='tmux list-sessions' # List all sessions
 alias tksv='tmux kill-server' # Kill the tmux server
 alias tkss='tmux kill-session -t' # Kill a specific session
+# nixGL for kitty
+alias kitty='nixGL kitty'
+alias kitten='nixGL kitten'
+
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -154,4 +160,3 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
 fi
 
 
-if [ -e /home/joel/.nix-profile/etc/profile.d/nix.sh ]; then . /home/joel/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
