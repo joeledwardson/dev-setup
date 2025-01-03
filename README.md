@@ -22,6 +22,11 @@ and finally home manager installed (nix command shoulw work now)
 nix run home-manager/release-24.11 -- switch --flake .
 ```
 
+and the nixGL channel and default added (for OpenGL apps, dont work with linked nix opengl)
+```bash
+nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
+nix-env -iA nixgl.auto.nixGLDefault   # or replace `nixGLDefault` with your desired wrapper
+```
 
 # install pipx and ansible
 ```bash
