@@ -68,6 +68,28 @@ let
 		lazysql
 		usql
   	# harlequin
+		# NEW packages
+    slack
+    git
+    pkgs.google-chrome
+    zsh
+    copyq
+    vim
+    pipx
+    curl
+    tldr
+    bat
+    #neovim
+    xclip
+    xsel
+    lazygit
+    # Note: pyenv isn't typically used in NixOS - it's better to use nix-shell or direnv
+    fnm
+    aichat
+    delta  # this is git-delta
+    gh     # this is github cli
+    tmux
+    glab   # this is gitlab cli
 ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -142,4 +164,12 @@ let
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  # Some of these might be better configured using their dedicated modules:
+  programs.zsh.enable = true;
+  programs.git = {
+    enable = true;
+    delta.enable = true;  # Enables git-delta integration
+  };
+  programs.neovim.enable = true;
 }
