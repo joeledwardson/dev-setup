@@ -52,12 +52,12 @@ bind | split-window -h -c "#{pane_current_path}"
 bind - split-window -v -c "#{pane_current_path}"
 
 # vim style window switching
-bind -n M-H previous-window
-bind -n M-L next-window
+bind -n M-u previous-window
+bind -n M-p next-window
 
 # Shift window using Ctrl-Shift-Arrow without prefix
-bind-key -n M-J swap-window -t -1\; select-window -t -1
-bind-key -n M-K swap-window -t +1\; select-window -t +1
+bind-key -n M-i swap-window -t -1\; select-window -t -1
+bind-key -n M-o swap-window -t +1\; select-window -t +1
 
 # Navigation bindings
 bind -T copy-mode-vi C-n send-keys -X cursor-down \; \

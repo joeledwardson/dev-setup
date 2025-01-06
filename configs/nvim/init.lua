@@ -937,7 +937,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-   { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -977,3 +977,5 @@ vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.number = true
 vim.opt.relativenumber = true
+-- alt shift H is used by tmux for window switching
+vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
