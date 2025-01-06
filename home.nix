@@ -83,6 +83,8 @@ let
     aichat
     gh     # this is github cli
     glab   # this is gitlab cli
+    neovim
+    visidata
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -98,6 +100,7 @@ let
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+    ".config/nvim".source = configs/nvim;
   };
 
   # Home Manager can also manage your environment variables through
@@ -205,5 +208,4 @@ let
     ];
   };
 
-  programs.neovim.enable = true;
 }
