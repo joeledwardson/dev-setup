@@ -32,6 +32,7 @@ let
   home.homeDirectory = builtins.trace "Username from config is: ${config.home.username}" (
     lib.mkDefault "/home/${config.home.username}"
   );
+  nixpkgs.config.allowUnfree = true;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -64,33 +65,25 @@ let
     direnv
     fnm
     clojure # for metabase
-    kitty
-		lazysql
-		usql
-  	# harlequin
-		# NEW packages
+    lazysql
+    usql
     slack
     git
-    pkgs.google-chrome
-    zsh
+    google-chrome
     copyq
     vim
     pipx
     curl
     tldr
     bat
-    #neovim
     xclip
     xsel
     lazygit
-    # Note: pyenv isn't typically used in NixOS - it's better to use nix-shell or direnv
     fnm
     aichat
-    delta  # this is git-delta
     gh     # this is github cli
-    tmux
     glab   # this is gitlab cli
-];
+  ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -166,10 +159,51 @@ let
   programs.home-manager.enable = true;
 
   # Some of these might be better configured using their dedicated modules:
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    envExtra = builtins.readFile ./configs/.zshrc;
+  };
+
+   # Configure Git using programs.git
   programs.git = {
     enable = true;
-    delta.enable = true;  # Enables git-delta integration
+
+    # Explicitly set userName and userEmail
+    userName = "joel";
+    userEmail = "joel.edwardson1@gmail.com";
+
+      delta = {
+        enable = true;
+	options = {
+
+        navigate = true;        # Use n and N to move between diff sections
+        light = false;          # Set to true if using a light terminal background
+        "syntax-theme" = "Dracula";
+	};
+      };
+
+    # Use structured extraConfig for other settings
+    extraConfig = {
+      core = {
+        editor = "vim";
+      };
+      merge = {
+        conflictStyle = "diff3";
+      };
+    };
+
+    # Add ignore entries
+    ignores = [
+      "**/*.swp"
+      "**/*.swo"
+      ".vscode"
+    ];
+
+    # Add include paths
+    includes = [ 
+      { path = "~/.gitconfig.local" ; }
+    ];
   };
+
   programs.neovim.enable = true;
 }
