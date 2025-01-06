@@ -164,7 +164,7 @@ let
   # Some of these might be better configured using their dedicated modules:
   programs.zsh = {
     enable = true;
-    envExtra = builtins.readFile ./configs/.zshrc;
+    envExtra = builtins.readFile ./configs/zshrc;
   };
 
    # Configure Git using programs.git
