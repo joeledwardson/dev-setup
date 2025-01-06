@@ -156,7 +156,7 @@ let
         plugin =cpu-tmux;
       }
     ];
-    extraConfig = builtins.readFile ./configs/.tmux.conf;
+    extraConfig = builtins.readFile ./configs/tmux;
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
