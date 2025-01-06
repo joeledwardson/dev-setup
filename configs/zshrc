@@ -77,13 +77,10 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# install fzf and setup completion
-if [ ! -d "$HOME/.fzf" ]; then
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ("$HOME/.fzf/install" --all)
+# pipe to dev null to not print if exists
+if command -v fzf >/dev/null; then
+  source <(fzf --zsh)
 fi
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source <(fzf --zsh)
 
 # Load from cache immediately
 autoload -U compinit
@@ -94,27 +91,27 @@ zinit ice depth"1" # git clone depth
 zinit light romkatv/powerlevel10k
 
 # Plugins
-#zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
-zinit ice wait'0' silent
+
+zinit ice wait silent
 zinit light catppuccin/zsh-syntax-highlighting
-zinit ice wait'0' silent
+zinit ice wait silent
 zinit light MichaelAquilina/zsh-you-should-use
-zinit ice wait'0' silent
+zinit ice wait silent
 zinit snippet OMZP::colored-man-pages
+zinit ice wait silent
 zinit snippet OMZP::vi-mode
-zinit ice wait'0' silent
+zinit ice wait silent
 zinit light xPMo/zsh-ls-colors
-# Use turbo mode for plugins that don't need immediate loading
-# Load git plugin directly (not from Oh-My-Zsh)
-zinit ice wait'0' lucid
+zinit ice wait lucid
 zinit load davidde/git
-
-
+zinit ice lucid wait'0'
+zinit light joshskidmore/zsh-fzf-history-search
+#
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd)"
@@ -154,11 +151,9 @@ set_terminal_title() {
   local title=$1
   print -Pn "\e]2;${title}\a"
 }
-
-# Update the terminal title with the current command
 zsh_preexec() {
-  local cmd=${1[(wr)^(*=*|sudo|ssh|mosh|-*)]} # Strip sudo, ssh, etc.
-  set_terminal_title "$cmd"
+  local cmd="${1}"
+  [[ -n "$cmd" ]] && set_terminal_title "$cmd"
 }
 
 # Update the terminal title to the compacted path on prompt
