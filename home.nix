@@ -85,6 +85,7 @@ let
     glab   # this is gitlab cli
     neovim
     visidata
+    zsh
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -101,6 +102,8 @@ let
     #   org.gradle.daemon.idletimeout=3600000
     # '';
     ".config/nvim".source = configs/nvim;
+    ".zshrc".source = configs/zshrc;
+
   };
 
   # Home Manager can also manage your environment variables through
@@ -123,6 +126,7 @@ let
     # EDITOR = "emacs";
   };
 
+  programs.zsh.enable = false;
   programs.fish.enable = true;
   programs.tmux = {
     enable = true;
@@ -160,12 +164,6 @@ let
   };
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
-  # Some of these might be better configured using their dedicated modules:
-  programs.zsh = {
-    enable = true;
-    envExtra = builtins.readFile ./configs/zshrc;
-  };
 
    # Configure Git using programs.git
   programs.git = {

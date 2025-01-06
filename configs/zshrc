@@ -149,6 +149,31 @@ alias tkss='tmux kill-session -t' # Kill a specific session
 alias kitty='nixGL kitty'
 alias kitten='nixGL kitten'
 
+# Function to set the terminal title
+set_terminal_title() {
+  local title=$1
+  print -Pn "\e]2;${title}\a"
+}
+
+# Update the terminal title with the current command
+zsh_preexec() {
+  local cmd=${1[(wr)^(*=*|sudo|ssh|mosh|-*)]} # Strip sudo, ssh, etc.
+  set_terminal_title "$cmd"
+}
+
+# Update the terminal title to the compacted path on prompt
+zsh_precmd() {
+  local pwd_compact="${PWD/#$HOME/~}"   # Replace $HOME with ~
+  pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g') # Compact paths
+  set_terminal_title "$pwd_compact"
+}
+
+# Add hooks
+autoload -U add-zsh-hook
+add-zsh-hook preexec zsh_preexec
+add-zsh-hook precmd zsh_precmd
+
+
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 
