@@ -86,6 +86,7 @@ let
     neovim
     visidata
     zsh
+    tmux
     fzf
     pgcli
     dotbot
@@ -127,43 +128,7 @@ let
     # EDITOR = "emacs";
   };
 
-  programs.zsh.enable = false;
   programs.fish.enable = true;
-  programs.tmux = {
-    enable = true;
-    baseIndex = 1;
-    prefix = "C-Space";
-
-    plugins = [
-      {
-        plugin = pkgs.tmuxPlugins.sensible;
-      }
-      {
-        plugin = catppuccin-tmux;
-        extraConfig = ''
-          set -g @catppuccin_flavor "mocha"
-          set -g @catppuccin_window_status_style "rounded"
-          '';
-      }
-      {
-        plugin = pkgs.tmuxPlugins.battery;
-        extraConfig = ''
-          set -g status-left-length 100
-          set -g status-left ""
-          set -g status-right "#{E:@catppuccin_status_application}"
-          set -agF status-right "#{E:@catppuccin_status_cpu}"
-          set -ag status-right "#{E:@catppuccin_status_session}"
-          set -ag status-right "#{E:@catppuccin_status_uptime}"
-          # TESTIE 1
-        '';
-      }
-      {
-        plugin =cpu-tmux;
-      }
-    ];
-    extraConfig = builtins.readFile ./configs/tmux;
-  };
-  # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
    # Configure Git using programs.git

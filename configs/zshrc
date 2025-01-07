@@ -63,14 +63,6 @@ function copyfile {
 # set pager for psql
 export PSQL_PAGER=pspg
 
-# tmux escape chars for `next-prompt` and `previous-prompt`
-function preexec() {
-  print -Pn '\e]133;A\a'
-}
-function precmd() {
-  print -Pn '\e]133;B\a'
-}
-
 # setup tmux plugin manager
 if [[ ! -e "$HOME/.tmux.plugins/tpm" ]]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux.plugins/tpm"
@@ -152,6 +144,17 @@ alias tkss='tmux kill-session -t' # Kill a specific session
 alias kitty='nixGL kitty'
 alias kitten='nixGL kitten'
 
+
+# tmux escape chars for `next-prompt` and `previous-prompt`
+function tmux_preexec() {
+  print -Pn '\e]133;A\a'
+}
+function tmux_precmd() {
+  print -Pn '\e]133;B\a'
+}
+
+
+
 # Function to set the terminal title
 set_terminal_title() {
   local title=$1
@@ -162,16 +165,17 @@ zsh_preexec() {
   [[ -n "$cmd" ]] && set_terminal_title "$cmd"
 }
 
-# Update the terminal title to the compacted path on prompt
 zsh_precmd() {
-  local pwd_compact="${PWD/#$HOME/~}"   # Replace $HOME with ~
-  pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g') # Compact paths
+  local pwd_compact="${PWD/#$HOME/~}"
+  pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
   set_terminal_title "$pwd_compact"
 }
 
 # Add hooks
 autoload -U add-zsh-hook
+add-zsh-hook preexec tmux_preexec
 add-zsh-hook preexec zsh_preexec
+add-zsh-hook precmd tmux_precmd
 add-zsh-hook precmd zsh_precmd
 
 
