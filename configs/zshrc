@@ -71,6 +71,12 @@ function precmd() {
   print -Pn '\e]133;B\a'
 }
 
+# setup tmux plugin manager
+if [[ ! -e "$HOME/.tmux.plugins/tpm" ]]; then
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux.plugins/tpm"
+fi
+
+
 # install and load zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"

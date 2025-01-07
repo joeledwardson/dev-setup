@@ -87,6 +87,8 @@ let
     visidata
     zsh
     fzf
+    pgcli
+    dotbot
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -102,8 +104,6 @@ let
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
-    ".config/nvim".source = configs/nvim;
-    ".zshrc".source = configs/zshrc;
 
   };
 
