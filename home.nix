@@ -83,13 +83,15 @@ let
     aichat
     gh     # this is github cli
     glab   # this is gitlab cli
-    neovim
     visidata
+    harlequin
     zsh
     tmux
     fzf
     pgcli
     dotbot
+    neovim
+    google-cloud-sdk
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
