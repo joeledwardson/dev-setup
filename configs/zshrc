@@ -60,9 +60,6 @@ function copyfile {
     echo "File path copied to clipboard: $fullpath"
 }
 
-# set pager for psql
-export PSQL_PAGER=pspg
-
 # setup tmux plugin manager
 if [[ ! -e "$HOME/.tmux.plugins/tpm" ]]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux.plugins/tpm"
@@ -109,7 +106,7 @@ zinit ice wait lucid
 zinit load davidde/git
 zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
-#
+
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd)"
