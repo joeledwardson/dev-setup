@@ -158,7 +158,7 @@ set_terminal_title() {
   print -Pn "\e]2;${title}\a"
 }
 zsh_preexec() {
-  local cmd="${1}"
+  local cmd="$(echo "${1}" | cut -d' ' -f1)"
   [[ -n "$cmd" ]] && set_terminal_title "$cmd"
 }
 
