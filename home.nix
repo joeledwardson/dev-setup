@@ -32,6 +32,7 @@ let
   home.homeDirectory = builtins.trace "Username from config is: ${config.home.username}" (
     lib.mkDefault "/home/${config.home.username}"
   );
+  nixpkgs.config.allowUnfree = true;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -64,11 +65,34 @@ let
     direnv
     fnm
     clojure # for metabase
-    kitty
-		lazysql
-		usql
-  	# harlequin
-];
+    lazysql
+    usql
+    slack
+    git
+    google-chrome
+    copyq
+    vim
+    pipx
+    curl
+    tldr
+    bat
+    xclip
+    xsel
+    lazygit
+    fnm
+    aichat
+    gh     # this is github cli
+    glab   # this is gitlab cli
+    visidata
+    harlequin
+    zsh
+    tmux
+    fzf
+    pgcli
+    dotbot
+    neovim
+    google-cloud-sdk
+  ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -83,6 +107,7 @@ let
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
   };
 
   # Home Manager can also manage your environment variables through
@@ -106,40 +131,47 @@ let
   };
 
   programs.fish.enable = true;
-  programs.tmux = {
-    enable = true;
-    baseIndex = 1;
-    prefix = "C-Space";
-
-    plugins = [
-      {
-        plugin = pkgs.tmuxPlugins.sensible;
-      }
-      {
-        plugin = catppuccin-tmux;
-        extraConfig = ''
-          set -g @catppuccin_flavor "mocha"
-          set -g @catppuccin_window_status_style "rounded"
-          '';
-      }
-      {
-        plugin = pkgs.tmuxPlugins.battery;
-        extraConfig = ''
-          set -g status-left-length 100
-          set -g status-left ""
-          set -g status-right "#{E:@catppuccin_status_application}"
-          set -agF status-right "#{E:@catppuccin_status_cpu}"
-          set -ag status-right "#{E:@catppuccin_status_session}"
-          set -ag status-right "#{E:@catppuccin_status_uptime}"
-          # TESTIE 1
-        '';
-      }
-      {
-        plugin =cpu-tmux;
-      }
-    ];
-    extraConfig = builtins.readFile ./configs/.tmux.conf;
-  };
-  # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+   # Configure Git using programs.git
+  programs.git = {
+    enable = true;
+
+    # Explicitly set userName and userEmail
+    userName = "joel";
+    userEmail = "joel.edwardson1@gmail.com";
+
+      delta = {
+        enable = true;
+	options = {
+
+        navigate = true;        # Use n and N to move between diff sections
+        light = false;          # Set to true if using a light terminal background
+        "syntax-theme" = "Dracula";
+	};
+      };
+
+    # Use structured extraConfig for other settings
+    extraConfig = {
+      core = {
+        editor = "vim";
+      };
+      merge = {
+        conflictStyle = "diff3";
+      };
+    };
+
+    # Add ignore entries
+    ignores = [
+      "**/*.swp"
+      "**/*.swo"
+      ".vscode"
+    ];
+
+    # Add include paths
+    includes = [ 
+      { path = "~/.gitconfig.local" ; }
+    ];
+  };
+
 }

@@ -60,16 +60,11 @@ function copyfile {
     echo "File path copied to clipboard: $fullpath"
 }
 
-# set pager for psql
-export PSQL_PAGER=pspg
+# setup tmux plugin manager
+if [[ ! -e "$HOME/.tmux.plugins/tpm" ]]; then
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux.plugins/tpm"
+fi
 
-# tmux escape chars for `next-prompt` and `previous-prompt`
-function preexec() {
-  print -Pn '\e]133;A\a'
-}
-function precmd() {
-  print -Pn '\e]133;B\a'
-}
 
 # install and load zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -77,13 +72,10 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# install fzf and setup completion
-if [ ! -d "$HOME/.fzf" ]; then
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ("$HOME/.fzf/install" --all)
+# pipe to dev null to not print if exists
+if command -v fzf >/dev/null; then
+  source <(fzf --zsh)
 fi
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source <(fzf --zsh)
 
 # Load from cache immediately
 autoload -U compinit
@@ -94,26 +86,26 @@ zinit ice depth"1" # git clone depth
 zinit light romkatv/powerlevel10k
 
 # Plugins
-#zinit light Aloxaf/fzf-tab
 # Without wait because we want the tools immediately
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
-zinit ice wait'0' silent
-zinit light catppuccin/zsh-syntax-highlighting
-zinit ice wait'0' silent
-zinit light MichaelAquilina/zsh-you-should-use
-zinit ice wait'0' silent
-zinit snippet OMZP::colored-man-pages
-zinit snippet OMZP::vi-mode
-zinit ice wait'0' silent
-zinit light xPMo/zsh-ls-colors
-# Use turbo mode for plugins that don't need immediate loading
-# Load git plugin directly (not from Oh-My-Zsh)
-zinit ice wait'0' lucid
-zinit load davidde/git
 
+zinit ice wait silent
+zinit light catppuccin/zsh-syntax-highlighting
+zinit ice wait silent
+zinit light MichaelAquilina/zsh-you-should-use
+zinit ice wait silent
+zinit snippet OMZP::colored-man-pages
+zinit ice wait silent
+zinit snippet OMZP::vi-mode
+zinit ice wait silent
+zinit light xPMo/zsh-ls-colors
+zinit ice wait lucid
+zinit load davidde/git
+zinit ice lucid wait'0'
+zinit light joshskidmore/zsh-fzf-history-search
 
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
@@ -148,6 +140,41 @@ alias tkss='tmux kill-session -t' # Kill a specific session
 # nixGL for kitty
 alias kitty='nixGL kitty'
 alias kitten='nixGL kitten'
+
+
+# tmux escape chars for `next-prompt` and `previous-prompt`
+function tmux_preexec() {
+  print -Pn '\e]133;A\a'
+}
+function tmux_precmd() {
+  print -Pn '\e]133;B\a'
+}
+
+
+
+# Function to set the terminal title
+set_terminal_title() {
+  local title=$1
+  print -Pn "\e]2;${title}\a"
+}
+zsh_preexec() {
+  local cmd="$(echo "${1}" | cut -d' ' -f1)"
+  [[ -n "$cmd" ]] && set_terminal_title "$cmd"
+}
+
+zsh_precmd() {
+  local pwd_compact="${PWD/#$HOME/~}"
+  pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
+  set_terminal_title "$pwd_compact"
+}
+
+# Add hooks
+autoload -U add-zsh-hook
+add-zsh-hook preexec tmux_preexec
+add-zsh-hook preexec zsh_preexec
+add-zsh-hook precmd tmux_precmd
+add-zsh-hook precmd zsh_precmd
+
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
