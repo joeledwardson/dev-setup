@@ -4,6 +4,12 @@ Before anything can be run, ansible must be installed
 If not using a Nix based OS, need to install NixOS (use `--daemon` as its nice to be able to view and restart it using `systemctl`)
 See instructions [here](https://nixos.org/download/)
 
+***TODO***
+- gcloud completion
+- zsh tmux titles not working (new pane doesn't sync with custom title)
+- ctrl g without prefix once in copy mode - ctrl G for previous
+
+
 ```bash
 $ sh <(curl -L https://nixos.org/nix/install) --daemon
 ```
