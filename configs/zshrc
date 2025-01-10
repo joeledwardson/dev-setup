@@ -157,15 +157,28 @@ set_terminal_title() {
   local title=$1
   print -Pn "\e]2;${title}\a"
 }
+
 zsh_preexec() {
-  local cmd="$(echo "${1}" | cut -d' ' -f1)"
-  [[ -n "$cmd" ]] && set_terminal_title "$cmd"
+    local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
+    # If current_title exists and is not a shell name
+    if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
+        set_terminal_title "$current_title"
+    else
+        echo "preexec $1"
+        local cmd="$(echo "${1}" | cut -d' ' -f1)"
+        [[ -n "$cmd" ]] && set_terminal_title "$cmd"
+    fi
 }
 
 zsh_precmd() {
-  local pwd_compact="${PWD/#$HOME/~}"
-  pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
-  set_terminal_title "$pwd_compact"
+    local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
+    if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
+        set_terminal_title "$current_title"
+    else
+        local pwd_compact="${PWD/#$HOME/~}"
+        pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
+        set_terminal_title "$pwd_compact"
+    fi
 }
 
 # Add hooks
