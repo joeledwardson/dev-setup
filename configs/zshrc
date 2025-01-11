@@ -3,13 +3,6 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # history settings
 # Add these near the top of your .zshrc, before loading zinit
 HISTFILE=~/.zsh_history
@@ -81,25 +74,18 @@ fi
 autoload -U compinit
 compinit
 
-# Load powerlevel10k theme
-zinit ice depth"1" # git clone depth
-zinit light romkatv/powerlevel10k
-
 # Plugins
-# Without wait because we want the tools immediately
+zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
+zinit light sindresorhus/pure
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
-
-
 zinit ice wait silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit ice wait silent
 zinit light MichaelAquilina/zsh-you-should-use
 zinit ice wait silent
 zinit snippet OMZP::colored-man-pages
-# zinit ice wait silent
-# zinit snippet OMZP::vi-mode
 zinit ice wait silent
 zinit light xPMo/zsh-ls-colors
 zinit ice wait lucid
@@ -195,9 +181,6 @@ add-zsh-hook precmd tmux_precmd
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
