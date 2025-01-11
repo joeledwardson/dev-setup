@@ -74,9 +74,11 @@ fi
 autoload -U compinit
 compinit
 
+eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/catppuccin_mocha.omp.json')"
+
 # Plugins
-zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
-zinit light sindresorhus/pure
+# zinit ice compile'(pure|async).zsh' pick'async.zsh' src'pure.zsh'
+# zinit light sindresorhus/pure
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
