@@ -5,10 +5,10 @@ set -g default-terminal "tmux-256color"
 # set-option -sa terminal-overrides ",xterm*:Tc"
 set-option -sa terminal-overrides ",xterm-256color:RGB"
 set -g pane-border-lines heavy
-set -g set-titles on
-set -g set-titles-string '#T'
-set -g default-command "${SHELL}"
-set -g allow-rename on
+# set -g set-titles on
+# set -g set-titles-string '#T'
+# set -g default-command "${SHELL}"
+# set -g allow-rename off
 
 # allow mouse scrolling
 set -g mouse on
@@ -91,8 +91,6 @@ bind C-p copy-mode ';' \
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'catppuccin/tmux#v2.1.2' # See https://github.com/catppuccin/tmux/tags for additional tags
-set -g @plugin 'tmux-plugins/tmux-battery'
-set -g @plugin 'tmux-plugins/tmux-cpu'
 # set theme
 set -g @catppuccin_flavor 'mocha' # latte, frappe, macchiato or mocha
 
@@ -101,7 +99,18 @@ set -g @catppuccin_flavor 'mocha' # latte, frappe, macchiato or mocha
 # set -g @catppuccin_window_current_text "#{?#{!=:#W,fish},#W,#T}#{?window_zoomed_flag, Z,}"
 set -g @catppuccin_window_status_style "rounded"
 set -ogq @catppuccin_pane_border_status "yes"
+# Make the status line pretty and add some modules
+set -g status-right-length 100
+set -g status-left-length 100
+set -g status-left ""
+set -g status-right "#{E:@catppuccin_status_application}"
+set -agF status-right "#{E:@catppuccin_status_cpu}"
+set -ag status-right "#{E:@catppuccin_status_session}"
+set -ag status-right "#{E:@catppuccin_status_uptime}"
+set -agF status-right "#{E:@catppuccin_status_battery}"
 
+set -g @plugin 'tmux-plugins/tmux-battery'
+set -g @plugin 'tmux-plugins/tmux-cpu'
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
