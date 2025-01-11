@@ -74,9 +74,11 @@ let
     google-cloud-sdk
     bitwarden-cli
     fnm
+    fish
     # themes
     starship
     oh-my-posh
+    oh-my-fish
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -118,7 +120,6 @@ let
   LC_ALL = "en_GB.UTF-8";
   };
 
-  programs.fish.enable = true;
   programs.home-manager.enable = true;
 
    # Configure Git using programs.git
