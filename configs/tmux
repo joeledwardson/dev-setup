@@ -1,14 +1,8 @@
 setw -g mode-keys vi
-# set -g default-terminal "screen-256color"
 set -g default-terminal "tmux-256color"
-# set-option -ga terminal-overrides ",xterm-256color:Tc"
-# set-option -sa terminal-overrides ",xterm*:Tc"
 set-option -sa terminal-overrides ",xterm-256color:RGB"
 set -g pane-border-lines heavy
-# set -g set-titles on
-# set -g set-titles-string '#T'
-# set -g default-command "${SHELL}"
-# set -g allow-rename off
+set-option -g default-shell "$HOME/.nix-profile/bin/zsh"
 
 # allow mouse scrolling
 set -g mouse on
@@ -94,9 +88,9 @@ set -g @plugin 'catppuccin/tmux#v2.1.2' # See https://github.com/catppuccin/tmux
 # set theme
 set -g @catppuccin_flavor 'mocha' # latte, frappe, macchiato or mocha
 
-# LEAVE for now as zsh sets the titles itself!
-# set -g @catppuccin_window_text "#{?#{!=:#W,fish},#W,#T}#{?window_zoomed_flag, Z,}"
-# set -g @catppuccin_window_current_text "#{?#{!=:#W,fish},#W,#T}#{?window_zoomed_flag, Z,}"
+# use window name if NOT zsh (i.e. set by user) otherwise automatic title name, and add Z if zoomed
+set -g @catppuccin_window_text "#{?#{!=:#W,zsh},#W,#T}#{?window_zoomed_flag, Z,}"
+set -g @catppuccin_window_current_text "#{?#{!=:#W,zsh},#W,#T}#{?window_zoomed_flag, Z,}"
 set -g @catppuccin_window_status_style "rounded"
 set -ogq @catppuccin_pane_border_status "yes"
 # Make the status line pretty and add some modules
@@ -111,6 +105,9 @@ set -agF status-right "#{E:@catppuccin_status_battery}"
 
 set -g @plugin 'tmux-plugins/tmux-battery'
 set -g @plugin 'tmux-plugins/tmux-cpu'
+
+# pure theme updates the title with the latest command / user directory, so tmux title updating is not neccessary
+set-window-option -g automatic-rename off
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
