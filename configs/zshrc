@@ -80,6 +80,7 @@ zinit light sindresorhus/pure
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
+zinit light Aloxaf/fzf-tab
 zinit ice wait silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit ice wait silent
