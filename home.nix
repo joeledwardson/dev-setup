@@ -39,16 +39,24 @@ let
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    direnv
-    fnm
-    clojure # for metabase
+    # (added for metabase)
+    clojure
+    # Database tools
     lazysql
     usql
-    slack
+    visidata
+    harlequin
+    dblab
+    rainfrog
     git
+    pgcli
+    # desktop apps
     google-chrome
     copyq
+    slack
+    # CLI tools
     vim
+    zsh
     pipx
     curl
     tldr
@@ -56,22 +64,19 @@ let
     xclip
     xsel
     lazygit
-    fnm
     aichat
-    gh     # this is github cli
-    glab   # this is gitlab cli
-    visidata
-    harlequin
-    zsh
+    gh     
+    glab   
     tmux
     fzf
-    pgcli
     dotbot
     neovim
     google-cloud-sdk
     bitwarden-cli
-    dblab
-    rainfrog
+    fnm
+    # themes
+    starship
+    oh-my-posh
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
