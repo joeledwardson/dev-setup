@@ -39,8 +39,9 @@ let
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    # (added for metabase)
-    clojure
+    # dependencies
+    clojure # for metabase
+    gcc # for nvim kickstart
     # Database tools
     lazysql
     usql
@@ -54,7 +55,7 @@ let
     google-chrome
     copyq
     slack
-    sxhkd
+    autokey
     # CLI tools
     vim
     zsh
