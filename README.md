@@ -11,7 +11,7 @@ See instructions [here](https://nixos.org/download/)
 - ignore fnm
 - fzf finder with eza (ls replacement, forgot what its called)
 - learn zsh nav (not vim)
-
+- sort out authentication with gh overwritten by nix
 
 ```bash
 $ sh <(curl -L https://nixos.org/nix/install) --daemon
