@@ -85,6 +85,10 @@ bind C-p copy-mode ';' \
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'catppuccin/tmux#v2.1.2' # See https://github.com/catppuccin/tmux/tags for additional tags
+set -g @plugin 'olimorris/tmux-pomodoro-plus'
+set -g @plugin 'xamut/tmux-weather'
+set -g @plugin 'tmux-plugins/tmux-cpu'
+
 # set theme
 set -g @catppuccin_flavor 'mocha' # latte, frappe, macchiato or mocha
 
@@ -96,11 +100,40 @@ set -ogq @catppuccin_pane_border_status "yes"
 # Make the status line pretty and add some modules
 set -g status-right-length 100
 set -g status-left-length 100
-set -g status-left ""
-set -g status-right "#{E:@catppuccin_status_application}"
-set -agF status-right "#{E:@catppuccin_status_cpu}"
-set -agF status-right "#{E:@catppuccin_status_session}"
 
+set -g status-left ""
+set -g status-right ""
+
+# session
+set -ga status-right "#[fg=#{@thm_green},bg=default]"
+set -ga status-right "#{?client_prefix,#[#{fg=#{@thm_green}}]#[reverse]#[bold],}"
+set -ga status-right " #{?#{e|>:#{window_width},90}, #S,} "
+set -ga status-right "#{?client_prefix,#[none],}"
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# application
+set -ga status-right "#[fg=#{@thm_maroon},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},80}, #{pane_current_command},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# directory
+set -ga status-right "#[fg=#{@thm_blue},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},80}, #{=/24/...:#{b:pane_current_path}},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# window zoom flag
+set -ga status-right "#{?window_zoomed_flag,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, zoom,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
+
+# pane marked flag
+set -ga status-right "#{?pane_marked,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, marked,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
 
 # cpu
 set -ga status-right "#[fg=#{@thm_teal},bg=default]"
@@ -112,11 +145,6 @@ set -ga status-right "#[fg=#{@thm_sky},bg=default]"
 set -ga status-right " #{?#{e|>:#{window_width},115}, #{ram_percentage},} "
 set -ga status-right "#{E:#{@custom_separator}}"
 
-set -agF status-right "#{E:@catppuccin_status_load}"
-set -agF status-right "#{E:@catppuccin_status_weather}"
-set -agF status-right "#{E:@catppuccin_status_pomodoro_plus}"
-
-
 # date
 set -ga status-right "#[fg=#{@thm_lavender},bg=default]"
 set -ga status-right " #{?#{e|>:#{window_width},95}, %Y-%m-%d,} "
@@ -126,30 +154,11 @@ set -ga status-right "#{E:#{@custom_separator}}"
 set -ga status-right "#[fg=#{@thm_fg},bg=default]"
 set -ga status-right " #{?#{e|>:#{window_width},85}, %H:%M,} "
 
-# ~/.tmux.conf
+# pomodoro
+set -ga status-right "#{pomodoro_status}"
 
-# set -ag status-right "#[bg=#{@thm_flamingo},fg=#{@thm_crust}]#[reverse]#[noreverse]󱀙  "
-# set -ag status-right "#[fg=#{@thm_fg},bg=#{@thm_mantle}] 'pls') "
-
-# In ~/.tmux.conf, after the catppuccin plugin has been loaded.
-
-%hidden MODULE_NAME="my_custom_module"
-
-set -ogq "@catppuccin_${MODULE_NAME}_icon" " "
-set -ogqF "@catppuccin_${MODULE_NAME}_color" "#{E:@thm_pink}"
-set -ogq "@catppuccin_${MODULE_NAME}_text" "#{pane_current_command}"
-
-source "/home/joel/.tmux/plugins/tmux/utils/status_module.conf"
-set -ag status-right "#{E:@catppuccin_status_application}#{E:@catppuccin_status_my_custom_module}"
-set -agF status-right "#[fg=#{@thm_crust},bg=#{@thm_teal}] ##H "
-
-set -g @plugin 'olimorris/tmux-pomodoro-plus'
-set -g @plugin 'xamut/tmux-weather'
-set -g @plugin 'tmux-plugins/tmux-cpu'
-set -g @plugin 'jamesoff/tmux-loadavg'
-
-# pure theme updates the title with the latest command / user directory, so tmux title updating is not neccessary
 set-window-option -g automatic-rename on
+
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
