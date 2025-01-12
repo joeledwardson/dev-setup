@@ -36,6 +36,13 @@ and the nixGL channel and default added (for OpenGL apps, dont work with linked 
 nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
 nix-env -iA nixgl.auto.nixGLDefault   # or replace `nixGLDefault` with your desired wrapper
 ```
+# Firefox tridactly
+Firefox tridactly extension find has some... interesting defaults.
+
+Suggested find bindings (see source here)[https://tridactyl.xyz/build/static/docs/modules/_src_excmds_.html#find], can be easily applied below in tridactl by typing `:` then pasting the below:
+```
+source https://raw.githubusercontent.com/joeledwardson/dev-setup/refs/heads/main/configs/tridactyl.config
+```
 
 # install pipx and ansible
 ```bash
