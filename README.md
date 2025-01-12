@@ -12,6 +12,7 @@ See instructions [here](https://nixos.org/download/)
 - fzf finder with eza (ls replacement, forgot what its called)
 - learn zsh nav (not vim)
 - sort out authentication with gh overwritten by nix
+- try out xremap?
 
 ```bash
 $ sh <(curl -L https://nixos.org/nix/install) --daemon
