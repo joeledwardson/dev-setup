@@ -54,6 +54,7 @@ let
     google-chrome
     copyq
     slack
+    sxhkd
     # CLI tools
     vim
     zsh

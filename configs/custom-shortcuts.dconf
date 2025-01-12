@@ -1,4 +1,7 @@
+[/]
+custom-list=['custom0']
+
 [custom0]
-binding=['<Super>v']
+binding='<Super>v'
 command='copyq show'
-name='Open CopyQ'
+name='open CopyQ GUI'
