@@ -8,7 +8,10 @@ See instructions [here](https://nixos.org/download/)
 - gcloud completion
 - zsh tmux titles not working (new pane doesn't sync with custom title)
 - ctrl g without prefix once in copy mode - ctrl G for previous
-
+- ignore fnm
+- fzf finder with eza (ls replacement, forgot what its called)
+- learn zsh nav (not vim)
+- sort out authentication with gh overwritten by nix
 
 ```bash
 $ sh <(curl -L https://nixos.org/nix/install) --daemon

@@ -1,14 +1,8 @@
 setw -g mode-keys vi
-# set -g default-terminal "screen-256color"
 set -g default-terminal "tmux-256color"
-# set-option -ga terminal-overrides ",xterm-256color:Tc"
-# set-option -sa terminal-overrides ",xterm*:Tc"
 set-option -sa terminal-overrides ",xterm-256color:RGB"
 set -g pane-border-lines heavy
-set -g set-titles on
-set -g set-titles-string '#T'
-set -g default-command "${SHELL}"
-set -g allow-rename on
+set-option -g default-shell "$HOME/.nix-profile/bin/zsh"
 
 # allow mouse scrolling
 set -g mouse on
@@ -91,16 +85,79 @@ bind C-p copy-mode ';' \
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'catppuccin/tmux#v2.1.2' # See https://github.com/catppuccin/tmux/tags for additional tags
-set -g @plugin 'tmux-plugins/tmux-battery'
+set -g @plugin 'olimorris/tmux-pomodoro-plus'
+set -g @plugin 'xamut/tmux-weather'
 set -g @plugin 'tmux-plugins/tmux-cpu'
+
 # set theme
 set -g @catppuccin_flavor 'mocha' # latte, frappe, macchiato or mocha
 
-# LEAVE for now as zsh sets the titles itself!
-# set -g @catppuccin_window_text "#{?#{!=:#W,fish},#W,#T}#{?window_zoomed_flag, Z,}"
-# set -g @catppuccin_window_current_text "#{?#{!=:#W,fish},#W,#T}#{?window_zoomed_flag, Z,}"
+# use window name if NOT zsh (i.e. set by user) otherwise automatic title name, and add Z if zoomed
+set -g @catppuccin_window_text "#{?#{!=:#W,zsh},#W,#T}#{?window_zoomed_flag, Z,}"
+set -g @catppuccin_window_current_text "#{?#{!=:#W,zsh},#W,#T}#{?window_zoomed_flag, Z,}"
 set -g @catppuccin_window_status_style "rounded"
 set -ogq @catppuccin_pane_border_status "yes"
+# Make the status line pretty and add some modules
+set -g status-right-length 100
+set -g status-left-length 100
+
+set -g status-left ""
+set -g status-right ""
+
+# session
+set -ga status-right "#[fg=#{@thm_green},bg=default]"
+set -ga status-right "#{?client_prefix,#[#{fg=#{@thm_green}}]#[reverse]#[bold],}"
+set -ga status-right " #{?#{e|>:#{window_width},90}, #S,} "
+set -ga status-right "#{?client_prefix,#[none],}"
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# application
+set -ga status-right "#[fg=#{@thm_maroon},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},80}, #{pane_current_command},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# directory
+set -ga status-right "#[fg=#{@thm_blue},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},80}, #{=/24/...:#{b:pane_current_path}},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# window zoom flag
+set -ga status-right "#{?window_zoomed_flag,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, zoom,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
+
+# pane marked flag
+set -ga status-right "#{?pane_marked,"
+set -ga status-right "#[fg=#{@thm_yellow}]#[bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},110}, marked,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+set -ga status-right ",}"
+
+# cpu
+set -ga status-right "#[fg=#{@thm_teal},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},115}, #{cpu_percentage},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# ram
+set -ga status-right "#[fg=#{@thm_sky},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},115}, #{ram_percentage},} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# date
+set -ga status-right "#[fg=#{@thm_lavender},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},95}, %Y-%m-%d,} "
+set -ga status-right "#{E:#{@custom_separator}}"
+
+# time
+set -ga status-right "#[fg=#{@thm_fg},bg=default]"
+set -ga status-right " #{?#{e|>:#{window_width},85}, %H:%M,} "
+
+# pomodoro
+set -ga status-right "#{pomodoro_status}"
+
+set-window-option -g automatic-rename on
 
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)

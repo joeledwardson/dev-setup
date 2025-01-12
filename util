@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case "$1" in
+  build)
+    home-manager switch --flake .
+    ;;
+  dotfiles)
+    dotbot -c install.conf.yaml 
+    ;;
+  clean)
+    nix-collect-garbage -d
+    ;;
+  *)
+    echo "Usage: $0 {build|dotfiles|clean}"
+    ;;
+esac
+

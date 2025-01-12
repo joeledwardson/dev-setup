@@ -1,29 +1,6 @@
 # home.nix
 { config, pkgs, lib, username, ... }: 
 let
-  # catppucin plugin doesnt render properly when using nixos package so build myself
-  catppuccin-tmux = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "catppuccin";
-    version = "unstable-2024-01-03";  # or whatever date you're building at
-    src = pkgs.fetchFromGitHub {
-      owner = "catppuccin";
-      repo = "tmux";
-      rev = "ba9bd88c98c81f25060f051ed983e40f82fdd3ba"; # Using the newer commit
-      sha256 = "sha256-HegD89d0HUJ7dHKWPkiJCIApPY/yqgYusn7e1LDYS6c=";
-      };
-    };
-
-  cpu-tmux = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "cpu";
-    version = "unstable-2024-01-03";  # or whatever date you're building at
-    src = pkgs.fetchFromGitHub {
-      owner = "tmux-plugins";
-      repo = "tmux-cpu";
-      rev = "bcb110d754ab2417de824c464730c412a3eb2769"; # Using the newer commit
-      sha256 = "sha256-OrQAPVJHM9ZACyN36tlUDO7l213tX2a5lewDon8lauc=";
-
-      };
-    };
   in
   {
   # Home Manager needs a bit of information about you and the paths it should
@@ -62,16 +39,24 @@ let
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    direnv
-    fnm
-    clojure # for metabase
+    # (added for metabase)
+    clojure
+    # Database tools
     lazysql
     usql
-    slack
+    visidata
+    harlequin
+    dblab
+    rainfrog
     git
+    pgcli
+    # desktop apps
     google-chrome
     copyq
+    slack
+    # CLI tools
     vim
+    zsh
     pipx
     curl
     tldr
@@ -79,22 +64,21 @@ let
     xclip
     xsel
     lazygit
-    fnm
     aichat
-    gh     # this is github cli
-    glab   # this is gitlab cli
-    visidata
-    harlequin
-    zsh
+    gh     
+    glab   
     tmux
     fzf
-    pgcli
     dotbot
     neovim
     google-cloud-sdk
     bitwarden-cli
-    dblab
-    rainfrog
+    fnm
+    fish
+    # themes
+    starship
+    oh-my-posh
+    oh-my-fish
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -131,9 +115,11 @@ let
   #
   home.sessionVariables = {
     # EDITOR = "emacs";
+    ZDOTDIR = "$HOME";
+      LANG = "en_GB.UTF-8";
+  LC_ALL = "en_GB.UTF-8";
   };
 
-  programs.fish.enable = true;
   programs.home-manager.enable = true;
 
    # Configure Git using programs.git

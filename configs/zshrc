@@ -3,13 +3,6 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # history settings
 # Add these near the top of your .zshrc, before loading zinit
 HISTFILE=~/.zsh_history
@@ -61,8 +54,8 @@ function copyfile {
 }
 
 # setup tmux plugin manager
-if [[ ! -e "$HOME/.tmux.plugins/tpm" ]]; then
-  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux.plugins/tpm"
+if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
 
@@ -81,25 +74,18 @@ fi
 autoload -U compinit
 compinit
 
-# Load powerlevel10k theme
-zinit ice depth"1" # git clone depth
-zinit light romkatv/powerlevel10k
-
 # Plugins
-# Without wait because we want the tools immediately
+eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/refs/heads/main/themes/catppuccin_mocha.omp.json')"
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
-
-
+zinit light Aloxaf/fzf-tab
 zinit ice wait silent
 zinit light catppuccin/zsh-syntax-highlighting
 zinit ice wait silent
 zinit light MichaelAquilina/zsh-you-should-use
 zinit ice wait silent
 zinit snippet OMZP::colored-man-pages
-zinit ice wait silent
-zinit snippet OMZP::vi-mode
 zinit ice wait silent
 zinit light xPMo/zsh-ls-colors
 zinit ice wait lucid
@@ -151,52 +137,51 @@ function tmux_precmd() {
 }
 
 
-
-# Function to set the terminal title
-set_terminal_title() {
-  local title=$1
-  print -Pn "\e]2;${title}\a"
-}
-
-zsh_preexec() {
-    local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
-    # If current_title exists and is not a shell name
-    if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
-        set_terminal_title "$current_title"
-    else
-        echo "preexec $1"
-        local cmd="$(echo "${1}" | cut -d' ' -f1)"
-        [[ -n "$cmd" ]] && set_terminal_title "$cmd"
-    fi
-}
-
-zsh_precmd() {
-    local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
-    if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
-        set_terminal_title "$current_title"
-    else
-        local pwd_compact="${PWD/#$HOME/~}"
-        pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
-        set_terminal_title "$pwd_compact"
-    fi
-}
+#
+# # Function to set the terminal title
+# set_terminal_title() {
+#   local title=$1
+#   # DEBUG line: uncomment below for testing titles
+#   # echo "setting title to $title"
+#   print -Pn "\e]2;${title}\a"
+# }
+#
+# zsh_preexec() {
+#     local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
+#     # If current_title exists and is not a shell name
+#     if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
+#         set_terminal_title "$current_title"
+#     else
+#         # DEBUG line - uncomment below for preexec testing
+#         # echo "preexec $1"
+#         local cmd="$(echo "${1}" | cut -d' ' -f1)"
+#         [[ -n "$cmd" ]] && set_terminal_title "$cmd"
+#     fi
+# }
+#
+# zsh_precmd() {
+#     local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
+#     if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
+#         set_terminal_title "$current_title"
+#     else
+#         local pwd_compact="${PWD/#$HOME/~}"
+#         pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
+#         set_terminal_title "$pwd_compact"
+#     fi
+# }
+#
 
 # Add hooks
 autoload -U add-zsh-hook
 add-zsh-hook preexec tmux_preexec
-add-zsh-hook preexec zsh_preexec
 add-zsh-hook precmd tmux_precmd
-add-zsh-hook precmd zsh_precmd
+# add-zsh-hook preexec zsh_preexec
+# add-zsh-hook precmd zsh_precmd
 
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
-
-
