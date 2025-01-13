@@ -39,9 +39,12 @@ let
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    # dependencies
+    # languages
     clojure # for metabase
     gcc # for nvim kickstart
+    pipx
+    fnm
+    deno
     # Database tools
     lazysql
     usql
@@ -59,7 +62,6 @@ let
     # CLI tools
     vim
     zsh
-    pipx
     curl
     tldr
     bat
@@ -75,7 +77,6 @@ let
     neovim
     google-cloud-sdk
     bitwarden-cli
-    fnm
     fish
     # themes
     starship
