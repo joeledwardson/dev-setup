@@ -158,7 +158,8 @@ set -ga status-right " #{?#{e|>:#{window_width},85}, %H:%M,} "
 set -ga status-right "#{pomodoro_status}"
 
 set-window-option -g automatic-rename on
-
+set -g @pomodoro_toggle 'j'                    # Start/pause a Pomodoro/break
+set -g @pomodoro_cancel 'J'                    # Cancel the current session
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
