@@ -102,19 +102,46 @@ fi
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
-# aliases
-# stolen from (https://github.com/DarrinTisdale/zsh-aliases-ls)
-alias ls='ls --color=auto'
-alias l='ls -lFh'          #size,show type,human readable
-alias la='ls -lAFh'        #long list,show almost all,show type,human readable
-alias lr='ls -tRFh'        #sorted by date,recursive,show type,human readable
-alias lt='ls -ltFh'        #long list,sorted by date,show type,human readable
-alias ll='ls -l'           #long list
-alias ldot='ls -ld .*'
-alias lS='ls -1FSsh'
-alias lart='ls -1Fcart'
-alias lrt='ls -1Fcrt'
-alias lf='find "$PWD" -maxdepth 1' # show full path
+# fzf tab config
+# # disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences (like '%F{red}%d%f') here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# custom fzf flags
+# NOTE: fzf-tab does not follow FZF_DEFAULT_OPTS by default
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+# To make fzf-tab follow FZF_DEFAULT_OPTS.
+# NOTE: This may lead to unexpected behavior since some flags break this plugin. See Aloxaf/fzf-tab#455.
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+# switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
+
+# fzf tmux popup
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+# apply to all command
+zstyle ':fzf-tab:*' popup-min-size 80 12
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always $realpath'
+
+
+# eza aliases stolen from here: https://github.com/MohamedElashri/eza-zsh/blob/main/eza-zsh.plugin.zsh
+alias l='eza --long --icons -bF' # Extended details with binary sizes and type indicators
+alias ll='eza --long -a' # Long format, including hidden files
+alias la='eza -a --group-directories-first' # Show all files, with directories listed first
+alias lx='eza -a --group-directories-first --extended' # Show all files and extended attributes, directories first
+alias lT='eza --tree --long' # Tree view with extended details
+alias lr='eza --long --modified --sort=modified' # sort by modified desc
+
+
+
 # stolen from OMZ tmux plugin
 # Essential tmux aliases
 alias ta='tmux attach'     # Attach to a session

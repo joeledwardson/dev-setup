@@ -59,9 +59,11 @@ let
     copyq
     slack
     autokey
+    # terminals
+    zsh
+    fish
     # CLI tools
     vim
-    zsh
     curl
     tldr
     bat
@@ -69,15 +71,15 @@ let
     xsel
     lazygit
     aichat
-    gh     
-    glab   
+    gh
+    glab
     tmux
     fzf
     dotbot
     neovim
     google-cloud-sdk
     bitwarden-cli
-    fish
+    eza
     # themes
     starship
     oh-my-posh
