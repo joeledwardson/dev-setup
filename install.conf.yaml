@@ -10,6 +10,7 @@
     ~/.p10k.zsh: ./configs/p10k
     ~/.config/nvim: ./configs/nvim
     ~/.tmux.conf: ./configs/tmux.conf
+    ~/.config/ohmyposh.json: ./configs/ohmyposh.json
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
