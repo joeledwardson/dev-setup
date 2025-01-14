@@ -59,6 +59,7 @@ let
     copyq
     slack
     autokey
+    pomodoro-gtk
     # terminals
     zsh
     fish
