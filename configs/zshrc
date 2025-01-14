@@ -93,6 +93,11 @@ zinit load davidde/git
 zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
 
+# Using ice syntax
+zinit ice wait lucid atload"source <(glab completion -s zsh)"
+zinit light zdharma-continuum/null
+
+
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd)"
