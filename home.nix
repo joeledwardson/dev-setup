@@ -45,6 +45,8 @@ let
     pipx
     fnm
     deno
+    poetry
+    pyenv
     # Database tools
     lazysql
     usql
