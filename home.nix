@@ -47,6 +47,7 @@ let
     deno
     poetry
     pyenv
+    go
     # Database tools
     lazysql
     usql
