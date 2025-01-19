@@ -7,6 +7,7 @@
 
 - create:
     - ~/.local/share/fonts
+    - ~/.local/share/wallpaper
 
 - link:
     ~/.vimrc: ./configs/vimrc
@@ -21,5 +22,6 @@
     - command: |
         rm -rf ~/.cache/fontconfig
         fc-cache -fv
+        gtk-update-icon-cache -f -t ~/.icons
       sudo: false
 
