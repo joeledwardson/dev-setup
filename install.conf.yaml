@@ -2,7 +2,11 @@
     link:
       relink: true
 
-- clean: ['~']
+- clean:
+    - ~/.local/share/fonts/monofur  # Optional, ensures clean setup
+
+- create:
+    - ~/.local/share/fonts
 
 - link:
     ~/.vimrc: ./configs/vimrc
@@ -11,6 +15,11 @@
     ~/.config/nvim: ./configs/nvim
     ~/.tmux.conf: ./configs/tmux.conf
     ~/.config/ohmyposh.json: ./configs/ohmyposh.json
+    ~/.local/share/fonts/monofur: ./fonts/monofur
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
+    - command: |
+        rm -rf ~/.cache/fontconfig
+        fc-cache -fv
+      sudo: false
+
