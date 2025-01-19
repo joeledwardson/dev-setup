@@ -88,6 +88,10 @@ let
     starship
     oh-my-posh
     oh-my-fish
+    qogir-theme
+    qogir-icon-theme
+    librsvg # for cursors and icons in xfce, see https://wiki.xfce.org/howto/install_new_themes
+    ulauncher
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -103,6 +107,9 @@ let
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
+    ".themes/Qogir".source = "${pkgs.qogir-theme}/share/themes/Qogir";
+    ".icons/Qogir".source = "${pkgs.qogir-icon-theme}/share/icons/Qogir";
 
   };
 
