@@ -17,6 +17,7 @@
     ~/.tmux.conf: ./configs/tmux.conf
     ~/.config/ohmyposh.json: ./configs/ohmyposh.json
     ~/.local/share/fonts/monofur: ./fonts/monofur
+    ~/.config/ulauncher: ./configs/ulauncher
 
 - shell:
     - command: |
