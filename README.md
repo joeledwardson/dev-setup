@@ -116,3 +116,7 @@ home, end, insert, delete, page up. pade down
 - fn backspace not so bad 
 - could just use fn(caps) h/e for home end
 
+# Non nix packages
+These packages require openGL or GPU stuff and i can't find an (easy) workaround yet on home manager, simpler just to install via `dnf`,`apt` whatever OS PC is running on 
+- kitty
+- ulauncher
