@@ -91,7 +91,6 @@ let
     qogir-theme
     qogir-icon-theme
     librsvg # for cursors and icons in xfce, see https://wiki.xfce.org/howto/install_new_themes
-    ulauncher
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
