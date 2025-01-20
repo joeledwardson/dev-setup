@@ -81,7 +81,7 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 zinit light Aloxaf/fzf-tab
 zinit ice wait silent
-zinit light catppuccin/zsh-syntax-highlighting
+zinit light zsh-users/zsh-syntax-highlighting
 zinit ice wait silent
 zinit light MichaelAquilina/zsh-you-should-use
 zinit ice wait silent
@@ -92,6 +92,8 @@ zinit ice wait lucid
 zinit load davidde/git
 zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
+zinit ice lucid wait'0'
+zinit light l4u/zsh-output-highlighting
 
 # Using ice syntax
 zinit ice wait lucid atload"source <(glab completion -s zsh)"
