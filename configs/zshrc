@@ -96,7 +96,7 @@ zinit ice lucid wait'0'
 zinit light l4u/zsh-output-highlighting
 
 # Using ice syntax
-zinit ice wait lucid atload"source <(glab completion -s zsh)"
+zinit ice wait lucid atload"source <(glab completion -s zsh); source <(docker completion zsh)"
 zinit light zdharma-continuum/null
 
 
@@ -130,8 +130,8 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-# fzf tmux popup
-zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+# fzf tmux popup (REMOVED, breaks when not in tmux)
+# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # apply to all command
 zstyle ':fzf-tab:*' popup-min-size 80 12
@@ -171,46 +171,10 @@ function tmux_precmd() {
 }
 
 
-#
-# # Function to set the terminal title
-# set_terminal_title() {
-#   local title=$1
-#   # DEBUG line: uncomment below for testing titles
-#   # echo "setting title to $title"
-#   print -Pn "\e]2;${title}\a"
-# }
-#
-# zsh_preexec() {
-#     local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
-#     # If current_title exists and is not a shell name
-#     if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
-#         set_terminal_title "$current_title"
-#     else
-#         # DEBUG line - uncomment below for preexec testing
-#         # echo "preexec $1"
-#         local cmd="$(echo "${1}" | cut -d' ' -f1)"
-#         [[ -n "$cmd" ]] && set_terminal_title "$cmd"
-#     fi
-# }
-#
-# zsh_precmd() {
-#     local current_title="$(tmux display-message -p '#W' 2>/dev/null)"
-#     if [[ -n "$current_title" && ! "$current_title" =~ ^(zsh|fish|bash|sh)$ ]]; then
-#         set_terminal_title "$current_title"
-#     else
-#         local pwd_compact="${PWD/#$HOME/~}"
-#         pwd_compact=$(echo $pwd_compact | sed -E 's|([^/])[^/]*/|\1/|g')
-#         set_terminal_title "$pwd_compact"
-#     fi
-# }
-#
-
 # Add hooks
 autoload -U add-zsh-hook
 add-zsh-hook preexec tmux_preexec
 add-zsh-hook precmd tmux_precmd
-# add-zsh-hook preexec zsh_preexec
-# add-zsh-hook precmd zsh_precmd
 
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
