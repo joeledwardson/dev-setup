@@ -57,12 +57,14 @@ let
     rainfrog
     git
     pgcli
+    rabbitmq-server
     # desktop apps
     google-chrome
     copyq
     slack
     autokey
     pomodoro-gtk
+    vlc
     # terminals
     zsh
     fish
