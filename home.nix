@@ -55,7 +55,6 @@ let
     harlequin
     dblab
     rainfrog
-    git
     pgcli
     rabbitmq-server
     # desktop apps
