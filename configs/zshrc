@@ -96,14 +96,39 @@ zinit ice lucid wait'0'
 zinit light l4u/zsh-output-highlighting
 
 # Using ice syntax
-zinit ice wait lucid atload"source <(glab completion -s zsh); source <(docker completion zsh)"
-zinit light zdharma-continuum/null
+zinit wait lucid for \
+    atload"source <(glab completion -s zsh)" \
+    atload"source <(docker completion zsh)" \
+    atload"source <(gh completion -s zsh)" \
+        zdharma-continuum/null
 
 
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd)"
 fi
+
+
+function setup-bw() {
+  if ! command -v jq >/dev/null; then
+    echo "jq not found!"
+    return 1;
+  fi
+
+  current_status="$(bw status | jq -r .status)"
+  case $current_status in
+      "unauthenticated")
+          echo "Please log in first"
+          bw login
+          ;;
+      "locked")
+          export BW_SESSION=$(bw unlock --raw)
+          ;;
+      "unlocked")
+          echo "Already unlocked"
+          ;;
+  esac
+}
 
 # control left/right because im lazy and dont want to un-learn
 bindkey "^[[1;5C" forward-word
