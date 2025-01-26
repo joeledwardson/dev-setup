@@ -7,15 +7,14 @@ See instructions [here](https://nixos.org/download/)
 ***TODO***
 - gcloud completion
 - ctrl g without prefix once in copy mode - ctrl G for previous
-- ignore fnm
 - learn zsh nav (not vim)
-- sort out authentication with gh overwritten by nix
-- try out xremap?
 - tmux/xfce indicator for caps/alt/fn keys 
 
 ***Done***
 - zsh tmux titles not working (new pane doesn't sync with custom title)
 - fzf finder with eza (ls replacement, forgot what its called)
+- sort out authentication with gh overwritten by nix
+- ignore fnm
 
 
 ```bash
