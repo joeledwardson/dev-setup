@@ -69,6 +69,7 @@ let
     zsh
     fish
     # CLI tools
+    git
     vim
     curl
     tldr
@@ -138,46 +139,4 @@ let
   };
 
   programs.home-manager.enable = true;
-
-   # Configure Git using programs.git
-  programs.git = {
-    enable = true;
-
-    # Explicitly set userName and userEmail
-    userName = "joel";
-    userEmail = "joel.edwardson1@gmail.com";
-
-      delta = {
-        enable = true;
-	options = {
-
-        navigate = true;        # Use n and N to move between diff sections
-        light = false;          # Set to true if using a light terminal background
-        "syntax-theme" = "Dracula";
-	};
-      };
-
-    # Use structured extraConfig for other settings
-    extraConfig = {
-      core = {
-        editor = "vim";
-      };
-      merge = {
-        conflictStyle = "diff3";
-      };
-    };
-
-    # Add ignore entries
-    ignores = [
-      "**/*.swp"
-      "**/*.swo"
-      ".vscode"
-    ];
-
-    # Add include paths
-    includes = [ 
-      { path = "~/.gitconfig.local" ; }
-    ];
-  };
-
 }

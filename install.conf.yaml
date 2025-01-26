@@ -8,6 +8,7 @@
 - create:
     - ~/.local/share/fonts
     - ~/.local/share/wallpaper
+    - ~/.config/git
 
 - link:
     ~/.vimrc: ./configs/vimrc
@@ -18,6 +19,8 @@
     ~/.config/ohmyposh.json: ./configs/ohmyposh.json
     ~/.local/share/fonts/monofur: ./fonts/monofur
     ~/.config/ulauncher: ./configs/ulauncher
+    ~/.config/git/config: ./configs/gitconfig
+    ~/.config/git/ignore: ./configs/gitignore
 
 - shell:
     - command: |
