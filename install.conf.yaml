@@ -21,6 +21,10 @@
     ~/.config/ulauncher: ./configs/ulauncher
     ~/.config/git/config: ./configs/gitconfig
     ~/.config/git/ignore: ./configs/gitignore
+    ~/.config/fish/config.fish: ./configs/config.fish
+    ~/.config/aichat/config.yaml: ./configs/aichat.yaml
+    ~/.config/copyq/copyq.conf: ./configs/copyq.conf
+
 
 - shell:
     - command: |
