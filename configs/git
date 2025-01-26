@@ -1,0 +1,29 @@
+[core]
+        editor = "vim"
+        pager = "delta"
+
+[delta]
+        light = false
+        navigate = true
+        syntax-theme = "Dracula"
+
+[interactive]
+        diffFilter = "delta --color-only"
+
+[merge]
+        conflictStyle = "diff3"
+
+[user]
+        email = "joel.edwardson1@gmail.com"
+        name = "joel"
+[credential "https://github.com"]
+        helper =
+        helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+        helper =
+        helper = !gh auth git-credential
+
+
+[include]
+        path = "~/.gitconfig.local"
+
