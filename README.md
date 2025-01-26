@@ -61,6 +61,10 @@ sudo pipx ensurepath --global # optional to allow pipx actions with --global arg
 pipx install --include-deps ansible
 ```
 
+# install cursor
+`zshrc` creates a function for cursor, assuming an appimage is in `.local/cursor.AppImage`
+
+
 # setup AI chat
 configuration is version controlled, but API keys are not.
 

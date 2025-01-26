@@ -98,7 +98,7 @@ zinit light l4u/zsh-output-highlighting
 # Using ice syntax
 zinit wait lucid for \
     atload"source <(glab completion -s zsh)" \
-    atload"source <(docker completion zsh)" \
+    atload"command -v docker >/dev/null && ! uname -r | grep -iq microsoft && source <(docker completion zsh)" \
     atload"source <(gh completion -s zsh)" \
         zdharma-continuum/null
 
