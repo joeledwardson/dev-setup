@@ -7,15 +7,14 @@ See instructions [here](https://nixos.org/download/)
 ***TODO***
 - gcloud completion
 - ctrl g without prefix once in copy mode - ctrl G for previous
-- ignore fnm
 - learn zsh nav (not vim)
-- sort out authentication with gh overwritten by nix
-- try out xremap?
 - tmux/xfce indicator for caps/alt/fn keys 
 
 ***Done***
 - zsh tmux titles not working (new pane doesn't sync with custom title)
 - fzf finder with eza (ls replacement, forgot what its called)
+- sort out authentication with gh overwritten by nix
+- ignore fnm
 
 
 ```bash
@@ -60,6 +59,10 @@ sudo pipx ensurepath --global # optional to allow pipx actions with --global arg
 # install ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 pipx install --include-deps ansible
 ```
+
+# install cursor
+`zshrc` creates a function for cursor, assuming an appimage is in `.local/cursor.AppImage`
+
 
 # setup AI chat
 configuration is version controlled, but API keys are not.
