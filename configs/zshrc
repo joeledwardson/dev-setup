@@ -98,10 +98,13 @@ zinit light l4u/zsh-output-highlighting
 # Using ice syntax
 zinit wait lucid for \
     atload"source <(glab completion -s zsh)" \
-    atload"source <(docker completion zsh)" \
     atload"source <(gh completion -s zsh)" \
         zdharma-continuum/null
 
+# completion wont work on docker desktop WSL
+if ! (uname -r | grep -i microsoft) > /dev/null; then
+  zinit wait lucid"source <(docker completion zsh)"
+fi
 
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
