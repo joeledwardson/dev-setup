@@ -57,6 +57,7 @@ let
     rainfrog
     pgcli
     rabbitmq-server
+    postgresql_17
     # desktop apps
     google-chrome
     copyq
