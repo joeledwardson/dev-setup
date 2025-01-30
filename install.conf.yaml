@@ -9,6 +9,7 @@
     - ~/.local/share/fonts
     - ~/.local/share/wallpaper
     - ~/.config/git
+    - ~/.config/copyq
 
 - link:
     ~/.vimrc: ./configs/vimrc
