@@ -43,7 +43,7 @@ let
     clojure # for metabase
     gcc # for nvim kickstart
     pipx
-    fnm
+    # fnm
     deno
     poetry
     pyenv
@@ -59,7 +59,7 @@ let
     rabbitmq-server
     postgresql_17
     # desktop apps
-    google-chrome
+    # google-chrome
     copyq
     slack
     autokey
@@ -87,6 +87,7 @@ let
     google-cloud-sdk
     bitwarden-cli
     eza
+    kitty
     # themes
     starship
     oh-my-posh
