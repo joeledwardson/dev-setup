@@ -102,6 +102,11 @@ zinit wait lucid for \
     atload"source <(gh completion -s zsh)" \
         zdharma-continuum/null
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
 # Check if fnm exists before trying to evaluate it
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd)"
@@ -169,7 +174,7 @@ alias ll='eza --long -a' # Long format, including hidden files
 alias la='eza -a --group-directories-first' # Show all files, with directories listed first
 alias lx='eza -a --group-directories-first --extended' # Show all files and extended attributes, directories first
 alias lT='eza --tree --long' # Tree view with extended details
-alias lr='eza --long --modified --sort=modified' # sort by modified desc
+alias lr='eza --long --modified --sort=modified -r' # sort by modified desc
 
 
 
@@ -203,7 +208,11 @@ add-zsh-hook precmd tmux_precmd
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
+if [ -e $HOME/.config/zshrclocal ]; then
+  source $HOME/.config/zshrclocal
+fi
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
+
