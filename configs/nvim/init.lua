@@ -946,7 +946,15 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'stevearc/aerial.nvim',
+    config = function()
+      require('aerial').setup {
+        backends = { 'markdown', 'man', 'help' }, -- Enable for `:help`
+        show_guides = true,
+      }
+    end,
+  },
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
