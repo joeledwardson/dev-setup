@@ -1,15 +1,11 @@
 - defaults:
     link:
       relink: true
+      force: true
+      create: true
 
 - clean:
     - ~/.local/share/fonts/monofur  # Optional, ensures clean setup
-
-- create:
-    - ~/.local/share/fonts
-    - ~/.local/share/wallpaper
-    - ~/.config/git
-    - ~/.config/copyq
 
 - link:
     ~/.vimrc: ./configs/vimrc
@@ -25,6 +21,12 @@
     ~/.config/fish/config.fish: ./configs/config.fish
     ~/.config/aichat/config.yaml: ./configs/aichat.yaml
     ~/.config/copyq/copyq.conf: ./configs/copyq.conf
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/xfwm4.xml
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-terminal.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/xfce4-terminal.xml
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/thunar.xml
+    ~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml: ./configs/xfce/xfconf/xfce-perchannel-xml/xsettings.xml
 
 
 - shell:

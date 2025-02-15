@@ -5,19 +5,13 @@ case "$1" in
     home-manager switch --flake .
     ;;
   dotfiles)
-    dotbot -c install.conf.yaml 
+    dotbot -c install.conf.yaml
     ;;
   clean)
     nix-collect-garbage -d
     ;;
-  pullkeys)
-    dconf dump /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/ > configs/custom-shortcuts.dconf
-    ;;
-  pushkeys)
-    dconf load /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/ < configs/custom-shortcuts.dconf
-    ;;
   *)
-    echo "Usage: $0 {build|dotfiles|clean|pullkeys|pushkeys}"
+    echo "Usage: $0 {build|dotfiles|clean}"
     ;;
 esac
 
