@@ -47,6 +47,7 @@ let
     deno
     poetry
     pyenv
+    pipx
     go
     # Database tools
     lazysql
