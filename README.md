@@ -97,6 +97,34 @@ To use it, set:
 export ZSH_DEBUGRC=true
 ```
 
+# summary of custom keybindings
+
+Window Management (Super + key):
+- `Super + m` - Maximize window
+- `Super + Up/Down/Left/Right` - Tile window in that direction
+- `Super + u` - Tile window up-left
+- `Super + i` - Tile window up-right
+- `Super + j` - Tile window down-left
+- `Super + k` - Tile window down-right
+
+Moving Windows Between Monitors (Super + Shift + key):
+- `Super + Shift + Up/Down/Left/Right` - Move window to monitor in that direction
+
+Applications:
+- `Super + l` - Lock screen
+- `Super + v` - Show CopyQ (clipboard manager)
+- `Super + x` - App finder
+- `Super + e` - Open Thunar (file manager)
+- `Super + r` - App finder (collapsed)
+- `Shift + Super + s` - Screenshot (region select)
+- `Ctrl + Alt + t` - Open Ghostty terminal
+
+Window Switching:
+- `Alt + grave` (backtick) - Switch windows
+- `Alt + Tab` - Cycle windows
+- `Alt + Shift + Tab` - Cycle windows (reverse)
+
+
 
 # 60% keyboard notes
 what keys will i miss in a 60% keyboard?
