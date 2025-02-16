@@ -49,6 +49,7 @@ let
     pyenv
     pipx
     go
+    nixd
     # Database tools
     ruby
     lazysql
@@ -60,13 +61,15 @@ let
     pgcli
     rabbitmq-server
     postgresql_17
-    # desktop apps
+    # GPU accelerated programs
     # google-chrome
-    copyq
     slack
+    vlc
+    kitty
+    # desktop apps
+    copyq
     autokey
     pomodoro-gtk
-    vlc
     # terminals
     zsh
     fish
@@ -89,8 +92,8 @@ let
     google-cloud-sdk
     bitwarden-cli
     eza
-    kitty
     gnumake
+    ranger
     # themes
     starship
     oh-my-posh
