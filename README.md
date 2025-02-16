@@ -125,6 +125,16 @@ Window Switching:
 - `Alt + Shift + Tab` - Cycle windows (reverse)
 
 
+# xfce-config-helper
+install xfce config helper
+```bash
+git clone https://github.com/felipec/xfce-config-helper.git && \
+cd xfce-config-helper && \
+gem install ruby-dbus && \
+make install && \
+cd .. && \
+rm -rf xfce-config-helper
+```
 
 # 60% keyboard notes
 what keys will i miss in a 60% keyboard?

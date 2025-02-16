@@ -1,0 +1,158 @@
+---
+shortcuts:
+  commands:
+    XF86LogOff: xfce4-session-logout
+    "<Super>x/startup-notify": true
+    "<Super>r/XF86Memo": xfce4-notes
+    "<Super>r/XF86Calendar": orage
+    "<Super>r/XF86Explorer": Thunar
+    "<Super>v": copyq show
+    "<Super>r/XF86Terminal": xfce4-terminal
+    "<Super>x": xfce4-appfinder
+    "<Primary><Alt>t": ghostty
+    "<Super>r/XF86AudioPlay": pragha --pause
+    "<Super>r/XF86AudioMedia": pragha
+    "<Super>r/XF86AudioPrev": pragha --prev
+    "<Shift><Super>s": xfce4-screenshooter -r
+    "<Super>r/XF86Calculator": galculator
+    "<Super>r/XF86AudioNext": pragha --next
+    "<Super>l": xflock4
+  wm:
+    fullscreen: F11
+    switch_window: "<Alt>grave"
+    hide_window: "<Super>h"
+    tile_up_right: "<Super>i"
+    move_window_right_workspace: "<Primary><Shift><Alt>Right"
+    tile_down_right: "<Super>k"
+    move_window_to_monitor_right: "<Shift><Super>Right"
+    tile_down_left: "<Super>j"
+    maximize_window: "<Super>m"
+    tile_right: "<Super>Right"
+    tile_left: "<Super>Left"
+    move_window_to_monitor_left: "<Shift><Super>Left"
+    move_window_to_monitor_up: "<Shift><Super>Up"
+    tile_down: "<Super>Down"
+    tile_up_left: "<Super>u"
+    move_window_left_workspace: "<Primary><Shift><Alt>Left"
+    move_window_to_monitor_down: "<Shift><Super>Down"
+    tile_up: "<Super>Up"
+settings:
+  xsettings:
+    "/Gtk/CursorThemeName": Qogir
+    "/Gtk/DecorationLayout": ":menu,maximize,minimize,close"
+    "/Gtk/MonospaceFontName": Monofur Nerd Font 10
+    "/Net/IconThemeName": Qogir-dark
+    "/Net/ThemeName": Qogir-Dark
+    "/Xfce/LastCustomDPI": 96
+    "/Xfce/SyncThemes": true
+    "/Xft/Antialias": 1
+    "/Xft/DPI": 96
+    "/Xft/HintStyle": hintfull
+  xfce4-terminal:
+    "/font-name": Monofur Nerd Font 12
+    "/misc-show-unsafe-paste-dialog": false
+  xfwm4:
+    "/general/button_layout": "|OSMHC"
+    "/general/inactive_opacity": 78
+    "/general/margin_right": 10
+    "/general/placement_ratio": 11
+    "/general/snap_width": 29
+    "/general/theme": Qogir-Dark
+    "/general/title_font": Monofur Nerd Font Bold 12
+    "/general/workspace_count": 3
+    "/general/workspace_names":
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - Workspace 5
+    "/general/wrap_resistance": 25
+    "/general/wrap_windows": false
+  xfce4-notifyd: {}
+  pointers:
+    "/PixArt_Microsoft_USB_Optical_Mouse/Acceleration": 4.0
+    "/PixArt_Microsoft_USB_Optical_Mouse/RightHanded": true
+    "/PixArt_Microsoft_USB_Optical_Mouse/Threshold": 1
+  xfce4-desktop:
+    "/desktop-icons/file-icons/show-filesystem": false
+    "/desktop-icons/icon-size": 46
+    "/desktop-icons/tooltip-size": 104.0
+  xfce4-taskmanager:
+    "/window-height": 600
+    "/window-maximized": false
+    "/window-width": 400
+  xfce4-session:
+    "/general/LockCommand": ''
+    "/general/SaveOnExit": true
+  keyboards:
+    "/Default/Numlock": false
+  xfce4-screenshooter:
+    "/actions/action-0/command": "/usr/libexec/xfce4/screenshooter/scripts/imgur-upload.sh
+      %f %imgur_client_id"
+    "/actions/action-0/name": Host on Imgur™
+    "/actions/actions": 1
+    "/imgur-custom-action-added": true
+  xfce4-power-manager:
+    "/xfce4-power-manager/hibernate-button-action": 3
+    "/xfce4-power-manager/logind-handle-lid-switch": false
+    "/xfce4-power-manager/power-button-action": 3
+    "/xfce4-power-manager/sleep-button-action": 3
+panels:
+- autohide-behavior: 1
+  background-style: 1
+  enter-opacity: 100
+  icon-size: 0
+  length: 100.0
+  nrows: 1
+  position: p=8;x=1280;y=1425
+  position-locked: true
+  size: 34
+  plugins:
+  - - applicationsmenu
+  - - tasklist
+    - grouping: 1
+      show-labels: true
+  - - separator
+    - expand: true
+      style: 0
+  - - separator
+    - style: 0
+  - - pager
+    - miniature-view: true
+      rows: 1
+  - - systray
+    - known-items:
+      - ulauncher
+      - CopyQ_copyq
+      - AutoKey
+      - dnfdragora-updater
+      known-legacy-items:
+      - no network connection
+      - ulauncher
+      - selinux troubleshooter
+      - seapplet
+      - ethernet network connection “wired connection 2” active
+      - xfce4-power-manager
+      - networkmanager applet
+      square-icons: true
+  - - pulseaudio
+    - enable-keyboard-shortcuts: true
+      known-players: Chrome;org.gnome.Totem
+      show-notifications: true
+  - - power-manager-plugin
+  - - notification-plugin
+  - - separator
+    - style: 0
+  - - clock
+    - digital-date-font: Sans 12
+      digital-layout: 2
+      digital-time-font: Sans 12
+      mode: 2
+      tooltip-format: "%x"
+  - - clock
+    - digital-layout: 3
+      digital-time-font: Sans 12
+  - - separator
+    - expand: false
+      style: 0
+  - - actions
