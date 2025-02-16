@@ -43,7 +43,7 @@ function reload-zsh {
 function copyfile {
     # Resolve the full path of the file
     local fullpath=$(realpath $1)
-		if [ ! -e $fullpath ]; then
+    if [ ! -e $fullpath ]; then
         echo "Error: Invalid file path" >&2
         return 1
     fi
@@ -65,10 +65,17 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# pipe to dev null to not print if exists
-if command -v fzf >/dev/null; then
-  source <(fzf --zsh)
-fi
+
+# Create the directory for cusotm zsh completions
+mkdir -p $HOME/.local/share/custom_zsh_completions
+# add custom completions to cusotm path
+fpath=($HOME/.local/share/custom_zsh_completions $fpath)
+
+# volta
+volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
 
 # Load from cache immediately
 autoload -U compinit
@@ -102,17 +109,7 @@ zinit wait lucid for \
     atload"source <(gh completion -s zsh)" \
         zdharma-continuum/null
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-# Check if fnm exists before trying to evaluate it
-if command -v fnm &> /dev/null; then
-    eval "$(fnm env --use-on-cd)"
-fi
-
-
+# sertup bit warden to BW_SESSION var
 function setup-bw() {
   if ! command -v jq >/dev/null; then
     echo "jq not found!"

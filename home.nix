@@ -43,13 +43,14 @@ let
     clojure # for metabase
     gcc # for nvim kickstart
     pipx
-    # fnm
+    volta
     deno
     poetry
     pyenv
     pipx
     go
     # Database tools
+    ruby
     lazysql
     usql
     visidata
@@ -89,6 +90,7 @@ let
     bitwarden-cli
     eza
     kitty
+    gnumake
     # themes
     starship
     oh-my-posh
