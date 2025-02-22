@@ -62,10 +62,13 @@ let
     rabbitmq-server
     postgresql_17
     # GPU accelerated programs
-    # google-chrome
+    google-chrome
     slack
     vlc
     kitty
+    # keyboard configuration apps
+    qmk
+    via
     # desktop apps
     copyq
     autokey
