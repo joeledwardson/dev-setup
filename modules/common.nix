@@ -94,6 +94,7 @@ let
     eza
     gnumake
     ranger
+    delta
     # themes
     starship
     oh-my-posh
