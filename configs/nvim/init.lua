@@ -682,7 +682,11 @@ require('lazy').setup({
   {
     'pmizio/typescript-tools.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {},
+    opts = {
+      settings = {
+        tsserver_logs = "verbose"
+      }
+    },
   },
   { -- Autoformat
     'stevearc/conform.nvim',
@@ -979,6 +983,10 @@ require('lazy').setup({
         show_guides = true,
       }
     end,
+  }, --lazy
+  {
+    'nvim-telescope/telescope-file-browser.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
   },
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
