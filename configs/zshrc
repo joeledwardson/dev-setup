@@ -107,6 +107,7 @@ zinit wait lucid for \
     atload"source <(glab completion -s zsh)" \
     atload"command -v docker >/dev/null && ! uname -r | grep -iq microsoft && source <(docker completion zsh)" \
     atload"source <(gh completion -s zsh)" \
+    atload"command -v fzf >/dev/null && source <(fzf --zsh)" \
         zdharma-continuum/null
 
 # sertup bit warden to BW_SESSION var
