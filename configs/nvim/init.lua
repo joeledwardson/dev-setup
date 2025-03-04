@@ -319,6 +319,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>p', group = '[P]ossesson' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -413,6 +414,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
       vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
       vim.keymap.set('n', '<C-t>', ':tabe<CR>', { desc = 'create tab' })
+      vim.keymap.set('n', '<leader>st', ':Telescope file_browser<CR>', { noremap = true, desc = '[S]earch [T]ree' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -684,8 +686,8 @@ require('lazy').setup({
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {
       settings = {
-        tsserver_logs = "verbose"
-      }
+        tsserver_logs = 'verbose',
+      },
     },
   },
   { -- Autoformat
@@ -726,7 +728,10 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -987,6 +992,43 @@ require('lazy').setup({
   {
     'nvim-telescope/telescope-file-browser.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+  },
+  {
+    'gennaro-tedesco/nvim-possession',
+    dependencies = {
+      'ibhagwan/fzf-lua',
+    },
+    config = true,
+    keys = {
+      {
+        '<leader>pl',
+        function()
+          require('nvim-possession').list()
+        end,
+        desc = '📌list sessions',
+      },
+      {
+        '<leader>pn',
+        function()
+          require('nvim-possession').new()
+        end,
+        desc = '📌create new session',
+      },
+      {
+        '<leader>pu',
+        function()
+          require('nvim-possession').update()
+        end,
+        desc = '📌update current session',
+      },
+      {
+        '<leader>pd',
+        function()
+          require('nvim-possession').delete()
+        end,
+        desc = '📌delete selected session',
+      },
+    },
   },
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
