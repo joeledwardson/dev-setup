@@ -76,7 +76,6 @@ volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 
-
 # Load from cache immediately
 autoload -U compinit
 compinit
@@ -101,6 +100,9 @@ zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
 zinit ice lucid wait'0'
 zinit light l4u/zsh-output-highlighting
+zinit ice wait lucid pick"flatpak.plugin.zsh" as"completion"
+zinit light bilelmoussaoui/flatpak-zsh-completion
+
 
 # Using ice syntax
 zinit wait lucid for \
