@@ -103,8 +103,10 @@ zinit light l4u/zsh-output-highlighting
 zinit ice wait lucid pick"flatpak.plugin.zsh" as"completion"
 zinit light bilelmoussaoui/flatpak-zsh-completion
 
+# Autosuggest settings
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
-# Using ice syntax
+# custom completions
 zinit wait lucid for \
     atload"source <(glab completion -s zsh)" \
     atload"command -v docker >/dev/null && ! uname -r | grep -iq microsoft && source <(docker completion zsh)" \
