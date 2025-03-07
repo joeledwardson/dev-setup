@@ -378,16 +378,22 @@ require('lazy').setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
+      local actions = require 'telescope.actions'
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
+        defaults = {
+          mappings = {
+            i = { ['<c-enter>'] = 'to_fuzzy_refine', ['<C-n>'] = actions.cycle_history_next, ['<C-p>'] = actions.cycle_history_prev },
+          },
+        },
+        pickers = {
+          find_files = {
+            -- This affects file finding
+            hidden = true, -- Set to true to include hidden files
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -1078,3 +1084,8 @@ vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 vim.keymap.set('n', '<leader>Du', '<cmd>DBUIToggle<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>Df', '<cmd>DBUIFindBuffer<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
+-- folds
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+-- vim.opt.foldenable = false  -- or true if you want closed by default
+-- vim.opt.foldlevel = 99
