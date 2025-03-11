@@ -385,7 +385,7 @@ require('lazy').setup({
         --
         defaults = {
           mappings = {
-            i = { ['<c-enter>'] = 'to_fuzzy_refine', ['<C-n>'] = actions.cycle_history_next, ['<C-p>'] = actions.cycle_history_prev },
+            i = { ['<c-enter>'] = 'to_fuzzy_refine', ['<C-l>'] = actions.cycle_history_next, ['<C-h>'] = actions.cycle_history_prev },
           },
         },
         pickers = {
@@ -404,7 +404,6 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
-
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -420,8 +419,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
       vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
       vim.keymap.set('n', '<C-t>', ':tabe<CR>', { desc = 'create tab' })
-      vim.keymap.set('n', '<leader>st', ':Telescope file_browser<CR>', { noremap = true, desc = '[S]earch [T]ree' })
-
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -968,7 +965,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
@@ -998,6 +995,18 @@ require('lazy').setup({
   {
     'nvim-telescope/telescope-file-browser.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+    config = function(self, opts)
+      vim.keymap.set('n', '<leader>st', function()
+        require('telescope').extensions.file_browser.file_browser { grouped = true }
+      end, { noremap = true, desc = '[S]earch [T]ree' })
+      vim.keymap.set('n', '<leader>sa', function()
+        require('telescope').extensions.file_browser.file_browser {
+          grouped = true,
+          hidden = true,
+          no_ignore = true,
+        }
+      end, { desc = '[S]search [A]ll files ' })
+    end,
   },
   {
     'gennaro-tedesco/nvim-possession',
