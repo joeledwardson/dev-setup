@@ -408,7 +408,13 @@ require('lazy').setup({
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [f]iles' })
+      vim.keymap.set('n', '<leader>sF', function()
+        builtin.find_files {
+          no_ignore = true,
+          hidden = true,
+        }
+      end, { desc = '[S]earch [F]iles (including hidden)' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -1002,14 +1008,14 @@ require('lazy').setup({
     config = function(self, opts)
       vim.keymap.set('n', '<leader>st', function()
         require('telescope').extensions.file_browser.file_browser { grouped = true }
-      end, { noremap = true, desc = '[S]earch [T]ree' })
-      vim.keymap.set('n', '<leader>sa', function()
+      end, { noremap = true, desc = '[S]earch [t]ree' })
+      vim.keymap.set('n', '<leader>sT', function()
         require('telescope').extensions.file_browser.file_browser {
           grouped = true,
           hidden = true,
           no_ignore = true,
         }
-      end, { desc = '[S]search [A]ll files ' })
+      end, { desc = '[S]earch [T]ree (including hidden)' })
     end,
   },
   {
@@ -1067,11 +1073,44 @@ require('lazy').setup({
       vim.fn['mkdp#util#install']()
     end,
   },
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+  {
+    'debugloop/telescope-undo.nvim',
+    dependencies = { -- note how they're inverted to above example
+      {
+        'nvim-telescope/telescope.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+      },
+    },
+    keys = {
+      { -- lazy style key map
+        '<leader>u',
+        '<cmd>Telescope undo<cr>',
+        desc = 'undo history',
+      },
+    },
+    opts = {
+      extensions = {
+        undo = {
+          use_delta = true,
+          use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
+          side_by_side = false,
+          vim_diff_opts = {
+            ctxlen = vim.o.scrolloff,
+          },
+          entry_format = 'state #$ID, $STAT, $TIME',
+          time_format = '',
+          saved_only = false,
+        },
+      },
+    },
+    config = function(_, opts)
+      -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+      -- configs for us. We won't use data, as everything is in it's own namespace (telescope
+      -- defaults, as well as each extension).
+      require('telescope').setup(opts)
+      require('telescope').load_extension 'undo'
+    end,
+  },
   { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
