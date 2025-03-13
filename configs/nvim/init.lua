@@ -1009,6 +1009,14 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>st', function()
         require('telescope').extensions.file_browser.file_browser { grouped = true }
       end, { noremap = true, desc = '[S]earch [t]ree' })
+
+      vim.keymap.set('n', '<leader>sc', function()
+        require('telescope').extensions.file_browser.file_browser {
+          grouped = true,
+          cwd = vim.fn.expand '%:p:h', -- this gets the directory of current file
+        }
+      end, { desc = '[S]earch [C]urrent directory' })
+
       vim.keymap.set('n', '<leader>sT', function()
         require('telescope').extensions.file_browser.file_browser {
           grouped = true,
@@ -1111,7 +1119,11 @@ require('lazy').setup({
       require('telescope').load_extension 'undo'
     end,
   },
+  {
+    'rafcamlet/nvim-luapad',
+  },
   { import = 'custom.plugins' },
+
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
