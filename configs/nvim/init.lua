@@ -1026,43 +1026,7 @@ require('lazy').setup({
       end, { desc = '[S]earch [T]ree (including hidden)' })
     end,
   },
-  {
-    'gennaro-tedesco/nvim-possession',
-    dependencies = {
-      'ibhagwan/fzf-lua',
-    },
-    config = true,
-    keys = {
-      {
-        '<leader>pl',
-        function()
-          require('nvim-possession').list()
-        end,
-        desc = '📌list sessions',
-      },
-      {
-        '<leader>pn',
-        function()
-          require('nvim-possession').new()
-        end,
-        desc = '📌create new session',
-      },
-      {
-        '<leader>pu',
-        function()
-          require('nvim-possession').update()
-        end,
-        desc = '📌update current session',
-      },
-      {
-        '<leader>pd',
-        function()
-          require('nvim-possession').delete()
-        end,
-        desc = '📌delete selected session',
-      },
-    },
-  },
+
   { 'nvim-focus/focus.nvim', version = false }, -- Lua
   {
     'folke/twilight.nvim',
