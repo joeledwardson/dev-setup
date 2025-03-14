@@ -892,17 +892,11 @@ require('lazy').setup {
   {
     'folke/tokyonight.nvim',
     priority = 1000,
-    config = function()
-      -- First set up the plugin
-      require('tokyonight').setup {
-        style = 'night',
-        -- transparent = true,
-        on_highlights = function(hl, c)
-          hl.Comment = { fg = c.blue }
-          hl.Search = { bg = c.blue, fg = c.yellow }
-          -- other highlight customizations...
-        end,
-      }
+    opts = {
+      style = 'night',
+      transparent = true,
+    },
+    init = function()
       -- Then apply the colorscheme
       vim.cmd.colorscheme 'tokyonight-night'
     end,
@@ -1203,16 +1197,23 @@ vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldenable = true
 vim.opt.foldlevel = 99 -- start with all folds open
 vim.opt.foldlevelstart = 99 -- start with all folds open
--- This will dim the main text when in command mode
-vim.api.nvim_create_autocmd('CmdlineEnter', {
+
+-- customise colours when in command mode to make it obvious
+-- Make fg transparent on leave
+vim.api.nvim_create_autocmd('CmdlineLeave', {
   callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { fg = '#666666' })
+    vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
   end,
 })
 
--- This will restore normal colors when leaving command mode
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' }) -- bright red background
+  end,
+})
+
 vim.api.nvim_create_autocmd('CmdlineLeave', {
   callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE' })
+    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
   end,
 })
