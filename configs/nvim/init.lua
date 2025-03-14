@@ -227,7 +227,7 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
-require('lazy').setup({
+require('lazy').setup {
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -243,17 +243,45 @@ require('lazy').setup({
   --    require('gitsigns').setup({ ... })
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
+  -- { -- Adds git related signs to the gutter, as well as utilities for managing changes
+  --   'lewis6991/gitsigns.nvim',
+  --   opts = {
+  --     signs = {
+  --       add = { text = '+' },
+  --       change = { text = '~' },
+  --       delete = { text = '_' },
+  --       topdelete = { text = '‾' },
+  --       changedelete = { text = '~' },
+  --     },
+  --   },
+  --
+  --   on_attach = function()
+  --     local gs = require 'gitsigns'
+  --     vim.keymap.set('n', ']c', gs.nav_hunk 'next')
+  --     vim.keymap.set('n', '[c', gs.nav_hunk 'prev')
+  --   end,
+  -- },
+
+  {
     'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
+    config = function()
+      require('gitsigns').setup {
+        signs = {
+          add = { text = '+' },
+          change = { text = '~' },
+          delete = { text = '_' },
+          topdelete = { text = '‾' },
+          changedelete = { text = '~' },
+        },
+      }
+
+      vim.keymap.set('n', ']c', function()
+        require('gitsigns').nav_hunk 'next'
+      end)
+      vim.keymap.set('n', '[c', function()
+        require('gitsigns').nav_hunk 'prev'
+      end)
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -1081,14 +1109,54 @@ require('lazy').setup({
   {
     'rafcamlet/nvim-luapad',
   },
+
+  -- {
+  --   'mvllow/modes.nvim',
+  --   event = 'VeryLazy',
+  --   opts = {
+  --     colors = {
+  --       copy = '#f5c359',
+  --       delete = '#c75c6a',
+  --       insert = '#78ccc5',
+  --       visual = '#9745be',
+  --     },
+  --     -- These are default values
+  --     line_opacity = 0.15,
+  --     set_cursor = true,
+  --     set_cursorline = true,
+  --     set_number = true,
+  --     ignore_filetypes = { 'NvimTree', 'TelescopePrompt' },
+  --   },
+  -- },
   { import = 'custom.plugins' },
 
-  --
-  -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
-  -- Or use telescope!
-  -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
-  -- you can continue same window with `<space>sr` which resumes last telescope search
-}, {
+  {
+    'Shatur/neovim-session-manager',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    lazy = false,
+    config = function()
+      local Path = require 'plenary.path'
+      require('session_manager').setup {
+        autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir,
+        sessions_dir = Path:new(vim.fn.stdpath 'data', 'sessions'),
+        autosave_last_session = true,
+        autosave_ignore_not_normal = true,
+        autosave_ignore_dirs = {},
+        autosave_ignore_filetypes = {
+          'gitcommit',
+          'gitrebase',
+        },
+        autosave_ignore_buftypes = {},
+        autosave_only_in_session = false,
+        max_path_length = 80,
+      }
+    end,
+    keys = {
+      { '<leader>pl', '<cmd>SessionManager load_session<CR>', desc = '📌 Load session' },
+      { '<leader>ps', '<cmd>SessionManager save_current_session<CR>', desc = '📌 Save session' },
+      { '<leader>pd', '<cmd>SessionManager delete_session<CR>', desc = '📌 Delete session' },
+    },
+  },
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
@@ -1108,7 +1176,7 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
+}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
@@ -1131,3 +1199,20 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 -- vim.opt.foldenable = false  -- or true if you want closed by default
 -- vim.opt.foldlevel = 99
+-- Add to your init.lua or in the config section
+vim.opt.foldenable = true
+vim.opt.foldlevel = 99 -- start with all folds open
+vim.opt.foldlevelstart = 99 -- start with all folds open
+-- This will dim the main text when in command mode
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { fg = '#666666' })
+  end,
+})
+
+-- This will restore normal colors when leaving command mode
+vim.api.nvim_create_autocmd('CmdlineLeave', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE' })
+  end,
+})
