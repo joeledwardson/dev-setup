@@ -840,7 +840,7 @@ require('lazy').setup {
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<C-i>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -1122,6 +1122,63 @@ require('lazy').setup {
   --     ignore_filetypes = { 'NvimTree', 'TelescopePrompt' },
   --   },
   -- },
+  --
+  {
+    'ray-x/lsp_signature.nvim',
+    event = 'InsertEnter',
+    opts = {
+      bind = true,
+      handler_opts = {
+        border = 'rounded',
+      },
+    },
+    -- or use config
+    -- config = function(_, opts) require'lsp_signature'.setup({you options}) end
+  },
+  {
+    'folke/noice.nvim',
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'rcarriga/nvim-notify',
+    },
+    config = function()
+      require('noice').setup {
+        lsp = {
+          hover = {
+            enabled = true,
+            silent = false,
+            view = 'hover', -- Options: hover, popup, split
+          },
+          signature = {
+            enabled = true,
+            auto_open = {
+              enabled = true,
+              trigger = true,
+              luasnip = true,
+            },
+            view = 'hover',
+          },
+        },
+      }
+    end,
+  },
+  {
+    'nvimdev/lspsaga.nvim',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require('lspsaga').setup {
+        hover = {
+          open_link = 'gx',
+          open_browser = '!chrome',
+        },
+      }
+      -- Then update your mapping
+      vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>')
+    end,
+  },
   { import = 'custom.plugins' },
 
   {
@@ -1134,7 +1191,7 @@ require('lazy').setup {
         autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir,
         sessions_dir = Path:new(vim.fn.stdpath 'data', 'sessions'),
         autosave_last_session = true,
-        autosave_ignore_not_normal = true,
+        autosave_ignore_not_normal = false,
         autosave_ignore_dirs = {},
         autosave_ignore_filetypes = {
           'gitcommit',
@@ -1191,29 +1248,39 @@ vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr =
 -- folds
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
--- vim.opt.foldenable = false  -- or true if you want closed by default
--- vim.opt.foldlevel = 99
--- Add to your init.lua or in the config section
 vim.opt.foldenable = true
 vim.opt.foldlevel = 99 -- start with all folds open
 vim.opt.foldlevelstart = 99 -- start with all folds open
+vim.keymap.set('n', 'zO', 'zczA', { desc = 'Open fold and enter insert' })
 
--- customise colours when in command mode to make it obvious
--- Make fg transparent on leave
+-- Window focus highlighting (NC = Non-Current/inactive windows)
+vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
+    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
+  end,
+})
+
+-- Command mode highlighting (keeping your original)
+vim.api.nvim_create_autocmd('CmdlineEnter', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' })
+  end,
+})
+
 vim.api.nvim_create_autocmd('CmdlineLeave', {
   callback = function()
     vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
   end,
 })
 
-vim.api.nvim_create_autocmd('CmdlineEnter', {
-  callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' }) -- bright red background
-  end,
-})
+vim.keymap.set({ 'n' }, '<C-k>', function()
+  require('lsp_signature').toggle_float_win()
+end, { silent = true, noremap = true, desc = 'toggle signature' })
 
-vim.api.nvim_create_autocmd('CmdlineLeave', {
-  callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })
-  end,
-})
+vim.keymap.set({ 'n' }, '<Leader>k', function()
+  vim.lsp.buf.signature_help()
+end, { silent = true, noremap = true, desc = 'toggle signature' })
+
+vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
+vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
