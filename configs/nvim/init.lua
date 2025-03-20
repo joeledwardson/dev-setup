@@ -1179,6 +1179,34 @@ require('lazy').setup {
       vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>')
     end,
   },
+  -- Add this to your nvim-cmp configuration (create a file like lua/custom/plugins/cmp-cmdline.lua)
+  {
+    'hrsh7th/nvim-cmp',
+    dependencies = { 'hrsh7th/cmp-cmdline' },
+    lazy = false,
+    config = function(_, opts)
+      local cmp = require 'cmp'
+
+      -- Load the base configuration from kickstart
+      cmp.setup(opts)
+
+      -- Add command-line completion setup
+      cmp.setup.cmdline(':', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = 'cmdline' },
+        },
+      })
+
+      -- Optional: Add search completion (/ and ?) as well
+      cmp.setup.cmdline({ '/', '?' }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = 'buffer' },
+        },
+      })
+    end,
+  },
   { import = 'custom.plugins' },
 
   {
