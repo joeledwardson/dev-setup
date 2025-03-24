@@ -277,10 +277,10 @@ require('lazy').setup {
 
       vim.keymap.set('n', ']c', function()
         require('gitsigns').nav_hunk 'next'
-      end)
+      end, { desc = 'Jump to next git change' })
       vim.keymap.set('n', '[c', function()
         require('gitsigns').nav_hunk 'prev'
-      end)
+      end, { desc = 'Jump to previous git change' })
     end,
   },
 
@@ -724,8 +724,33 @@ require('lazy').setup {
     opts = {
       settings = {
         tsserver_logs = 'verbose',
+        -- Your existing settings
       },
     },
+    config = function(_, opts)
+      -- Configure diagnostics to show full messages
+      vim.diagnostic.config {
+        float = {
+          source = 'always',
+          border = 'rounded',
+          max_width = 100,
+          max_height = 20,
+          focusable = false,
+        },
+        virtual_text = true,
+        severity_sort = true,
+      }
+
+      -- Now access the API after the plugin is loaded
+      local api = require 'typescript-tools.api'
+
+      -- Add handlers to opts
+      opts.handlers = {
+        ['textDocument/publishDiagnostics'] = api.filter_diagnostics, -- Ignore 'This may be converted to an async function' diagnostics. { 80006 },
+      }
+
+      require('typescript-tools').setup(opts)
+    end,
   },
   { -- Autoformat
     'stevearc/conform.nvim',
