@@ -781,12 +781,13 @@ require('lazy').setup {
           lsp_format_opt = 'fallback'
         end
         return {
-          timeout_ms = 500,
+          timeout_ms = 5000,
           lsp_format = lsp_format_opt,
         }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -868,7 +869,7 @@ require('lazy').setup {
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-i>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -915,9 +916,34 @@ require('lazy').setup {
         },
       }
 
+      -- cmp.setup.cmdline(':', {
+      --   mapping = {
+      --     ['<Tab>'] = {
+      --       c = function()
+      --         local cmp = require 'cmp'
+      --         if cmp.visible() then
+      --           cmp.confirm { select = true }
+      --         else
+      --           cmp.complete()
+      --         end
+      --       end,
+      --     },
+      --     -- Keep the rest of the default mappings
+      --   },
+      --   sources = {
+      --     { name = 'cmdline' },
+      --     { name = 'path' },
+      --   },
+      -- })
+      --
       -- Add command-line completion setup
+
       cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline(),
+        mapping = cmp.mapping.preset.cmdline {
+          ['<Tab>'] = cmp.mapping(function()
+            cmp.confirm { select = false }
+          end, { 'c' }),
+        },
         sources = {
           { name = 'cmdline' },
         },
@@ -936,10 +962,17 @@ require('lazy').setup {
   {
     'folke/tokyonight.nvim',
     priority = 1000,
-    opts = {
-      style = 'night',
-      transparent = true,
-    },
+    config = function()
+      local tokyo = require 'tokyonight'
+      tokyo.setup {
+        style = 'night',
+        transparent = true,
+        on_highlights = function(hl, c)
+          hl.LineNrAbove = { fg = c.red }
+          hl.LineNrBelow = { fg = c.magenta }
+        end,
+      }
+    end,
     init = function()
       -- Then apply the colorscheme
       vim.cmd.colorscheme 'tokyonight-night'
@@ -1036,7 +1069,7 @@ require('lazy').setup {
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  require 'kickstart.plugins.debug',
+  -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
@@ -1223,6 +1256,69 @@ require('lazy').setup {
       vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>')
     end,
   },
+  {
+    'nvim-pack/nvim-spectre',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+
+    config = function()
+      vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', {
+        desc = 'Toggle Spectre',
+      })
+      vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+        desc = 'Search current word',
+      })
+      vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+        desc = 'Search current word',
+      })
+      vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+        desc = 'Search on current file',
+      })
+    end,
+  },
+  -- { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
+  -- {
+  --   'mfussenegger/nvim-dap',
+  --   config = function() end,
+  --   keys = {
+  --     -- Add keymaps for debugging
+  --     {
+  --       '<F5>',
+  --       function()
+  --         require('dap').continue()
+  --       end,
+  --       desc = 'Debug: Continue',
+  --     },
+  --     {
+  --       '<F10>',
+  --       function()
+  --         require('dap').step_over()
+  --       end,
+  --       desc = 'Debug: Step Over',
+  --     },
+  --     {
+  --       '<F11>',
+  --       function()
+  --         require('dap').step_into()
+  --       end,
+  --       desc = 'Debug: Step Into',
+  --     },
+  --     {
+  --       '<F12>',
+  --       function()
+  --         require('dap').step_out()
+  --       end,
+  --       desc = 'Debug: Step Out',
+  --     },
+  --     {
+  --       '<leader>db',
+  --       function()
+  --         require('dap').toggle_breakpoint()
+  --       end,
+  --       desc = 'Debug: Toggle Breakpoint',
+  --     },
+  --   },
+  -- },
+
   { import = 'custom.plugins' },
 
   {
@@ -1318,9 +1414,9 @@ vim.api.nvim_create_autocmd('CmdlineLeave', {
   end,
 })
 
-vim.keymap.set({ 'n' }, '<C-k>', function()
-  require('lsp_signature').toggle_float_win()
-end, { silent = true, noremap = true, desc = 'toggle signature' })
+-- vim.keymap.set({ 'n' }, '<C-k>', function()
+--   require('lsp_signature').toggle_float_win()
+-- end, { silent = true, noremap = true, desc = 'toggle signature' })
 
 vim.keymap.set({ 'n' }, '<Leader>k', function()
   vim.lsp.buf.signature_help()
@@ -1361,7 +1457,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     client.notify('workspace/didChangeConfiguration', {
       settings = client.config.settings,
     })
-
-    print('Pyright: Set Python path to ' .. executable)
   end,
 })
+
+vim.keymap.set('n', '<Esc>', function()
+  vim.cmd 'nohlsearch' -- Clear search highlighting
+  require('notify').dismiss()
+end, { desc = 'dismiss notify popup and clear hlsearch' })
