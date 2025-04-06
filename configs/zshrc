@@ -109,8 +109,10 @@ zinit light l4u/zsh-output-highlighting
 zinit ice wait lucid pick"flatpak.plugin.zsh" as"completion"
 zinit light bilelmoussaoui/flatpak-zsh-completion
 
+# Autosuggest settings
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
-# Using ice syntax
+# custom completions
 zinit wait lucid for \
     atload"command -v glab >/dev/null && source <(glab completion -s zsh)" \
     atload"command -v docker >/dev/null && ! uname -r | grep -iq microsoft && source <(docker completion zsh)" \
@@ -181,7 +183,11 @@ alias la='eza -a --group-directories-first' # Show all files, with directories l
 alias lx='eza -a --group-directories-first --extended' # Show all files and extended attributes, directories first
 alias lT='eza --tree --long' # Tree view with extended details
 alias lr='eza --long --modified --sort=modified -r' # sort by modified desc
-
+function lP() {
+  local target="${1:-.}"
+  local resolved=$(realpath "$target")
+  find "$resolved" -maxdepth 1
+}
 
 
 # stolen from OMZ tmux plugin

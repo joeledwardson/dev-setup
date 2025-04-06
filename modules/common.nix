@@ -46,7 +46,8 @@ let
     volta
     deno
     poetry
-    pyenv
+    uv
+    # pyenv
     pipx
     go
     nixd
@@ -98,6 +99,9 @@ let
     gnumake
     ranger
     delta
+    # dependencies
+    readline
+    libedit
     # themes
     starship
     oh-my-posh

@@ -4,3 +4,10 @@ model: claude:claude-3-5-sonnet-latest
 clients:
 - type: openai
 - type: claude
+- type: ollama
+  base_url: http://localhost:11434
+
+providers:
+  ollama:
+    models:
+      - name: qwen2.5-coder-7b
