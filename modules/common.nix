@@ -45,7 +45,7 @@ let
     pipx
     volta
     deno
-    poetry
+    # poetry
     uv
     # pyenv
     pipx
@@ -65,7 +65,7 @@ let
     # GPU accelerated programs
     google-chrome
     slack
-    vlc
+    # vlc
     kitty
     # keyboard configuration apps
     qmk
