@@ -960,24 +960,66 @@ require('lazy').setup {
   },
 
   {
-    'folke/tokyonight.nvim',
+    'Mofiqul/vscode.nvim',
     priority = 1000,
     config = function()
-      local tokyo = require 'tokyonight'
-      tokyo.setup {
-        style = 'night',
+      -- For dark theme (neovim's default)
+      vim.o.background = 'dark'
+
+      local c = require('vscode.colors').get_colors()
+      require('vscode').setup {
+        -- Enable transparent background
         transparent = true,
-        on_highlights = function(hl, c)
-          hl.LineNrAbove = { fg = c.red }
-          hl.LineNrBelow = { fg = c.magenta }
-        end,
+
+        -- Enable italic comment
+        italic_comments = true,
+
+        -- Underline `@markup.link.*` variants
+        underline_links = true,
+
+        -- Disable nvim-tree background color
+        disable_nvimtree_bg = true,
+
+        -- Apply theme colors to terminal
+        terminal_colors = true,
+
+        -- Override colors (see ./lua/vscode/colors.lua)
+        color_overrides = {
+          vscLineNumber = '#FFFFFF',
+        },
+
+        -- Override highlight groups (see ./lua/vscode/theme.lua)
+        group_overrides = {
+          -- this supports the same val table as vim.api.nvim_set_hl
+          -- use colors from this colorscheme by requiring vscode.colors!
+          Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
+        },
       }
-    end,
-    init = function()
-      -- Then apply the colorscheme
-      vim.cmd.colorscheme 'tokyonight-night'
+
+      -- load the theme without affecting devicon colors.
+      vim.cmd.colorscheme 'vscode'
     end,
   },
+
+  -- {
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     local tokyo = require 'tokyonight'
+  --     tokyo.setup {
+  --       style = 'night',
+  --       transparent = true,
+  --       on_highlights = function(hl, c)
+  --         hl.LineNrAbove = { fg = c.red }
+  --         hl.LineNrBelow = { fg = c.magenta }
+  --       end,
+  --     }
+  --   end,
+  --   init = function()
+  --     -- Then apply the colorscheme
+  --     vim.cmd.colorscheme 'tokyonight-moon'
+  --   end,
+  -- },
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
@@ -1018,21 +1060,33 @@ require('lazy').setup {
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
-    opts = {
-      enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-      multiwindow = false, -- Enable multiwindow support.
-      max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-      min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
-      line_numbers = true,
-      multiline_threshold = 20, -- Maximum number of lines to show for a single context
-      trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-      mode = 'cursor', -- Line used to calculate context. Choices: 'cursor', 'topline'
-      -- Separator between context and content. Should be a single character string, like '-'.
-      -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-      separator = nil,
-      zindex = 20, -- The Z-index of the context window
-      on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
-    },
+    -- enabled = false,
+    config = function()
+      require('treesitter-context').setup {
+        -- Standard configuration options
+        enable = true,
+        max_lines = 5,
+        multiline_threshold = 20,
+        trim_scope = 'outer',
+        mode = 'cursor',
+
+        -- This is the important part to disable the background
+        on_attach = function()
+          -- Explicitly clear background colors for Treesitter Context highlights
+          vim.api.nvim_set_hl(0, 'TreesitterContext', { bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'TreesitterContextLineNumber', { bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'TreesitterContextBottom', { sp = 'NONE' })
+        end,
+      }
+
+      -- Add this to ensure highlights are applied after colorscheme changes
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        callback = function()
+          vim.api.nvim_set_hl(0, 'TreesitterContext', { bg = 'NONE' })
+          vim.api.nvim_set_hl(0, 'TreesitterContextLineNumber', { bg = 'NONE' })
+        end,
+      })
+    end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -1460,13 +1514,13 @@ vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
 -- Command mode highlighting (keeping your original)
 vim.api.nvim_create_autocmd('CmdlineEnter', {
   callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' })
+    -- vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' })
   end,
 })
 
 vim.api.nvim_create_autocmd('CmdlineLeave', {
   callback = function()
-    vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
+    -- vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
   end,
 })
 
@@ -1495,6 +1549,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     local executable = vim.fn.system({ 'poetry', 'env', 'info', '--executable' }):gsub('%s+$', '')
+    print 'got python executable'
     if not executable or executable == '' then
       return
     end
