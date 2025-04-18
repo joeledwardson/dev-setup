@@ -72,29 +72,22 @@ mkdir -p $HOME/.local/share/custom_zsh_completions
 fpath=($HOME/.local/share/custom_zsh_completions $fpath)
 
 # volta
-volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
+if command -v volta; then
+  volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
+  export VOLTA_HOME="$HOME/.volta"
+  export PATH="$VOLTA_HOME/bin:$PATH"
+fi
 
 # Load from cache immediately
 autoload -U compinit
 compinit
 
-
-# gcloud completions
-if command -v gcloud >/dev/null && [[ ! -e "$HOME/.local/google-cloud-sdk" ]]; then
-  savepath=$(mktemp)
-  wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz --output-document=$savepath
-  tar -xf $savepath -C "$HOME/.local"
-fi
-
-gcloud_zsh="$HOME/.local/google-cloud-sdk/completion.zsh.inc"
-if [[ -e "$gcloud_zsh" ]]; then
-  source "$gcloud_zsh"
+# Oh my posh theme
+if command -v oh-my-posh; then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh.json)"
 fi
 
 # Plugins
-eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh.json)"
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
@@ -121,9 +114,9 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
 # custom completions
 zinit wait lucid for \
-    atload"source <(glab completion -s zsh)" \
+    atload"command -v glab >/dev/null && source <(glab completion -s zsh)" \
     atload"command -v docker >/dev/null && ! uname -r | grep -iq microsoft && source <(docker completion zsh)" \
-    atload"source <(gh completion -s zsh)" \
+    atload"command -v gh >/dev/null && source <(gh completion -s zsh)" \
     atload"command -v fzf >/dev/null && source <(fzf --zsh)" \
         zdharma-continuum/null
 
