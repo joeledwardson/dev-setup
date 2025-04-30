@@ -26,6 +26,23 @@
           # to pass through arguments to home.nix
         };
          	
+        "nixos@jollof-degen-wsl" =  home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+
+          # Specify your home configuration modules here, for example,
+          # the path to your home.nix.
+          modules = [ 
+            ./modules/common.nix
+            {
+              home = {
+                username = "nixos";
+                homeDirectory = "/home/nixos";
+              };
+            }
+          ];
+          # Optionally use extraSpecialArgs
+          # to pass through arguments to home.nix
+        };
 
         "joel" =  home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
