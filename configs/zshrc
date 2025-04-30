@@ -72,7 +72,7 @@ mkdir -p $HOME/.local/share/custom_zsh_completions
 fpath=($HOME/.local/share/custom_zsh_completions $fpath)
 
 # volta
-if command -v volta; then
+if command -v volta >/dev/null; then
   volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
   export VOLTA_HOME="$HOME/.volta"
   export PATH="$VOLTA_HOME/bin:$PATH"
@@ -82,8 +82,21 @@ fi
 autoload -U compinit
 compinit
 
+
+# gcloud completions
+if command -v gcloud >/dev/null && [[ ! -e "$HOME/.local/google-cloud-sdk" ]]; then
+  savepath=$(mktemp)
+  wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz --output-document=$savepath
+  tar -xf $savepath -C "$HOME/.local"
+fi
+
+gcloud_zsh="$HOME/.local/google-cloud-sdk/completion.zsh.inc"
+if [[ -e "$gcloud_zsh" ]]; then
+  source "$gcloud_zsh"
+fi
+
 # Oh my posh theme
-if command -v oh-my-posh; then
+if command -v oh-my-posh >/dev/null; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh.json)"
 fi
 
