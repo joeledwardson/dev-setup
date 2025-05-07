@@ -14,6 +14,7 @@
 				inherit system;
 			};
     in {
+
       homeConfigurations = {
         "joelyboy" =  home-manager.lib.homeManagerConfiguration {
           inherit pkgs;

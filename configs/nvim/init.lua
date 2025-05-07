@@ -298,7 +298,7 @@ require('lazy').setup {
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -341,7 +341,7 @@ require('lazy').setup {
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -382,7 +382,7 @@ require('lazy').setup {
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -491,7 +491,7 @@ require('lazy').setup {
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -503,7 +503,7 @@ require('lazy').setup {
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -805,7 +805,7 @@ require('lazy').setup {
     },
   },
 
-  { -- Autocompletion
+  {               -- Autocompletion
     'hrsh7th/nvim-cmp',
     lazy = false, -- needs to be loaded for command line and insert mode now
     -- event = 'InsertEnter',
@@ -1235,7 +1235,7 @@ require('lazy').setup {
     end,
   },
 
-  { 'nvim-focus/focus.nvim', version = false }, -- Lua
+  { 'nvim-focus/focus.nvim',  version = false }, -- Lua
   {
     'folke/twilight.nvim',
     opts = {
@@ -1504,7 +1504,7 @@ vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr =
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldenable = true
-vim.opt.foldlevel = 99 -- start with all folds open
+vim.opt.foldlevel = 99      -- start with all folds open
 vim.opt.foldlevelstart = 99 -- start with all folds open
 vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
 
@@ -1512,7 +1512,7 @@ vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   callback = function()
     vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
-    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
+    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' })      -- active window stays default
   end,
 })
 
@@ -1580,3 +1580,7 @@ vim.keymap.set('n', '<Esc>', function()
   vim.cmd 'nohlsearch' -- Clear search highlighting
   require('notify').dismiss()
 end, { desc = 'dismiss notify popup and clear hlsearch' })
+
+vim.keymap.set('n', '<leader>e', function()
+  vim.diagnostic.open_float({ focusable = true, focus = true })
+end)

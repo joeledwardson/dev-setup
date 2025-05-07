@@ -8,8 +8,8 @@
     - ~/.local/share/fonts/monofur  # Optional, ensures clean setup
 
 - link:
-    ~/.vimrc: ./configs/vimrc
-    ~/.zshrc: ./configs/zshrc
+    ~/.vim/vimrc: ./configs/vimrc
+    ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.p10k.zsh: ./configs/p10k
     ~/.config/nvim: ./configs/nvim
     ~/.config/tmux/tmux.conf: ./configs/tmux.conf

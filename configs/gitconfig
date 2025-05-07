@@ -27,3 +27,6 @@
 [include]
         path = "~/.gitconfig.local"
 
+[credential "https://gitlab.com"]
+	helper = 
+	helper = !/nix/store/xk5h3q88y308nanji5xq4gzzrs3rdhq1-glab-1.51.0/bin/glab auth git-credential

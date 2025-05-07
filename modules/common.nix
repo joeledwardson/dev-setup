@@ -1,14 +1,14 @@
 # home.nix
-{ config, pkgs, lib, username, ... }: 
+{ config, pkgs, lib, ... }:
+
 let
   in
   {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = builtins.trace "Setting username to:" (lib.mkDefault "joelyboy");
-  home.homeDirectory = builtins.trace "Username from config is: ${config.home.username}" (
-    lib.mkDefault "/home/${config.home.username}"
-  );
+  # home.username = builtins.trace "Using username: " (config.home.username);
+  # home.homeDirectory = builtins.trace "Using home directory" (config.home.homeDirectory);
+
   nixpkgs.config.allowUnfree = true;
 
   # This value determines the Home Manager release that your configuration is
@@ -43,9 +43,11 @@ let
     clojure # for metabase
     gcc # for nvim kickstart
     pipx
-    volta
+    nix-search-cli
+    # volta
+    # fnm
     deno
-    # poetry
+    poetry
     uv
     # pyenv
     pipx
@@ -63,17 +65,17 @@ let
     rabbitmq-server
     postgresql_17
     # GPU accelerated programs
-    google-chrome
-    slack
+    # google-chrome
+    # slack
     # vlc
     kitty
     # keyboard configuration apps
     qmk
     via
     # desktop apps
-    copyq
-    autokey
-    pomodoro-gtk
+    # copyq
+    # autokey
+    # pomodoro-gtk
     # terminals
     zsh
     fish
@@ -92,13 +94,21 @@ let
     tmux
     fzf
     dotbot
-    neovim
     google-cloud-sdk
     bitwarden-cli
     eza
     gnumake
     ranger
     delta
+    wget
+    jq
+    xdg-utils
+    kbd # has showkey
+    # neovim
+    neovim
+    ripgrep 
+    prettierd
+    stylua
     # dependencies
     readline
     libedit
@@ -147,11 +157,17 @@ let
   #  /etc/profiles/per-user/joel/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
-    ZDOTDIR = "$HOME";
+  XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
+    ZDOTDIR = "${config.home.homeDirectory}/.config/zsh";
       LANG = "en_GB.UTF-8";
   LC_ALL = "en_GB.UTF-8";
   };
 
+  # Alternatively, this cleaner version also works
+  _module.args = builtins.trace "Using username: ${config.home.username} and home dir ${config.home.homeDirectory}" {};
+
+
+  # this creates the ~/.profile link and ensures session variables above are sourced
+  programs.bash.enable = true;
   programs.home-manager.enable = true;
 }

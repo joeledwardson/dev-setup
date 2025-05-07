@@ -40,6 +40,21 @@ and the nixGL channel and default added (for OpenGL apps, dont work with linked 
 nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
 nix-env -iA nixgl.auto.nixGLDefault   # or replace `nixGLDefault` with your desired wrapper
 ```
+
+# Git credentials
+for gh its as simple as (hopefully this can be absolved into the symlinks in the future)
+- gh auth setup-git
+
+for glab apparently this works?:
+- git config --global credential.https://gitlab.com.helper '!glab auth git-credential'
+
+no idea how this actually works, but an example of it working from claude is:
+```
+echo -e "protocol=https\nhost=gitlab.com" | glab auth git-credential get
+```
+
+apparently it reads from stdin?
+
 # Firefox tridactly
 Firefox tridactly extension find has some... interesting defaults.
 
