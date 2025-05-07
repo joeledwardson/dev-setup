@@ -2,8 +2,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  in
-  {
+in {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   # home.username = builtins.trace "Using username: " (config.home.username);
@@ -106,9 +105,10 @@ let
     kbd # has showkey
     # neovim
     neovim
-    ripgrep 
+    ripgrep
     prettierd
     stylua
+    nixfmt-classic
     # dependencies
     readline
     libedit
@@ -157,15 +157,16 @@ let
   #  /etc/profiles/per-user/joel/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-  XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
+    XDG_CONFIG_HOME = "${config.home.homeDirectory}/.config";
     ZDOTDIR = "${config.home.homeDirectory}/.config/zsh";
-      LANG = "en_GB.UTF-8";
-  LC_ALL = "en_GB.UTF-8";
+    LANG = "en_GB.UTF-8";
+    LC_ALL = "en_GB.UTF-8";
   };
 
   # Alternatively, this cleaner version also works
-  _module.args = builtins.trace "Using username: ${config.home.username} and home dir ${config.home.homeDirectory}" {};
-
+  _module.args = builtins.trace
+    "Using username: ${config.home.username} and home dir ${config.home.homeDirectory}"
+    { };
 
   # this creates the ~/.profile link and ensures session variables above are sourced
   programs.bash.enable = true;
