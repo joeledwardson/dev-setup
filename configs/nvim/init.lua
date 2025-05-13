@@ -349,6 +349,7 @@ require('lazy').setup {
         { '<leader>t', group = '[T]oggle' },
         { '<leader>p', group = '[P]ossesson' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>n', group = '[N]vim Tree' },
       },
     },
   },
