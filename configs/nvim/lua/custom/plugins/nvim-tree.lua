@@ -9,6 +9,8 @@ return {
     require('nvim-tree').setup {
       sort_by = 'case_sensitive',
       view = {
+        number = true,
+        relativenumber = true,
         width = 30,
       },
       renderer = {
@@ -36,4 +38,3 @@ return {
     vim.keymap.set('n', '<leader>nf', ':NvimTreeFindFile<CR>', { silent = true, desc = 'Find current file in tree' })
   end,
 }
-
