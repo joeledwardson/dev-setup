@@ -553,44 +553,43 @@ require('lazy').setup {
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          -- Rename the variable under your cursor.
+          --  Most Language Servers support renaming across files, etc.
+          map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+          -- Execute a code action, usually your cursor needs to be on top of an error
+          -- or a suggestion from your LSP for this to activate.
+          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+          -- Jump to the definition of the word under your cursor.
+          --  This is where a variable was first declared, or where a function is defined, etc.
+          --  To jump back, press <C-t>.
+          map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+
+          -- WARN: This is not Goto Definition, this is Goto Declaration.
+          --  For example, in C this would take you to the header.
+          map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+          -- Fuzzy find all the symbols in your current document.
+          --  Symbols are things like variables, functions, types, etc.
+          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+
+          -- Fuzzy find all the symbols in your current workspace.
+          --  Similar to document symbols, except searches over your entire project.
+          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
-          -- Fuzzy find all the symbols in your current document.
-          --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-          -- Fuzzy find all the symbols in your current workspace.
-          --  Similar to document symbols, except searches over your entire project.
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-          -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-
+          map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header.
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -947,46 +946,80 @@ require('lazy').setup {
   },
 
   {
-    'Mofiqul/vscode.nvim',
+    'rebelot/kanagawa.nvim',
     priority = 1000,
     config = function()
-      -- For dark theme (neovim's default)
-      vim.o.background = 'dark'
-
-      local c = require('vscode.colors').get_colors()
-      require('vscode').setup {
-        -- Enable transparent background
-        transparent = true,
-
-        -- Enable italic comment
-        italic_comments = true,
-
-        -- Underline `@markup.link.*` variants
-        underline_links = true,
-
-        -- Disable nvim-tree background color
-        disable_nvimtree_bg = true,
-
-        -- Apply theme colors to terminal
-        terminal_colors = true,
-
-        -- Override colors (see ./lua/vscode/colors.lua)
-        color_overrides = {
-          vscLineNumber = '#FFFFFF',
+      -- Default options:
+      require('kanagawa').setup {
+        compile = false, -- enable compiling the colorscheme
+        undercurl = true, -- enable undercurls
+        commentStyle = { italic = true },
+        functionStyle = {},
+        keywordStyle = { italic = true },
+        statementStyle = { bold = true },
+        typeStyle = {},
+        transparent = false, -- do not set background color
+        dimInactive = false, -- dim inactive window `:h hl-NormalNC`
+        terminalColors = true, -- define vim.g.terminal_color_{0,17}
+        colors = { -- add/modify theme and palette colors
+          palette = {},
+          theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
         },
-
-        -- Override highlight groups (see ./lua/vscode/theme.lua)
-        group_overrides = {
-          -- this supports the same val table as vim.api.nvim_set_hl
-          -- use colors from this colorscheme by requiring vscode.colors!
-          Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
+        overrides = function(colors) -- add/modify highlights
+          return {}
+        end,
+        theme = 'wave', -- Load "wave" theme
+        background = { -- map the value of 'background' option to a theme
+          dark = 'wave', -- try "dragon" !
+          light = 'lotus',
         },
       }
 
-      -- load the theme without affecting devicon colors.
-      vim.cmd.colorscheme 'vscode'
+      -- setup must be called before loading
+      vim.cmd 'colorscheme kanagawa'
     end,
   },
+  -- {
+  --   'Mofiqul/vscode.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     -- For dark theme (neovim's default)
+  --     vim.o.background = 'dark'
+  --
+  --     local c = require('vscode.colors').get_colors()
+  --     require('vscode').setup {
+  --       -- Enable transparent background
+  --       transparent = true,
+  --
+  --       -- Enable italic comment
+  --       italic_comments = true,
+  --
+  --       -- Underline `@markup.link.*` variants
+  --       underline_links = true,
+  --
+  --       -- Disable nvim-tree background color
+  --       disable_nvimtree_bg = true,
+  --
+  --       -- Apply theme colors to terminal
+  --       terminal_colors = true,
+  --
+  --       -- Override colors (see ./lua/vscode/colors.lua)
+  --       color_overrides = {
+  --         vscLineNumber = '#FFFFFF',
+  --       },
+  --
+  --       -- Override highlight groups (see ./lua/vscode/theme.lua)
+  --       group_overrides = {
+  --         -- this supports the same val table as vim.api.nvim_set_hl
+  --         -- use colors from this colorscheme by requiring vscode.colors!
+  --         Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
+  --       },
+  --     }
+  --
+  --     -- load the theme without affecting devicon colors.
+  --     vim.cmd.colorscheme 'vscode'
+  --   end,
+  -- },
 
   -- {
   --   'folke/tokyonight.nvim',
@@ -1296,18 +1329,23 @@ require('lazy').setup {
   --   },
   -- },
   --
-  {
-    'ray-x/lsp_signature.nvim',
-    event = 'InsertEnter',
-    opts = {
-      bind = true,
-      handler_opts = {
-        border = 'rounded',
-      },
-    },
-    -- or use config
-    -- config = function(_, opts) require'lsp_signature'.setup({you options}) end
-  },
+  -- {
+  --   'ray-x/lsp_signature.nvim',
+  --   event = 'InsertEnter',
+  --   opts = {
+  --     bind = true,
+  --     handler_opts = {
+  --       border = 'rounded',
+  --     },
+  --     -- hint_enable = false, -- Disable the virtual text hints
+  --     -- floating_window = true, -- Show floating window for signature
+  --     -- auto_close_after = nil, -- Don't auto-close signature
+  --     -- toggle_key = nil, -- Disable automatic toggle
+  --   },
+  --   config = function(_, opts)
+  --     require('lsp_signature').setup(opts)
+  --   end,
+  -- },
   {
     'folke/noice.nvim',
     dependencies = {
@@ -1325,9 +1363,9 @@ require('lazy').setup {
           signature = {
             enabled = true,
             auto_open = {
-              enabled = true,
-              trigger = true,
-              luasnip = true,
+              enabled = false, -- Disable auto-popup
+              trigger = false, -- Disable triggering
+              luasnip = false, -- Disable for luasnip
             },
             view = 'hover',
           },
