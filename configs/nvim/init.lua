@@ -350,6 +350,7 @@ require('lazy').setup {
         { '<leader>p', group = '[P]ossesson' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>n', group = '[N]vim Tree' },
+        { '<leader>tw', desc = '[T]ypeScript [W]atch mode' },
       },
     },
   },
@@ -662,11 +663,23 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
-        denols = {
-          root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
-          single_file_support = false,
-          settings = {},
-        },
+        -- denols = {
+        --   -- Only activate Deno for projects with deno.json files
+        --   root_markers = { 'deno.json', 'deno.jsonc' },
+        --   single_file_support = false,
+        --   -- Initialize with Deno configuration
+        --   init_options = {
+        --     lint = true,
+        --     unstable = false,
+        --     suggest = {
+        --       imports = {
+        --         hosts = {
+        --           ['https://deno.land'] = true,
+        --         },
+        --       },
+        --     },
+        --   },
+        -- },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -725,40 +738,7 @@ require('lazy').setup {
       require('lspconfig').nixd.setup {}
     end,
   },
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {
-      settings = {
-        tsserver_logs = 'verbose',
-        -- Your existing settings
-      },
-    },
-    config = function(_, opts)
-      -- Configure diagnostics to show full messages
-      -- vim.diagnostic.config {
-      --   float = {
-      --     source = 'always',
-      --     border = 'rounded',
-      --     max_width = 100,
-      --     max_height = 20,
-      --     focusable = false,
-      --   },
-      --   virtual_text = true,
-      --   severity_sort = true,
-      -- }
-      --
-      -- -- Now access the API after the plugin is loaded
-      -- local api = require 'typescript-tools.api'
-      --
-      -- -- Add handlers to opts
-      -- opts.handlers = {
-      --   ['textDocument/publishDiagnostics'] = api.filter_diagnostics, -- Ignore 'This may be converted to an async function' diagnostics. { 80006 },
-      -- }
-      --
-      require('typescript-tools').setup(opts)
-    end,
-  },
+  -- TypeScript Tools moved to custom/plugins/typescript-tools.lua
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -1483,6 +1463,10 @@ require('lazy').setup {
       task = '📌',
       lazy = '💤 ',
     },
+  },
+  profiling = {
+    loader = true, -- Show detailed plugin loading info in :Lazy profile
+    require = true, -- Track require calls during plugin loading
   },
 }
 
