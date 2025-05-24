@@ -38,7 +38,8 @@ in {
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    # languages
+    
+    ### languages
     clojure # for metabase
     gcc # for nvim kickstart
     pipx
@@ -52,7 +53,7 @@ in {
     pipx
     go
     nixd
-    # Database tools
+    ### Database tools
     ruby
     lazysql
     usql
@@ -63,22 +64,23 @@ in {
     pgcli
     rabbitmq-server
     postgresql_17
-    # GPU accelerated programs
+    ### (disabled for now, until full nix transition)
+    ### GPU accelerated programs 
     # google-chrome
     # slack
     # vlc
-    kitty
+    # kitty
     # keyboard configuration apps
-    qmk
-    via
-    # desktop apps
+    # qmk
+    # via
+    ### desktop apps
     # copyq
     # autokey
     # pomodoro-gtk
-    # terminals
+    ### terminals
     zsh
     fish
-    # CLI tools
+    ### CLI tools
     git
     vim
     curl
@@ -103,16 +105,16 @@ in {
     jq
     xdg-utils
     kbd # has showkey
-    # neovim
+    ### neovim
     neovim
     ripgrep
     prettierd
     stylua
     nixfmt-classic
-    # dependencies
+    ### dependencies
     readline
     libedit
-    # themes
+    ### themes
     starship
     oh-my-posh
     oh-my-fish

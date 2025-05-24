@@ -3,4 +3,4 @@
 scratchpads
 # apparently share/fonts adds a .uuid file? 
 fonts/monofur/.uuid
-
+.claude

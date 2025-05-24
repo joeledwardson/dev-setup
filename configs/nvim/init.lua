@@ -349,6 +349,8 @@ require('lazy').setup {
         { '<leader>t', group = '[T]oggle' },
         { '<leader>p', group = '[P]ossesson' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>n', group = '[N]vim Tree' },
+        { '<leader>tw', desc = '[T]ypeScript [W]atch mode' },
       },
     },
   },
@@ -551,44 +553,43 @@ require('lazy').setup {
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          -- Rename the variable under your cursor.
+          --  Most Language Servers support renaming across files, etc.
+          map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+          -- Execute a code action, usually your cursor needs to be on top of an error
+          -- or a suggestion from your LSP for this to activate.
+          map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+          -- Jump to the definition of the word under your cursor.
+          --  This is where a variable was first declared, or where a function is defined, etc.
+          --  To jump back, press <C-t>.
+          map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+
+          -- WARN: This is not Goto Definition, this is Goto Declaration.
+          --  For example, in C this would take you to the header.
+          map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+          -- Fuzzy find all the symbols in your current document.
+          --  Symbols are things like variables, functions, types, etc.
+          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+
+          -- Fuzzy find all the symbols in your current workspace.
+          --  Similar to document symbols, except searches over your entire project.
+          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-
-          -- Fuzzy find all the symbols in your current document.
-          --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-          -- Fuzzy find all the symbols in your current workspace.
-          --  Similar to document symbols, except searches over your entire project.
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-          -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-
+          map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-          -- WARN: This is not Goto Definition, this is Goto Declaration.
-          --  For example, in C this would take you to the header.
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -661,11 +662,23 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
-        denols = {
-          root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
-          single_file_support = false,
-          settings = {},
-        },
+        -- denols = {
+        --   -- Only activate Deno for projects with deno.json files
+        --   root_markers = { 'deno.json', 'deno.jsonc' },
+        --   single_file_support = false,
+        --   -- Initialize with Deno configuration
+        --   init_options = {
+        --     lint = true,
+        --     unstable = false,
+        --     suggest = {
+        --       imports = {
+        --         hosts = {
+        --           ['https://deno.land'] = true,
+        --         },
+        --       },
+        --     },
+        --   },
+        -- },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -724,40 +737,7 @@ require('lazy').setup {
       require('lspconfig').nixd.setup {}
     end,
   },
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {
-      settings = {
-        tsserver_logs = 'verbose',
-        -- Your existing settings
-      },
-    },
-    config = function(_, opts)
-      -- Configure diagnostics to show full messages
-      -- vim.diagnostic.config {
-      --   float = {
-      --     source = 'always',
-      --     border = 'rounded',
-      --     max_width = 100,
-      --     max_height = 20,
-      --     focusable = false,
-      --   },
-      --   virtual_text = true,
-      --   severity_sort = true,
-      -- }
-      --
-      -- -- Now access the API after the plugin is loaded
-      -- local api = require 'typescript-tools.api'
-      --
-      -- -- Add handlers to opts
-      -- opts.handlers = {
-      --   ['textDocument/publishDiagnostics'] = api.filter_diagnostics, -- Ignore 'This may be converted to an async function' diagnostics. { 80006 },
-      -- }
-      --
-      require('typescript-tools').setup(opts)
-    end,
-  },
+  -- TypeScript Tools moved to custom/plugins/typescript-tools.lua
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -922,28 +902,6 @@ require('lazy').setup {
         },
       }
 
-      -- cmp.setup.cmdline(':', {
-      --   mapping = {
-      --     ['<Tab>'] = {
-      --       c = function()
-      --         local cmp = require 'cmp'
-      --         if cmp.visible() then
-      --           cmp.confirm { select = true }
-      --         else
-      --           cmp.complete()
-      --         end
-      --       end,
-      --     },
-      --     -- Keep the rest of the default mappings
-      --   },
-      --   sources = {
-      --     { name = 'cmdline' },
-      --     { name = 'path' },
-      --   },
-      -- })
-      --
-      -- Add command-line completion setup
-
       cmp.setup.cmdline(':', {
         mapping = cmp.mapping.preset.cmdline {
           ['<Tab>'] = cmp.mapping(function()
@@ -966,44 +924,37 @@ require('lazy').setup {
   },
 
   {
-    'Mofiqul/vscode.nvim',
+    'rebelot/kanagawa.nvim',
     priority = 1000,
     config = function()
-      -- For dark theme (neovim's default)
-      vim.o.background = 'dark'
-
-      local c = require('vscode.colors').get_colors()
-      require('vscode').setup {
-        -- Enable transparent background
-        transparent = true,
-
-        -- Enable italic comment
-        italic_comments = true,
-
-        -- Underline `@markup.link.*` variants
-        underline_links = true,
-
-        -- Disable nvim-tree background color
-        disable_nvimtree_bg = true,
-
-        -- Apply theme colors to terminal
-        terminal_colors = true,
-
-        -- Override colors (see ./lua/vscode/colors.lua)
-        color_overrides = {
-          vscLineNumber = '#FFFFFF',
+      -- Default options:
+      require('kanagawa').setup {
+        compile = false, -- enable compiling the colorscheme
+        undercurl = true, -- enable undercurls
+        commentStyle = { italic = true },
+        functionStyle = {},
+        keywordStyle = { italic = true },
+        statementStyle = { bold = true },
+        typeStyle = {},
+        transparent = false, -- do not set background color
+        dimInactive = false, -- dim inactive window `:h hl-NormalNC`
+        terminalColors = true, -- define vim.g.terminal_color_{0,17}
+        colors = { -- add/modify theme and palette colors
+          palette = {},
+          theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
         },
-
-        -- Override highlight groups (see ./lua/vscode/theme.lua)
-        group_overrides = {
-          -- this supports the same val table as vim.api.nvim_set_hl
-          -- use colors from this colorscheme by requiring vscode.colors!
-          Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
+        overrides = function(colors) -- add/modify highlights
+          return {}
+        end,
+        theme = 'wave', -- Load "wave" theme
+        background = { -- map the value of 'background' option to a theme
+          dark = 'wave', -- try "dragon" !
+          light = 'lotus',
         },
       }
 
-      -- load the theme without affecting devicon colors.
-      vim.cmd.colorscheme 'vscode'
+      -- setup must be called before loading
+      vim.cmd 'colorscheme kanagawa'
     end,
   },
 
@@ -1295,175 +1246,10 @@ require('lazy').setup {
   {
     'rafcamlet/nvim-luapad',
   },
-
-  -- {
-  --   'mvllow/modes.nvim',
-  --   event = 'VeryLazy',
-  --   opts = {
-  --     colors = {
-  --       copy = '#f5c359',
-  --       delete = '#c75c6a',
-  --       insert = '#78ccc5',
-  --       visual = '#9745be',
-  --     },
-  --     -- These are default values
-  --     line_opacity = 0.15,
-  --     set_cursor = true,
-  --     set_cursorline = true,
-  --     set_number = true,
-  --     ignore_filetypes = { 'NvimTree', 'TelescopePrompt' },
-  --   },
-  -- },
-  --
-  {
-    'ray-x/lsp_signature.nvim',
-    event = 'InsertEnter',
-    opts = {
-      bind = true,
-      handler_opts = {
-        border = 'rounded',
-      },
-    },
-    -- or use config
-    -- config = function(_, opts) require'lsp_signature'.setup({you options}) end
-  },
-  {
-    'folke/noice.nvim',
-    dependencies = {
-      'MunifTanjim/nui.nvim',
-      'rcarriga/nvim-notify',
-    },
-    config = function()
-      require('noice').setup {
-        lsp = {
-          hover = {
-            enabled = true,
-            silent = false,
-            view = 'hover', -- Options: hover, popup, split
-          },
-          signature = {
-            enabled = true,
-            auto_open = {
-              enabled = true,
-              trigger = true,
-              luasnip = true,
-            },
-            view = 'hover',
-          },
-        },
-      }
-    end,
-  },
-  {
-    'nvimdev/lspsaga.nvim',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function()
-      require('lspsaga').setup {
-        hover = {
-          open_link = 'gx',
-          open_browser = '!chrome',
-        },
-      }
-      -- Then update your mapping
-      vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>')
-    end,
-  },
-  {
-    'nvim-pack/nvim-spectre',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-
-    config = function()
-      vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', {
-        desc = 'Toggle Spectre',
-      })
-      vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
-        desc = 'Search current word',
-      })
-      vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
-        desc = 'Search current word',
-      })
-      vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
-        desc = 'Search on current file',
-      })
-    end,
-  },
-  -- { 'rcarriga/nvim-dap-ui', dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' } },
-  -- {
-  --   'mfussenegger/nvim-dap',
-  --   config = function() end,
-  --   keys = {
-  --     -- Add keymaps for debugging
-  --     {
-  --       '<F5>',
-  --       function()
-  --         require('dap').continue()
-  --       end,
-  --       desc = 'Debug: Continue',
-  --     },
-  --     {
-  --       '<F10>',
-  --       function()
-  --         require('dap').step_over()
-  --       end,
-  --       desc = 'Debug: Step Over',
-  --     },
-  --     {
-  --       '<F11>',
-  --       function()
-  --         require('dap').step_into()
-  --       end,
-  --       desc = 'Debug: Step Into',
-  --     },
-  --     {
-  --       '<F12>',
-  --       function()
-  --         require('dap').step_out()
-  --       end,
-  --       desc = 'Debug: Step Out',
-  --     },
-  --     {
-  --       '<leader>db',
-  --       function()
-  --         require('dap').toggle_breakpoint()
-  --       end,
-  --       desc = 'Debug: Toggle Breakpoint',
-  --     },
-  --   },
-  -- },
   { 'mbbill/undotree' },
 
   { import = 'custom.plugins' },
 
-  {
-    'Shatur/neovim-session-manager',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    lazy = false,
-    config = function()
-      local Path = require 'plenary.path'
-      require('session_manager').setup {
-        autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir,
-        sessions_dir = Path:new(vim.fn.stdpath 'data', 'sessions'),
-        autosave_last_session = true,
-        autosave_ignore_not_normal = false,
-        autosave_ignore_dirs = {},
-        autosave_ignore_filetypes = {
-          'gitcommit',
-          'gitrebase',
-        },
-        autosave_ignore_buftypes = {},
-        autosave_only_in_session = false,
-        max_path_length = 80,
-      }
-    end,
-    keys = {
-      { '<leader>pl', '<cmd>SessionManager load_session<CR>', desc = '📌 Load session' },
-      { '<leader>ps', '<cmd>SessionManager save_current_session<CR>', desc = '📌 Save session' },
-      { '<leader>pd', '<cmd>SessionManager delete_session<CR>', desc = '📌 Delete session' },
-    },
-  },
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
@@ -1483,105 +1269,11 @@ require('lazy').setup {
       lazy = '💤 ',
     },
   },
+  profiling = {
+    loader = true, -- Show detailed plugin loading info in :Lazy profile
+    require = true, -- Track require calls during plugin loading
+  },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-
--- JOLLOF SPECIFIC CONFIGURATIONS
-vim.opt.autoindent = true
-vim.opt.smartindent = true
-vim.opt.ignorecase = true
-vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
-vim.opt.number = true
--- alt shift H is used by tmux for window switching
-vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
-vim.keymap.set('n', '<leader>Du', '<cmd>DBUIToggle<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>Df', '<cmd>DBUIFindBuffer<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
--- folds
-vim.opt.foldmethod = 'expr'
-vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-vim.opt.foldenable = true
-vim.opt.foldlevel = 99 -- start with all folds open
-vim.opt.foldlevelstart = 99 -- start with all folds open
-vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
-
--- Window focus highlighting (NC = Non-Current/inactive windows)
-vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
-  callback = function()
-    vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
-    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
-  end,
-})
-
--- Command mode highlighting (keeping your original)
-vim.api.nvim_create_autocmd('CmdlineEnter', {
-  callback = function()
-    -- vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' })
-  end,
-})
-
-vim.api.nvim_create_autocmd('CmdlineLeave', {
-  callback = function()
-    -- vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
-  end,
-})
-
--- vim.keymap.set({ 'n' }, '<C-k>', function()
---   require('lsp_signature').toggle_float_win()
--- end, { silent = true, noremap = true, desc = 'toggle signature' })
-
-vim.keymap.set({ 'n' }, '<Leader>k', function()
-  vim.lsp.buf.signature_help()
-end, { silent = true, noremap = true, desc = 'toggle signature' })
-
-vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
-vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
-
--- use poetry executable as python path (if exists)
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client == nil or client.name == nil or client.name ~= 'pyright' then
-      return
-    end
-
-    local venv = vim.env.VIRTUAL_ENV
-    if not venv or venv == '' then
-      return
-    end
-
-    local executable = vim.fn.system({ 'poetry', 'env', 'info', '--executable' }):gsub('%s+$', '')
-    print 'got python executable'
-    if not executable or executable == '' then
-      return
-    end
-
-    if vim.fn.filereadable(executable) ~= 1 then
-      print('executable is not a valid file? ', executable)
-      return
-    end
-
-    -- Update Pyright config using the LSP protocol directly
-    client.config.settings = client.config.settings or {}
-    client.config.settings.python = client.config.settings.python or {}
-    client.config.settings.python.pythonPath = executable
-
-    -- Notify the server about the updated configuration
-    client.notify('workspace/didChangeConfiguration', {
-      settings = client.config.settings,
-    })
-  end,
-})
-
-vim.keymap.set('n', '<Esc>', function()
-  vim.cmd 'nohlsearch' -- Clear search highlighting
-  require('notify').dismiss()
-end, { desc = 'dismiss notify popup and clear hlsearch' })
-
-vim.keymap.set('n', '<leader>e', function()
-  vim.diagnostic.open_float { focusable = true, focus = true }
-end)
