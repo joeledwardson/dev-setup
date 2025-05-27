@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Check if 'autorandr' is in $PATH
+command -v autorandr >/dev/null && \
+  # Ensure log directory exists
+  mkdir -p "$HOME/.local/state/autorandr" && \
+  # Run autorandr and log output
+  autorandr --change > "$HOME/.local/state/autorandr/log.txt" 2>&1
+

@@ -10,20 +10,32 @@
       ./hardware-configuration.nix
     ];
 
-  # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/vda";
-  boot.loader.grub.useOSProber = true;
+  boot = {
+    loader = {
+      efi = {
+        canTouchEfiVariables = true;
+      };
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 5;
+        extraEntries = {
+          "windows.conf" = ''
+            title Windows Boot Manager
+            efi /EFI/Microsoft-Copy/Boot/bootmgfw.efi
+          '';
+        };
+      };
+    };
+   };
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "jollof-home"; # Define your hostname.
+  # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Enable network manager applet
   programs.nm-applet.enable = true;
@@ -87,9 +99,10 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.joel = {
+  users.users.jollof = {
     isNormalUser = true;
-    description = "joel";
+    description = "jollof";
+    initialPassword = "password";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
@@ -118,10 +131,19 @@
     xorg.xmodmap
     picom
     polybar
+    # (polybar.override {
+    #   pulseSupport = true;
+    # })
     killall # for i3 script
     nix-search-cli
     feh    
     rofi
+    pavucontrol   
+    polybar-pulseaudio-control
+    libnotify
+    dunst
+    wmctrl
+    autorandr   
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -142,6 +164,9 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+ 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
