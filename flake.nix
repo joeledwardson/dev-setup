@@ -11,32 +11,28 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
-   # ✅ Helper function
-    getHome = user: {
-      home.username = user;
-      home.homeDirectory = "/home/${user}";
-    };
+      # ✅ Helper function
+      getHome = user: {
+        home.username = user;
+        home.homeDirectory = "/home/${user}";
+      };
     in {
 
       homeConfigurations = {
+        # work desktop
+        "joelyboy@MINTY-RDP" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./modules/common.nix (getHome "joelyboy") ];
+        };
+        # work (degen) laptop WSL
         "nixos@jollof-degen-wsl" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-
-          modules = [
-            ./modules/common.nix
-            (getHome "nixos")
-          ];
+          modules = [ ./modules/common.nix (getHome "nixos") ];
         };
-
+        # home surface pro WSL
         "nixos@SURFACE-BRO-NIX" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-
-          modules = [
-            ./modules/common.nix
-            (getHome "nixos")
-          ];
-          # Optionally use extraSpecialArgs
-          # to pass through arguments to home.nix
+          modules = [ ./modules/common.nix (getHome "nixos") ];
         };
       };
     };
