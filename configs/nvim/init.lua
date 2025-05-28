@@ -944,7 +944,15 @@ require('lazy').setup {
           theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
         },
         overrides = function(colors) -- add/modify highlights
-          return {}
+          local palette = colors.palette
+          return {
+            -- Use springGreen for diff add (brighter than winterGreen)
+            DiffAdd = { bg = palette.springGreen },
+            -- Other diff colors from palette for better visibility
+            DiffDelete = { bg = palette.autumnRed },
+            DiffChange = { bg = palette.crystalBlue },
+            DiffText = { bg = palette.lightBlue },
+          }
         end,
         theme = 'wave', -- Load "wave" theme
         background = { -- map the value of 'background' option to a theme
