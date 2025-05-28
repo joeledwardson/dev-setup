@@ -38,7 +38,7 @@ in {
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    
+
     ### languages
     clojure # for metabase
     gcc # for nvim kickstart
@@ -105,6 +105,7 @@ in {
     jq
     xdg-utils
     kbd # has showkey
+    lazydocker
     ### neovim
     neovim
     ripgrep
