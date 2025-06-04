@@ -106,6 +106,7 @@ in {
     xdg-utils
     kbd # has showkey
     lazydocker
+    graphviz # required for madge npm package
     ### neovim
     neovim
     ripgrep
