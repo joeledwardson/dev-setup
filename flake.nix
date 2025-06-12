@@ -35,5 +35,17 @@
           modules = [ ./modules/common.nix (getHome "nixos") ];
         };
       };
+
+
+      nixosConfigurations = {
+         "degen-work" = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/degen-work/configuration.nix
+          ];
+        };
+      };
+
     };
+    
+      
 }
