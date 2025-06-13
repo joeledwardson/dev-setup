@@ -29,6 +29,11 @@
           inherit pkgs;
           modules = [ ./modules/common.nix (getHome "nixos") ];
         };
+        # work (degen) laptop NixOS
+        "jollof@degen-work" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./modules/common.nix (getHome "jollof") ];
+        };
         # home surface pro WSL
         "nixos@SURFACE-BRO-NIX" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
