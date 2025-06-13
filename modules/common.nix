@@ -77,6 +77,7 @@ in {
     # copyq
     # autokey
     # pomodoro-gtk
+    xdg-utils
     ### terminals
     zsh
     fish
@@ -86,8 +87,6 @@ in {
     curl
     tldr
     bat
-    xclip
-    xsel
     lazygit
     aichat
     gh
@@ -107,15 +106,20 @@ in {
     kbd # has showkey
     lazydocker
     graphviz # required for madge npm package
+    claude-code
     ### neovim
     neovim
     ripgrep
     prettierd
     stylua
     nixfmt-classic
-    ### dependencies
+    ### dependencies for neovim
     readline
     libedit
+    ### X11 specific utilities
+    xclip
+    xsel
+    xorg.xdpyinfo
     ### themes
     starship
     oh-my-posh
