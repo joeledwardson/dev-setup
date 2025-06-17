@@ -5,11 +5,9 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
-
+  imports = [ # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   boot.loader = {
     grub = {
@@ -28,7 +26,8 @@
   networking.hostName = "degen-work"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable =
+    true; # Easiest to use and most distros use this by default.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -43,6 +42,9 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
 
+  # enable spice vd agent for virtualisation copy pasting
+  services.spice-vdagentd.enable = true;
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
@@ -55,19 +57,37 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services.displayManager.ly.enable = true;
 
-  # Enable the LXQT Desktop Environment.
-  services.xserver.displayManager.lightdm.enable = true;
-  # services.xserver.desktopManager.lxqt.enable = true;
-  services.xserver.windowManager.i3.enable = true;
-  services.spice-vdagentd.enable = true;
+  # =======================================
+  # X11 Configuration
+  # =======================================
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "gb";
-    variant = "";
+  # --- Core X11 Settings ---
+  # This enables the X11 windowing system
+  # NOTE: Even if you primarily use Wayland, this is needed for X11 apps compatibility
+  services.xserver = {
+    enable = true;
+
+    # --- X11 Keyboard Layout ---
+    xkb = {
+      layout = "gb";
+      variant = "";
+    };
+
+    # --- X11 Window Manager ---
+    # i3 tiling window manager for X11 sessions
+    windowManager.i3.enable = true;
+
+    # --- Display Manager / Login Screen ---
+    # Works for both X11 and Wayland sessions
+    displayManager = {
+      # SDDM - Modern Qt-based login greeter
+      sddm.enable = false;
+      # LightDM - Lightweight login greeter (disabled)
+      lightdm.enable = false;
+
+    };
   };
 
   # Configure console keymap
@@ -100,10 +120,11 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    #  thunderbird
-    ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
+    packages = with pkgs;
+      [
+        #  thunderbird
+      ];
   };
 
   # Install firefox.
@@ -115,29 +136,61 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # --- Core system utilities ---
+    libnotify # send notifications to daemon (for dunst, mako etc)
+    spice-vdagent # frontend to spice vdagent (clipboard)
+
+    # core terminal utilities
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    i3
-    dmenu
+    killall # useful, also required in polybar script
+    nix-search-cli # helpful nix-search command
+
+    # graphical applications
     alacritty
     firefox
-    networkmanagerapplet
-    lxappearance
-    picom
-    spice-vdagent
-    xorg.xmodmap
-    picom
-    polybar
-    killall # for i3 script
-    nix-search-cli
-    feh    
-    rofi
-    pavucontrol   
+    networkmanagerapplet # includes nm-applet (used in polybar)
+    pavucontrol # pulse audio GTK application (used in polybar)
+
+    # =======================================
+    # X11-specific packages
+    # =======================================
+    # Window management
+    i3 # Tiling window manager
+    picom # Compositor for X11
+    wmctrl # Command line tool to interact with X window manager
+    dunst # not x-11 specific but wayland deskop uses different notifications
+
+    # UI and appearance
+    lxappearance # GTK theme switcher
+    polybar # Status bar
     polybar-pulseaudio-control
-    libnotify
-    dunst
-    wmctrl
-    autorandr   
+    rofi # Application launcher
+    dmenu # Minimal application launcher
+
+    # X11 utilities
+    xorg.xmodmap # Utility for modifying keymaps
+    autorandr # Auto-configure display outputs
+    feh # set wallpaper
+
+    # =======================================
+    # Wayland/Sway packages
+    # =======================================
+    # sway # Tiling Wayland compositor
+    swaylock # Screen locker
+    swayidle # Idle management daemon
+    # waybar # Wayland bar/panel
+    wl-clipboard # Command-line copy/paste utilities
+    mako # Notification daemon
+    grim # Screenshot utility
+    slurp # Region selection tool (used with grim)
+    wofi # Application launcher for Wayland
+    xdg-utils # For xdg-open and similar commands
+    # xdg-desktop-portal # Desktop integration portals
+    # xdg-desktop-portal-wlr # Wayland desktop portal
+    # xwayland # For X11 app compatibility
+    swww # Wallpaper manager with transitions
+    swaybg # Simple wallpaper utility
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -159,8 +212,35 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
- 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # =======================================
+  # Wayland/Sway Configuration
+  # =======================================
+  # Minimal setup that allows using a custom Sway config
+
+  # Enable Sway Window Manager (system-wide activation only)
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true; # Improves GTK application compatibility
+    xwayland.enable = true;
+    # No config option - we'll use a custom symlinked config
+  };
+
+  programs.waybar = { enable = true; };
+
+  # Enable light for brightness control
+  programs.light.enable = true;
+
+  # XDG Portal for desktop integration
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true; # Wayland compositor support
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
+  # D-Bus is required for many Wayland applications
+  services.dbus.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

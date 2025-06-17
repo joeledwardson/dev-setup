@@ -10,6 +10,8 @@
 - link:
     ~/.vim/vimrc: ./configs/vimrc
     ~/.xprofile: ./configs/xprofile
+    ~/.config/sway/config: ./configs/sway/config
+    ~/.config/waybar: ./configs/waybar/
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.p10k.zsh: ./configs/p10k
     ~/.config/nvim: ./configs/nvim

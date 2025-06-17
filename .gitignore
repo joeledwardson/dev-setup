@@ -4,3 +4,8 @@ scratchpads
 # apparently share/fonts adds a .uuid file? 
 fonts/monofur/.uuid
 .claude
+
+# while copying stuff from the LoneWolf4713/new-wave repo will be here in a subdir
+new-wave
+# and anothe rone
+smravec-nixos-config
