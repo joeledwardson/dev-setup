@@ -42,7 +42,8 @@
         # home desktop
         "jollof@jollof-home" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./modules/common.nix (getHome "jollof") ];
+          modules =
+            [ ./modules/common.nix ./modules/desktop.nix (getHome "jollof") ];
         };
       };
 
