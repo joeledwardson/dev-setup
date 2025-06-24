@@ -46,16 +46,17 @@
         };
       };
 
-
       nixosConfigurations = {
-         "degen-work" = nixpkgs.lib.nixosSystem {
-          modules = [
-            ./hosts/degen-work/configuration.nix
-          ];
+        "degen-work" = nixpkgs.lib.nixosSystem {
+          modules = [ ./hosts/degen-work/configuration.nix ];
         };
+
+        "jollof-home" = nixpkgs.lib.nixosSystem {
+          modules = [ ./hosts/jollof-home/configuration.nix ];
+        };
+
       };
 
     };
-    
-      
+
 }
