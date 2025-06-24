@@ -39,6 +39,11 @@
           inherit pkgs;
           modules = [ ./modules/common.nix (getHome "nixos") ];
         };
+        # home desktop
+        "jollof@jollof-home" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./modules/common.nix (getHome "jollof") ];
+        };
       };
 
 

@@ -44,7 +44,7 @@ in {
     gcc # for nvim kickstart
     pipx
     nix-search-cli
-    # volta
+    volta
     # fnm
     deno
     poetry
@@ -64,20 +64,6 @@ in {
     pgcli
     rabbitmq-server
     postgresql_17
-    ### (disabled for now, until full nix transition)
-    ### GPU accelerated programs 
-    # google-chrome
-    # slack
-    # vlc
-    # kitty
-    # keyboard configuration apps
-    # qmk
-    # via
-    ### desktop apps
-    # copyq
-    # autokey
-    # pomodoro-gtk
-    xdg-utils
     ### terminals
     zsh
     fish
@@ -107,6 +93,7 @@ in {
     lazydocker
     graphviz # required for madge npm package
     claude-code
+    unzip
     ### neovim
     neovim
     ripgrep
@@ -114,6 +101,7 @@ in {
     stylua
     nixfmt-classic
     ### dependencies for neovim
+    tree-sitter
     readline
     libedit
     ### X11 specific utilities
