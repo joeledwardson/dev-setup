@@ -1,5 +1,4 @@
 # Development setup
-Before anything can be run, ansible must be installed
 # NixOS Setup
 If not using a Nix based OS, need to install NixOS (use `--daemon` as its nice to be able to view and restart it using `systemctl`)
 See instructions [here](https://nixos.org/download/)
@@ -55,27 +54,6 @@ echo -e "protocol=https\nhost=gitlab.com" | glab auth git-credential get
 
 apparently it reads from stdin?
 
-# Firefox tridactly
-Firefox tridactly extension find has some... interesting defaults.
-
-Custom tridcactyl firefox bindings, can be easily applied below in tridactl by typing `:` then pasting the below:
-```
-source --url https://raw.githubusercontent.com/joeledwardson/dev-setup/refs/heads/main/configs/tridactyl.config
-```
-
-# install pipx and ansible
-```bash
-# install pipx: https://github.com/pypa/pipx?tab=readme-ov-file#on-linux
-sudo apt update
-sudo apt install pipx
-pipx ensurepath
-sudo pipx ensurepath --global # optional to allow pipx actions with --global argument
-
-# install ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
-pipx install --include-deps ansible
-```
-
-# install cursor
 `zshrc` creates a function for cursor, assuming an appimage is in `.local/cursor.AppImage`
 
 
