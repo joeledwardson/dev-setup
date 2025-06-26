@@ -1,7 +1,0 @@
-[/]
-custom-list=['custom0']
-
-[custom0]
-binding='<Super>v'
-command='copyq show'
-name='open CopyQ GUI'
