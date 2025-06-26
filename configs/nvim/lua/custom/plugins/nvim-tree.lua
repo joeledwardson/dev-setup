@@ -14,7 +14,7 @@ return {
         width = 30,
       },
       renderer = {
-        group_empty = true,
+        group_empty = false,
         highlight_opened_files = 'all',
       },
       filters = {
