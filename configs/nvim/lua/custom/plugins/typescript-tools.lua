@@ -5,6 +5,14 @@ return {
   opts = {
     settings = {
       tsserver_logs = 'verbose',
+      -- This exposes ALL TypeScript refactors as code actions!
+      expose_as_code_action = 'all',
+
+      -- This adds parentheses when completing functions
+      complete_function_calls = true,
+
+      -- This shows reference counts above functions
+      code_lens = 'all',
     },
   },
   config = function(_, opts)
