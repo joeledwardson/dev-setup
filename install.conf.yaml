@@ -14,7 +14,6 @@
     ~/.config/sway/config: ./configs/sway/config
     ~/.config/waybar: ./configs/waybar/
     ~/.config/zsh/.zshrc: ./configs/zshrc
-    ~/.p10k.zsh: ./configs/p10k
     ~/.config/nvim: ./configs/nvim
     ~/.config/tmux/tmux.conf: ./configs/tmux.conf
     ~/.config/i3/config: ./configs/i3/config
