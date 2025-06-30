@@ -57,39 +57,6 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
-  services.displayManager.ly.enable = true;
-
-  # =======================================
-  # X11 Configuration
-  # =======================================
-
-  # --- Core X11 Settings ---
-  # This enables the X11 windowing system
-  # NOTE: Even if you primarily use Wayland, this is needed for X11 apps compatibility
-  services.xserver = {
-    enable = true;
-
-    # --- X11 Keyboard Layout ---
-    xkb = {
-      layout = "gb";
-      variant = "";
-    };
-
-    # --- X11 Window Manager ---
-    # i3 tiling window manager for X11 sessions
-    windowManager.i3.enable = true;
-
-    # --- Display Manager / Login Screen ---
-    # Works for both X11 and Wayland sessions
-    displayManager = {
-      # SDDM - Modern Qt-based login greeter
-      sddm.enable = false;
-      # LightDM - Lightweight login greeter (disabled)
-      lightdm.enable = false;
-
-    };
-  };
-
   # Configure console keymap
   console.keyMap = "uk";
 
@@ -152,30 +119,6 @@
     networkmanagerapplet # includes nm-applet (used in polybar)
     pavucontrol # pulse audio GTK application (used in polybar)
 
-    # =======================================
-    # X11-specific packages
-    # =======================================
-    # Window management
-    i3 # Tiling window manager
-    picom # Compositor for X11
-    wmctrl # Command line tool to interact with X window manager
-    dunst # not x-11 specific but wayland deskop uses different notifications
-
-    # UI and appearance
-    lxappearance # GTK theme switcher
-    polybar # Status bar
-    polybar-pulseaudio-control
-    rofi # Application launcher
-    dmenu # Minimal application launcher
-
-    # X11 utilities
-    xorg.xmodmap # Utility for modifying keymaps
-    autorandr # Auto-configure display outputs
-    feh # set wallpaper
-
-    # =======================================
-    # Wayland/Sway packages
-    # =======================================
     # sway # Tiling Wayland compositor
     swaylock # Screen locker
     swayidle # Idle management daemon
@@ -191,6 +134,8 @@
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
     swaybg # Simple wallpaper utility
+    # UI and appearance
+    rofi # Application launcher
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -218,6 +163,16 @@
   # Wayland/Sway Configuration
   # =======================================
   # Minimal setup that allows using a custom Sway config
+  services.greetd = {
+    enable = true;
+    settings = rec {
+      initial_session = {
+        command = "${pkgs.sway}/bin/sway";
+        user = "jollof";
+      };
+      default_session = initial_session;
+    };
+  };
 
   # Enable Sway Window Manager (system-wide activation only)
   programs.sway = {
