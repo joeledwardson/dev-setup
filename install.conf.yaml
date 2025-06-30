@@ -9,18 +9,14 @@
 
 - link:
     ~/.vim/vimrc: ./configs/vimrc
-    ~/.xprofile: ./configs/xprofile
     ~/.config/rofi: ./configs/rofi
     ~/.config/sway/config: ./configs/sway/config
-    ~/.config/waybar: ./configs/waybar/
+    ~/.config/waybar: ./configs/waybar
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.config/nvim: ./configs/nvim
     ~/.config/tmux/tmux.conf: ./configs/tmux.conf
-    ~/.config/i3/config: ./configs/i3/config
-    ~/.config/polybar: ./configs/polybar
     ~/.config/ohmyposh.json: ./configs/ohmyposh.json
     ~/.local/share/fonts/monofur: ./fonts/monofur
-    ~/.config/ulauncher: ./configs/ulauncher
     ~/.config/git/config: ./configs/gitconfig
     ~/.config/git/ignore: ./configs/gitignore
     ~/.config/fish/config.fish: ./configs/config.fish
