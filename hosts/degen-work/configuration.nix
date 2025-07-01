@@ -122,7 +122,6 @@
     # sway # Tiling Wayland compositor
     swaylock # Screen locker
     swayidle # Idle management daemon
-    # waybar # Wayland bar/panel
     wl-clipboard # Command-line copy/paste utilities
     mako # Notification daemon
     grim # Screenshot utility
@@ -149,7 +148,7 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
