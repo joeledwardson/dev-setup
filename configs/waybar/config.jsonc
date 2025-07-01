@@ -1,37 +1,90 @@
 {
-  "layer": "top",
-  "position": "bottom",
-  "height": 40,
+    "layer": "top",
+    "spacing": 0,
+    "height": 0,
 
-  "modules-left": ["hyprland/workspaces", "wlr/taskbar"],
-  "modules-center": [],
-  "modules-right": ["tray", "clock"],
+    "margin-top": 8,
+    "margin-right": 8,
+    "margin-bottom": 0,
+    "margin-left": 8,
 
-  "tray": {
-    "spacing": 5,
-  },
+    "modules-left": [
+        "sway/workspaces"
+    ],
 
-  "hyprland/workspaces": {
-    "format": "{name}",
-  },
+    "modules-center": [
+        "clock"
+    ],
 
-  "wlr/taskbar": {
-    "format": "{icon}   {title:.25}",
-    "markup": true,
-    "icon-size": 20,
-    "on-click": "activate",
-  },
+    "modules-right": [
+        "tray",
+        "cpu_text",
+        "cpu",
+        "memory",
+        "battery",
+        "network",
+        "pulseaudio"
+    ],
 
-  "clock": {
-    "format": "{:>%I:%M:%S \n %m/%d/%y}",
-    "interval": 1,
-    "align": 1,
-    "justify": "right",
-  },
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "tooltip": false
+    },
 
-  "custom/power": {
-    "format": "⏻",
-    "tooltip": "Power Off",
-    "on-click": "poweroff",
-  },
+    "tray": {
+        "spacing": 10,
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": "{:%I:%M %p - %a, %d %b %Y}",
+        "tooltip": false
+    },
+
+    "cpu": {
+        "format": "cpu {usage}%",
+        "interval": 2,
+
+        "states": {
+            "critical": 90
+        }
+    },
+
+    "memory": {
+        "format": "mem {percentage}%",
+        "interval": 2,
+
+        "states": {
+            "critical": 80
+        }
+    },
+
+    "battery": {
+        "format": "bat {capacity}%",
+        "interval": 5,
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+
+    "network": {
+        "format-wifi" : "wifi {bandwidthDownBits}",
+        "format-ethernet": "enth {bandwidthDownBits}",
+        "format-disconnected" : "no network",
+        "interval": 5,
+        "tooltip": false
+    },
+
+    "pulseaudio": {
+        "scroll-step": 5,
+        "max-volume": 150,
+        "format": "vol {volume}%",
+        "format-bluetooth": "vol {volume}%",
+        "nospacing": 1,
+        "on-click": "pavucontrol",
+        "tooltip": false
+    }
 }
