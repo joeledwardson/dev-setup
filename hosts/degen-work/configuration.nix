@@ -162,16 +162,7 @@
   # Wayland/Sway Configuration
   # =======================================
   # Minimal setup that allows using a custom Sway config
-  services.greetd = {
-    enable = true;
-    settings = rec {
-      initial_session = {
-        command = "${pkgs.sway}/bin/sway";
-        user = "jollof";
-      };
-      default_session = initial_session;
-    };
-  };
+  services.greetd = { enable = true; };
 
   # Enable Sway Window Manager (system-wide activation only)
   programs.sway = {
