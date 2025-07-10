@@ -154,3 +154,4 @@ exec configure-gtk
 exec systemctl --user import-environment
 
 include @sysconfdir@/sway/config.d/*
+include ~/.config/sway/config.d/*
