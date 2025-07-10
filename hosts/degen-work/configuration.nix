@@ -113,6 +113,9 @@
     killall # useful, also required in polybar script
     nix-search-cli # helpful nix-search command
 
+    # for home manager
+    yadm
+
     # graphical applications
     alacritty
     firefox
@@ -122,6 +125,7 @@
     # sway # Tiling Wayland compositor
     swaylock # Screen locker
     swayidle # Idle management daemon
+    wlr-randr
     wl-clipboard # Command-line copy/paste utilities
     mako # Notification daemon
     grim # Screenshot utility
@@ -162,7 +166,15 @@
   # Wayland/Sway Configuration
   # =======================================
   # Minimal setup that allows using a custom Sway config
-  services.greetd = { enable = true; };
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
+        user = "greeter";
+      };
+    };
+  };
 
   # Enable Sway Window Manager (system-wide activation only)
   programs.sway = {
