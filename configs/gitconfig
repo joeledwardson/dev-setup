@@ -13,6 +13,9 @@
 [merge]
         conflictStyle = "diff3"
 
+[advice]
+        addIgnoredFile = false
+
 [user]
         email = "joel.edwardson1@gmail.com"
         name = "joel"
