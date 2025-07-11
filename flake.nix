@@ -32,24 +32,6 @@
         # work (degen) laptop NixOS
         "jollof@degen-work" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [
-            ./modules/common.nix
-            (getHome "jollof")
-            ({ config, ... }: {
-              xdg.configFile."sway/config.d/degen-work.conf".source =
-                config.lib.file.mkOutOfStoreSymlink
-                "hosts/degen-work/sway.conf";
-            })
-          ];
-        };
-        # home surface pro WSL
-        "nixos@SURFACE-BRO-NIX" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./modules/common.nix (getHome "nixos") ];
-        };
-        # home desktop
-        "jollof@jollof-home" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
           modules =
             [ ./modules/common.nix ./modules/desktop.nix (getHome "jollof") ];
         };

@@ -82,6 +82,35 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  # =======================================
+  # NVIDIA Configuration
+  # =======================================
+
+  hardware.graphics = { enable = true; };
+
+  # Load NVIDIA driver for Xorg and Wayland
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    # Modesetting is required for most Wayland compositors
+    modesetting.enable = true;
+
+    # Use the NVidia open source kernel module (for Turing and newer GPUs)
+    # RTX 4070 is Ada Lovelace, so this should work well
+    open = false; # Set to true if you want to try the open source module
+
+    # Enable the Nvidia settings menu
+    nvidiaSettings = true;
+
+    # Optionally, you may select a specific driver version
+    package =
+      config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
+
+    # Enable power management (can cause sleep/suspend issues on some laptops)
+    powerManagement.enable = true;
+    powerManagement.finegrained = false;
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.jollof = {
     isNormalUser = true;
@@ -112,9 +141,7 @@
     wget
     killall # useful, also required in polybar script
     nix-search-cli # helpful nix-search command
-
-    # for home manager
-    yadm
+    pciutils # check pci utils
 
     # graphical applications
     alacritty
