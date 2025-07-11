@@ -10,7 +10,6 @@
 - link:
     ~/.vim/vimrc: ./configs/vimrc
     ~/.config/rofi: ./configs/rofi
-    ~/.config/sway/config: ./configs/sway/config
     ~/.config/waybar: ./configs/waybar
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.config/nvim: ./configs/nvim

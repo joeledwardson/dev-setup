@@ -9,12 +9,6 @@ case "$1" in
     ;;
   dotfiles)
     dotbot -c install.conf.yaml
-    # Create hostname-specific sway config symlink if it exists
-    if [ -f "hosts/$(hostname)/sway.conf" ]; then
-      mkdir -p ~/.config/sway/config.d
-      ln -sf "$(pwd)/hosts/$(hostname)/sway.conf" ~/.config/sway/config.d/99-$(hostname).conf
-      echo "Created symlink for hostname-specific sway config: 99-$(hostname).conf"
-    fi
     ;;
   clean)
     nix-collect-garbage -d
