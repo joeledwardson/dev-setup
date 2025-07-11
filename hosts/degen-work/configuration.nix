@@ -148,10 +148,9 @@
     firefox
     networkmanagerapplet # includes nm-applet (used in polybar)
     pavucontrol # pulse audio GTK application (used in polybar)
+    kitty
 
-    # sway # Tiling Wayland compositor
-    swaylock # Screen locker
-    swayidle # Idle management daemon
+    # Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
     mako # Notification daemon
@@ -163,9 +162,6 @@
     # xdg-desktop-portal-wlr # Wayland desktop portal
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
-    swaybg # Simple wallpaper utility
-    # UI and appearance
-    rofi # Application launcher
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -190,9 +186,9 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # =======================================
-  # Wayland/Sway Configuration
+  # Wayland Configuration
   # =======================================
-  # Minimal setup that allows using a custom Sway config
+  # Minimal setup that allows using a custom 
   services.greetd = {
     enable = true;
     settings = {
@@ -203,15 +199,8 @@
     };
   };
 
-  # Enable Sway Window Manager (system-wide activation only)
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true; # Improves GTK application compatibility
-    xwayland.enable = true;
-    # No config option - we'll use a custom symlinked config
-  };
-
   programs.waybar = { enable = true; };
+  programs.hyprland.enable = true;
 
   # Enable light for brightness control
   programs.light.enable = true;
