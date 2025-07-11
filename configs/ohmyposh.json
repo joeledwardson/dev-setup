@@ -7,7 +7,13 @@
         {
           "foreground": "lightYellow",
           "style": "plain",
-          "template": "\n{{ .UserName }} ",
+          "template": "\n{{ .UserName }}",
+          "type": "session"
+        },
+        {
+          "foreground": "lightRed",
+          "style": "plain",
+          "template": "@{{ .HostName }} ",
           "type": "session"
         },
         {
