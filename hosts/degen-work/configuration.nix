@@ -123,6 +123,11 @@
       ];
   };
 
+  fonts = {
+    packages = with pkgs; [ (nerdfonts.override { fonts = [ "SpaceMono" ]; }) ];
+    fontconfig = { defaultFonts = { monospace = [ "SpaceMono Nerd Font" ]; }; };
+  };
+
   # Install firefox.
   programs.firefox.enable = true;
 
