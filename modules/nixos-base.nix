@@ -73,7 +73,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     ### --- Core system utilities ---
-    libnotify # send notifications to daemon (for dunst, mako etc)
+    libnotify # send notifications to daemon
     spice-vdagent # frontend to spice vdagent (clipboard)
 
     ### core terminal utilities
@@ -115,7 +115,6 @@
     # Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
-    mako # Notification daemon
     grim # Screenshot utility
     slurp # Region selection tool (used with grim)
     wofi # Application launcher for Wayland
@@ -123,6 +122,7 @@
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
     wev # debug hyprland key events (equivalent of xev on X11)
+    swaynotificationcenter # notifications
 
     ### more desktop packages (not specifically hyprland)
     xdg-utils

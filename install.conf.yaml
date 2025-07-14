@@ -21,6 +21,5 @@
     ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
     ~/.config/kitty/kitty.conf: ./configs/kitty.conf
     ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
-    ~/.config/mako/config: ./configs/mako/config
 
 
