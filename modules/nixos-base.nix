@@ -108,6 +108,10 @@
     pomodoro-gtk
     thunar # file managed used in hyprland
 
+    # nix specific tools
+    nix-tree
+    nix-du
+
     # Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
@@ -189,6 +193,9 @@
     oh-my-posh
     oh-my-fish
   ];
+
+  # set default shell to zsh
+  users.defaultUserShell = pkgs.zsh;
 
   environment.sessionVariables = {
     XDG_CONFIG_HOME = "$HOME/.config";
