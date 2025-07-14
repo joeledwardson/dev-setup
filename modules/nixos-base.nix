@@ -153,7 +153,6 @@
     postgresql_17
 
     ### terminals
-    zsh
     fish
 
     ### CLI tools
@@ -194,6 +193,7 @@
     oh-my-fish
   ];
 
+  programs.zsh.enable = true;
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
 
