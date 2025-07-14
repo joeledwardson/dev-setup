@@ -1,6 +1,7 @@
 [core]
         editor = "vim"
         pager = "delta"
+        excludesFile = "~/.config/git/gitignore"
 
 [delta]
         light = false
@@ -12,6 +13,9 @@
 
 [merge]
         conflictStyle = "diff3"
+
+[advice]
+        addIgnoredFile = false
 
 [user]
         email = "joel.edwardson1@gmail.com"
@@ -25,4 +29,4 @@
 
 
 [include]
-        path = "~/.gitconfig.local"
+        path = "~/.config/git/config.local"

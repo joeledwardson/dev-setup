@@ -1,7 +1,10 @@
 #!/bin/sh
 
 case "$1" in
-  build)
+  os)
+    sudo nixos-rebuild switch --flake .
+    ;;
+  home)
     home-manager switch --flake .
     ;;
   dotfiles)
@@ -11,7 +14,7 @@ case "$1" in
     nix-collect-garbage -d
     ;;
   *)
-    echo "Usage: $0 {build|dotfiles|clean}"
+    echo "Usage: $0 {os|home|dotfiles|clean}"
     ;;
 esac
 

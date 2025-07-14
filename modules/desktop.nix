@@ -6,6 +6,7 @@ in {
   home.packages = with pkgs; [
     ## GPU accelerated programs 
     google-chrome
+    brave
     slack
     vlc
     kitty

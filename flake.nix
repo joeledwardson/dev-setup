@@ -10,7 +10,10 @@
   outputs = { nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = import nixpkgs { 
+        inherit system; 
+        config.allowUnfree = true;
+      };
       # ✅ Helper function
       getHome = user: {
         home.username = user;
@@ -28,22 +31,6 @@
         "nixos@jollof-degen-wsl" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./modules/common.nix (getHome "nixos") ];
-        };
-        # work (degen) laptop NixOS
-        "jollof@degen-work" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./modules/common.nix (getHome "jollof") ];
-        };
-        # home surface pro WSL
-        "nixos@SURFACE-BRO-NIX" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./modules/common.nix (getHome "nixos") ];
-        };
-        # home desktop
-        "jollof@jollof-home" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules =
-            [ ./modules/common.nix ./modules/desktop.nix (getHome "jollof") ];
         };
       };
 
