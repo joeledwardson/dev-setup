@@ -81,5 +81,14 @@
   "tray": {
     "icon-size": 21,
     "spacing": 10
+  },
+
+  "custom/notification": {
+    "exec": "swaync-client -swb", // sends JSON to Waybar
+    "return-type": "json",
+    "on-click": "swaync-client -t -sw", // toggle panel
+    "on-click-right": "swaync-client -d -sw", // dismiss all
+    "tooltip": false,
+    "format": "{icon}" // or "{icon} {count}" if you want the number
   }
 }

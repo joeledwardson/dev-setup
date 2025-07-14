@@ -1,3 +1,4 @@
+// shamelessly stolen from https://github.com/d00m1k/SimpleBlueColorWaybar
 // -*- mode: jsonc -*-
 {
     "layer": "top", // Waybar at top layer
@@ -23,7 +24,8 @@
         "temperature",
         "hyprland/language",
         "battery",
-        "clock"
+        "clock",
+        "custom/notification"
     ],
     //Modules configuration
 
