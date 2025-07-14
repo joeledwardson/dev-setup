@@ -1,6 +1,7 @@
 [core]
         editor = "vim"
         pager = "delta"
+        excludesFile = "~/.config/git/gitignore"
 
 [delta]
         light = false
@@ -28,4 +29,4 @@
 
 
 [include]
-        path = "~/.gitconfig.local"
+        path = "~/.config/git/config.local"

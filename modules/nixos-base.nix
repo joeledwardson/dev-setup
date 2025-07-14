@@ -72,11 +72,11 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # --- Core system utilities ---
+    ### --- Core system utilities ---
     libnotify # send notifications to daemon (for dunst, mako etc)
     spice-vdagent # frontend to spice vdagent (clipboard)
 
-    # core terminal utilities
+    ### core terminal utilities
     git
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
@@ -84,21 +84,29 @@
     nix-search-cli # helpful nix-search command
     pciutils # check pci utils
     curl
+    unzip
 
-    # terminal emulators
+    ### terminal emulators
     alacritty
     kitty
     wezterm
 
-    # graphical applications
+    ### graphical applications
     networkmanagerapplet # includes nm-applet (used in polybar)
     pavucontrol # pulse audio GTK application (used in polybar)
     firefox
-    google-chrome
+    (google-chrome.override {
+      commandLineArgs = [
+        "--enable-features=UseOzonePlatform"
+        "--ozone-platform=wayland"
+        "--enable-wayland-ime"
+      ];
+    })
     slack
-    copyq
+    copyq # copy paste manager
     vlc
     pomodoro-gtk
+    thunar # file managed used in hyprland
 
     # Wayland desktop core packages
     wlr-randr
@@ -112,12 +120,14 @@
     # xdg-desktop-portal-wlr # Wayland desktop portal
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
+    wev # debug hyprland key events (equivalent of xev on X11)
+
+    ### more desktop packages (not specifically hyprland)
+    xdg-utils
 
     ### languages
     clojure # for metabase
     gcc # for nvim kickstart
-    pipx
-    nix-search-cli
     volta
     deno
     poetry
@@ -129,7 +139,7 @@
     ### Database tools
     ruby
     lazysql
-    usql
+    usql # univeral cli for dbs
     visidata
     harlequin
     dblab
@@ -159,12 +169,10 @@
     ranger
     delta
     jq
-    xdg-utils
     kbd # has showkey
     lazydocker
     graphviz # required for madge npm package
     claude-code
-    unzip
 
     ### neovim
     neovim

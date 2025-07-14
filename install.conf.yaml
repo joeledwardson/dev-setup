@@ -19,4 +19,5 @@
     ~/.config/aichat/config.yaml: ./configs/aichat.yaml
     ~/.config/copyq/copyq.conf: ./configs/copyq.conf
     ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+    ~/.config/kitty/kitty.conf: ./configs/kitty.conf
 
