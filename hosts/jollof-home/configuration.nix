@@ -9,19 +9,17 @@
     ./hardware-configuration.nix
   ];
 
-  boot = {
-    loader = {
-      efi = { canTouchEfiVariables = true; };
-      systemd-boot = {
-        enable = true;
-        configurationLimit = 5;
-        extraEntries = {
-          "windows.conf" = ''
-            title Windows Boot Manager
-            efi /EFI/Microsoft-Copy/Boot/bootmgfw.efi
-          '';
-        };
-      };
+  boot.loader = {
+    grub = {
+      enable = true;
+      devices = [ "nodev" ];
+      efiSupport = true;
+      useOSProber = true;
+      configurationLimit = 5;
+    };
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot";
     };
   };
 
@@ -31,7 +29,7 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     packages = with pkgs;
       [
         #  thunderbird
