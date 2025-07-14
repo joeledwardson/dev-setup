@@ -85,6 +85,7 @@
     pciutils # check pci utils
     curl
     unzip
+    parted
 
     ### terminal emulators
     alacritty
@@ -106,7 +107,6 @@
     copyq # copy paste manager
     vlc
     pomodoro-gtk
-    thunar # file managed used in hyprland
 
     # nix specific tools
     nix-tree
@@ -120,8 +120,6 @@
     slurp # Region selection tool (used with grim)
     wofi # Application launcher for Wayland
     xdg-utils # For xdg-open and similar commands
-    # xdg-desktop-portal # Desktop integration portals
-    # xdg-desktop-portal-wlr # Wayland desktop portal
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
     wev # debug hyprland key events (equivalent of xev on X11)
@@ -193,6 +191,7 @@
     oh-my-fish
   ];
 
+  programs.thunar.enable = true; # file managed used in hyprland
   programs.zsh.enable = true;
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
@@ -232,14 +231,15 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd hyprland";
+        command =
+          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd hyprland";
         user = "greeter";
       };
     };
   };
 
   programs.waybar = { enable = true; };
-  programs.hyprland.enable = true;
+  programs.hyprland = { enable = true; };
 
   # Enable light for brightness control
   programs.light.enable = true;
