@@ -29,12 +29,6 @@
           inherit pkgs;
           modules = [ ./modules/common.nix (getHome "nixos") ];
         };
-        # work (degen) laptop NixOS
-        "jollof@degen-work" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules =
-            [ ./modules/common.nix ./modules/desktop.nix (getHome "jollof") ];
-        };
       };
 
       nixosConfigurations = {
