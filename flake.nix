@@ -10,8 +10,8 @@
   outputs = { nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { 
-        inherit system; 
+      pkgs = import nixpkgs {
+        inherit system;
         config.allowUnfree = true;
       };
       # ✅ Helper function
@@ -36,11 +36,13 @@
 
       nixosConfigurations = {
         "degen-work" = nixpkgs.lib.nixosSystem {
-          modules = [ ./hosts/degen-work/configuration.nix ];
+          modules =
+            [ ./modules/nixos-base.nix ./hosts/degen-work/configuration.nix ];
         };
 
         "jollof-home" = nixpkgs.lib.nixosSystem {
-          modules = [ ./hosts/jollof-home/configuration.nix ];
+          modules =
+            [ ./modules/nixos-base.nix ./hosts/jollof-home/configuration.nix ];
         };
 
       };
