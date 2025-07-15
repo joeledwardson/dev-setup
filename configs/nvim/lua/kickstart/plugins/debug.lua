@@ -80,6 +80,7 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+    local utils = require 'dap.utils'
 
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
@@ -97,6 +98,55 @@ return {
         'delve',
       },
     }
+
+    -- set logging levels to debug why adapters are not working
+    -- logs are saved in ~.cache/nvim/dap.log
+    dap.set_log_level 'DEBUG'
+
+    -- Maybe set this up with mason-nvim-dap handlers?
+    dap.adapters = {
+      ['pwa-node'] = {
+        type = 'server',
+        host = '127.0.01',
+        port = '${port}',
+        executable = {
+          command = 'js-debug-adapter',
+          args = {
+            '${port}',
+          },
+        },
+      },
+      ['codelldb'] = {
+        type = 'server',
+        port = '${port}',
+        executable = {
+          -- command = 'codelldb',
+          command = vim.fn.stdpath 'data' .. '/mason/bin/codelldb',
+          args = { '--port', '${port}' },
+        },
+      },
+    }
+
+    for _, language in ipairs { 'typescript', 'javascript' } do
+      -- js-debug-adapter options:
+      -- https://github.com/microsoft/vscode-js-debug/blob/main/OPTIONS.md
+      dap.configurations[language] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+        },
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach to process ID',
+          processId = utils.pick_process,
+          cwd = '${workspaceFolder}',
+        },
+      }
+    end
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
