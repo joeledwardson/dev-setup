@@ -141,11 +141,8 @@
     ### Database tools
     ruby
     lazysql
-    usql # univeral cli for dbs
-    visidata
-    harlequin
-    dblab
-    rainfrog
+    usql # univeral cli for dbs (TODO - remove?)
+    harlequin # another database TUI (TODO - no schema intellisense?)
     pgcli
     rabbitmq-server
     postgresql_17
@@ -153,11 +150,19 @@
     ### terminals
     fish
 
+    ### TUI style tools
+    lazygit
+    aichat
+    lazydocker
+    graphviz # required for madge npm package
+    claude-code
+    ranger # file browser (TODO - can be removed?)
+    lf # modern version of ranger (TODO - can be removed)?
+    yazi # as for now, will be my default file manager
+
     ### CLI tools
     tldr
     bat
-    lazygit
-    aichat
     gh
     glab
     tmux
@@ -167,13 +172,10 @@
     bitwarden-cli
     eza
     gnumake
-    ranger
+    fd
     delta
     jq
     kbd # has showkey
-    lazydocker
-    graphviz # required for madge npm package
-    claude-code
 
     ### neovim
     neovim
