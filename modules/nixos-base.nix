@@ -98,14 +98,7 @@
     networkmanagerapplet # includes nm-applet (used in polybar)
     pavucontrol # pulse audio GTK application (used in polybar)
     firefox
-    # chrome requires additional args or is blurry on wayland/hyprland
-    (google-chrome.override {
-      commandLineArgs = [
-        "--enable-features=UseOzonePlatform"
-        "--ozone-platform=wayland"
-        "--enable-wayland-ime"
-      ];
-    })
+    google-chrome
     slack
     copyq # copy paste manager
     vlc
@@ -119,9 +112,10 @@
     # Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
-    grim # Screenshot utility
-    slurp # Region selection tool (used with grim)
-    wofi # Application launcher for Wayland
+    grim # Screenshot utility (TODO, remove?)
+    slurp # Region selection tool (TODO, remove?)
+    wofi # launcher (TODO, remove?)
+    fuzzel # new launcher to replace wofi
     xdg-utils # For xdg-open and similar commands
     # xwayland # For X11 app compatibility
     swww # Wallpaper manager with transitions
@@ -129,8 +123,9 @@
     swaynotificationcenter # notifications
 
     ### more desktop packages (not specifically hyprland)
-    xdg-utils
-    udiskie
+    xdg-utils # for "open with..." integrations
+    udiskie # for status bar disks
+    grimblast # screenshotting tools
 
     ### languages
     clojure # for metabase
@@ -204,9 +199,10 @@
   users.defaultUserShell = pkgs.zsh;
 
   environment.sessionVariables = {
+    # prefer specific directory for configuration rather than cluttering home dir
     XDG_CONFIG_HOME = "$HOME/.config";
-    ZDOTDIR =
-      "$HOME/.config/zsh"; # custom directory as per dotbot configuration
+    # custom directory as per dotbot configuration
+    ZDOTDIR = "$HOME/.config/zsh";
   };
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -261,6 +257,13 @@
   # D-Bus is required for many Wayland applications
   services.dbus.enable = true;
 
+  # wayland variable (should) make chromium/electron apps run better, see here
+  # https://nixos.wiki/wiki/Wayland
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  # =======================================
+  # System version
+  # =======================================
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
