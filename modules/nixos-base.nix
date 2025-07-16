@@ -58,6 +58,9 @@
     #media-session.enable = true;
   };
 
+  # enable libinput
+  services.libinput.enable = true;
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -176,6 +179,7 @@
     delta
     jq
     kbd # has showkey
+    libinput # input device management tool
 
     ### neovim
     neovim
