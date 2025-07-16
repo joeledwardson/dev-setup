@@ -154,3 +154,95 @@ home, end, insert, delete, page up. pade down
 These packages require openGL or GPU stuff and i can't find an (easy) workaround yet on home manager, simpler just to install via `dnf`,`apt` whatever OS PC is running on 
 - kitty
 - ulauncher
+
+# Trying to get my head round disk management terminal tools
+PARTITIONING TOOLS (modify disks):
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  fdisk (1991) ──same tool──> cfdisk (1994)              │
+│      │              │            │                      │
+│      │              │            │ (menu interface)     │
+│      │              │            │                      │
+│      └──────────────┴────────────┘                      │
+│                     │                                   │
+│                     ↓ replaced by                       │
+│                                                         │
+│                parted (1999)                            │
+│                (modern standard)                        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
+INFORMATION TOOLS (read-only):
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  lsblk (2010)                 findmnt (2010)            │
+│  (block devices)              (mount points)            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
+Show file systems with mount points
+```
+lsblk -f
+```
+
+example output:
+```
+NAME        FSTYPE FSVER LABEL         UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+nvme1n1
+├─nvme1n1p1 vfat   FAT32 SYSTEM        BE05-F38D                             119.1M    53% /boot
+├─nvme1n1p2
+├─nvme1n1p3 ntfs         Windows       5466065066063372
+├─nvme1n1p4 ntfs         WinRE         F88E06A38E065A90
+└─nvme1n1p5 ntfs         RecoveryImage 7040088F40085DEA
+nvme0n1
+└─nvme0n1p1 ext4   1.0   NIXROOT       c82fdf13-7c80-4864-92ce-78c06d81043c  863.5G     3% /nix/store
+                                                                                           /
+```
+
+
+Find mounts
+```
+findmnt
+```
+
+example output:
+```
+TARGET                  SOURCE                FSTYPE   OPTIONS
+/                       /dev/disk/by-uuid/c82fdf13-7c80-4864-92ce-78c06d81043c
+│                                             ext4     rw,relatime
+├─/dev                  devtmpfs              devtmpfs rw,nosuid,size=1625640k,nr_inodes=4060220,mode=755
+│ ├─/dev/pts            devpts                devpts   rw,nosuid,noexec,relatime,gid=3,mode=620,ptmxmode=
+│ ├─/dev/shm            tmpfs                 tmpfs    rw,nosuid,nodev,size=16256392k
+│ ├─/dev/hugepages      hugetlbfs             hugetlbf rw,nosuid,nodev,relatime,pagesize=2M
+│ └─/dev/mqueue         mqueue                mqueue   rw,nosuid,nodev,noexec,relatime
+├─/proc                 proc                  proc     rw,nosuid,nodev,noexec,relatime
+├─/run                  tmpfs                 tmpfs    rw,nosuid,nodev,size=8128196k,mode=755
+│ ├─/run/keys           ramfs                 ramfs    rw,nosuid,nodev,relatime,mode=750
+│ ├─/run/wrappers       tmpfs                 tmpfs    rw,nodev,relatime,size=16256392k,mode=755
+│ ├─/run/credentials/systemd-journald.service
+│ │                     tmpfs                 tmpfs    ro,nosuid,nodev,noexec,relatime,nosymfollow,size=1
+│ └─/run/user/1000      tmpfs                 tmpfs    rw,nosuid,nodev,relatime,size=3251276k,nr_inodes=8
+│   └─/run/user/1000/doc
+│                       portal                fuse.por rw,nosuid,nodev,relatime,user_id=1000,group_id=100
+├─/sys                  sysfs                 sysfs    rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security
+│ │                     securityfs            security rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup      cgroup2               cgroup2  rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_
+│ ├─/sys/fs/pstore      pstore                pstore   rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars
+│ │                     efivarfs              efivarfs rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf         bpf                   bpf      rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/tracing tracefs               tracefs  rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/debug   debugfs               debugfs  rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/config  configfs              configfs rw,nosuid,nodev,noexec,relatime
+│ └─/sys/fs/fuse/connections
+│                       fusectl               fusectl  rw,nosuid,nodev,noexec,relatime
+├─/nix/store            /dev/disk/by-uuid/c82fdf13-7c80-4864-92ce-78c06d81043c[/nix/store]
+│                                             ext4     ro,nosuid,nodev,relatime
+└─/boot                 /dev/nvme1n1p1        vfat     rw,relatime,fmask=0022,dmask=0022,codepage=437,ioc
+
+```
+
+Note that above, `/nix/store` is shown to be mounted to the subdirectory `/nix/store/` of `/dev/disk/by-uuid/c82fdf13-7c80-4864-92ce-78c06d81043c`
+
+This is NOT shown in `lsblk`!

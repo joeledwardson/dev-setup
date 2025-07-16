@@ -27,6 +27,13 @@
   # Define your hostname.
   networking.hostName = "degen-work";
 
+  # laptop has 2 disks, the other one has a windows partition on it
+  fileSystems."/mnt/windows" = {
+    device = "/dev/disk/by-label/Windows";
+    fsType = "ntfs3";
+    options = [ "rw" "uid=1000" "gid=100" "dmask=022" "fmask=133" ];
+  };
+
   # =======================================
   # NVIDIA Configuration
   # =======================================
