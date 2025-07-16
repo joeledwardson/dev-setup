@@ -29,10 +29,6 @@ then the daemon must be restarted
 sudo systemctl restart nix-daemon
 ```
 
-and finally home manager installed (nix command shoulw work now)
-```bash
-nix run home-manager/release-24.11 -- switch --flake .
-```
 
 and the nixGL channel and default added (for OpenGL apps, dont work with linked nix opengl)
 ```bash

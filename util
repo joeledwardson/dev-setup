@@ -4,9 +4,6 @@ case "$1" in
   os)
     sudo nixos-rebuild switch --flake .
     ;;
-  home)
-    home-manager switch --flake .
-    ;;
   dotfiles)
     dotbot -c install.conf.yaml
     ;;
