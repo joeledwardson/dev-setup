@@ -96,6 +96,7 @@
     networkmanagerapplet # includes nm-applet (used in polybar)
     pavucontrol # pulse audio GTK application (used in polybar)
     firefox
+    # chrome requires additional args or is blurry on wayland/hyprland
     (google-chrome.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -107,6 +108,7 @@
     copyq # copy paste manager
     vlc
     pomodoro-gtk
+    pinta
 
     # nix specific tools
     nix-tree
