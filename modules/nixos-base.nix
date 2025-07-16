@@ -193,7 +193,6 @@
     oh-my-fish
   ];
 
-  programs.thunar.enable = true; # file managed used in hyprland
   programs.zsh.enable = true;
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
@@ -243,6 +242,8 @@
 
   programs.waybar = { enable = true; };
   programs.hyprland = { enable = true; };
+  programs.thunar.enable = true; # file managed used in hyprland
+  programs.hyprlock.enable = true;
 
   # Enable light for brightness control
   programs.light.enable = true;
