@@ -91,6 +91,8 @@
     curl
     unzip
     parted
+    libinput # input device management tool
+    usbutils # usb utilities (like lsusb)
 
     ### terminal emulators
     alacritty
@@ -179,7 +181,6 @@
     delta
     jq
     kbd # has showkey
-    libinput # input device management tool
 
     ### neovim
     neovim
