@@ -17,6 +17,10 @@
             [ ./modules/nixos-base.nix ./hosts/jollof-home/configuration.nix ];
         };
 
+        "desktop-work" = nixpkgs.lib.nixosSystem {
+          modules =
+            [ ./modules/nixos-base.nix ./hosts/desktop-work/configuration.nix ];
+        };
       };
 
     };
