@@ -152,8 +152,14 @@ These packages require openGL or GPU stuff and i can't find an (easy) workaround
 - ulauncher
 
 # Trying to get my head round disk management terminal tools
-PARTITIONING TOOLS (modify disks):
+
+## Partition Management
+GUI tools seem to do a much better job of combining these together, in either `GParted` or `Gnome disks`
+
+Here is a summary of how all the different various disk management tools I have seen online relate to each other
+
 ```
+PARTITION MANAGEMENT:
 ┌─────────────────────────────────────────────────────────┐
 │                                                         │
 │  fdisk (1991) ──same tool──> cfdisk (1994)              │
@@ -169,6 +175,20 @@ PARTITIONING TOOLS (modify disks):
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 
+FILESYSTEM LABEL TOOLS:
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  e2label (ext2/3/4)           fatlabel (FAT16/32)       │
+│  ntfslabel (NTFS)             exfatlabel (exFAT)        │
+│  xfs_admin (XFS)              btrfs (btrfs)             │
+│                                                         │
+│                     ↓ unified by                        │
+│                                                         │
+│                udisksctl (2012)                         │
+│             (modern unified tool)                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
 INFORMATION TOOLS (read-only):
 ┌─────────────────────────────────────────────────────────┐
 │                                                         │
@@ -177,6 +197,103 @@ INFORMATION TOOLS (read-only):
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
+
+Thus, for most operations a combination of
+- `parted`
+- `lsblk`
+
+*should* be sufficient
+
+## Filesystem labels vs Parition Names
+I have noticed that the "name" quoted by `sudo parted -l` does NOT match what is mounted, or the "label" in `lsblk -f`.
+
+This is because parted names are `partition names`, stored in the GPT partition table apparently, outside of the filesystem.
+
+Filesystem labels are stored in the filesystem metadata apparently (i guess in a header somewhere in the partition), and is used by automounters.
+
+An example below shows where `Ventoy` was automounted and picked up the correct label name. And the both name and label from `lsblk` vs just the name in `parted`.
+```
+❯sudo parted -l
+Model: SanDisk Cruzer Blade (scsi)
+Disk /dev/sda: 30.8GB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  30.8GB  30.7GB  primary               boot
+ 2      30.8GB  30.8GB  33.6MB  primary  fat16        esp
+
+
+Model: ADATA SX8200PNP (nvme)
+Disk /dev/nvme0n1: 256GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End    Size   File system  Name  Flags
+ 1      17.4kB  256GB  256GB  ext4
+
+
+Model: CT1000P3SSD8 (nvme)
+Disk /dev/nvme1n1: 1000GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name                          Flags
+ 1      17.4kB  16.8MB  16.8MB               Microsoft reserved partition  msftres
+ 2      16.8MB  499GB   499GB   ntfs         Basic data partition          msftdata
+ 3      499GB   499GB   538MB   fat32        EFI System Partition          boot, esp
+ 4      499GB   894GB   395GB   ext4         LINUX-MINT
+ 6      894GB   999GB   105GB   ext4         root
+ 5      999GB   1000GB  524MB   fat32        JOL-WIN-BOOT                  boot, esp
+
+
+❯lsblk -o NAME,PARTLABEL,LABEL,SIZE,TYPE,MOUNTPOINT
+NAME        PARTLABEL                    LABEL        SIZE TYPE MOUNTPOINT
+sda                                                  28.7G disk
+├─sda1                                   Ventoy      28.6G part /media/joelyboy/Ventoy
+└─sda2                                   VTOYEFI       32M part
+nvme0n1                                             238.5G disk
+└─nvme0n1p1                              SPARE-DISK 238.5G part
+nvme1n1                                             931.5G disk
+├─nvme1n1p1 Microsoft reserved partition               16M part
+├─nvme1n1p2 Basic data partition         Windows    464.3G part /mnt/jollof-windows
+├─nvme1n1p3 EFI System Partition                      513M part /boot/efi
+├─nvme1n1p4 LINUX-MINT                                368G part /
+├─nvme1n1p5 JOL-WIN-BOOT                              500M part
+└─nvme1n1p6 root                                     97.7G part
+
+joelyboy@MINTY-RDP in dev-setup on   main  15
+❯
+```
+
+To change disk label is not unified unfortunately.
+
+Shamelessly stole these commands [from here](https://askubuntu.com/questions/1103569/how-do-i-change-the-label-reported-by-lsblk)
+
+for ext2/ext3/ext4 filesystems (most linux stuff) can use:
+```
+e2label /dev/XXX <label>
+```
+
+For fat (usb drives, boot partitions) can use:
+```
+fatlabel /dev/XXX <label> 
+```
+
+for exfat (you might need to install exfat-utils first):
+```
+exfatlabel /dev/XXX <label>
+```
+
+for ntfs (windows):
+```
+ntfslabel /dev/XXX <label>
+```
+
+## Mount points
 
 Show file systems with mount points
 ```
