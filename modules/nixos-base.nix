@@ -131,6 +131,7 @@
     xdg-utils # for "open with..." integrations
     udiskie # for status bar disks
     grimblast # screenshotting tools
+    dragon-drop # dray and drop utility
 
     ### languages
     clojure # for metabase
@@ -247,7 +248,10 @@
 
   programs.waybar = { enable = true; };
   programs.hyprland = { enable = true; };
-  programs.thunar.enable = true; # file managed used in hyprland
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
+  }; # file managed used in hyprland
   programs.hyprlock.enable = true;
 
   # Enable light for brightness control

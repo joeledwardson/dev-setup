@@ -153,6 +153,7 @@ These packages require openGL or GPU stuff and i can't find an (easy) workaround
 
 # Trying to get my head round disk management terminal tools
 PARTITIONING TOOLS (modify disks):
+```
 ┌─────────────────────────────────────────────────────────┐
 │                                                         │
 │  fdisk (1991) ──same tool──> cfdisk (1994)              │
@@ -175,6 +176,7 @@ INFORMATION TOOLS (read-only):
 │  (block devices)              (mount points)            │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
+```
 
 Show file systems with mount points
 ```
@@ -242,3 +244,58 @@ TARGET                  SOURCE                FSTYPE   OPTIONS
 Note that above, `/nix/store` is shown to be mounted to the subdirectory `/nix/store/` of `/dev/disk/by-uuid/c82fdf13-7c80-4864-92ce-78c06d81043c`
 
 This is NOT shown in `lsblk`!
+
+
+# Trying to get my head around linux desktop theming
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                              Linux Desktop Theming Stack                            │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────┐                    ┌─────────────────────┐
+│   GTK Applications  │                    │   Qt Applications   │
+│  (GNOME, XFCE,      │                    │  (KDE, VLC, qBit-   │
+│   Thunar, Firefox)  │                    │   torrent, etc)     │
+└──────────┬──────────┘                    └──────────┬──────────┘
+          │                                          │
+          ▼                                          ▼
+┌─────────────────────┐                    ┌─────────────────────┐
+│    GTK Toolkit      │                    │    Qt Toolkit       │
+│  • GTK2 (legacy)    │                    │  • Qt5 (current)    │
+│  • GTK3 (current)   │                    │  • Qt6 (modern)     │
+│  • GTK4 (modern)    │                    │  • Can mimic GTK    │
+│                     │                    │    theme via        │
+│                     │                    │    platformTheme    │
+└─────────┬───────────┘                    └─────────┬───────────┘
+         │                                          │
+         ▼                                          ▼
+┌─────────────────────────────────┐      ┌─────────────────────────────────┐
+│      GTK Configuration          │      │      Qt Configuration           │
+├─────────────────────────────────┤      ├─────────────────────────────────┤
+│  GSettings → dconf              │      │  ~/.config/qt5ct/               │
+│  (GNOME/GTK standard)           │      │  ~/.config/kdeglobals (KDE)     │
+│  Binary database                │      │  QT_QPA_PLATFORMTHEME env var   │
+└─────────────────────────────────┘      └─────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                     Configuration Tools                         │
+├─────────────────────────────┬───────────────────────────────────┤
+│         GTK Tools           │           Qt Tools                │
+├─────────────────────────────┼───────────────────────────────────┤
+│ • lxappearance (GUI)        │ • qt5ct/qt6ct (GUI)               │
+│ • nwg-look (modern GUI)     │ • kvantum (theme engine)          │
+│ • gsettings (CLI)           │ • kde-gtk-config (KDE→GTK sync)   │
+│ • dconf-editor (GUI)        │                                   │
+└─────────────────────────────┴───────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────┐
+│                    Desktop Environments                       │
+├──────────────┬──────────────┬──────────────┬──────────────────┤
+│    GNOME     │     KDE      │     XFCE     │   Minimal WM     │
+│ (GTK-based)  │  (Qt-based)  │ (GTK-based)  │ (Need tools      │
+│ Uses dconf   │ Own system   │ Uses dconf   │  above)          │
+└──────────────┴──────────────┴──────────────┴──────────────────┘
+
+Note: "Qt can mimic GTK" means when you set QT_QPA_PLATFORMTHEME=gtk2,
+Qt apps try to read GTK theme settings and match their appearance
+```
