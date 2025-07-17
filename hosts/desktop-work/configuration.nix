@@ -16,6 +16,7 @@
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 5;
+      gfxmodeEfi = "1024x768";
     };
     efi = {
       canTouchEfiVariables = true;
