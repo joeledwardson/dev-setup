@@ -7,7 +7,6 @@
 
 - link:
     ~/.vim/vimrc: ./configs/vimrc
-    ~/.config/rofi: ./configs/rofi
     ~/.config/waybar: ./configs/waybar
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.config/nvim: ./configs/nvim
