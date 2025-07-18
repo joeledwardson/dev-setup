@@ -58,7 +58,7 @@
     #media-session.enable = true;
   };
 
-  # enable libinput
+  # enable libinput (so can run commands like libinput list-devices)
   services.libinput.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -72,6 +72,7 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
   # List packages installed in system profile. To search, run:
@@ -132,6 +133,8 @@
     udiskie # for status bar disks
     grimblast # screenshotting tools
     dragon-drop # dray and drop utility
+    kdePackages.dolphin # default GUI file manager
+    kdePackages.qtsvg # svg icons for dolphin
 
     ### languages
     clojure # for metabase
@@ -177,9 +180,9 @@
     google-cloud-sdk
     bitwarden-cli
     eza
-    gnumake
-    fd
-    delta
+    gnumake # provides `make` command
+    fd # alternative to find
+    delta # fancy syntax highlighting and pager for git
     jq
     kbd # has showkey
 
@@ -248,10 +251,6 @@
 
   programs.waybar = { enable = true; };
   programs.hyprland = { enable = true; };
-  programs.thunar = {
-    enable = true;
-    plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
-  }; # file managed used in hyprland
   programs.hyprlock.enable = true;
 
   # Enable light for brightness control
