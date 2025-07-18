@@ -121,13 +121,10 @@ zinit ice lucid wait'0'
 zinit light l4u/zsh-output-highlighting
 zinit ice wait lucid pick"flatpak.plugin.zsh" as"completion"
 zinit light bilelmoussaoui/flatpak-zsh-completion
-# nvm plugin environment opts
-# export NVM_LAZY_LOAD=true # commented as it shims npm and breaks nvim plenary
-export NVM_COMPLETION=true
-zinit ice lucid wait'0'
-zinit light lukechilds/zsh-nvm
 
 
+# fnm completion and shell
+eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"

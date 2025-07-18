@@ -139,13 +139,13 @@
     ### languages
     clojure # for metabase
     gcc # for nvim kickstart
-    volta
     deno
     poetry
     uv
     pipx
     go
     nixd
+    fnm
 
     ### Database tools
     ruby
@@ -201,6 +201,11 @@
     oh-my-posh
     oh-my-fish
   ];
+
+  # fnm uses dynamic linked executables which requires a hack to work
+  # TODO move to nix flakes for node versions
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [ fnm ];
 
   programs.zsh.enable = true;
   # set default shell to zsh
