@@ -27,6 +27,9 @@
         helper =
         helper = !gh auth git-credential
 
+[credential "https://gitlab.com"]
+        helper = 
+        helper = !glab auth git-credential
 
 [include]
         path = "~/.config/git/config.local"
