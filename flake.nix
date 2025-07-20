@@ -8,8 +8,11 @@
     in {
       nixosConfigurations = {
         "degen-work" = nixpkgs.lib.nixosSystem {
-          modules =
-            [ ./modules/nixos-base.nix ./hosts/degen-work/configuration.nix ];
+          modules = [
+            ./modules/nixos-base.nix
+            (import ./modules/nixos-keyd.nix { keyboardIds = [ "0414:8005" ]; })
+            ./hosts/degen-work/configuration.nix
+          ];
         };
 
         "jollof-home" = nixpkgs.lib.nixosSystem {
