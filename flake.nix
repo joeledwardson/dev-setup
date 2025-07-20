@@ -10,11 +10,8 @@
         "degen-work" = nixpkgs.lib.nixosSystem {
           modules = [
             ./modules/nixos-base.nix
-            ./modules/nixos-keyd.nix
+            (import ./modules/nixos-keyd.nix { keyboardIds = [ "0414:8005" ]; })
             ./hosts/degen-work/configuration.nix
-            {
-              myKeyd.keyboardIds = [ "0414:8005" ];
-            }
           ];
         };
 
