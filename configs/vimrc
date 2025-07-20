@@ -20,6 +20,7 @@ set smartindent
 
 " Plugins configuration
 call plug#begin()
+Plug 'jasonccox/vim-wayland-clipboard'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion'
@@ -54,3 +55,5 @@ if system('uname -r') =~ "Microsoft"
     autocmd TextYankPost * :call system('/mnt/c/windows/system32/clip.exe ',@")
   augroup END
 endif
+
+set clipboard=unnamedplus
