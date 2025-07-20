@@ -18,7 +18,8 @@
   programs.nm-applet.enable = true;
 
   # Set your time zone.
-  time.timeZone = "Europe/London";
+  # time.timeZone = "Europe/London";
+  services.automatic-timezoned.enable = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
@@ -86,7 +87,7 @@
 
     ### core terminal utilities
     git
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
     wget
     killall # useful for waybar scripts when restarting services
     nix-search-cli # helpful nix-search command
@@ -96,6 +97,8 @@
     parted
     libinput # input device management tool
     usbutils # usb utilities (like lsusb)
+    nettools # ifconfig, netstat etc
+    keyd # allows calling keyd manually (useful for keyd monitor etc..)
 
     ### terminal emulators
     alacritty
