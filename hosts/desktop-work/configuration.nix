@@ -24,6 +24,31 @@
     };
   };
 
+  # mount windows from other partition
+  fileSystems."/mnt/joelyboy/windows" = {
+    device = "/dev/disk/by-label/Windows";
+    fsType = "ntfs3";
+    options = [
+      "nofail" # prevent system failure if i typed something wrong
+      "rw"
+      "uid=1000"
+      "gid=100"
+      "dmask=022"
+      "fmask=133"
+    ];
+
+  };
+
+  # mount old linux mint partition (from pre NixOS)
+  fileSystems."/mnt/joelyboy/minty" = {
+    device = "/dev/disk/by-label/Minty";
+    fsType = "ext4";
+    options = [
+      "users" # allows any user to mount and unmount
+      "nofail" # prevent system failure if i typed something wrong
+    ];
+  };
+
   networking.hostName = "desktop-work"; # Define your hostname.
 
   # =======================================
