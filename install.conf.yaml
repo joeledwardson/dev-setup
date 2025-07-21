@@ -21,4 +21,6 @@
     ~/.config/kitty/kitty.conf: ./configs/kitty.conf
     ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
 
-
+- shell:
+    # setup a blank (non symlinked file) for per-machine configs to keep hyprland from complaining
+    - [test -f ~/.config/hypr/custom.conf || touch ~/.config/hypr/custom.conf]
