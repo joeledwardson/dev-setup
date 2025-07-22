@@ -1,7 +1,5 @@
-# Base NixOS configuration shared by all hosts
-{ keyboardIds }:
-
-{
+# setup keyd daemon with my custom keyboard configuration, for a specific set of keyboard IDs
+{ keyboardIds }: {
   services.keyd = {
     enable = true;
     keyboards = {
@@ -25,6 +23,7 @@
             u = "pageup";
             d = "pagedown";
             x = "delete";
+            i = "insert";
           };
         };
         extraConfig = ''
