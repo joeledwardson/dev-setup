@@ -1,7 +1,8 @@
 # Base NixOS configuration shared by all hosts
 { config, pkgs, lib, ... }:
 
-{
+let
+in {
 
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -26,6 +27,9 @@
 
   # enable spice vd agent for virtualisation copy pasting
   services.spice-vdagentd.enable = true;
+
+  # creates magic symlinks in /bin so that shebangs like #!/bin/bash dont break on nixos
+  services.envfs.enable = true;
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
@@ -55,7 +59,7 @@
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
-
+    # get file type
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
@@ -99,6 +103,8 @@
     usbutils # usb utilities (like lsusb)
     nettools # ifconfig, netstat etc
     keyd # allows calling keyd manually (useful for keyd monitor etc..)
+    file # get file type
+    dig # has nslookup
 
     ### terminal emulators
     alacritty
@@ -115,6 +121,8 @@
     vlc
     pomodoro-gtk
     pinta
+    scrcpy # android screen copy tool
+    remmina # RDP tool
 
     # nix specific tools
     nix-tree
@@ -128,8 +136,7 @@
     wofi # launcher (TODO, remove?)
     fuzzel # new launcher to replace wofi
     xdg-utils # For xdg-open and similar commands
-    # xwayland # For X11 app compatibility
-    swww # Wallpaper manager with transitions
+    hyprpaper # hyprland wallpaper
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications
 
@@ -170,8 +177,6 @@
     lazydocker
     graphviz # required for madge npm package
     claude-code
-    ranger # file browser (TODO - can be removed?)
-    lf # modern version of ranger (TODO - can be removed)?
     yazi # as for now, will be my default file manager
 
     ### CLI tools
@@ -191,6 +196,9 @@
     jq
     kbd # has showkey
 
+    ### video processing
+    ffmpeg
+
     ### neovim
     neovim
     ripgrep
@@ -206,6 +214,19 @@
     oh-my-posh
     oh-my-fish
   ];
+
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ # SSH
+      22
+      # http 
+      80
+      # https
+      443
+      # custom application port (for bot)
+      8282
+    ];
+  };
 
   # fnm uses dynamic linked executables which requires a hack to work
   # TODO move to nix flakes for node versions
