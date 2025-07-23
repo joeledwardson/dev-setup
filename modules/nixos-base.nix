@@ -131,10 +131,9 @@ in {
     # Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
-    grim # Screenshot utility (TODO, remove?)
-    slurp # Region selection tool (TODO, remove?)
-    wofi # launcher (TODO, remove?)
-    fuzzel # new launcher to replace wofi
+    grim # Screenshot utility
+    slurp # Region selection tool
+    fuzzel # new launcher to replace
     xdg-utils # For xdg-open and similar commands
     hyprpaper # hyprland wallpaper
     wev # debug hyprland key events (equivalent of xev on X11)
@@ -147,6 +146,9 @@ in {
     dragon-drop # dray and drop utility
     kdePackages.dolphin # default GUI file manager
     kdePackages.qtsvg # svg icons for dolphin
+    tokyonight-gtk-theme # gtk theme
+    flat-remix-icon-theme # icons theme
+    signal-desktop
 
     ### languages
     clojure # for metabase
