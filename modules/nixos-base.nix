@@ -154,9 +154,8 @@ in {
     clojure # for metabase
     gcc # for nvim kickstart
     deno
-    poetry
     uv
-    pipx
+    pipx # use this for poetry so can use shell plugin
     go
     nixd
     fnm
@@ -216,6 +215,13 @@ in {
     oh-my-posh
     oh-my-fish
   ];
+
+  # add qt styling
+  qt = {
+    enable = true;
+    platformTheme = "gtk2"; # or "gnome", "gtk3", "qt5ct"
+    style = "adwaita-dark"; # or "breeze", "fusion", etc.
+  };
 
   networking.firewall = {
     enable = true;
