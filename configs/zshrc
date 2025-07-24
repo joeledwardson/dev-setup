@@ -49,7 +49,7 @@ function copyfile {
     fi
 
     # Copy the file path to the clipboard
-    echo "file://$fullpath" | xclip -selection clipboard -t text/uri-list
+    echo "file://$fullpath" | wl-copy -t text/uri-list
     echo "File path copied to clipboard: $fullpath"
 }
 
