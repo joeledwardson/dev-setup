@@ -18,10 +18,12 @@
     ~/.config/aichat/config.yaml: ./configs/aichat.yaml
     ~/.config/copyq/copyq.conf: ./configs/copyq.conf
     ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+    ~/.config/hypr/scripts: ./configs/hypr/scripts
     ~/.config/kitty/kitty.conf: ./configs/kitty.conf
     ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
     ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
     ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
+    ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
 
 - shell:
     # setup a blank (non symlinked file) for per-machine configs to keep hyprland from complaining

@@ -11,7 +11,7 @@ case "$1" in
     nix-collect-garbage -d
     ;;
   *)
-    echo "Usage: $0 {os|home|dotfiles|clean}"
+    echo "Usage: $0 {os|dotfiles|clean}"
     ;;
 esac
 
