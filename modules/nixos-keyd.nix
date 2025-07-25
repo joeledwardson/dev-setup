@@ -1,4 +1,7 @@
 # setup keyd daemon with my custom keyboard configuration, for a specific set of keyboard IDs
+#
+# to check the name of a key (for escape, control etc), run `sudo keyd monitor`
+
 { keyboardIds }: {
   services.keyd = {
     enable = true;
@@ -11,7 +14,7 @@
           # The main layer, if you choose to declare it in Nix
           main = {
             # remap caps to combination of ctrl and escape
-            capslock = "overload(control, sec)";
+            capslock = "overload(control, esc)";
             # remap space to custom layer function
             space = "overload(custom, space)";
           };

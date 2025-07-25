@@ -27,11 +27,20 @@
   # Define your hostname.
   networking.hostName = "degen-work";
 
+  boot.supportedFilesystems = [ "ntfs" ];
   # laptop has 2 disks, the other one has a windows partition on it
-  fileSystems."/mnt/windows" = {
+  fileSystems."/mnt/windows-2" = {
     device = "/dev/disk/by-label/Windows";
-    fsType = "ntfs3";
-    options = [ "rw" "uid=1000" "gid=100" "dmask=022" "fmask=133" ];
+    fsType = "ntfs";
+    options = [
+      "nofail" # prevent system failure if i typed something wrong
+      "rw"
+      "uid=1000"
+      # "gid=100"
+      # "dmask=022"
+      # "fmask=133"
+    ];
+
   };
 
   # =======================================
