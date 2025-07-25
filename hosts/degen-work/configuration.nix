@@ -40,8 +40,15 @@
       # "dmask=022"
       # "fmask=133"
     ];
-
   };
+
+  hardware.bluetooth = {
+    enable = true; # enables support for Bluetooth
+    powerOnBoot = true; # powers up the default Bluetooth controller on boot
+    # experimental apparently allows showing charge of devices
+    # settings = { General = { Experimental = true; }; };
+  };
+  services.blueman.enable = true;
 
   # =======================================
   # NVIDIA Configuration
