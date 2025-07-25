@@ -42,12 +42,18 @@
     ];
   };
 
+  # use CUDA for ollama
+  services.ollama.acceleration = "cuda";
+
+  # =======================================
+  # Bluetooth Configuration
+  # =======================================
   hardware.bluetooth = {
     enable = true; # enables support for Bluetooth
     powerOnBoot = true; # powers up the default Bluetooth controller on boot
-    # experimental apparently allows showing charge of devices
-    # settings = { General = { Experimental = true; }; };
   };
+
+  # bluetooth GUI service
   services.blueman.enable = true;
 
   # =======================================
@@ -78,6 +84,9 @@
     powerManagement.finegrained = false;
   };
 
+  # =======================================
+  # Accounts Configuration
+  # =======================================
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.jollof = {
     isNormalUser = true;

@@ -59,7 +59,6 @@ in {
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
-    # get file type
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
@@ -196,6 +195,14 @@ in {
     delta # fancy syntax highlighting and pager for git
     jq
     kbd # has showkey
+    (llm.withPlugins {
+      # LLM access to models by Anthropic, including the Claude series
+      llm-anthropic = true;
+      # LLM plugin providing access to Ollama models using HTTP API
+      llm-ollama = true;
+      # OpenAI plugin for LLM
+      llm-openai-plugin = true;
+    })
 
     ### video processing
     ffmpeg
@@ -213,6 +220,12 @@ in {
 
   ];
 
+  services.ollama = {
+    enable = true;
+    # Optional: preload models, see https://ollama.com/library
+    loadModels = [ "llama3.2:3b" "deepseek-r1:1.5b" ];
+  };
+
   # add qt styling
   qt = {
     enable = true;
@@ -222,7 +235,8 @@ in {
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ # SSH
+    allowedTCPPorts = [
+      # SSH
       22
       # http 
       80
