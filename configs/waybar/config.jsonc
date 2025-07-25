@@ -18,11 +18,9 @@
         "tray",
         "idle_inhibitor",
         "pulseaudio",
-        "network",
         "cpu",
         "memory",
         "temperature",
-        "hyprland/language",
         "battery",
         "clock",
         "custom/notification"

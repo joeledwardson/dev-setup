@@ -211,9 +211,6 @@ in {
     readline
     libedit
 
-    ### themes
-    oh-my-posh
-    oh-my-fish
   ];
 
   # add qt styling

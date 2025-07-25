@@ -11,10 +11,10 @@
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.config/nvim: ./configs/nvim
     ~/.config/tmux/tmux.conf: ./configs/tmux.conf
-    ~/.config/ohmyposh.json: ./configs/ohmyposh.json
     ~/.config/git/config: ./configs/gitconfig
     ~/.config/git/ignore: ./configs/gitignore
-    ~/.config/fish/config.fish: ./configs/config.fish
+    ~/.config/fish/config.fish: ./configs/fish/config.fish
+    ~/.config/fish/fish_plugins: ./configs/fish/fish_plugins
     ~/.config/aichat/config.yaml: ./configs/aichat.yaml
     ~/.config/copyq/copyq.conf: ./configs/copyq.conf
     ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf

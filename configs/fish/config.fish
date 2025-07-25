@@ -15,6 +15,8 @@ if not functions -q fisher
     return
 end
 
+fish_config theme choose "Dracula Official"
+
 # Rest of your Fish configuration goes here
 echo "Fish configuration loaded successfully."
 

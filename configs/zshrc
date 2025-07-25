@@ -95,11 +95,6 @@ if [[ -e "$gcloud_zsh" ]]; then
   source "$gcloud_zsh"
 fi
 
-# Oh my posh theme
-if command -v oh-my-posh >/dev/null; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh.json)"
-fi
-
 # Plugins
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions
@@ -122,6 +117,9 @@ zinit light l4u/zsh-output-highlighting
 zinit ice wait lucid pick"flatpak.plugin.zsh" as"completion"
 zinit light bilelmoussaoui/flatpak-zsh-completion
 
+zinit ice pick"lib/async.zsh" src"dracula.zsh-theme"; zinit light dracula/zsh
+# show hostname
+DRACULA_DISPLAY_CONTEXT=1
 
 # fnm completion and shell
 eval "$(fnm env --use-on-cd --shell zsh)"
@@ -194,6 +192,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always $realpath'
 
 
 # eza aliases stolen from here: https://github.com/MohamedElashri/eza-zsh/blob/main/eza-zsh.plugin.zsh
+alias ..='cd ..'
 alias l='eza --long --icons -bF' # Extended details with binary sizes and type indicators
 alias ll='eza --long -a' # Long format, including hidden files
 alias la='eza -a --group-directories-first' # Show all files, with directories listed first
