@@ -7,6 +7,9 @@ wezterm.log_info("Loading WezTerm config from dev-setup")
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
+local pls = wezterm.font_locator
+wezterm.log_info("hellothere: ", pls)
+print("hi!")
 -- This is where you actually apply your config choices.
 
 -- For example, changing the initial geometry for new windows:

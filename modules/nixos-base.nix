@@ -173,7 +173,6 @@ in {
 
     ### TUI style tools
     lazygit
-    aichat
     lazydocker
     graphviz # required for madge npm package
     claude-code

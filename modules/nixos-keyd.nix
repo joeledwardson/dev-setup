@@ -8,7 +8,8 @@
     keyboards = {
       # The name is just the name of the configuration file, it does not really matter
       default = {
-        ids = keyboardIds; # what goes into the [id] section
+        # keyboard IDs passed as an argument to this function
+        ids = keyboardIds;
         # Everything but the ID section:
         settings = {
           # The main layer, if you choose to declare it in Nix
@@ -18,6 +19,7 @@
             # remap space to custom layer function
             space = "overload(custom, space)";
           };
+          # my custom layer, used with space bar
           custom = {
             h = "left";
             j = "down";

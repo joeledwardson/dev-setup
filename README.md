@@ -1,60 +1,69 @@
 # Development setup
-# NixOS Setup
-If not using a Nix based OS, need to install NixOS (use `--daemon` as its nice to be able to view and restart it using `systemctl`)
-See instructions [here](https://nixos.org/download/)
+This repository covers my development setup, including
+- NixOS configuration files 
+- dotfiles to manage my configurations
+- some development notes
 
-***TODO***
-- gcloud completion
-- ctrl g without prefix once in copy mode - ctrl G for previous
-- learn zsh nav (not vim)
-- tmux/xfce indicator for caps/alt/fn keys 
+Thus, the above (almost) fully describes my system state from OS to packages to configuration.
 
-***Done***
-- zsh tmux titles not working (new pane doesn't sync with custom title)
-- fzf finder with eza (ls replacement, forgot what its called)
-- sort out authentication with gh overwritten by nix
-- ignore fnm
+Given I am always tinkering with dotfiles and configurations, using NixOS or even home-manager is not responsive enough, having to "rebuild" every time a single change is made, so I use `dotbot` with symlinks.
+
+> For example, adding a single line in `zshrc` would require a full `sudo nixos-rebuild switch` via NixOS or `home-manager build` with home-manager to apply the `zshrc` changes. With symlinks, I simple save the changes and open a new shell.
+
+The downsides are:
+- my configuration is not truly declarative. Dotfiles are managed separately, symlinks might break, stale links might not get cleaned up
+- the upside is a any changes can be applied immediately once symlinkes are established
+
+I have made a sincere attempt to keep this repository as un-cluttered and simple as possible.
+
+I found most dotfiles repositories daunting, with large complex configurations split into multiple sub-modules.
+> Whilst this is fine if you understand fully, I do not believe it is a good starting point as the learning process of achieving such a configuration isas important as the result
+
+## Utility script
+I have included a utility script `util` to select between
+- `os`: building the NixOS configuration
+- `dotfiles`: applying the dotfiles symlinks
+- `clean`: delete old NixOS generations
 
 
-```bash
-$ sh <(curl -L https://nixos.org/nix/install) --daemon
+## NixOS setup
+I have tried to keep my NixOS setup as simple as possible, in a vain attempt to avoid millions of different helper files, sub-modules and overrides.
+
+For configuration files I am using `dotbot`, thus I believe `home-manager` just adds another layer of un-necessary complexity and have opted to not us it
+
+The basic structure follows nix flakes:
+- `flake.nix` selects between the configuration of the machine (located in `hosts`)
+- `flake.lock` tracks the exact commit of `nixpkgs` so package versions can be replicated
+- `modules` provides re-usable configuration fragments
+> something I did not know as a beginner is the difference between a NixOS module and configuration fragment, which are distinct!
+
+
+## Dotfiles
+My dotfiles are located in `configs`, where the symlinks are applied by `dotbot` via the `install.conf.yaml` configuration file
+
+Some of the configurations are built from scratch, some based off a templated, or edited from the defaults:
+- `nvim` for neovim is based off the neovim kickstart project (although it has diverged a fair bit since)
+
+
+# Git cred
+for gh itsto the symlinks in the future)
+- gh auth 
+
+for glab a
+- git conf '!glab auth git-credential'
+
+no idea hoing from claude is:
 ```
-the experimental nix and flakes added (see [docs](https://nixos.wiki/wiki/Flakes))
-```bash
-echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+echo -e "pcredential get
 ```
 
-then the daemon must be restarted 
-```bash
-sudo systemctl restart nix-daemon
-```
+apparently
 
+`zshrc` cre is in `.local/cursor.AppImage`
 
-and the nixGL channel and default added (for OpenGL apps, dont work with linked nix opengl)
-```bash
-nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
-nix-env -iA nixgl.auto.nixGLDefault   # or replace `nixGLDefault` with your desired wrapper
-```
-
-# Git credentials
-for gh its as simple as (hopefully this can be absolved into the symlinks in the future)
-- gh auth setup-git
-
-for glab apparently this works?:
-- git config --global credential.https://gitlab.com.helper '!glab auth git-credential'
-
-no idea how this actually works, but an example of it working from claude is:
-```
-echo -e "protocol=https\nhost=gitlab.com" | glab auth git-credential get
-```
-
-apparently it reads from stdin?
-
-`zshrc` creates a function for cursor, assuming an appimage is in `.local/cursor.AppImage`
-
-
-# setup AI chat
-configuration is version controlled, but API keys are not.
+at
+# setup AI
+configurat
 
 To add API keys (check they exist first, otherwise ignore):
 

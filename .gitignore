@@ -1,9 +1,12 @@
 .vscode
 .ansible
 scratchpads
-# apparently share/fonts adds a .uuid file? 
+# apparently share/fonts adds a .uuid file? (TODO remove?)
 fonts/monofur/.uuid
+# claude code
 .claude
+
+# another sub directory (TODO remove this?)
 sub
 
 # while copying stuff from the LoneWolf4713/new-wave repo will be here in a subdir
