@@ -27,7 +27,9 @@
   # Define your hostname.
   networking.hostName = "degen-work";
 
+  # for windows support
   boot.supportedFilesystems = [ "ntfs" ];
+
   # laptop has 2 disks, the other one has a windows partition on it
   fileSystems."/mnt/windows-2" = {
     device = "/dev/disk/by-label/Windows";

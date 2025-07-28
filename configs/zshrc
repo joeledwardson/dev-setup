@@ -122,7 +122,9 @@ zinit ice pick"lib/async.zsh" src"dracula.zsh-theme"; zinit light dracula/zsh
 DRACULA_DISPLAY_CONTEXT=1
 
 # fnm completion and shell
-eval "$(fnm env --use-on-cd --shell zsh)"
+if command -v fnm >/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"

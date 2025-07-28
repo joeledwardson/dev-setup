@@ -16,6 +16,7 @@
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 5;
+      gfxmodeEfi = "1024x768";
     };
     efi = {
       canTouchEfiVariables = true;
@@ -23,7 +24,39 @@
     };
   };
 
-  networking.hostName = "jollof-home"; # Define your hostname.
+  # for windows support
+  boot.supportedFilesystems = [ "ntfs" ];
+
+  # mount windows from other partition
+  fileSystems."/mnt/jollof/windows" = {
+    device = "/dev/disk/by-label/windows";
+    fsType = "ntfs3";
+    options = [
+      "nofail" # prevent system failure if i typed something wrong
+      "rw"
+      "uid=1000"
+      "gid=100"
+      "dmask=022"
+      "fmask=133"
+    ];
+
+  };
+
+  # mount old ubuntu partition
+  fileSystems."/mnt/jollof/minty" = {
+    device = "/dev/disk/by-label/ubuntu";
+    fsType = "ext4";
+    options = [
+      "users" # allows any user to mount and unmount
+      "nofail" # prevent system failure if i typed something wrong
+    ];
+  };
+
+  # Define your hostname.
+  networking.hostName = "jollof-home";
+
+  # use CUDA for ollama
+  services.ollama.acceleration = "cuda";
 
   # =======================================
   # NVIDIA Configuration

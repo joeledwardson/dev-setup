@@ -122,16 +122,16 @@ in {
     scrcpy # android screen copy tool
     remmina # RDP tool
 
-    # nix specific tools
+    ### nix specific tools
     nix-tree
     nix-du
 
-    # Wayland desktop core packages
+    ### Wayland desktop core packages
     wlr-randr
     wl-clipboard # Command-line copy/paste utilities
     grim # Screenshot utility
     slurp # Region selection tool
-    fuzzel # new launcher to replace
+    fuzzel # new launcher to replace rofi/wofi
     xdg-utils # For xdg-open and similar commands
     hyprpaper # hyprland wallpaper
     wev # debug hyprland key events (equivalent of xev on X11)
@@ -139,7 +139,6 @@ in {
 
     ### more desktop packages (not specifically hyprland)
     xdg-utils # for "open with..." integrations
-    udiskie # for status bar disks
     grimblast # screenshotting tools
     dragon-drop # dray and drop utility
     kdePackages.dolphin # default GUI file manager
@@ -147,6 +146,10 @@ in {
     tokyonight-gtk-theme # gtk theme
     flat-remix-icon-theme # icons theme
     signal-desktop
+
+    ### disk management
+    udiskie # for status bar disks
+    ntfs3g # in case of running `ntfslabel` to re-label windows partition
 
     ### languages
     clojure # for metabase

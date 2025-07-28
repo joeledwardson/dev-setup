@@ -11,7 +11,7 @@ Given I am always tinkering with dotfiles and configurations, using NixOS or eve
 > For example, adding a single line in `zshrc` would require a full `sudo nixos-rebuild switch` via NixOS or `home-manager build` with home-manager to apply the `zshrc` changes. With symlinks, I simple save the changes and open a new shell.
 
 The downsides are:
-- my configuration is not truly declarative. Dotfiles are managed separately, symlinks might break, stale links might not get cleaned up
+- my configuration is not truly re-producible. Dotfiles are managed separately, symlinks might break, stale links might not get cleaned up
 - the upside is a any changes can be applied immediately once symlinkes are established
 
 I have made a sincere attempt to keep this repository as un-cluttered and simple as possible.
@@ -43,6 +43,8 @@ My dotfiles are located in `configs`, where the symlinks are applied by `dotbot`
 
 Some of the configurations are built from scratch, some based off a templated, or edited from the defaults:
 - `nvim` for neovim is based off the neovim kickstart project (although it has diverged a fair bit since)
+- `hyprland` is based off the default generated configuration, although has diverged a fair bit since then
+> To see the diffs from my config to the example generated one, run `git diff --no-index  <(curl https://raw.githubusercontent.com/hyprwm/Hyprland/refs/heads/main/example/hyprland.conf) configs/hypr/hyprland.conf`
 
 
 # Git cred
@@ -276,6 +278,11 @@ nvme1n1                                             931.5G disk
 
 joelyboy@MINTY-RDP in dev-setup on   main  15
 ❯
+```
+
+Thus, to see what parted gives as well (partition labels) thus command is useful:
+```bash
+lsblk -o NAME,PARTLABEL,LABEL,SIZE,TYPE,MOUNTPOINT
 ```
 
 To change disk label is not unified unfortunately.
