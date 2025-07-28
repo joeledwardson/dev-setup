@@ -118,7 +118,6 @@ in {
     slack
     copyq # copy paste manager
     vlc
-    pomodoro-gtk
     pinta
     scrcpy # android screen copy tool
     remmina # RDP tool
@@ -255,9 +254,17 @@ in {
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
 
+  environment.variables = {
+    # set default editor to vim
+    EDITOR = "vim";
+  };
+
   environment.sessionVariables = {
-    # prefer specific directory for configuration rather than cluttering home dir
+    # use XDG base directory spec
+    XDG_CACHE_HOME = "$HOME/.cache";
     XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_DATA_HOME = "$HOME/.local/share";
+    XDG_STATE_HOME = "$HOME/.local/state";
     # custom directory as per dotbot configuration
     ZDOTDIR = "$HOME/.config/zsh";
   };

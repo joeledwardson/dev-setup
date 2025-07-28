@@ -7,14 +7,18 @@
 
   "hyprland/workspaces": {
     "disable-scroll": true,
-    "all-outputs": true,
+    "all-outputs": false,
     "warp-on-scroll": false,
     "format": "{name} {icon}",
     "format-icons": {
       "urgent": "",
       "active": "",
-      "default": ""
+      "default": "",
+      "empty": ""
     }
+  },
+  "hyprland/window": {
+    "separate-outputs": true
   },
   "idle_inhibitor": {
     "format": "{icon}",
