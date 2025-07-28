@@ -51,6 +51,9 @@
 
   networking.hostName = "desktop-work"; # Define your hostname.
 
+  # use CUDA for ollama
+  services.ollama.acceleration = "cuda";
+
   # =======================================
   # NVIDIA Configuration
   # =======================================
