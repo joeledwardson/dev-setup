@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Google Chrome (Personal)
+Comment=Launch Google Chrome with personal profile
+Icon=google-chrome
+Exec=google-chrome-stable --new-window --profile-directory=Default
+Categories=Network;WebBrowser;
+Terminal=false
+StartupNotify=true
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
+Actions=new-window;new-private-window;

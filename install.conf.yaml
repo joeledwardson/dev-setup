@@ -25,6 +25,7 @@
     ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
     ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
     ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
+    ~/.local/share/applications/custom: ./applications
 
 - shell:
     # setup a blank (non symlinked file) for per-machine configs to keep hyprland from complaining
