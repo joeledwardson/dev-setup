@@ -4,6 +4,13 @@
       force: true
       create: true
 
+- clean: ['~']
+
+- clean:
+    ~/:
+      force: true
+    ~/.config:
+      recursive: true
 
 - link:
     ~/.vim/vimrc: ./configs/vimrc
