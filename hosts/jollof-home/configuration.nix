@@ -9,6 +9,9 @@
     ./hardware-configuration.nix
   ];
 
+  # =======================================
+  # Boot Configuration
+  # =======================================
   boot.loader = {
     grub = {
       enable = true;
@@ -24,6 +27,16 @@
     };
   };
 
+  # =======================================
+  # Keyboard Building Configuration
+  # =======================================
+  hardware.keyboard.qmk.enable = true;
+  environment.systemPackages = with pkgs; [ via ];
+  services.udev.packages = [ pkgs.via ];
+
+  # =======================================
+  # Mount Configuration
+  # =======================================
   # for windows support
   boot.supportedFilesystems = [ "ntfs" ];
 
@@ -52,15 +65,18 @@
     ];
   };
 
+  # =======================================
+  # Networking Configuration
+  # =======================================
   # Define your hostname.
   networking.hostName = "jollof-home";
-
-  # use CUDA for ollama
-  services.ollama.acceleration = "cuda";
 
   # =======================================
   # NVIDIA Configuration
   # =======================================
+  # use CUDA for ollama (NVIDIA ONLY)
+  services.ollama.acceleration = "cuda";
+
   hardware.graphics = { enable = true; };
 
   # Load NVIDIA driver for Xorg and Wayland

@@ -47,6 +47,15 @@ Some of the configurations are built from scratch, some based off a templated, o
 > To see the diffs from my config to the example generated one, run `git diff --no-index  <(curl https://raw.githubusercontent.com/hyprwm/Hyprland/refs/heads/main/example/hyprland.conf) configs/hypr/hyprland.conf`
 
 
+## Keyboard re-bindings
+I have a set of keyboard bindings I apply as I find it helps my workflow. In short
+- `caps` is rebound to a combination of `ctrl` and `escape` (hold vs tap)
+- `space` when in used in conjunction with another key actives a special layer
+
+For keyboard devices such as my laptop keyboard which do not support QMK, I have used `keyd` to remap keys (see `modules/nixos-keyd.nix`).
+
+For my programming keybaords that do support QMK, I have forked [QMK firmware here](https://github.com/joeledwardson/qmk_firmware) with layers added for my keyboards
+
 # Git cred
 for gh itsto the symlinks in the future)
 - gh auth 
