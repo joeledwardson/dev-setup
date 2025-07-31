@@ -1,6 +1,9 @@
+# vim swap files
 **/*.swp
 **/*.swo
+
+# vscode configuration files
 .vscode
 
-
+# claude code 
 **/.claude/settings.local.json

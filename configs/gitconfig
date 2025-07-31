@@ -6,7 +6,6 @@
 [delta]
         light = false
         navigate = true
-        syntax-theme = "Dracula"
 
 [interactive]
         diffFilter = "delta --color-only"

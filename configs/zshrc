@@ -17,21 +17,9 @@ setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
 # other options
 setopt interactivecomments
 
-# rust path
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# added by pipx (https://github.com/pipxproject/pipx)
-export PATH="$HOME/.local/bin:$PATH"
-
 # print each path entry on a new line
 pretty-path() {
     echo "${1:-$PATH}" | sed "s/:/\n/g"
-}
-
-# allow calling "cursor ." from terminal to open cursor AI
-function cursor {
-  nohup "$HOME/.local/cursor.AppImage" "$@" >/dev/null 2>&1 &
-  disown
 }
 
 function reload-tmux {
@@ -40,6 +28,8 @@ function reload-tmux {
 function reload-zsh {
   source ~/.zshrc
 }
+
+# copy a file to clipboard
 function copyfile {
     # Resolve the full path of the file
     local fullpath=$(realpath $1)
@@ -71,12 +61,6 @@ mkdir -p $HOME/.local/share/custom_zsh_completions
 # add custom completions to cusotm path
 fpath=($HOME/.local/share/custom_zsh_completions $fpath)
 
-# volta
-if command -v volta >/dev/null; then
-  volta completions zsh > $HOME/.local/share/custom_zsh_completions/_volta
-  export VOLTA_HOME="$HOME/.volta"
-  export PATH="$VOLTA_HOME/bin:$PATH"
-fi
 
 # Load from cache immediately
 autoload -U compinit
@@ -163,11 +147,31 @@ function setup-bw() {
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
+# Bind Ctrl-N and Ctrl-P to next/previous history commands
+bindkey '^N' down-history        # Ctrl-N for next command
+bindkey '^P' up-history          # Ctrl-P for previous command
+
+# otherwise cant delete words if pasted over new lines
+bindkey '^?' backward-delete-char
+bindkey '^W' backward-kill-word  # This will use WORDCHARS
+
+
 autoload -U select-word-style
 select-word-style bash
 
+# only treat . and - as special chars so c-w doesnt delete whole words
 export WORDCHARS='.-'
+
+
 # fzf tab config
+# enable tab completion on empty line
+zstyle ':completion:*' insert-tab false
+# show both commands and files on empty line
+zstyle ':completion:*' completer _complete _files _expand
+# force file completion to show all files including directories
+zstyle ':completion:*' file-patterns '*:all-files'
+# group completions by type
+zstyle ':completion:*' group-name ''
 # # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
@@ -202,7 +206,7 @@ alias ..='cd ..'
 alias l='eza --long --icons -bF' # Extended details with binary sizes and type indicators
 alias ll='eza --long -a' # Long format, including hidden files
 alias la='eza -a --group-directories-first' # Show all files, with directories listed first
-alias lx='eza -a --group-directories-first --extended' # Show all files and extended attributes, directories first
+alias lx='eza -a -l --group-directories-first --extended' # Show all files and extended attributes, directories first
 alias lT='eza --tree --long' # Tree view with extended details
 alias lr='eza --long --modified --sort=modified -r' # sort by modified desc
 function lP() {
@@ -215,11 +219,8 @@ function lP() {
 # stolen from OMZ tmux plugin
 # Essential tmux aliases
 alias ta='tmux attach'     # Attach to a session
-alias tad='tmux attach -d -t' # Attach to session in detached mode
 alias ts='tmux new-session -s' # Start new session with name
 alias tl='tmux list-sessions' # List all sessions
-alias tksv='tmux kill-server' # Kill the tmux server
-alias tkss='tmux kill-session -t' # Kill a specific session
 
 
 # tmux escape chars for `next-prompt` and `previous-prompt`
@@ -246,4 +247,3 @@ fi
 if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
-
