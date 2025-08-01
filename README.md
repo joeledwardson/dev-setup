@@ -63,6 +63,14 @@ For keyboard devices such as my laptop keyboard which do not support QMK, I have
 
 For my programming keybaords that do support QMK, I have forked [QMK firmware here](https://github.com/joeledwardson/qmk_firmware) with layers added for my keyboards
 
+The additional layer is summarised as:
+- `hjkl` for left/down/up/right to mimic vim
+- `u` and `d` are mapped to page up/down respectively
+- `i` and `x` are mapped to insert/delete respectively
+- `p` for print
+- `1 through 0,-,=` for fn1 to fn12 respectively
+- `g` and `a` for end/home respectively
+
 # Git cred
 for gh itsto the symlinks in the future)
 - gh auth 
