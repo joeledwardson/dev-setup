@@ -78,6 +78,13 @@ in {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Add mpv overlay to include cutter script
+  nixpkgs.overlays = [
+    (self: super: {
+      mpv = super.mpv.override { scripts = with self.mpvScripts; [ cutter ]; };
+    })
+  ];
+
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
@@ -223,6 +230,17 @@ in {
     libedit
 
   ];
+
+  # enable thunar while i decide if its better than dolpin for me
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
+  };
+  # enable save preferences in thunar
+  programs.xfconf.enable = true;
+  # other thunar services
+  services.gvfs.enable = true; # Mount, trash, and other functionalities
+  services.tumbler.enable = true; # Thumbnail support for images
 
   services.ollama = {
     enable = true;
