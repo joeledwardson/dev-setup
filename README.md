@@ -46,6 +46,13 @@ Some of the configurations are built from scratch, some based off a templated, o
 - `hyprland` is based off the default generated configuration, although has diverged a fair bit since then
 > To see the diffs from my config to the example generated one, run `git diff --no-index  <(curl https://raw.githubusercontent.com/hyprwm/Hyprland/refs/heads/main/example/hyprland.conf) configs/hypr/hyprland.conf`
 
+## Applications
+The `applications` directory is symlinked via `dotbot` to my "custom" directory in `~/.local/share/applications/`.
+
+This enables me to have custom entries available in fuzzel launcher
+
+## Wallpapers
+Wallpapers shameless stolen from [mylinuxforwork dotfiles repo](https://github.com/mylinuxforwork/dotfiles/tree/main)
 
 # Git cred
 for gh itsto the symlinks in the future)
