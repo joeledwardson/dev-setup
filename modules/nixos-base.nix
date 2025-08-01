@@ -117,7 +117,8 @@ in {
     google-chrome
     slack
     copyq # copy paste manager
-    vlc
+    mpv # new video player
+    vlc # TODO remove? (mpv seems much more modern and better...)
     pinta
     scrcpy # android screen copy tool
     remmina # RDP tool
@@ -150,6 +151,7 @@ in {
     ### disk management
     udiskie # for status bar disks
     ntfs3g # in case of running `ntfslabel` to re-label windows partition
+    exfat # in case of running `exfatlabel` to re-label SD cards etc
 
     ### languages
     clojure # for metabase
@@ -179,6 +181,7 @@ in {
     graphviz # required for madge npm package
     claude-code
     yazi # as for now, will be my default file manager
+    tomato-c # pomodoro
 
     ### CLI tools
     tldr

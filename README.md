@@ -54,6 +54,15 @@ This enables me to have custom entries available in fuzzel launcher
 ## Wallpapers
 Wallpapers shameless stolen from [mylinuxforwork dotfiles repo](https://github.com/mylinuxforwork/dotfiles/tree/main)
 
+## Keyboard re-bindings
+I have a set of keyboard bindings I apply as I find it helps my workflow. In short
+- `caps` is rebound to a combination of `ctrl` and `escape` (hold vs tap)
+- `space` when in used in conjunction with another key actives a special layer
+
+For keyboard devices such as my laptop keyboard which do not support QMK, I have used `keyd` to remap keys (see `modules/nixos-keyd.nix`).
+
+For my programming keybaords that do support QMK, I have forked [QMK firmware here](https://github.com/joeledwardson/qmk_firmware) with layers added for my keyboards
+
 # Git cred
 for gh itsto the symlinks in the future)
 - gh auth 
