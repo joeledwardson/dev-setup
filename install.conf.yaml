@@ -17,7 +17,9 @@
     ~/.config/fish/fish_plugins: ./configs/fish/fish_plugins
     ~/.config/copyq/copyq.conf: ./configs/copyq.conf
     ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+    ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
     ~/.config/hypr/scripts: ./configs/hypr/scripts
+    ~/.config/hypr/wallpapers: ./wallpapers
     ~/.config/kitty/kitty.conf: ./configs/kitty.conf
     ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
     ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
