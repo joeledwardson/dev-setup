@@ -78,13 +78,6 @@ in {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Add mpv overlay to include cutter script
-  nixpkgs.overlays = [
-    (self: super: {
-      mpv = super.mpv.override { scripts = with self.mpvScripts; [ cutter ]; };
-    })
-  ];
-
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
@@ -125,7 +118,7 @@ in {
     slack
     copyq # copy paste manager
     mpv # new video player
-    vlc # TODO remove? (mpv seems much more modern and better...)
+    bc # software calculator? required for mpv cutter script
     pinta
     scrcpy # android screen copy tool
     remmina # RDP tool
