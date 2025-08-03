@@ -5,5 +5,8 @@
 # vscode configuration files
 .vscode
 
+# local neovim settings files
+.nvim.lua
+
 # claude code 
 **/.claude/settings.local.json
