@@ -1,0 +1,4 @@
+[mgr]
+append_keymap = [
+	{ on = [ "g", "b" ], run = "plugin simple-message",          desc = "Single command with `g => b`" },
+]

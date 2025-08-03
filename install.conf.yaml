@@ -37,6 +37,7 @@
     ~/.local/share/applications/custom: ./applications
     ~/.config/mpv/input.conf: ./configs/mpv/input.conf
     ~/.config/mpv/scripts: ./configs/mpv/scripts
+    ~/.config/yazi: ./configs/yazi
 
 - shell:
     # setup a blank (non symlinked file) for per-machine configs to keep hyprland from complaining
