@@ -29,6 +29,7 @@
     device = "/dev/disk/by-label/Windows";
     fsType = "ntfs3";
     options = [
+      "users" # allows any user to mount and unmount
       "nofail" # prevent system failure if i typed something wrong
       "rw"
       "uid=1000"
@@ -92,6 +93,16 @@
       [
         #  thunderbird
       ];
+  };
+
+  # enable docker
+  users.extraGroups.docker.members = [ "joelyboy" ];
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
   };
 
 }
