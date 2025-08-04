@@ -63,49 +63,21 @@ For keyboard devices such as my laptop keyboard which do not support QMK, I have
 
 For my programming keybaords that do support QMK, I have forked [QMK firmware here](https://github.com/joeledwardson/qmk_firmware) with layers added for my keyboards
 
-# Git cred
-for gh itsto the symlinks in the future)
-- gh auth 
+The additional layer is summarised as:
+- `hjkl` for left/down/up/right to mimic vim
+- `u` and `d` are mapped to page up/down respectively
+- `i` and `x` are mapped to insert/delete respectively
+- `p` for print
+- `1 through 0,-,=` for fn1 to fn12 respectively
+- `g` and `a` for end/home respectively
+TODO: use `e` for end, makes much more sense
 
-for glab a
-- git conf '!glab auth git-credential'
+## Git authentication
+I have setup `glab` and `gh `clis for authentication so that i can login via browser on each which is easier
 
-no idea hoing from claude is:
-```
-echo -e "pcredential get
-```
+TODO: review SSH keys synchronisation without commiting to git? maybe syncthing?
 
-apparently
-
-`zshrc` cre is in `.local/cursor.AppImage`
-
-at
-# setup AI
-configurat
-
-To add API keys (check they exist first, otherwise ignore):
-
-```bash
-RUN_SETUP=true
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo "OPENAI_API_KEY is not set"
-    echo "Please set OPENAI_API_KEY and try again"
-    RUN_SETUP=false
-fi
-
-if [ -z "$CLAUDE_API_KEY" ]; then
-    echo "CLAUDE_API_KEY is not set"
-    echo "Please set CLAUDE_API_KEY and try again"
-    RUN_SETUP=false
-fi
-
-if [ "$RUN_SETUP" = true ]; then
-    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> ~/.config/aichat/.env
-    echo "CLAUDE_API_KEY=$CLAUDE_API_KEY" >> ~/.config/aichat/.env
-fi
-```
-
-# Configuration
+## Shell debugging
 The `.zshrc` provides a debugging variable which uses `zprof` to log the load times when specified.
 
 To use it, set:
@@ -113,72 +85,8 @@ To use it, set:
 export ZSH_DEBUGRC=true
 ```
 
-# summary of custom keybindings
-
-Window Management (Super + key):
-- `Super + m` - Maximize window
-- `Super + Up/Down/Left/Right` - Tile window in that direction
-- `Super + u` - Tile window up-left
-- `Super + i` - Tile window up-right
-- `Super + j` - Tile window down-left
-- `Super + k` - Tile window down-right
-
-Moving Windows Between Monitors (Super + Shift + key):
-- `Super + Shift + Up/Down/Left/Right` - Move window to monitor in that direction
-
-Applications:
-- `Super + l` - Lock screen
-- `Super + v` - Show CopyQ (clipboard manager)
-- `Super + x` - App finder
-- `Super + e` - Open Thunar (file manager)
-- `Super + r` - App finder (collapsed)
-- `Shift + Super + s` - Screenshot (region select)
-- `Ctrl + Alt + t` - Open Ghostty terminal
-
-Window Switching:
-- `Alt + grave` (backtick) - Switch windows
-- `Alt + Tab` - Cycle windows
-- `Alt + Shift + Tab` - Cycle windows (reverse)
-
-
-# xfce-config-helper
-install xfce config helper
-```bash
-git clone https://github.com/felipec/xfce-config-helper.git && \
-cd xfce-config-helper && \
-gem install ruby-dbus && \
-make install && \
-cd .. && \
-rm -rf xfce-config-helper
-```
-
-# 60% keyboard notes
-what keys will i miss in a 60% keyboard?
-
-up/down/left/right
-- solution: caps and jkl;
-
-fn keys
-- solution: fn and numbres?
-
-surface pro key has alt, fn and windows on left of space bar
-- solution: right cmd not that useful. win useful, alt useful fn useful, ctrl manatory
-(could) have fn to right, but i dont like that very much
-(could) map caps to fn key, then everything else is still accessible?
-also up/down/left/right from jkl; are v acessible
-
-home, end, insert, delete, page up. pade down
-- fn u/o for page up/down are easy with caps as fn
-- fn plus easy for insert with caps
-- fn backspace not so bad 
-- could just use fn(caps) h/e for home end
-
-# Non nix packages
-These packages require openGL or GPU stuff and i can't find an (easy) workaround yet on home manager, simpler just to install via `dnf`,`apt` whatever OS PC is running on 
-- kitty
-- ulauncher
-
-# Trying to get my head round disk management terminal tools
+# Mental Notes
+Trying to get my head round the crazy world of linux and computers in general
 
 ## Partition Management
 GUI tools seem to do a much better job of combining these together, in either `GParted` or `Gnome disks`
@@ -395,7 +303,7 @@ Note that above, `/nix/store` is shown to be mounted to the subdirectory `/nix/s
 This is NOT shown in `lsblk`!
 
 
-# Trying to get my head around linux desktop theming
+## Linux desktop theming
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
 │                              Linux Desktop Theming Stack                            │
@@ -447,4 +355,88 @@ This is NOT shown in `lsblk`!
 
 Note: "Qt can mimic GTK" means when you set QT_QPA_PLATFORMTHEME=gtk2,
 Qt apps try to read GTK theme settings and match their appearance
+```
+
+## Linux file permissions
+No matter how many times i read about file permissions on linux: groups,id,read,write,execute etc i seem to forget the syntaxes.
+
+So I write (another) diagram to help me remember
+
+### Permission Bits Reference
+```
+Permission Bits: Read=4, Write=2, Execute=1
+
+Each digit in chmod represents ONE entity:
+┌────────────┬────────────┬────────────┐
+│ 1st digit  │ 2nd digit  │ 3rd digit  │
+│   OWNER    │   GROUP    │   OTHERS   │
+│ (you)      │ (your grp) │ (everyone) │
+└────────────┴────────────┴────────────┘
+
+Breaking down 755:
+┌─────┬─────┬─────┐
+│  7  │  5  │  5  │
+└──┬──┴──┬──┴──┬──┘
+   │     │     │
+   │     │     └─> Others: 5 = 4+0+1 = r-x (read + execute)
+   │     └─────> Group:  5 = 4+0+1 = r-x (read + execute)
+   └───────────> Owner:  7 = 4+2+1 = rwx (read + write + execute)
+
+So 755 means:
+- Owner (you):     rwx (can do everything)
+- Group members:   r-x (can read and execute, NOT write)
+- Others:          r-x (can read and execute, NOT write)
+
+Each digit is calculated:
+7 = 4(r) + 2(w) + 1(x) = rwx
+6 = 4(r) + 2(w) + 0    = rw-
+5 = 4(r) + 0    + 1(x) = r-x
+4 = 4(r) + 0    + 0    = r--
+3 = 0    + 2(w) + 1(x) = -wx
+2 = 0    + 2(w) + 0    = -w-
+1 = 0    + 0    + 1(x) = --x
+0 = 0    + 0    + 0    = ---
+```
+
+### Examples with 007 (DON'T DO THIS!):
+```
+# Create a file with normal permissions
+$ touch myfile.txt
+$ ls -l myfile.txt
+-rw-r--r-- 1 jollof users 0 Aug  3 10:00 myfile.txt
+
+# Apply the bizarre 007 permission
+$ chmod 007 myfile.txt
+$ ls -l myfile.txt
+-------rwx 1 jollof users 0 Aug  3 10:00 myfile.txt
+        ↑
+        └── Others have FULL access!
+
+# Now YOU (the owner) can't even read your own file!
+$ cat myfile.txt
+cat: myfile.txt: Permission denied
+
+# But a random user can do anything!
+$ sudo -u randomuser cat myfile.txt  # Works!
+$ sudo -u randomuser rm myfile.txt   # They can even delete it!
+```
+
+### More wacky examples:
+```
+070 = ---rwx---  (only group members have access)
+707 = rwx---rwx  (owner and others yes, group no)
+000 = ---------  (nobody can do anything)
+111 = --x--x--x  (everyone can execute, but not read/write)
+222 = -w--w--w-  (write-only for everyone - very weird!)
+444 = r--r--r--  (read-only for everyone, even owner)
+```
+
+### Standard permissions you actually want:
+```
+755 = rwxr-xr-x  # Executables/directories
+644 = rw-r--r--  # Regular files
+600 = rw-------  # Private files (like SSH keys)
+700 = rwx------  # Private executables/directories
+664 = rw-rw-r--  # Group-writable files
+775 = rwxrwxr-x  # Group-writable directories
 ```
