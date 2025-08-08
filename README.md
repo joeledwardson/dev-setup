@@ -431,6 +431,8 @@ $ sudo -u randomuser rm myfile.txt   # They can even delete it!
 444 = r--r--r--  (read-only for everyone, even owner)
 ```
 
+> For `000`, the root user (or any user with ID 0) can still access given it has special capabilities. See [capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html)
+
 ### Standard permissions you actually want:
 ```
 755 = rwxr-xr-x  # Executables/directories
@@ -440,3 +442,50 @@ $ sudo -u randomuser rm myfile.txt   # They can even delete it!
 664 = rw-rw-r--  # Group-writable files
 775 = rwxrwxr-x  # Group-writable directories
 ```
+## Id and Groups
+Diagram of how the `/etc/passwd` file works
+
+`/etc/passwd` defines the user, UID and GID whilst `/etc/group` defines how said users are part of different groups
+![/etc/passwd diagram](https://miro.medium.com/v2/resize:fit:1400/1*YUNa7sy_Uef9-Of_UvkZbA.jpeg)
+
+### How /etc/passwd, /etc/group, and /etc/shadow Connect
+
+```
+/etc/passwd                    /etc/group
+username ─────────────┬────────► groupname (for supplementary)
+         GID ─────────┴────────► GID (for primary group)
+         x ───────────┐
+                      │        /etc/shadow
+                      └────────► password_hash
+```
+
+### File Format Breakdown
+
+**`/etc/passwd` format:**
+```
+username:x:UID:GID:comment:home_directory:shell
+```
+- `username` - Login name
+- `x` - Password placeholder (actual password in /etc/shadow)
+- `UID` - User ID number
+- `GID` - Primary Group ID number
+- `comment` - User description/full name
+- `home_directory` - User's home directory path
+- `shell` - User's default shell
+
+Example: `joelyboy:x:1000:1000:Joe L:/home/joelyboy:/bin/bash`
+
+**`/etc/group` format:**
+```
+groupname:x:GID:user1,user2,user3
+```
+- `groupname` - Group name
+- `x` - Password placeholder (rarely used)
+- `GID` - Group ID number
+- `user1,user2,user3` - Comma-separated list of users (SUPPLEMENTARY members only)
+
+Examples:
+- `root:x:0:` - root group with no supplementary members
+- `networkmanager:x:57:joelyboy,nm-openvpn` - networkmanager group with two supplementary members
+
+**Key concept:** Users are NOT listed in `/etc/group` for their PRIMARY group (defined in `/etc/passwd`). They only appear in `/etc/group` for SUPPLEMENTARY groups.
