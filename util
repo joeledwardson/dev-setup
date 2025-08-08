@@ -2,7 +2,10 @@
 
 case "$1" in
   os)
+    echo "rebuilding nix..."
     sudo nixos-rebuild switch --flake .
+    echo "installing yazi plugins..."
+    ya pkg install
     ;;
   dotfiles)
     dotbot -c install.conf.yaml
