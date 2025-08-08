@@ -126,6 +126,7 @@ in {
     ### nix specific tools
     nix-tree
     nix-du
+    devenv
 
     ### Wayland desktop core packages
     wlr-randr
@@ -298,12 +299,6 @@ in {
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
