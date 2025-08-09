@@ -10,3 +10,6 @@
 
 # claude code 
 **/.claude/settings.local.json
+
+# python cache files
+**/__pycache__
