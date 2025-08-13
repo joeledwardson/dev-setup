@@ -173,9 +173,6 @@ in {
     rabbitmq-server
     postgresql_17
 
-    ### terminals
-    fish
-
     ### TUI style tools
     lazygit
     lazydocker
@@ -200,14 +197,15 @@ in {
     delta # fancy syntax highlighting and pager for git
     jq
     kbd # has showkey
-    (llm.withPlugins {
-      # LLM access to models by Anthropic, including the Claude series
-      llm-anthropic = true;
-      # LLM plugin providing access to Ollama models using HTTP API
-      llm-ollama = true;
-      # OpenAI plugin for LLM
-      llm-openai-plugin = true;
-    })
+    llm
+    # (llm.withPlugins {
+    #   # LLM access to models by Anthropic, including the Claude series
+    #   llm-anthropic = true;
+    #   # LLM plugin providing access to Ollama models using HTTP API
+    #   llm-ollama = true;
+    #   # OpenAI plugin for LLM
+    #   llm-openai-plugin = true;
+    # })
 
     ### video processing
     ffmpeg
@@ -268,9 +266,10 @@ in {
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [ fnm ];
 
+  programs.fish.enable = true;
   programs.zsh.enable = true;
   # set default shell to zsh
-  users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = pkgs.fish;
 
   environment.variables = {
     # set default editor to vim

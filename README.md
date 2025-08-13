@@ -84,6 +84,101 @@ To use it, set:
 ```bash
 export ZSH_DEBUGRC=true
 ```
+# Nix Notes
+Nix is an... interesting language, so these are my notes/thoughts along the way
+
+## Lookup syntax
+Firstly, the nix "lookup syntax" `<...>` is sometimes used with `nixpkgs`, but I'm gonna write a simple example here to help myself understand it
+
+Nix expressions expect a `default.nix` file (or a `flake.nix` for newer ones?), see [docs on default.nix here](https://nix.dev/manual/nix/2.25/command-ref/files/default-nix-expression).
+
+This is a super simple example of looking up my example `default.nix` file with the `greeting` variable and evaluating it
+```bash
+➜ jollof dev-setup (main) ✗ mkdir -p /tmp/mynixdir
+➜ jollof dev-setup (main) ✗ echo -e '{\n greeting = "Hello there!";\n }' > /tmp/mynixdir/default.nix
+➜ jollof dev-setup (main) ✗ nix eval --file /tmp/mynixdir greeting
+"Hello there!"
+➜ jollof dev-setup (main) ✗
+```
+
+```mermaid
+flowchart TD
+    subgraph "1. Source Files"
+        DEFAULT[default.nix<br/>Traditional Nix]
+        FLAKE[flake.nix<br/>Modern Nix]
+        CONTENT["{ python3 = {...};<br/>  hello = 'world'; }"]
+    end
+    
+    subgraph "2. Lookup Methods"
+        DIRECT[Direct Path<br/>/tmp/mynixdir]
+        NIXPATH["NIX_PATH<br/>&lt;nixpkgs&gt; → /nix/..."]
+        FLAKEREF[Flake Ref<br/>nixpkgs#...]
+    end
+    
+    subgraph "3. Tools/Operations"
+        REPL[nix repl<br/>Interactive explore]
+        EVAL[nix eval<br/>Compute values]
+        INST[nix-instantiate<br/>Create .drv files]
+        BUILD[nix-build<br/>Build packages]
+    end
+    
+    subgraph "4. Core Concepts"
+        EXPR[Nix Expressions<br/>Functions, attributes]
+        DERIV[Derivations<br/>.drv build recipes]
+        PKG[Packages<br/>/nix/store/...]
+    end
+    
+    DEFAULT --> DIRECT
+    DEFAULT --> NIXPATH
+    FLAKE --> FLAKEREF
+    
+    DIRECT --> REPL
+    NIXPATH --> REPL
+    NIXPATH --> EVAL
+    FLAKEREF --> EVAL
+    
+    REPL -.explore.-> EVAL
+    EVAL --compute--> INST
+    INST --create--> DERIV
+    DERIV --> BUILD
+    BUILD --realize--> PKG
+    
+    REPL --> EXPR
+    EVAL --> EXPR
+    INST --> DERIV
+```
+
+## Nix derivations
+I'm not hoenstly sure exactly what they, except that they are some sort of enclased part of a function/package that runs/does something??
+
+Anyway, an example to create a derivation, "instantiate" it to the store
+
+```bash
+➜ jollof mynixdir cat > simple.nix << 'EOF'
+with import <nixpkgs> {};
+derivation {
+  name = "simple";
+  system = "x86_64-linux";
+  builder = "${bash}/bin/bash";
+  args = [ "-c" "echo hello > $out" ];
+}
+EOF
+➜ jollof mynixdir nix-build simple.nix
+this derivation will be built:
+  /nix/store/ycdgnli9la2nhmrclldwv3mcckzb0684-simple.drv
+building '/nix/store/ycdgnli9la2nhmrclldwv3mcckzb0684-simple.drv'...
+/nix/store/i538l7xjp5d5sq5lr9v35pg34b6fq0mx-simple
+➜ jollof mynixdir ll
+lrwxrwxrwx   - jollof  9 Aug 19:24 result -> /nix/store/i538l7xjp5d5sq5lr9v35pg34b6fq0mx-simple
+.rw-r--r-- 158 jollof  9 Aug 19:24 simple.nix
+➜ jollof mynixdir cat result
+hello
+➜ jollof mynixdir readlink -f result
+/nix/store/i538l7xjp5d5sq5lr9v35pg34b6fq0mx-simple
+➜ jollof mynixdir cat $(readlink -f result)
+hello
+➜ jollof mynixdir
+```
 
 # Mental Notes
 Trying to get my head round the crazy world of linux and computers in general
