@@ -141,7 +141,7 @@ in {
 
     ### more desktop packages (not specifically hyprland)
     xdg-utils # for "open with..." integrations
-    grimblast # screenshotting tools
+    hyprshot # screenshotting tool
     dragon-drop # dray and drop utility
     kdePackages.dolphin # default GUI file manager
     kdePackages.qtsvg # svg icons for dolphin
