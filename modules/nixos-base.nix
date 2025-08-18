@@ -224,6 +224,11 @@ in {
 
   ];
 
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;
+  };
+
   # enable thunar while i decide if its better than dolpin for me
   programs.thunar = {
     enable = true;
