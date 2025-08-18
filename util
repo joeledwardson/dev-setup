@@ -13,8 +13,11 @@ case "$1" in
   clean)
     nix-collect-garbage -d
     ;;
+  toc)
+    doctoc README.md
+    ;;
   *)
-    echo "Usage: $0 {os|dotfiles|clean}"
+    echo "Usage: $0 {os|dotfiles|clean|toc}"
     ;;
 esac
 

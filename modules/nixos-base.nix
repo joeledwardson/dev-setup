@@ -92,7 +92,6 @@ in {
     git
     vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
     wget
-    killall # useful for waybar scripts when restarting services
     nix-search-cli # helpful nix-search command
     pciutils # check pci utils
     curl
@@ -104,6 +103,8 @@ in {
     keyd # allows calling keyd manually (useful for keyd monitor etc..)
     file # get file type
     dig # has nslookup
+    busybox # has lsof, fuser, killall
+    doctoc # for updating my README toc!
 
     ### terminal emulators
     alacritty
@@ -122,6 +123,7 @@ in {
     pinta
     scrcpy # android screen copy tool
     remmina # RDP tool
+    gparted # for when im lazy and dont want to use terminal
 
     ### nix specific tools
     nix-tree
@@ -197,15 +199,14 @@ in {
     delta # fancy syntax highlighting and pager for git
     jq
     kbd # has showkey
-    llm
-    # (llm.withPlugins {
-    #   # LLM access to models by Anthropic, including the Claude series
-    #   llm-anthropic = true;
-    #   # LLM plugin providing access to Ollama models using HTTP API
-    #   llm-ollama = true;
-    #   # OpenAI plugin for LLM
-    #   llm-openai-plugin = true;
-    # })
+    # install python3 with llm and its plugins
+    (llm.withPlugins ({
+      llm-anthropic = true;
+      llm-ollama = true;
+      llm-openai-plugin = true;
+    }))
+    # (python3.withPackages
+    #   (ps: with ps; [ llm llm-openai-plugin llm-ollama llm-anthropic ]))
 
     ### video processing
     ffmpeg
@@ -237,7 +238,7 @@ in {
   services.ollama = {
     enable = true;
     # Optional: preload models, see https://ollama.com/library
-    loadModels = [ "llama3.2:3b" "deepseek-r1:1.5b" ];
+    loadModels = [ "deepseek-r1:1.5b" ];
   };
 
   # add qt styling
