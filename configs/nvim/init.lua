@@ -778,6 +778,7 @@ require('lazy').setup {
         }
       end,
       formatters_by_ft = {
+        sql = { 'sql_formatter' },
         nix = { 'nixfmt' },
         lua = { 'stylua' },
         json = { 'prettierd', 'prettier', stop_after_first = true },
@@ -789,6 +790,7 @@ require('lazy').setup {
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        fish = { 'fish_indent', stop_after_first = true },
       },
     },
   },
