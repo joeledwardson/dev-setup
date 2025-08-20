@@ -3,6 +3,10 @@ if [[ -z "$choice" ]]; then
     notify-send "screenshot cancelled"
     exit
 fi
+
+# Small delay to let the menu close and blur to clear
+sleep 0.2
+
 if [[ "$choice" == "area" ]]; then
     hyprshot -m region --clipboard-only
 else
