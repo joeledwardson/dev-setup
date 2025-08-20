@@ -1,3 +1,36 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Development setup](#development-setup)
+  - [Utility script](#utility-script)
+  - [NixOS setup](#nixos-setup)
+  - [Dotfiles](#dotfiles)
+  - [Applications](#applications)
+  - [Wallpapers](#wallpapers)
+  - [Keyboard re-bindings](#keyboard-re-bindings)
+  - [Git authentication](#git-authentication)
+  - [Shell debugging](#shell-debugging)
+- [Nix Notes](#nix-notes)
+  - [Repl and Installables](#repl-and-installables)
+  - [Lookup syntax](#lookup-syntax)
+  - [Nix derivations](#nix-derivations)
+- [Mental Notes](#mental-notes)
+  - [Partition Management](#partition-management)
+  - [Filesystem labels vs Parition Names](#filesystem-labels-vs-parition-names)
+  - [Mount points](#mount-points)
+  - [Linux desktop theming](#linux-desktop-theming)
+  - [Linux file permissions](#linux-file-permissions)
+    - [Permission Bits Reference](#permission-bits-reference)
+    - [Examples with 007 (DON'T DO THIS!):](#examples-with-007-dont-do-this)
+    - [More wacky examples:](#more-wacky-examples)
+    - [Standard permissions you actually want:](#standard-permissions-you-actually-want)
+  - [Id and Groups](#id-and-groups)
+    - [How /etc/passwd, /etc/group, and /etc/shadow Connect](#how-etcpasswd-etcgroup-and-etcshadow-connect)
+    - [File Format Breakdown](#file-format-breakdown)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Development setup
 This repository covers my development setup, including
 - NixOS configuration files 
@@ -87,12 +120,103 @@ export ZSH_DEBUGRC=true
 # Nix Notes
 Nix is an... interesting language, so these are my notes/thoughts along the way
 
+
+## Repl and Installables
+According to the docs from `nix repl --help`
+```
+Synopsis
+
+    nix repl [option...] installables...
+```
+
+The arg after nix repl is `installables`.
+
+Reading the docs for installables [here](https://nix.dev/manual/nix/2.18/command-ref/new-cli/nix#installables), it is of the form `flakeref[ # attrpath ],
+
+e.g. `nixpkgs#hello`, or as the `#attrpath` is optional i guess just `nixpkgs`, where we can call `nix repl 'nixpkgs'`
+
+Now, `nix flake show` shows the outputs of a flake, so we can actually see with nixpkgs (i've trimmed the output as its long)
+```bash
+➜ joelyboy dev-setup (main) ✗ nix flake show nixpkgs
+path:/nix/store/bgl6ldj5ihbwcq8p42z3a0qzgqafgk2b-source?lastModified=0&narHash=sha256-LwWRsENAZJKUdD3SpLluwDmdXY9F45ZEgCb0X%2BxgOL0%3D
+├───htmlDocs: unknown
+    ...
+    ...
+├───legacyPackages
+│   ├───aarch64-darwin omitted (use '--legacy' to show)
+│   ├───aarch64-linux omitted (use '--legacy' to show)
+│   ├───armv6l-linux omitted (use '--legacy' to show)
+│   ├───armv7l-linux omitted (use '--legacy' to show)
+│   ├───i686-linux omitted (use '--legacy' to show)
+│   ├───powerpc64le-linux omitted (use '--legacy' to show)
+│   ├───riscv64-linux omitted (use '--legacy' to show)
+│   ├───x86_64-darwin omitted (use '--legacy' to show)
+│   ├───x86_64-freebsd omitted (use '--legacy' to show)
+│   └───x86_64-linux omitted (use '--legacy' to show)
+├───lib: unknown
+└───nixosModules
+    ├───notDetected: NixOS module
+    └───readOnlyPkgs: NixOS module
+➜ joelyboy dev-setup (main) ✗
+```
+
+Can see now the `legacyPackages` attribute is loaded into the repl! which is from `nixpkgs`.
+
+```bash
+➜ joelyboy dev-setup (main) ✗ nix repl nixpkgs
+Nix 2.28.4
+Type :? for help.
+Loading installable 'flake:nixpkgs#'...
+Added 7 variables.
+nix-repl> legacyPackages
+{
+  aarch64-darwin = { ... };
+  aarch64-linux = { ... };
+  armv6l-linux = { ... };
+  armv7l-linux = { ... };
+  i686-linux = { ... };
+  powerpc64le-linux = { ... };
+  riscv64-linux = { ... };
+  x86_64-darwin = { ... };
+  x86_64-freebsd = { ... };
+  x86_64-linux = { ... };
+}
+
+nix-repl>
+```
+
+
+(FROM CLAUDE)
+
+When you run `nix repl nixpkgs`, here's what happens:
+
+1. **"nixpkgs" is a flake ID** that gets resolved via the registry to `github:NixOS/nixpkgs`
+2. **The flake itself** has outputs like `packages`, `legacyPackages`, etc.
+3. **In the REPL**, you're interacting with the flake's outputs, not the flake itself
+
+So when you type `nixpkgs` in commands:
+- `nix repl nixpkgs` → loads the entire flake's outputs
+- `nixpkgs#hello` → means "the hello attribute from nixpkgs flake's outputs"
+- The `#` separates flake reference from attribute path
+
+The confusion comes because:
+- `nixpkgs` (the flake) contains `legacyPackages.x86_64-linux` with thousands of packages
+- When you load it in REPL, you see those packages directly
+- But `nixpkgs` itself is the flake, not an output attribute
+
+
+
+
+
 ## Lookup syntax
 Firstly, the nix "lookup syntax" `<...>` is sometimes used with `nixpkgs`, but I'm gonna write a simple example here to help myself understand it
 
 Nix expressions expect a `default.nix` file (or a `flake.nix` for newer ones?), see [docs on default.nix here](https://nix.dev/manual/nix/2.25/command-ref/files/default-nix-expression).
 
 This is a super simple example of looking up my example `default.nix` file with the `greeting` variable and evaluating it
+
+In this case, I did a load of my module `mynixdir` and then executed `greeting` (which was made available as a string from inside `mynixdir`)
+
 ```bash
 ➜ jollof dev-setup (main) ✗ mkdir -p /tmp/mynixdir
 ➜ jollof dev-setup (main) ✗ echo -e '{\n greeting = "Hello there!";\n }' > /tmp/mynixdir/default.nix
@@ -101,51 +225,78 @@ This is a super simple example of looking up my example `default.nix` file with 
 ➜ jollof dev-setup (main) ✗
 ```
 
+Or, to demonstrate an import, and allocating it to a var and getting the value of `greeting`!
+```bash
+➜ joelyboy dev-setup (main) ✗ nix repl
+Nix 2.28.4
+Type :? for help.
+nix-repl> import /tmp/mynixdir
+{ greeting = "Hello there!"; }
+
+nix-repl> myvar=(import /tmp/m
+/tmp/mkdp-nvim.log  /tmp/mynixdir
+nix-repl> myvar=(import /tmp/mynixdir)
+
+nix-repl> myvar.greeting
+"Hello there!"
+
+nix-repl>
+```
+
 ```mermaid
 flowchart TD
-    subgraph "1. Source Files"
-        DEFAULT[default.nix<br/>Traditional Nix]
-        FLAKE[flake.nix<br/>Modern Nix]
-        CONTENT["{ python3 = {...};<br/>  hello = 'world'; }"]
+    subgraph Files
+        FLAKE_NIX[flake.nix]
+        DEFAULT_NIX[default.nix]
     end
     
-    subgraph "2. Lookup Methods"
-        DIRECT[Direct Path<br/>/tmp/mynixdir]
-        NIXPATH["NIX_PATH<br/>&lt;nixpkgs&gt; → /nix/..."]
-        FLAKEREF[Flake Ref<br/>nixpkgs#...]
+    subgraph Registry
+        REG[Flake Registry<br/>Maps names to URLs]
+        NIXPKGS_REG[nixpkgs = github:NixOS/nixpkgs]
     end
     
-    subgraph "3. Tools/Operations"
-        REPL[nix repl<br/>Interactive explore]
-        EVAL[nix eval<br/>Compute values]
-        INST[nix-instantiate<br/>Create .drv files]
-        BUILD[nix-build<br/>Build packages]
+    subgraph Flakes
+        FLAKE[Flake<br/>Has outputs]
+        OUTPUTS[Outputs:<br/>packages<br/>devShells<br/>nixosConfigurations]
     end
     
-    subgraph "4. Core Concepts"
-        EXPR[Nix Expressions<br/>Functions, attributes]
-        DERIV[Derivations<br/>.drv build recipes]
-        PKG[Packages<br/>/nix/store/...]
+    subgraph Installables
+        INST[Installable<br/>nixpkgs#hello]
+        LEGACY[Legacy<br/>-f file.nix]
     end
     
-    DEFAULT --> DIRECT
-    DEFAULT --> NIXPATH
-    FLAKE --> FLAKEREF
+    subgraph Commands
+        REPL[nix repl]
+        EVAL[nix eval]
+        BUILD[nix build]
+    end
     
-    DIRECT --> REPL
-    NIXPATH --> REPL
-    NIXPATH --> EVAL
-    FLAKEREF --> EVAL
+    subgraph Language
+        IMPORT[import statement]
+        WITH[with statement]
+        DERIV[Derivations]
+        PKG[Packages in /nix/store]
+    end
     
-    REPL -.explore.-> EVAL
-    EVAL --compute--> INST
-    INST --create--> DERIV
-    DERIV --> BUILD
-    BUILD --realize--> PKG
+    FLAKE_NIX --> FLAKE
+    DEFAULT_NIX --> LEGACY
     
-    REPL --> EXPR
-    EVAL --> EXPR
-    INST --> DERIV
+    REG --> NIXPKGS_REG
+    NIXPKGS_REG --> FLAKE
+    
+    FLAKE --> OUTPUTS
+    OUTPUTS --> INST
+    
+    INST --> REPL
+    INST --> EVAL
+    INST --> BUILD
+    
+    REPL --> IMPORT
+    IMPORT --> WITH
+    
+    EVAL --> DERIV
+    BUILD --> DERIV
+    DERIV --> PKG
 ```
 
 ## Nix derivations
@@ -584,3 +735,101 @@ Examples:
 - `networkmanager:x:57:joelyboy,nm-openvpn` - networkmanager group with two supplementary members
 
 **Key concept:** Users are NOT listed in `/etc/group` for their PRIMARY group (defined in `/etc/passwd`). They only appear in `/etc/group` for SUPPLEMENTARY groups.
+
+## Crypography
+So just trying to get my head round this and the various components and how they fit together.
+
+I got claude to draw me a graph
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         User Applications                        │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │ Email Client│ │     gpg     │ │ File Manager│ │ Git Signing │ │
+│  │             │ │  (command)  │ │             │ │             │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└───────────────────────────────────────────────────────────────-──┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        GPG Agent                                │
+│                   Master orchestrator daemon                    │
+│    • Receives requests from GPG clients                         │
+│    • Manages all cryptographic operations                       │
+│    • Caches passphrases securely                                │
+│    • Calls Pinentry when passwords needed                       │
+│    • Interfaces with hardware tokens                            │
+└─────────────────────────────────────────────────────────────────┘
+                │                               │
+                ▼                               ▼
+┌─────────────────────┐              ┌─────────────────────┐
+│      Pinentry       │              │      GnuPG Core     │
+│   Password helper   │              │   Crypto library    │
+│                     │              │                     │
+│ • Called by Agent   │              │ • Low-level crypto  │
+│ • GUI/terminal      │              │ • OpenPGP standard  │
+│   password dialogs  │              │ • Algorithm impl.   │
+│ • Secure input only │              │ • Used by Agent     │
+└─────────────────────┘              └─────────────────────┘
+                                                │
+                                                ▼
+                                    ┌─────────────────────┐
+                                    │      Keyring        │
+                                    │   Storage layer     │
+                                    │                     │
+                                    │ • Public keys       │
+                                    │ • Private keys      │
+                                    │ • Trust database    │
+                                    │ • Revocation certs  │
+                                    └─────────────────────┘
+```
+
+Now the `gnupg` part is enabled in nix by my `modules/nixos-base` with:
+```nix
+programs.gnupg.agent....
+```
+
+As an example of gpg workflow:
+1. generate a key for `alice`. 
+2. encrypt `util` file to new file `encrypted` using `alice` gpg key
+3. decrypt `decrypted` using alice passphrase to new `decrypted` file (which matches original `util` file)
+
+3. decrypt `decrypted` using alice passphrase to new `decrypted` file (which matches original `util` file)
+
+3. decrypt `decrypted` using alice passphrase to new `decrypted` file (which matches original `util` file)
+
+```bash
+joelyboy@desktop-work ~/c/dev-setup (main)> gpg --quick-generate-key alice
+About to create a key for:
+    "alice"
+
+Continue? (Y/n) Y
+gpg: A key for "alice" already exists
+Create anyway? (y/N) y
+gpg: creating anyway
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+gpg: revocation certificate stored as '/home/joelyboy/.gnupg/openpgp-revocs.d/6E46F0FBFD10A30D4C83376CD781A6723F1F0113.rev'
+public and secret key created and signed.
+
+pub   ed25519 2025-08-19 [SC] [expires: 2028-08-18]
+      6E46F0FBFD10A30D4C83376CD781A6723F1F0113
+uid                      alice
+sub   cv25519 2025-08-19 [E]
+
+joelyboy@desktop-work ~/c/dev-setup (main) [2]> gpg --encrypt --recipient alice --output encrypted util
+File 'encrypted' exists. Overwrite? (y/N) y
+joelyboy@desktop-work ~/c/dev-setup (main)> gpg --output decrypted --decrypt encrypted
+gpg: encrypted with cv25519 key, ID C84520B33A555DF4, created 2025-08-19
+      "alice"
+File 'decrypted' exists. Overwrite? (y/N) y
+joelyboy@desktop-work ~/c/dev-setup (main)>
+```
+
+
