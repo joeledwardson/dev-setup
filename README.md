@@ -58,6 +58,16 @@ I have included a utility script `util` to select between
 - `dotfiles`: applying the dotfiles symlinks
 - `clean`: delete old NixOS generations
 
+## Adding a new devices
+I have found that to add a new devices it's easiest to add the initial code for the device on an existing setup **before** cloning the repository. This is because, otherwise NixOS requires the files to be added to git, which in turn requires git's stupid global username and email 😠. All of this is before the nix packages have been installed and `dotbot` run to setup symlinks to git config...
+
+Thus:
+1. Create a new directory in `hosts` with the apprioriate hostname, by copying the most similar existing one
+2. Go into the `configuration.nix` of the new host and update the `hostname`
+3. Make any other necessary changes to `configuration.nix` in the new device (mounts, nvidia, cuda etc)
+4. Delete the contents of `hardware-configuration.nix` to make space for the new correct configuration
+5. Add a mapping from the username@hostname to the configuration in the `hosts` directory in `flake.nix`
+6. Commit and push the changes
 
 ## NixOS setup
 I have tried to keep my NixOS setup as simple as possible, in a vain attempt to avoid millions of different helper files, sub-modules and overrides.
@@ -832,4 +842,137 @@ File 'decrypted' exists. Overwrite? (y/N) y
 joelyboy@desktop-work ~/c/dev-setup (main)>
 ```
 
+## Character Encodings
+Right, I'm going to try and get my head round character encodings (namely UTF-8) as I see it everywhere but have never really understood what it means.
 
+> (I copied alot from [this blog post](https://lokalise.com/blog/what-is-character-encoding-exploring-unicode-utf-8-ascii-and-more/), was an interesting read
+
+### Encodings themselves
+It's just thrown around with
+- ASCII
+- ANSI?
+- Unicode?
+
+So a character encoding is the way it's transformed from bytes to wahts shown on the screen firstly (then can come to all the other stuff like terminal escape codes)
+UTF-8 is the most popular, ASCII being the ancient one with 7 bits (first bit always 0), and UTF-8 the modern one.
+
+- ASCII: 7 bits, 0 to 127
+> Characters 0-31 are control characters (e.g. 10 is newline)
+> 128 to 256 is reserved? so we know that its going to need more bytes?
+
+- UTF-8: Variable length (1-4 bytes per char)
+
+Apparently ANSI was a "code page", whereby when ASCII was expanded from the original 7 bits to 8 bits
+- suddently we had 128-255 available
+- so the other 126 bits could be mapped to a different language based on the code page selected
+
+| Code Page| Region             | Example Mapping |
+| -------- | -------            | -------         |
+| 1252     | western eurpoe     | ñ               |
+| 1253     | greek              | Ψ        |
+
+```
+ASCII (0-127): Same everywhere
+├── A, B, C... (English letters)
+├── 1, 2, 3... (digits)  
+└── !, @, #... (basic symbols)
+
+Extended (128-255): Different per region
+├── CP-1252: ñ, é, ü, £, ©... (Western Europe)
+├── CP-1251: а, б, в, г, д... (Cyrillic)
+├── CP-1253: α, β, γ, δ, ε... (Greek)
+└── CP-932: あ, か, さ, た, な... (Japanese)
+```
+
+Anyway back to encodings.
+ASCII is legacy, and UTF-16/UTF-32 is essentially unused (as far as I know!) but it useful to see as a comparison here to UTF-8.
+
+### Character Encoding Examples
+
+**Example: "Hello"**
+
+| Encoding | H | e | l | l | o |
+|----------|---|---|---|---|---|
+| ASCII    | 48 | 65 | 6C | 6C | 6F |
+| UTF-8    | 48 | 65 | 6C | 6C | 6F |
+| UTF-16   | 00 48 | 00 65 | 00 6C | 00 6C | 00 6F |
+| UTF-32   | 00 00 00 48 | 00 00 00 65 | 00 00 00 6C | 00 00 00 6C | 00 00 00 6F |
+
+**Example: "Café"**
+
+| Encoding | C | a | f | é |
+|----------|---|---|---|---|
+| ASCII    | 43 | 61 | 66 | ❌ |
+| UTF-8    | 43 | 61 | 66 | C3 A9 |
+| UTF-16   | 00 43 | 00 61 | 00 66 | 00 E9 |
+| UTF-32   | 00 00 00 43 | 00 00 00 61 | 00 00 00 66 | 00 00 00 E9 |
+
+**Example: "你好" (Chinese "Hello")**
+
+| Encoding | 你 | 好 |
+|----------|----|----|
+| ASCII    | ❌ | ❌ |
+| UTF-8    | E4 BD A0 | E5 A5 BD |
+| UTF-16   | 4F 60 | 59 7D |
+| UTF-32   | 00 00 4F 60 | 00 00 59 7D |
+
+**Example: "Hello 🌍"**
+
+| Encoding | H | e | l | l | o | (space) | 🌍 |
+|----------|---|---|---|---|---|---------|-----|
+| ASCII    | 48 | 65 | 6C | 6C | 6F | 20 | ❌ |
+| UTF-8    | 48 | 65 | 6C | 6C | 6F | 20 | F0 9F 8C 8D |
+| UTF-16   | 00 48 | 00 65 | 00 6C | 00 6C | 00 6F | 00 20 | D8 3C DF 0D |
+| UTF-32   | 00 00 00 48 | 00 00 00 65 | 00 00 00 6C | 00 00 00 6C | 00 00 00 6F | 00 00 00 20 | 00 01 F3 0D |
+
+**Key observations:**
+- ASCII can only represent basic English characters (0-127)
+- UTF-8 is backwards compatible with ASCII for basic English text
+- UTF-8 uses variable-length encoding (1-4 bytes per character)
+- UTF-16 uses minimum 2 bytes per character
+- UTF-32 always uses 4 bytes per character (most space-inefficient)
+
+
+
+### Unicode
+Somewhat confusingly, unicode is often referred to as an encoding, wheras its more of a lookup table?
+
+Introduced asfter ASCII, it expands the available characters.
+
+Most importantly, it **does NOT** specify how to store numbers (thats down to UTF-8 usually), just what the numbers mean.
+
+It is backwards compatible with ASCII, but it typically uses hex to be represented (with U+ prefix). so
+- ASCII: 65 = 'A'
+- Unicode: U+41 = 'A'
+
+Which are the **same thing**, just normally expressed in a different notation
+
+Just a bit confusing then ASCII is (typically) represented in decimal and Unicode in Hex
+
+
+```
+U+0041 = 'A'
+U+0042 = 'B'  
+U+00F1 = 'ñ'
+U+1F3A8 = '🎨'
+```
+
+The typical notation for unicode is:
+- `U+0042`, always 0-pad to minimum 4 digits
+- `U+U+10FFFF`, unicode maximum value (21 bits, 1,114,111)
+
+And nowwwww, this nicely ties us along to UTF-8, how we normally represnt variable byte information (from 1 to 4 bytes).
+
+Which (not sure these were designed at the same time), conveniently ties in with Unicode, that:
+- the max UTF-8 is 4 bytes but 21 bits of data, the same as unicodes max of 21 bits of data!
+
+
+| Character Length | Bit Pattern | Total Bits | Bits for Data | Bits Lost to Length Info | Efficiency |
+|------------------|-------------|------------|---------------|--------------------------|------------|
+| **1 byte** | `0xxxxxxx` | 8 | 7 | 1 | 87.5% |
+| **2 bytes** | `110xxxxx 10xxxxxx` | 16 | 11 | 5 | 68.75% |
+| **3 bytes** | `1110xxxx 10xxxxxx 10xxxxxx` | 24 | 16 | 8 | 66.67% |
+| **4 bytes** | `11110xxx 10xxxxxx 10xxxxxx 10xxxxxx` | 32 | 21 | 11 | 65.625% |
+
+### Escape Sequences
+To start with the basics, 
