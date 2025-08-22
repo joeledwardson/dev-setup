@@ -54,8 +54,12 @@ I found most dotfiles repositories daunting, with large complex configurations s
 
 ## Utility script
 I have included a utility script `util` to select between
-- `os`: building the NixOS configuration
+- `os`: building the OS configuration
+    1. Builds NixOS configuration
+    2. Installs Yazi plugin packages
 - `dotfiles`: applying the dotfiles symlinks
+    1. Runs common dotfile symlinks
+    2. Symlinks hyprland host specific `custom.conf` if exists
 - `clean`: delete old NixOS generations
 
 ## Adding a new devices

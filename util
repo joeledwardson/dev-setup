@@ -8,7 +8,17 @@ case "$1" in
     ya pkg install
     ;;
   dotfiles)
+    echo "running dotbot..."
     dotbot -c install.conf.yaml
+    custom_src=$(realpath "./hosts/$(hostname)/custom.conf")
+    custom_dest=~/.config/hypr/custom.conf
+    if [ -f "$custom_src" ]; then
+      echo "hypr custom.conf exists, symlinking it..."
+      ln -sf "$custom_src" "$custom_dest"
+     elif [ ! -f "$custom_dest" ]; then
+      echo "no custom.conf, creating blank file..."
+      touch "$custom_dest"
+    fi
     ;;
   clean)
     nix-collect-garbage -d
