@@ -15,6 +15,11 @@
           ];
         };
 
+        "degen-home" = nixpkgs.lib.nixosSystem {
+          modules =
+            [ ./modules/nixos-base.nix ./hosts/degen-home/configuration.nix ];
+        };
+
         "jollof-home" = nixpkgs.lib.nixosSystem {
           modules =
             [ ./modules/nixos-base.nix ./hosts/jollof-home/configuration.nix ];
