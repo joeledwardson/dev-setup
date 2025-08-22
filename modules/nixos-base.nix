@@ -104,7 +104,6 @@ in {
     file # get file type
     dig # has nslookup
     busybox # has lsof, fuser, killall
-    doctoc # for updating my README toc!
 
     ### terminal emulators
     alacritty
@@ -165,12 +164,11 @@ in {
     go
     nixd
     fnm
+    lua
 
     ### Database tools
     ruby
     lazysql
-    usql # univeral cli for dbs (TODO - remove?)
-    harlequin # another database TUI (TODO - no schema intellisense?)
     pgcli
     rabbitmq-server
     postgresql_17
@@ -198,15 +196,15 @@ in {
     fd # alternative to find
     delta # fancy syntax highlighting and pager for git
     jq
+    yq-go
     kbd # has showkey
     # install python3 with llm and its plugins
-    (llm.withPlugins ({
+    (llm.withPlugins {
       llm-anthropic = true;
       llm-ollama = true;
       llm-openai-plugin = true;
-    }))
-    # (python3.withPackages
-    #   (ps: with ps; [ llm llm-openai-plugin llm-ollama llm-anthropic ]))
+    })
+    doctoc # for updating my README toc!
 
     ### video processing
     ffmpeg

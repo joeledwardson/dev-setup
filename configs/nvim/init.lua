@@ -490,7 +490,7 @@ require('lazy').setup {
     'folke/lazydev.nvim',
     ft = 'lua',
     dependencies = {
-      { 'gonstoll/wezterm-types', lazy = true },
+      { 'justinsgithub/wezterm-types', lazy = true },
     },
     opts = {
       library = {

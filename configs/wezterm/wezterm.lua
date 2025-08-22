@@ -1,14 +1,14 @@
 -- Pull in the wezterm API
+---@type Wezterm
 local wezterm = require("wezterm")
 
 -- Debug: print when config loads
 wezterm.log_info("Loading WezTerm config from dev-setup")
 
 -- This will hold the configuration.
+---@type Config
 local config = wezterm.config_builder()
 
-local pls = wezterm.font_locator
-wezterm.log_info("hellothere: ", pls)
 print("hi!")
 -- This is where you actually apply your config choices.
 
