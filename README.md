@@ -61,13 +61,60 @@ I have included a utility script `util` to select between
 ## Adding a new devices
 I have found that to add a new devices it's easiest to add the initial code for the device on an existing setup **before** cloning the repository. This is because, otherwise NixOS requires the files to be added to git, which in turn requires git's stupid global username and email 😠. All of this is before the nix packages have been installed and `dotbot` run to setup symlinks to git config...
 
-Thus:
+Thus (from an existing machine with git configured):
 1. Create a new directory in `hosts` with the apprioriate hostname, by copying the most similar existing one
 2. Go into the `configuration.nix` of the new host and update the `hostname`
 3. Make any other necessary changes to `configuration.nix` in the new device (mounts, nvidia, cuda etc)
-4. Delete the contents of `hardware-configuration.nix` to make space for the new correct configuration
+4. Delete the contents of `hardware-configuration.nix` (NOT the file itself!) to make space for the new correct configuration
 5. Add a mapping from the username@hostname to the configuration in the `hosts` directory in `flake.nix`
 6. Commit and push the changes
+
+Then, on the target device:
+
+7. Use the graphical NixOS USB installer to boot into NixOS (will have to set boot order in BIOS if it has an existing OS) and clone my repo
+```bash
+git clone https://github.com/joeledwardson/dev-setup.git
+```
+
+8. Resize the windows partition (if there is one), and create a new `ext4` partition for NixOS
+> I used GParted because I'm lazy and it handles resizing NTFS windows file system and creates the `ext4` FS for me
+9. Mount the partitions (in my example p7 is my new nix partition, and p1 is EFI)
+```bash
+sudo mount /dev/nvme0n1p7 /mnt
+sudo mkdir -p /mnt/boot
+sudo mount /dev/nvme0n1p1 /mnt/boot
+```
+10. Generate the hardware configuration
+```
+sudo nixos-generate-config --root /mnt
+```
+11. Copy it into my hosts dir
+```
+cp /mnt/etc/nixos/hardware-configuration.nix $HOME/dev-setup/hosts/<HOSTNAME-GOES-HERE>/hardware-configuration.nix
+```
+12. Then, can install from the flake in the dev-setup dir (hostname wont be set yet so have to specify it)
+```
+sudo nixos-install --root /mnt --flake .#<HOSTNAME-GOES-HERE>
+```
+13. Remove the USB and reboot, (GRUB should appear) and pick NixOS to boot into
+14. Use the initial `password` to login
+15. Press Ctrl-Q for terminal (I use Ctrl-Enter but bindings are not yet setup), and change password with `passwd`
+16. Clone my repo again (was cloned on the USB stick so will not persist to NixOS)
+```bash
+git clone https://github.com/joeledwardson/dev-setup.git
+cd dev-setup
+```
+17. Copy the hardware configuration across again (wont persist as previously was on the USB)
+```bash
+cp /etc/nixos/hardware-configuration.nix ./hosts/<HOSTNAME-GOES-HERE>/hardware-configuration.nix
+```
+18. Apply the dotfiles and restart hyprland
+```bash
+./util dotfiles
+hyprctl reload
+```
+19. Probably should commit the hardware configuration changes, restart hyprland (`Ctrl-Shift-Q`) and that's it! 😬
+
 
 ## NixOS setup
 I have tried to keep my NixOS setup as simple as possible, in a vain attempt to avoid millions of different helper files, sub-modules and overrides.
@@ -464,6 +511,8 @@ Thus, to see what parted gives as well (partition labels) thus command is useful
 ```bash
 lsblk -o NAME,PARTLABEL,LABEL,SIZE,TYPE,MOUNTPOINT
 ```
+Or, to see the list of options (why this isnt in the MAN page i'll never know 🤦)
+> lsblk --list-options
 
 To change disk label is not unified unfortunately.
 
@@ -558,6 +607,20 @@ Note that above, `/nix/store` is shown to be mounted to the subdirectory `/nix/s
 
 This is NOT shown in `lsblk`!
 
+## Loop Devices
+I was getting confused between
+- `loop device` (i.e. what snap uses), so can have some random file appeaing as if it was a drive (not sure why TBH)
+- `loop partition table`, which is basically no partition table and a free for all, just a file partition (FAT32 etc)
+
+| Aspect | Normal Mount | Loop Mount | Normal Partitions | Loop "Partition" |
+|--------|-------------|------------|-------------------|------------------|
+| **Source** | Block device | File | Multiple sections | Whole device |
+| **Device** | `/dev/sda1` | `/dev/loop0` → file | `/dev/sda1`, `/dev/sda2` | `/dev/sda` |
+| **Partition Table** | Uses GPT/MBR | N/A | Required (GPT/MBR) | None |
+| **Use Case** | Regular storage | Apps, images | Multi-boot, organization | Simple storage |
+| **Flexibility** | Direct access | Portable, secure | Multiple filesystems | Single filesystem |
+| **Command Example** | `mount /dev/sda1 /mnt` | `mount -o loop file.img /mnt` | `parted /dev/sda print` | `parted: "Partition Table: loop"` |
+| **Real Examples** | External HDD | Snap packages | Dual-boot systems | Formatted USB stick |
 
 ## Linux desktop theming
 ```
