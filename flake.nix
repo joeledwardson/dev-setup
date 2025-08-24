@@ -10,14 +10,21 @@
         "degen-work" = nixpkgs.lib.nixosSystem {
           modules = [
             ./modules/nixos-base.nix
+            # lapyop keyboard
             (import ./modules/nixos-keyd.nix { keyboardIds = [ "0414:8005" ]; })
             ./hosts/degen-work/configuration.nix
           ];
         };
 
         "degen-home" = nixpkgs.lib.nixosSystem {
-          modules =
-            [ ./modules/nixos-base.nix ./hosts/degen-home/configuration.nix ];
+          modules = [
+            ./modules/nixos-base.nix
+            # laptop keyboard
+            (import ./modules/nixos-keyd.nix {
+              keyboardIds = [ "0001:0001:70533846" ];
+            })
+            ./hosts/degen-home/configuration.nix
+          ];
         };
 
         "jollof-home" = nixpkgs.lib.nixosSystem {
