@@ -6,6 +6,9 @@ case "$1" in
     sudo nixos-rebuild switch --flake .
     echo "installing yazi plugins..."
     ya pkg install
+    echo "updating fish shell plugins..."
+    fish -c "fisher update"
+    echo "done!"
     ;;
   dotfiles)
     echo "running dotbot..."
@@ -19,6 +22,7 @@ case "$1" in
       echo "no custom.conf, creating blank file..."
       touch "$custom_dest"
     fi
+    echo "done!"
     ;;
   clean)
     nix-collect-garbage -d
