@@ -180,6 +180,7 @@ in {
     claude-code
     yazi # as for now, will be my default file manager
     tomato-c # pomodoro
+    ncdu
 
     ### CLI tools
     tldr
