@@ -3,9 +3,9 @@ append_keymap = [
 	{ on = [ "g", "b" ], run = "plugin simple-message",          desc = "Single command with `g => b`" },
 ]
 
-	# If your yazi version is lower than v25.5.28, repleace "mgr" by "manager".
+# Bookmarks keymaps
 [[mgr.prepend_keymap]]
-on = [ "m" ]
+on = [ "b", "m" ]
 run = "plugin bookmarks save"
 desc = "Save current position as a bookmark"
 
@@ -23,3 +23,9 @@ desc = "Delete a bookmark"
 on = [ "b", "D" ]
 run = "plugin bookmarks delete_all"
 desc = "Delete all bookmarks"
+
+# what size keymaps
+[[mgr.prepend_keymap]]
+on = [ ";", "s" ]
+run  = "plugin what-size"
+desc = "Calc size of selection or cwd"
