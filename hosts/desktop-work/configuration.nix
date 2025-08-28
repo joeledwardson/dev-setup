@@ -40,16 +40,6 @@
 
   };
 
-  # mount old linux mint partition (from pre NixOS)
-  fileSystems."/mnt/joelyboy/minty" = {
-    device = "/dev/disk/by-label/Minty";
-    fsType = "ext4";
-    options = [
-      "users" # allows any user to mount and unmount
-      "nofail" # prevent system failure if i typed something wrong
-    ];
-  };
-
   networking.hostName = "desktop-work"; # Define your hostname.
 
   # use CUDA for ollama
