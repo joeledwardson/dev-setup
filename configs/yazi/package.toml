@@ -3,5 +3,15 @@ use = "pirafrank/what-size"
 rev = "d896656"
 hash = "62251f94eb67648d42cdfcfb8be0fad2"
 
+[[plugin.deps]]
+use = "iynaix/time-travel"
+rev = "7e0179e"
+hash = "69967963fba96295a07b68354fc91ea9"
+
+[[plugin.deps]]
+use = "WhoSowSee/whoosh"
+rev = "49dd966"
+hash = "aab29d8dd949b4802c08598a0ee96d2"
+
 [flavor]
 deps = []
