@@ -14,6 +14,7 @@
     grub = {
       enable = true;
       devices = [ "nodev" ];
+      gfxmodeEfi = "1024x768";
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 5;
