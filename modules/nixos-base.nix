@@ -309,18 +309,18 @@ in {
   # =======================================
   # Wayland Configuration
   # =======================================
-  # Minimal setup that allows using a custom 
-  services.greetd = {
+  # try using regreet - shoudl automatically setup greetd for me!
+  programs.regreet = {
     enable = true;
-    settings = {
-      default_session = {
-        command =
-          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd hyprland";
-        user = "greeter";
-      };
+    theme = {
+      package = pkgs.tokyonight-gtk-theme;
+      name = "Tokyonight-Dark";
+    };
+    iconTheme = {
+      package = pkgs.flat-remix-icon-theme;
+      name = "Flat-Remix-Blue-Dark";
     };
   };
-
   programs.waybar = { enable = true; };
   programs.hyprland = { enable = true; };
   programs.hyprlock.enable = true;
