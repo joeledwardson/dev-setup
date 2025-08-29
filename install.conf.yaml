@@ -15,6 +15,7 @@
 - link:
     ~/.vim/vimrc: ./configs/vimrc
     ~/.config/waybar: ./configs/waybar
+    ~/.config/swaync: ./configs/swaync
     ~/.config/zsh/.zshrc: ./configs/zshrc
     ~/.config/nvim: ./configs/nvim
     ~/.config/tmux/tmux.conf: ./configs/tmux.conf
