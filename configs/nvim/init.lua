@@ -1217,6 +1217,7 @@ require('lazy').setup {
   -- install without yarn or npm
   {
     'iamcco/markdown-preview.nvim',
+    lazy = false,
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
     ft = { 'markdown' },
     build = function()
