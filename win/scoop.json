@@ -1,0 +1,92 @@
+{
+    "buckets": [
+        {
+            "Name": "main",
+            "Source": "C:\\Users\\joele\\scoop\\buckets\\main",
+            "Updated": "\/Date(1756748027272)\/",
+            "Manifests": 1403
+        },
+        {
+            "Name": "extras",
+            "Source": "https://github.com/ScoopInstaller/Extras",
+            "Updated": {
+                "value": "\/Date(1756744228000)\/",
+                "DisplayHint": 2,
+                "DateTime": "01 September 2025 17:30:28"
+            },
+            "Manifests": 2180
+        }
+    ],
+    "apps": [
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "7zip",
+            "Version": "25.01",
+            "Updated": "\/Date(1756748128346)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "busybox",
+            "Version": "5579-g5749feb35",
+            "Updated": "\/Date(1756748277993)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "clink",
+            "Version": "1.7.22",
+            "Updated": "\/Date(1756748256131)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "ffmpeg",
+            "Version": "8.0",
+            "Updated": "\/Date(1756748407674)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "gh",
+            "Version": "2.78.0",
+            "Updated": "\/Date(1756748461306)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "git",
+            "Version": "2.51.0",
+            "Updated": "\/Date(1756748149650)\/"
+        },
+        {
+            "Info": "",
+            "Source": "extras",
+            "Name": "mpv",
+            "Version": "0.39.0",
+            "Updated": "\/Date(1756748454451)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "vim",
+            "Version": "9.1.0",
+            "Updated": "\/Date(1756753350519)\/"
+        },
+        {
+            "Info": "",
+            "Source": "extras",
+            "Name": "wezterm",
+            "Version": "20240203-110809-5046fc22",
+            "Updated": "\/Date(1756749450848)\/"
+        },
+        {
+            "Info": "",
+            "Source": "main",
+            "Name": "yazi",
+            "Version": "25.5.31",
+            "Updated": "\/Date(1756748206733)\/"
+        }
+    ]
+}
