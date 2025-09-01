@@ -115,6 +115,7 @@ in {
     pavucontrol # pulse audio GTK application (used in polybar)
     firefox
     google-chrome
+    brave
     slack
     copyq # copy paste manager
     mpv # new video player
