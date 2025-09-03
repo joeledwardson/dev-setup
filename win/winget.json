@@ -1,0 +1,92 @@
+{
+	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
+	"CreationDate" : "2025-09-01T20:08:01.534-00:00",
+	"Sources" : 
+	[
+		{
+			"Packages" : 
+			[
+				{
+					"PackageIdentifier" : "Notepad++.Notepad++",
+					"Version" : "8.8.5"
+				},
+				{
+					"PackageIdentifier" : "dotPDN.PaintDotNet",
+					"Version" : "5.1.9"
+				},
+				{
+					"PackageIdentifier" : "NordSecurity.NordVPN",
+					"Version" : "7.46.2.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.Edge",
+					"Version" : "139.0.3405.125"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.EdgeWebView2Runtime",
+					"Version" : "139.0.3405.125"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.DotNet.DesktopRuntime.8",
+					"Version" : "8.0.19"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCRedist.2015+.x64",
+					"Version" : "14.44.35211.0"
+				},
+				{
+					"PackageIdentifier" : "Anthropic.ClaudeCode",
+					"Version" : "1.0.98"
+				},
+				{
+					"PackageIdentifier" : "Brave.Brave",
+					"Version" : "139.1.81.137"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.OneDrive",
+					"Version" : "25.149.0803.0003"
+				},
+				{
+					"PackageIdentifier" : "Spotify.Spotify",
+					"Version" : "1.2.71.421.g794ff5e5"
+				},
+				{
+					"PackageIdentifier" : "SlackTechnologies.Slack",
+					"Version" : "4.45.69"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VisualStudioCode",
+					"Version" : "1.103.2"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.Teams",
+					"Version" : "25044.2208.3471.2155"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.AppInstaller",
+					"Version" : "1.26.430.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.UI.Xaml.2.8",
+					"Version" : "8.2501.31001.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.VCLibs.Desktop.14",
+					"Version" : "14.0.33728.0"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.WindowsTerminal",
+					"Version" : "1.22.12111.0"
+				}
+			],
+			"SourceDetails" : 
+			{
+				"Argument" : "https://cdn.winget.microsoft.com/cache",
+				"Identifier" : "Microsoft.Winget.Source_8wekyb3d8bbwe",
+				"Name" : "winget",
+				"Type" : "Microsoft.PreIndexed.Package"
+			}
+		}
+	],
+	"WinGetVersion" : "1.11.430"
+}

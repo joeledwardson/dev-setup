@@ -1,5 +1,11 @@
 #!/bin/sh
 
+WIN_DIR="win"
+WINGET_FILE="$WIN_DIR/winget.json"
+SCOOP_FILE="$WIN_DIR/scoop.json"
+
+mkdir -p "$WIN_DIR"
+
 restart_hyprland()
 {
   if command -v hyprctl >/dev/null && test -n "$HYPRLAND_INSTANCE_SIGNATURE"; then
@@ -11,6 +17,30 @@ restart_hyprland()
   }
 
 case "$1" in
+  winpush)
+    echo "Exporting winget packages..."
+    winget export --nowarn --output "$WINGET_FILE" --include-versions
+
+    echo "Exporting scoop packages..."
+    scoop export > "$SCOOP_FILE"
+    ;;
+
+  winpull)
+    if [[ -f "$WINGET_FILE" ]]; then
+      echo "Importing winget packages..."
+      winget import --import-file "$WINGET_FILE"
+    else
+      echo "No winget export file found at $WINGET_FILE"
+    fi
+
+    if [[ -f "$SCOOP_FILE" ]]; then
+      echo "Importing scoop packages..."
+      scoop import "$SCOOP_FILE"
+    else
+      echo "No scoop export file found at $SCOOP_FILE"
+    fi
+    ;;
+
   os)
     echo "rebuilding nix..."
     sudo nixos-rebuild switch --flake .
@@ -43,7 +73,7 @@ case "$1" in
     doctoc README.md
     ;;
   *)
-    echo "Usage: $0 {os|dotfiles|clean|toc}"
+    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush}"
     ;;
 esac
 
