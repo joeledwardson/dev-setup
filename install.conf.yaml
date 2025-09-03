@@ -39,6 +39,7 @@
     ~/.config/mpv/input.conf: ./configs/mpv/input.conf
     ~/.config/mpv/scripts: ./configs/mpv/scripts
     ~/.config/yazi: ./configs/yazi
+    ~/.config/mimeapps.list: ./configs/mimeapps.list
 
 
 
