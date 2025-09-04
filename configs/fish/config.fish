@@ -25,18 +25,24 @@ function bw-setup
     end
 
     set current_status "$(bw status | jq -r .status)"
+
     switch $current_status
         case unauthenticated
-            echo "Please log in first"
-            bw login
+            echo "Please log in first with 'bw login' before setting up session"
+            return 1
         case locked
             echo "locked, please unlock..."
-            export BW_SESSION=$(bw unlock --raw)
+            set unlock_result (bw unlock --raw)
+            if test $status -ne 0
+                echo "Failed to unlock!"
+                return 1
+            end
+            set -gx BW_SESSION $unlock_result
         case unlocked
             echo "Already unlocked"
         case '*'
             echo "unknown status $current_status"
-            exit 1
+            return 1
     end
 end
 
