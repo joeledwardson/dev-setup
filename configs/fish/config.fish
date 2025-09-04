@@ -112,6 +112,22 @@ function bw-edit
     echo "Item $selected_id updated successfully"
 end
 
+# copy a file to clipboard
+function copyfile
+    set localpath "$argv[1]"
+
+    # Resolve the full path of the file
+    set fullpath (realpath "$localpath")
+    if test ! -e "$fullpath"
+        echo "Error: Invalid file path" >&2
+        return 1
+    end
+
+    # Copy the file path to the clipboard
+    echo "file://$fullpath" | wl-copy -t text/uri-list
+    echo "File path copied to clipboard: $fullpath"
+end
+
 # Essential tmux aliases
 alias ta='tmux attach' # Attach to a session
 alias ts='tmux new-session -s' # Start new session with name

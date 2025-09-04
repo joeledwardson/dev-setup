@@ -95,3 +95,8 @@ desc = "Rename bookmark by key"
 on = [ "]", "R" ]
 run = "plugin whoosh rename_by_fzf"
 desc = "Rename bookmark by fzf"
+
+# custom copy to clipboard file
+[[mgr.prepend_keymap]]
+on = [ "y" ]
+run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]
