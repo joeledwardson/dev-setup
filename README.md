@@ -4,6 +4,7 @@
 
 - [Development setup](#development-setup)
   - [Utility script](#utility-script)
+  - [Adding a new devices](#adding-a-new-devices)
   - [NixOS setup](#nixos-setup)
   - [Dotfiles](#dotfiles)
   - [Applications](#applications)
@@ -13,12 +14,16 @@
   - [Shell debugging](#shell-debugging)
 - [Nix Notes](#nix-notes)
   - [Repl and Installables](#repl-and-installables)
+    - [Repl](#repl)
+    - [Flake show](#flake-show)
   - [Lookup syntax](#lookup-syntax)
+    - [Loading](#loading)
   - [Nix derivations](#nix-derivations)
 - [Mental Notes](#mental-notes)
   - [Partition Management](#partition-management)
   - [Filesystem labels vs Parition Names](#filesystem-labels-vs-parition-names)
   - [Mount points](#mount-points)
+  - [Loop Devices](#loop-devices)
   - [Linux desktop theming](#linux-desktop-theming)
   - [Linux file permissions](#linux-file-permissions)
     - [Permission Bits Reference](#permission-bits-reference)
@@ -28,6 +33,12 @@
   - [Id and Groups](#id-and-groups)
     - [How /etc/passwd, /etc/group, and /etc/shadow Connect](#how-etcpasswd-etcgroup-and-etcshadow-connect)
     - [File Format Breakdown](#file-format-breakdown)
+  - [Crypography](#crypography)
+  - [Character Encodings](#character-encodings)
+    - [Encodings themselves](#encodings-themselves)
+    - [Character Encoding Examples](#character-encoding-examples)
+    - [Unicode](#unicode)
+    - [Escape Sequences](#escape-sequences)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -185,6 +196,7 @@ Nix is an... interesting language, so these are my notes/thoughts along the way
 
 
 ## Repl and Installables
+### Repl
 According to the docs from `nix repl --help`
 ```
 Synopsis
@@ -198,6 +210,7 @@ Reading the docs for installables [here](https://nix.dev/manual/nix/2.18/command
 
 e.g. `nixpkgs#hello`, or as the `#attrpath` is optional i guess just `nixpkgs`, where we can call `nix repl 'nixpkgs'`
 
+### Flake show
 Now, `nix flake show` shows the outputs of a flake, so we can actually see with nixpkgs (i've trimmed the output as its long)
 ```bash
 ➜ joelyboy dev-setup (main) ✗ nix flake show nixpkgs
@@ -266,6 +279,7 @@ The confusion comes because:
 - `nixpkgs` (the flake) contains `legacyPackages.x86_64-linux` with thousands of packages
 - When you load it in REPL, you see those packages directly
 - But `nixpkgs` itself is the flake, not an output attribute
+
 
 
 
@@ -362,10 +376,104 @@ flowchart TD
     DERIV --> PKG
 ```
 
+### Loading
+`:l` loads a file in the repl, AND makes all vars available (unlike `import` which must be assigned to a variable)
+
+e.g. see how `myAge` is loaded into available variables
+```bash
+joelyboy@desktop-work ~/c/dev-setup (main)> echo "{myAge=31;}" > /tmp/testie.nix
+joelyboy@desktop-work ~/c/dev-setup (main)> nix repl
+Nix 2.28.4
+Type :? for help.
+nix-repl> :l /tmp/testie.nix
+Added 1 variables.
+
+nix-repl> myAge
+31
+
+nix-repl>
+```
+
+### Lambda functions
+e.g.
+```nix
+joelyboy@desktop-work ~/c/dev-setup (main)> nix repl
+Nix 2.28.4
+Type :? for help.
+nix-repl> myFunc = { name }: "Hello ${name}"
+
+nix-repl> myFunc { name = "jollof"; }
+"Hello jollof"
+
+nix-repl>
+```
+
+### Nix override attributes
+the `//` operator overrides attributes
+e.g.
+```nix
+joelyboy@desktop-work ~/c/dev-setup (main)> nix repl
+Nix 2.28.4
+Type :? for help.
+nix-repl> me = { name="jollof"; age=31;}
+
+nix-repl> me // {age=40;}
+{
+  age = 40;
+  name = "jollof";
+}
+
+nix-repl>
+```
+
+### Curried functions
+Basically chained function creation
+e.g. create a function which creates ANOTHER function to add a set number
+```nix
+joelyboy@desktop-work ~/c/dev-setup (main)> nix repl
+Nix 2.28.4
+Type :? for help.
+nix-repl> createAdder = numberToAdd : value : value + numberToAdd
+
+nix-repl> add5 = createAdder 5
+
+nix-repl> add5 12
+17
+
+nix-repl> add3 = createAdder 3
+
+nix-repl> add3 12
+15
+
+nix-repl>
+```
+
+
 ## Nix derivations
 I'm not hoenstly sure exactly what they, except that they are some sort of enclased part of a function/package that runs/does something??
 
 Anyway, an example to create a derivation, "instantiate" it to the store
+
+> A note on heredoc
+The `<<` is a `here-document` (NOT SUPPORED IN FISH! [see here](https://fishshell.com/docs/current/fish_for_bash_users.html#heredocs))
+
+`here-document`s feed a command list to STDIN (hence why it wont work with echo, which doesnt read from stdin!)
+
+
+e.g. count lines with `wc -l`  is a simple example to demonstrate using `heredoc` to feed 4 lines to stdin to `wc` and print line count
+```bash
+[joelyboy@desktop-work:~/coding/dev-setup]$ wc -l << 'ENDHEREPLS'
+> line 1
+> line 2
+> line 3
+> line 4
+> ENDHEREPLS
+4
+
+[joelyboy@desktop-work:~/coding/dev-setup]$
+```
+
+Anyway, continuing...
 
 ```bash
 ➜ jollof mynixdir cat > simple.nix << 'EOF'

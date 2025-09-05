@@ -1,8 +1,7 @@
 # Base NixOS configuration shared by all hosts
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
-let
-in {
+{
 
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -81,8 +80,6 @@ in {
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     ### --- Core system utilities ---
     libnotify # send notifications to daemon
@@ -213,14 +210,16 @@ in {
 
     ### neovim
     neovim
+    ### dependencies for neovim
     ripgrep
     prettierd
     stylua
     nixfmt-classic
-    ### dependencies for neovim
     tree-sitter
     readline
     libedit
+    imagemagick # for image.nvim
+    luajitPackages.magick # lua bindings for imagemagick
 
   ];
 
@@ -315,7 +314,7 @@ in {
     settings = {
       default_session = {
         command =
-          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "greeter";
       };
     };
