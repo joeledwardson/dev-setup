@@ -40,20 +40,20 @@
   # for windows support
   boot.supportedFilesystems = [ "ntfs" ];
 
-  # mount windows from other partition
-  fileSystems."/mnt/jollof/windows" = {
-    device = "/dev/disk/by-label/windows";
-    fsType = "ntfs3";
-    options = [
-      "nofail" # prevent system failure if i typed something wrong
-      "rw"
-      "uid=1000"
-      "gid=100"
-      "dmask=022"
-      "fmask=133"
-    ];
-
-  };
+  # # mount windows from other partition
+  # fileSystems."/mnt/jollof/windows" = {
+  #   device = "/dev/disk/by-label/windows";
+  #   fsType = "ntfs3";
+  #   options = [
+  #     "nofail" # prevent system failure if i typed something wrong
+  #     "rw"
+  #     "uid=1000"
+  #     "gid=100"
+  #     "dmask=022"
+  #     "fmask=133"
+  #   ];
+  #
+  # };
 
   # mount old ubuntu partition
   fileSystems."/mnt/jollof/minty" = {
