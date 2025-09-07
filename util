@@ -65,6 +65,7 @@ case "$1" in
     fi
     restart_hyprland
     echo "done!"
+    # TODO sync brave settings? /home/jollof/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences
     ;;
   clean)
     nix-collect-garbage -d
