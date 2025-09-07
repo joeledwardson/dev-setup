@@ -137,6 +137,7 @@
     hyprpaper # hyprland wallpaper
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications
+    wtype
 
     ### more desktop packages (not specifically hyprland)
     xdg-utils # for "open with..." integrations
@@ -244,6 +245,10 @@
     # Optional: preload models, see https://ollama.com/library
     loadModels = [ "deepseek-r1:1.5b" ];
   };
+
+  # see docs, mullvad requires resolved https://nixos.wiki/wiki/Mullvad_VPN
+  services.mullvad-vpn.enable = true;
+  services.resolved.enable = true;
 
   # add qt styling
   qt = {
