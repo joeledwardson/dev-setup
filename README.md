@@ -1164,3 +1164,16 @@ YAZI_LOG=debug yazi
 
 - Also, can use `;` and `:` to run shell commands for custom application picker
 
+## Shells
+1. Started out with ZSH and spent many many many hours twearing with my `zshrc` file. Ultimately got to something vaguely useful, but it still felt...
+- "hacky", like a few weird keybindings entered a strange non-insert state that left me confused
+- slow to startup (relatively)
+- akward syntax highlighting
+
+2. This led me to fish shell, which just WORKS out the box. but after a while i did notice some quirks that are pretty annoying tbh...
+- completions lacking, case and point `git stash` only has `--help` as a completion. not a good start given how popular git is...
+- `fzf` extension for zsh just... works, its clean easy to read and actually has all the arguments (more of a repetition of the previous point tbh)
+- lacks POSIX compatibility. this is REALLY annoying. its not THAT much better, but writing hyprland scripts (in normal sh) i have to remember its slightly different than fish
+
+
+3. An alternative option is nushell? could be something more modern that supports data types

@@ -157,10 +157,9 @@ bindkey '^W' backward-kill-word  # This will use WORDCHARS
 
 
 autoload -U select-word-style
-select-word-style bash
 
 # only treat . and - as special chars so c-w doesnt delete whole words
-export WORDCHARS='.-'
+export WORDCHARS='.-_'
 
 
 # fzf tab config
