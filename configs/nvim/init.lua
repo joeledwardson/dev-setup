@@ -457,7 +457,7 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
       vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
-      vim.keymap.set('n', '<C-t>', ':tabe<CR>', { desc = 'create tab' })
+      vim.keymap.set('n', '<leader>t', ':tabnew<CR>', { desc = 'create tab' })
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
