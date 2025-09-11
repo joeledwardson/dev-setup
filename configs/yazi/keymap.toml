@@ -1,102 +1,161 @@
-[mgr]
-append_keymap = [
-	{ on = [ "g", "b" ], run = "plugin simple-message",          desc = "Single command with `g => b`" },
-]
-
-# Bookmarks keymaps
+### jollof custom overrides
+#custom copy to clipboard file
 [[mgr.prepend_keymap]]
-on = [ "b", "m" ]
-run = "plugin bookmarks save"
-desc = "Save current position as a bookmark"
+on = [ "c", "b" ]
+run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]
 
 [[mgr.prepend_keymap]]
-on = [ "'" ]
-run = "plugin bookmarks jump"
-desc = "Jump to a bookmark"
+on = [ "g", "?" ]
+run = "help"
+desc = "Open help"
+
+[[help.prepend_keymap]]
+on = [ "/" ]
+run = "filter"
+desc = "Find help.items"
 
 [[mgr.prepend_keymap]]
-on = [ "b", "d" ]
-run = "plugin bookmarks delete"
-desc = "Delete a bookmark"
+on = [ "T" ]
+run = "tab_create $HOME"
+desc = "Create a new tab at home dir"
+
+
+### relative motion plugin bindings
+[[mgr.prepend_keymap]]
+on = [ "1" ]
+run = "plugin relative-motions 1"
+desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "b", "D" ]
-run = "plugin bookmarks delete_all"
-desc = "Delete all bookmarks"
-
-# what size keymaps
-[[mgr.prepend_keymap]]
-on = [ ";", "s" ]
-run  = "plugin what-size"
-desc = "Calc size of selection or cwd"
+on = [ "2" ]
+run = "plugin relative-motions 2"
+desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = "["
-run = "plugin whoosh jump_by_key"
+on = [ "3" ]
+run = "plugin relative-motions 3"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "4" ]
+run = "plugin relative-motions 4"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "5" ]
+run = "plugin relative-motions 5"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "6" ]
+run = "plugin relative-motions 6"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "7" ]
+run = "plugin relative-motions 7"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "8" ]
+run = "plugin relative-motions 8"
+desc = "Move in relative steps"
+
+[[mgr.prepend_keymap]]
+on = [ "9" ]
+run = "plugin relative-motions 9"
+desc = "Move in relative steps"
+
+### cd git root plugin
+[[mgr.prepend_keymap]]
+on   = ["g", "r"]
+run  = "plugin cd-git-root"
+desc = "Go to git repo root"
+
+### projects plugin
+[[mgr.prepend_keymap]]
+on = [ "P", "s" ]
+run = "plugin projects save"
+desc = "Save current project"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "l" ]
+run = "plugin projects load"
+desc = "Load project"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "P" ]
+run = "plugin projects load_last"
+desc = "Load last project"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "d" ]
+run = "plugin projects delete"
+desc = "Delete project"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "D" ]
+run = "plugin projects delete_all"
+desc = "Delete all projects"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "m" ]
+run = "plugin projects 'merge current'"
+desc = "Merge current tab to other projects"
+
+[[mgr.prepend_keymap]]
+on = [ "P", "M" ]
+run = "plugin projects 'merge all'"
+desc = "Merge current project to other projects"
+
+### smart enter plugin, remap enter as its annoying otherwise
+[[mgr.prepend_keymap]]
+on = "<Enter>"
+run = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+### mount manager plugin
+[[mgr.prepend_keymap]]
+on  = "M"
+run = "plugin mount"
+
+### yamb plugin
+[[mgr.prepend_keymap]]
+on = [ "u", "a" ]
+run = "plugin yamb save"
+desc = "Add bookmark"
+
+[[mgr.prepend_keymap]]
+on = [ "u", "g" ]
+run = "plugin yamb jump_by_key"
 desc = "Jump bookmark by key"
 
-# Direct fuzzy search access
 [[mgr.prepend_keymap]]
-on = "}"
-run = "plugin whoosh fuzzy"
-desc = "Direct fuzzy search for bookmarks"
-
-# Basic bookmark operations
-[[mgr.prepend_keymap]]
-on = [ "]", "a" ]
-run = "plugin whoosh save"
-desc = "Add bookmark (hovered file/directory)"
-
-[[mgr.prepend_keymap]]
-on = [ "]", "A" ]
-run = "plugin whoosh save_cwd"
-desc = "Add bookmark (current directory)"
-
-# Temporary bookmarks
-[[mgr.prepend_keymap]]
-on = [ "]", "t" ]
-run = "plugin whoosh save_temp"
-desc = "Add temporary bookmark (hovered file/directory)"
-
-[[mgr.prepend_keymap]]
-on = [ "]", "T" ]
-run = "plugin whoosh save_cwd_temp"
-desc = "Add temporary bookmark (current directory)"
-
-# Jump to bookmarks
-[[mgr.prepend_keymap]]
-on = [ "]", "f" ]
-run = "plugin whoosh jump_by_fzf"
+on = [ "u", "G" ]
+run = "plugin yamb jump_by_fzf"
 desc = "Jump bookmark by fzf"
 
-# Delete bookmarks
 [[mgr.prepend_keymap]]
-on = [ "]", "d" ]
-run = "plugin whoosh delete_by_key"
+on = [ "u", "d" ]
+run = "plugin yamb delete_by_key"
 desc = "Delete bookmark by key"
 
 [[mgr.prepend_keymap]]
-on = [ "]", "D" ]
-run = "plugin whoosh delete_by_fzf"
-desc = "Delete bookmarks by fzf (use TAB to select multiple)"
+on = [ "u", "D" ]
+run = "plugin yamb delete_by_fzf"
+desc = "Delete bookmark by fzf"
 
 [[mgr.prepend_keymap]]
-on = [ "]", "C" ]
-run = "plugin whoosh delete_all"
-desc = "Delete all user bookmarks"
+on = [ "u", "A" ]
+run = "plugin yamb delete_all"
+desc = "Delete all bookmarks"
 
-# Rename bookmarks
 [[mgr.prepend_keymap]]
-on = [ "]", "r" ]
-run = "plugin whoosh rename_by_key"
+on = [ "u", "r" ]
+run = "plugin yamb rename_by_key"
 desc = "Rename bookmark by key"
 
 [[mgr.prepend_keymap]]
-on = [ "]", "R" ]
-run = "plugin whoosh rename_by_fzf"
+on = [ "u", "R" ]
+run = "plugin yamb rename_by_fzf"
 desc = "Rename bookmark by fzf"
-
-# custom copy to clipboard file
-[[mgr.prepend_keymap]]
-on = [ "y" ]
-run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]

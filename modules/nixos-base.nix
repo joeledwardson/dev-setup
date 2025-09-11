@@ -121,6 +121,8 @@
     scrcpy # android screen copy tool
     remmina # RDP tool
     gparted # for when im lazy and dont want to use terminal
+    libreoffice
+    vscode
 
     ### nix specific tools
     nix-tree
@@ -221,6 +223,12 @@
     imagemagick # for image.nvim
     luajitPackages.magick # lua bindings for imagemagick
 
+    ### yazi deps
+    ouch
+    rich-cli
+    exiftool
+    mediainfo
+    poppler-utils # pdftoppm required
   ];
 
   programs.gnupg.agent = {

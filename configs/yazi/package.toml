@@ -4,14 +4,61 @@ rev = "d896656"
 hash = "62251f94eb67648d42cdfcfb8be0fad2"
 
 [[plugin.deps]]
-use = "iynaix/time-travel"
-rev = "7e0179e"
-hash = "69967963fba96295a07b68354fc91ea9"
-
-[[plugin.deps]]
 use = "WhoSowSee/whoosh"
 rev = "49dd966"
 hash = "aab29d8dd949b4802c08598a0ee96d2"
 
-[flavor]
-deps = []
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "a603d9e"
+hash = "e02a788e5b8ae0fb47fd0193dda589cc"
+
+[[plugin.deps]]
+use = "ndtoan96/ouch"
+rev = "0742fff"
+hash = "2bd799b42b8e42b8ef100310be71f8d1"
+
+[[plugin.deps]]
+use = "AnirudhG07/rich-preview"
+rev = "843c3fa"
+hash = "b4040931f0d2f9670ddb4923e55cd881"
+
+[[plugin.deps]]
+use = "ciarandg/cd-git-root"
+rev = "a0e0f4b"
+hash = "b84a85f3b513bd9c0a0ab93cc7c8e4c3"
+
+[[plugin.deps]]
+use = "MasouShizuka/projects"
+rev = "a5e33db"
+hash = "3de26efded35814ba3e55e28f1c389a4"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "d7588f6"
+hash = "56fdabc96fc1f4d53c96eb884b02a5be"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "d7588f6"
+hash = "e1de3054c0d1a2d8dc6f007eadc0fa31"
+
+[[plugin.deps]]
+use = "boydaihungst/mediainfo"
+rev = "2093ab7"
+hash = "16a10359fc2a3cd8cc8bcfbe00f744d3"
+
+[[plugin.deps]]
+use = "macydnah/office"
+rev = "33cc61a"
+hash = "d7e31c616cc6c8a1f05fdff7c47dae98"
+
+[[plugin.deps]]
+use = "h-hg/yamb"
+rev = "22af003"
+hash = "7cc42012a7c2099f80064d228feb8d44"
+
+[[flavor.deps]]
+use = "BennyOe/tokyo-night"
+rev = "5f56364"
+hash = "c0bf69ad2c44005892d586e9693993c6"

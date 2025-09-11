@@ -1153,3 +1153,14 @@ Which (not sure these were designed at the same time), conveniently ties in with
 
 ### Escape Sequences
 To start with the basics, 
+
+## Yazi
+Remember if having problems to use (documented [here](https://yazi-rs.github.io/docs/plugins/overview/#logging))
+```bash
+YAZI_LOG=debug yazi
+```
+
+- Well turns out yazi uses `J` and `K` (caps) to scroll preview, meaning i can't use `K` for preview (same as nvim) unless i rebind those also
+
+- Also, can use `;` and `:` to run shell commands for custom application picker
+
