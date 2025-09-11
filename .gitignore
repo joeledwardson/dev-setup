@@ -17,3 +17,5 @@ smravec-nixos-config
 # simpler to put all repos clonsed for inspiration in a combined sub-dir
 third-party
 
+# dont commit the git repos for yazi packages installed via `ya pkg`
+configs/yazi/plugins
