@@ -1,7 +1,7 @@
 {
   description = "NixOS configuration of joel";
 
-  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable"; };
+  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; };
 
   outputs = { nixpkgs, ... }:
     let

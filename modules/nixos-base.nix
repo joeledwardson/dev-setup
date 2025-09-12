@@ -200,12 +200,12 @@
     jq
     yq-go
     kbd # has showkey
-    # install python3 with llm and its plugins
-    (llm.withPlugins {
-      llm-anthropic = true;
-      llm-ollama = true;
-      llm-openai-plugin = true;
-    })
+    # # install python3 with llm and its plugins
+    # (llm.withPlugins {
+    #   llm-anthropic = true;
+    #   llm-ollama = true;
+    #   llm-openai-plugin = true;
+    # })
     doctoc # for updating my README toc!
 
     ### video processing
@@ -287,7 +287,7 @@
   programs.fish.enable = true;
   programs.zsh.enable = true;
   # set default shell to zsh
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.zsh;
 
   environment.variables = {
     # set default editor to vim
@@ -327,7 +327,7 @@
     settings = {
       default_session = {
         command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "greeter";
       };
     };
