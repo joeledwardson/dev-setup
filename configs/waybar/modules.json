@@ -1,6 +1,6 @@
 {
-  "custom/arch": {
-    "format": "󰣇",
+  "custom/phoenix": {
+    "format": "🐦‍🔥",
     "tooltip": true,
     "tooltip-format": "btw"
   },
@@ -10,11 +10,13 @@
     "all-outputs": false,
     "warp-on-scroll": false,
     "format": "{name} {icon}",
+    "show-special": true,
     "format-icons": {
       "urgent": "",
       "active": "",
       "default": "",
-      "empty": ""
+      "empty": "",
+      "special": "☯"
     }
   },
   "hyprland/window": {
