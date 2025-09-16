@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, lib, ... }:
+{ pkgs, lib, pkgs-unstable, ... }:
 
 {
 
@@ -80,157 +80,162 @@
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    ### --- Core system utilities ---
-    libnotify # send notifications to daemon
-    spice-vdagent # frontend to spice vdagent (clipboard)
+  environment.systemPackages = with pkgs;
+    [
+      ### --- Core system utilities ---
+      libnotify # send notifications to daemon
+      spice-vdagent # frontend to spice vdagent (clipboard)
 
-    ### core terminal utilities
-    git
-    vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
-    wget
-    nix-search-cli # helpful nix-search command
-    pciutils # check pci utils
-    curl
-    unzip
-    parted
-    libinput # input device management tool
-    usbutils # usb utilities (like lsusb)
-    nettools # ifconfig, netstat etc
-    keyd # allows calling keyd manually (useful for keyd monitor etc..)
-    file # get file type
-    dig # has nslookup
-    busybox # has lsof, fuser, killall
+      ### core terminal utilities
+      git
+      vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
+      wget
+      nix-search-cli # helpful nix-search command
+      pciutils # check pci utils
+      curl
+      unzip
+      parted
+      libinput # input device management tool
+      usbutils # usb utilities (like lsusb)
+      nettools # ifconfig, netstat etc
+      keyd # allows calling keyd manually (useful for keyd monitor etc..)
+      file # get file type
+      dig # has nslookup
+      busybox # has lsof, fuser, killall
 
-    ### terminal emulators
-    alacritty
-    kitty
-    wezterm
+      ### terminal emulators
+      alacritty
+      kitty
+      wezterm
 
-    ### graphical applications
-    networkmanagerapplet # includes nm-applet (used in polybar)
-    pavucontrol # pulse audio GTK application (used in polybar)
-    firefox
-    google-chrome
-    brave
-    slack
-    copyq # copy paste manager
-    mpv # new video player
-    bc # software calculator? required for mpv cutter script
-    pinta
-    scrcpy # android screen copy tool
-    remmina # RDP tool
-    gparted # for when im lazy and dont want to use terminal
-    libreoffice
-    vscode
+      ### graphical applications
+      networkmanagerapplet # includes nm-applet (used in polybar)
+      pavucontrol # pulse audio GTK application (used in polybar)
+      firefox
+      google-chrome
+      brave
+      slack
+      copyq # copy paste manager
+      mpv # new video player
+      bc # software calculator? required for mpv cutter script
+      pinta
+      scrcpy # android screen copy tool
+      remmina # RDP tool
+      gparted # for when im lazy and dont want to use terminal
+      libreoffice
+      vscode
 
-    ### nix specific tools
-    nix-tree
-    nix-du
-    devenv
+      ### nix specific tools
+      nix-tree
+      nix-du
+      devenv
 
-    ### Wayland desktop core packages
-    wlr-randr
-    wl-clipboard # Command-line copy/paste utilities
-    grim # Screenshot utility
-    slurp # Region selection tool
-    fuzzel # new launcher to replace rofi/wofi
-    xdg-utils # For xdg-open and similar commands
-    hyprpaper # hyprland wallpaper
-    wev # debug hyprland key events (equivalent of xev on X11)
-    swaynotificationcenter # notifications
-    wtype
+      ### Wayland desktop core packages
+      wlr-randr
+      wl-clipboard # Command-line copy/paste utilities
+      grim # Screenshot utility
+      slurp # Region selection tool
+      fuzzel # new launcher to replace rofi/wofi
+      xdg-utils # For xdg-open and similar commands
+      hyprpaper # hyprland wallpaper
+      wev # debug hyprland key events (equivalent of xev on X11)
+      swaynotificationcenter # notifications
+      wtype
 
-    ### more desktop packages (not specifically hyprland)
-    xdg-utils # for "open with..." integrations
-    hyprshot # screenshotting tool
-    dragon-drop # dray and drop utility
-    kdePackages.dolphin # default GUI file manager
-    kdePackages.qtsvg # svg icons for dolphin
-    tokyonight-gtk-theme # gtk theme
-    flat-remix-icon-theme # icons theme
-    signal-desktop
+      ### more desktop packages (not specifically hyprland)
+      xdg-utils # for "open with..." integrations
+      hyprshot # screenshotting tool
+      dragon-drop # dray and drop utility
+      kdePackages.dolphin # default GUI file manager
+      kdePackages.qtsvg # svg icons for dolphin
+      tokyonight-gtk-theme # gtk theme
+      flat-remix-icon-theme # icons theme
+      signal-desktop
 
-    ### disk management
-    udiskie # for status bar disks
-    ntfs3g # in case of running `ntfslabel` to re-label windows partition
-    exfat # in case of running `exfatlabel` to re-label SD cards etc
+      ### disk management
+      udiskie # for status bar disks
+      ntfs3g # in case of running `ntfslabel` to re-label windows partition
+      exfat # in case of running `exfatlabel` to re-label SD cards etc
 
-    ### languages
-    clojure # for metabase
-    gcc # for nvim kickstart
-    deno
-    uv
-    pipx # use this for poetry so can use shell plugin
-    go
-    nixd
-    fnm
-    lua
+      ### languages
+      clojure # for metabase
+      gcc # for nvim kickstart
+      deno
+      uv
+      pipx # use this for poetry so can use shell plugin
+      go
+      nixd
+      fnm
+      lua
 
-    ### Database tools
-    ruby
-    lazysql
-    pgcli
-    rabbitmq-server
-    postgresql_17
+      ### Database tools
+      ruby
+      lazysql
+      pgcli
+      rabbitmq-server
+      postgresql_17
 
-    ### TUI style tools
-    lazygit
-    lazydocker
-    graphviz # required for madge npm package
-    claude-code
-    yazi # as for now, will be my default file manager
-    tomato-c # pomodoro
-    ncdu
+      ### TUI style tools
+      lazygit
+      lazydocker
+      graphviz # required for madge npm package
+      claude-code
+      tomato-c # pomodoro
+      ncdu
 
-    ### CLI tools
-    tldr
-    bat
-    gh
-    glab
-    tmux
-    fzf
-    dotbot # required for dotfiles configuration
-    google-cloud-sdk
-    bitwarden-cli
-    eza
-    gnumake # provides `make` command
-    fd # alternative to find
-    delta # fancy syntax highlighting and pager for git
-    jq
-    yq-go
-    kbd # has showkey
-    # # install python3 with llm and its plugins
-    # (llm.withPlugins {
-    #   llm-anthropic = true;
-    #   llm-ollama = true;
-    #   llm-openai-plugin = true;
-    # })
-    doctoc # for updating my README toc!
+      ### CLI tools
+      tldr
+      bat
+      gh
+      glab
+      tmux
+      fzf
+      dotbot # required for dotfiles configuration
+      google-cloud-sdk
+      bitwarden-cli
+      eza
+      gnumake # provides `make` command
+      fd # alternative to find
+      delta # fancy syntax highlighting and pager for git
+      jq
+      yq-go
+      kbd # has showkey
+      # # install python3 with llm and its plugins
+      # (llm.withPlugins {
+      #   llm-anthropic = true;
+      #   llm-ollama = true;
+      #   llm-openai-plugin = true;
+      # })
+      doctoc # for updating my README toc!
 
-    ### video processing
-    ffmpeg
+      ### video processing
+      ffmpeg
 
-    ### neovim
-    neovim
-    ### dependencies for neovim
-    ripgrep
-    prettierd
-    stylua
-    nixfmt-classic
-    tree-sitter
-    readline
-    libedit
-    imagemagick # for image.nvim
-    luajitPackages.magick # lua bindings for imagemagick
+      ### neovim
+      neovim
+      ### dependencies for neovim
+      ripgrep
+      prettierd
+      stylua
+      nixfmt-classic
+      tree-sitter
+      readline
+      libedit
+      imagemagick # for image.nvim
+      luajitPackages.magick # lua bindings for imagemagick
 
-    ### yazi deps
-    ouch
-    rich-cli
-    exiftool
-    mediainfo
-    poppler-utils # pdftoppm required
-  ];
+      ### yazi deps
+      ouch
+      rich-cli
+      exiftool
+      mediainfo
+      poppler-utils # pdftoppm required
+    ] ++ (
+      # packages to be built from unstable nixpkgs
+      with pkgs-unstable;
+      [
+        yazi # mediainfo plugin doesnt work with 25.05
+      ]);
 
   programs.gnupg.agent = {
     enable = true;

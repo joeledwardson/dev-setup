@@ -502,6 +502,92 @@ hello
 ➜ jollof mynixdir
 ```
 
+## Nix building
+```bash
+mkdir -p /tmp/testieflake
+cat > /tmp/testieflake/flake.nix << 'EOF'
+{
+  description = "Super simple flake";
+  
+  inputs = {};  # No inputs at all!
+  
+  outputs = { self }: {
+    packages.x86_64-linux.hello = derivation {
+      name = "hello";
+      system = "x86_64-linux";
+      builder = "/bin/sh";
+      args = [ "-c" "echo 'Hello from a flake!' > $out" ];
+    };
+  };
+}
+EOF
+cd /tmp/testieflake
+nix build .#hello
+cat result
+```
+
+and then we get!
+
+```bash
+➜ joelyboy testieflake cd /tmp/testieflake
+nix build .#hello
+cat result
+
+➜ joelyboy testieflake
+```
+
+
+and then we can import it into another flake, this is where the `url` style syntax comes into flakes!
+```bash
+➜ joelyboy myotherflake pwd
+/tmp/myotherflake
+➜ joelyboy myotherflake cat flake.nix
+# /tmp/myotherflake/flake.nix
+{
+  description = "Simpler version";
+
+  inputs = {
+    mytestie.url = "/tmp/testieflake";
+  };
+
+  outputs = { self, mytestie }: {
+    packages.x86_64-linux.combined = mytestie.packages.x86_64-linux.hello;
+  };
+}
+➜ joelyboy myotherflake nix build .#combined --impure
+➜ joelyboy myotherflake cat result
+Hello from a flake!
+➜ joelyboy myotherflake cat flake.lock
+{
+  "nodes": {
+    "mytestie": {
+      "locked": {
+        "lastModified": 1758017036,
+        "narHash": "sha256-xgTGb89vbd5jNRibieQ6ksc2erfI32l0s1T/pL+AHi0=",
+        "path": "/tmp/testieflake",
+        "type": "path"
+      },
+      "original": {
+        "path": "/tmp/testieflake",
+        "type": "path"
+      }
+    },
+    "root": {
+      "inputs": {
+        "mytestie": "mytestie"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
+➜ joelyboy myotherflake
+```
+
+
+
+
+
 # Mental Notes
 Trying to get my head round the crazy world of linux and computers in general
 
