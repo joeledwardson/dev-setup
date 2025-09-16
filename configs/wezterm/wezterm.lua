@@ -61,8 +61,8 @@ config.font = wezterm.font("SpaceMonoNF")
 
 -- Pane focus indication - make inactive panes much more obvious
 config.inactive_pane_hsb = {
-	saturation = 0.2, -- Much less color for inactive panes
-	brightness = 0.1, -- Much darker inactive panes
+	saturation = 0.1, -- Much less color for inactive panes
+	brightness = 0.15, -- Much darker inactive panes
 }
 
 -- Define colors including split lines
@@ -574,8 +574,11 @@ config.key_tables = {
 }
 
 wezterm.on("update-status", function(window, pane)
+	local old_key_table = global_key_table
 	global_key_table = window:active_key_table()
-	print("status of key table updated to: ", global_key_table)
+	if old_key_table ~= global_key_table then
+		print("status of key table updated to: ", global_key_table)
+	end
 end)
 
 -- Finally, return the configuration to wezterm:
