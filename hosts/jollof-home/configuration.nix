@@ -18,7 +18,7 @@
       devices = [ "nodev" ];
       efiSupport = true;
       useOSProber = true;
-      configurationLimit = 5;
+      configurationLimit = 10;
       gfxmodeEfi = "1024x768";
     };
     efi = {
