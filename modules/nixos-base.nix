@@ -7,7 +7,7 @@
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager = {
     enable = true;
-    plugins = with pkgs; [ networkmanager-openvpn ];
+    # plugins = with pkgs; [ networkmanager-openvpn ];
   };
 
   # Configure network proxy if necessary
@@ -260,8 +260,8 @@
   };
 
   # see docs, mullvad requires resolved https://nixos.wiki/wiki/Mullvad_VPN
-  services.mullvad-vpn.enable = true;
-  services.resolved.enable = true;
+  # services.mullvad-vpn.enable = true;
+  # services.resolved.enable = true;
 
   # add qt styling
   qt = {
