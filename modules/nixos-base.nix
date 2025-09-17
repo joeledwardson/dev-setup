@@ -200,12 +200,6 @@
       jq
       yq-go
       kbd # has showkey
-      # # install python3 with llm and its plugins
-      # (llm.withPlugins {
-      #   llm-anthropic = true;
-      #   llm-ollama = true;
-      #   llm-openai-plugin = true;
-      # })
       doctoc # for updating my README toc!
 
       ### video processing
@@ -232,9 +226,15 @@
       poppler-utils # pdftoppm required
     ] ++ (
       # packages to be built from unstable nixpkgs
-      with pkgs-unstable;
-      [
-        yazi # mediainfo plugin doesnt work with 25.05
+      with pkgs-unstable; [
+        # mediainfo plugin doesnt work with 25.05
+        yazi
+        # withPlugins not available on 25.05
+        (llm.withPlugins {
+          llm-anthropic = true;
+          llm-ollama = true;
+          llm-openai-plugin = true;
+        })
       ]);
 
   programs.gnupg.agent = {

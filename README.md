@@ -100,16 +100,20 @@ sudo mkdir -p /mnt/boot
 sudo mount /dev/nvme0n1p1 /mnt/boot
 ```
 10. Generate the hardware configuration
-```
+```bash
 sudo nixos-generate-config --root /mnt
 ```
-11. Copy it into my hosts dir
+10. Set a hostname for convenience later scripts (hostname wont be set yet until nix is built)
+```bash
+export NEW_HOSTNAME=<....>
 ```
-cp /mnt/etc/nixos/hardware-configuration.nix $HOME/dev-setup/hosts/<HOSTNAME-GOES-HERE>/hardware-configuration.nix
+11. Copy it into my hosts dir
+```bash
+cp /mnt/etc/nixos/hardware-configuration.nix "$HOME/dev-setup/hosts/$NEW_HOSTNAME/hardware-configuration.nix"
 ```
 12. Then, can install from the flake in the dev-setup dir (hostname wont be set yet so have to specify it)
-```
-sudo nixos-install --root /mnt --flake .#<HOSTNAME-GOES-HERE>
+```bash
+sudo nixos-install --root /mnt --flake .#$NEW_HOSTNAME
 ```
 13. Remove the USB and reboot, (GRUB should appear) and pick NixOS to boot into
 14. Use the initial `password` to login
