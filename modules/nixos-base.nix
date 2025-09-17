@@ -102,6 +102,7 @@
       file # get file type
       dig # has nslookup
       busybox # has lsof, fuser, killall
+      lsof # better than busybox one (otherwise even lsof -h help isnt available!)
 
       ### terminal emulators
       alacritty
@@ -167,6 +168,7 @@
       nixd
       fnm
       lua
+      glib # contains gio, useful for viewing all mounts (including SMB etc)
 
       ### Database tools
       ruby
@@ -224,6 +226,15 @@
       exiftool
       mediainfo
       poppler-utils # pdftoppm required
+
+      # for gvfs
+      wsdd # needed for samba
+
+      # mtp shite
+      libmtp
+      mtpfs
+      simple-mtpfs
+      jmtpfs
     ] ++ (
       # packages to be built from unstable nixpkgs
       with pkgs-unstable; [
