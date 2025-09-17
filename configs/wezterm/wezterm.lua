@@ -121,6 +121,29 @@ local act = wezterm.action
 -- 	end)
 -- end
 
+--- check pane is available in direction beofre moving, show warning if not
+---@param window Window
+---@param pane Pane
+---@param direction PaneDirection
+local function move_pane(window, pane, direction)
+	local tab = window:active_tab()
+	local new_pane = tab:get_pane_direction(direction)
+	if new_pane == nil then
+		local overrides = window:get_config_overrides() or {}
+		overrides.colors = overrides.colors or {}
+		local colours = overrides.colors
+		colours.background = "rgb(115,5,5)"
+		window:set_config_overrides(overrides)
+		wezterm.time.call_after(0.2, function()
+			local post_overrides = window:get_config_overrides() or {}
+			post_overrides.colors = { background = nil }
+			window:set_config_overrides(post_overrides)
+		end)
+	else
+		window:perform_action(act.ActivatePaneDirection(direction), pane)
+	end
+end
+
 config.keys = {
 	--
 	-- pane splits
@@ -144,19 +167,31 @@ config.keys = {
 	{
 		key = "j",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.ActivatePaneDirection("Down")),
-		action = (act.ActivatePaneDirection("Down")),
+		action = wezterm.action_callback(function(window, pane)
+			move_pane(window, pane, "Down")
+		end),
 	},
-	-- { key = "k", mods = MOD_KEY, action = with_color_update(act.ActivatePaneDirection("Up")) },
-	{ key = "k", mods = MOD_KEY, action = (act.ActivatePaneDirection("Up")) },
+	{
+		key = "k",
+		mods = MOD_KEY,
+		action = wezterm.action_callback(function(window, pane)
+			move_pane(window, pane, "Up")
+		end),
+	},
 	{
 		key = "h",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.ActivatePaneDirection("Left")),
-		action = (act.ActivatePaneDirection("Left")),
+		action = wezterm.action_callback(function(window, pane)
+			move_pane(window, pane, "Left")
+		end),
 	},
-	{ key = "l", mods = MOD_KEY, action = (act.ActivatePaneDirection("Right")) },
-	-- { key = "l", mods = MOD_KEY, action = with_color_update(act.ActivatePaneDirection("Right")) },
+	{
+		key = "l",
+		mods = MOD_KEY,
+		action = wezterm.action_callback(function(window, pane)
+			move_pane(window, pane, "Right")
+		end),
+	},
 	{ key = "q", mods = MOD_KEY, action = act.CloseCurrentPane({ confirm = true }) },
 
 	--
