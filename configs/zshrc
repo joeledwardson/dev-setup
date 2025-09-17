@@ -105,6 +105,12 @@ zinit ice pick"lib/async.zsh" src"dracula.zsh-theme"; zinit light dracula/zsh
 # show hostname
 DRACULA_DISPLAY_CONTEXT=1
 
+# WezTerm shell integration with zinit
+if [[ -n "$WEZTERM_PANE" ]]; then
+    zinit ice wait lucid
+    zinit snippet "https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh"
+fi
+
 # fnm completion and shell
 if command -v fnm >/dev/null; then
   eval "$(fnm env --use-on-cd --shell zsh)"

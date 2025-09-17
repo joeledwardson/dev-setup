@@ -316,6 +316,20 @@ local county = 0
 
 config.key_tables = {
 	copy_mode = {
+		{
+			key = "p",
+			mods = "ALT",
+			action = act.Multiple({
+				act.CopyMode("MoveBackwardSemanticZone"),
+			}),
+		},
+		{
+			key = "n",
+			mods = "ALT",
+			action = act.Multiple({
+				act.CopyMode("MoveForwardSemanticZone"),
+			}),
+		},
 		--
 		-- page up/down navigators (including vim style bindings)
 		-- I added in Ctrl-e and Ctrl-y for 1/4 page movements from wezterm
