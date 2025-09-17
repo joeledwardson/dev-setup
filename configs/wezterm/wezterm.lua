@@ -300,8 +300,6 @@ end
 -- https://wezterm.org/copymode.html
 -- importantly to note though, in the docs when they describe overriding key_tables = { copy_mode = .... }, we are overwriding ALL key tables (not just copy mode)! i.e. it will wipe search mode
 
-local county = 0
-
 --
 -- i copied this and modified it to suit my needs from the copy mode docs page
 -- somewhat confusingly the act.CopyMode is not in
@@ -313,6 +311,50 @@ local county = 0
 -- It seems wezterm will pick up F as F with the 'SHIFT' modifier, not just F alone
 -- But, F with 'NONE' modifier is also added to catch somewhow when 'F' is dispatched without SHIFT
 --
+
+-- store relative motion counter (i.e. the 5 pressed for 5j to go down 5 lines)
+local relative_motion_counter = 0
+
+-- store latest position of cursor
+local latest_position = { x = 0, y = 0 }
+
+---comment
+---@param distance number
+---@param pane Pane
+local function update_motion_counter(distance, pane)
+	local current_position = pane:get_cursor_position()
+
+	-- reset motion counter if moved
+	-- e.g. if someone pressed 4 then control-u and moved up we would want to discard that 4 after movement
+	-- its a less complete way of wrapping every action in a reset of latest position
+	if current_position.x ~= latest_position.x or current_position.y ~= latest_position.y then
+		print(
+			"cursor moved from ",
+			latest_position.x,
+			",",
+			latest_position.y,
+			" to ",
+			current_position.x,
+			",",
+			current_position.y
+		)
+		latest_position = { x = current_position.x, y = current_position.y }
+		relative_motion_counter = 0
+	end
+
+	relative_motion_counter = (relative_motion_counter * 10) + distance
+end
+
+---perform the function passed number of times specified by relative motion counter
+---fallback to 1 if relative motion counter not set
+---@param function function
+local function perform_relative_motion(pls)
+	local count = relative_motion_counter > 0 and relative_motion_counter or 1
+	for i = 1, count do
+		pls()
+	end
+	relative_motion_counter = 0
+end
 
 config.key_tables = {
 	copy_mode = {
@@ -330,10 +372,36 @@ config.key_tables = {
 				act.CopyMode("MoveForwardSemanticZone"),
 			}),
 		},
+		{
+			key = "2",
+			mode = "NONE",
+			action = wezterm.action_callback(function(_, pane)
+				update_motion_counter(2, pane)
+			end),
+		},
+		--TESTIE JOLLOF
+		{
+			key = "s",
+			mode = "NONE",
+			action = wezterm.action_callback(function(window, pane)
+				window:perform_action(act.CopyMode("MoveRight"))
+			end),
+		},
+		--- motion key with counts
+		{ key = "h", mods = "NONE", action = act.CopyMode("MoveLeft") },
+		{ key = "j", mods = "NONE", action = act.CopyMode("MoveDown") },
+		{ key = "k", mods = "NONE", action = act.CopyMode("MoveUp") },
+		{ key = "l", mods = "NONE", action = act.CopyMode("MoveRight") },
+		{ key = "LeftArrow", mods = "NONE", action = act.CopyMode("MoveLeft") },
+		{
+			key = "RightArrow",
+			mods = "NONE",
+			action = act.CopyMode("MoveRight"),
+		},
+		{ key = "UpArrow", mods = "NONE", action = act.CopyMode("MoveUp") },
+		{ key = "DownArrow", mods = "NONE", action = act.CopyMode("MoveDown") },
 		--
 		-- page up/down navigators (including vim style bindings)
-		-- I added in Ctrl-e and Ctrl-y for 1/4 page movements from wezterm
-		--
 		{
 			key = "u",
 			mods = "CTRL",
@@ -428,10 +496,6 @@ config.key_tables = {
 		{
 			key = "c",
 			mods = "CTRL",
-			-- action = with_color_update(act.Multiple({
-			-- 	{ CopyMode = "MoveToScrollbackBottom" },
-			-- 	{ CopyMode = "Close" },
-			-- })),
 			action = (act.Multiple({
 				{ CopyMode = "MoveToScrollbackBottom" },
 				{ CopyMode = "Close" },
@@ -444,10 +508,6 @@ config.key_tables = {
 				{ CopyMode = "MoveToScrollbackBottom" },
 				{ CopyMode = "Close" },
 			})),
-			-- action = with_color_update(act.Multiple({
-			-- 	{ CopyMode = "MoveToScrollbackBottom" },
-			-- 	{ CopyMode = "Close" },
-			-- })),
 		},
 
 		--
@@ -558,10 +618,6 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.CopyMode("MoveToScrollbackTop"),
 		},
-		{ key = "h", mods = "NONE", action = act.CopyMode("MoveLeft") },
-		{ key = "j", mods = "NONE", action = act.CopyMode("MoveDown") },
-		{ key = "k", mods = "NONE", action = act.CopyMode("MoveUp") },
-		{ key = "l", mods = "NONE", action = act.CopyMode("MoveRight") },
 		{
 			key = "o",
 			mods = "NONE",
@@ -576,15 +632,6 @@ config.key_tables = {
 		{ key = "W", mods = "SHIFT", action = act.CopyMode("MoveForwardSemanticZone") },
 		{ key = "W", mods = "NONE", action = act.CopyMode("MoveForwardSemanticZone") },
 		{
-			key = "y",
-			mods = "NONE",
-			action = act.Multiple({
-				{ CopyTo = "ClipboardAndPrimarySelection" },
-				{ CopyMode = "ClearPattern" },
-				{ CopyMode = "ClearSelectionMode" },
-			}),
-		},
-		{
 			key = "End",
 			mods = "NONE",
 			action = act.CopyMode("MoveToEndOfLineContent"),
@@ -594,14 +641,30 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.CopyMode("MoveToStartOfLine"),
 		},
-		{ key = "LeftArrow", mods = "NONE", action = act.CopyMode("MoveLeft") },
+
+		---
+		--- yank commands
+		---
 		{
-			key = "RightArrow",
+			key = "y",
 			mods = "NONE",
-			action = act.CopyMode("MoveRight"),
+			action = act.Multiple({
+				{ CopyTo = "ClipboardAndPrimarySelection" },
+				{ CopyMode = "ClearPattern" },
+				{ CopyMode = "ClearSelectionMode" },
+			}),
 		},
-		{ key = "UpArrow", mods = "NONE", action = act.CopyMode("MoveUp") },
-		{ key = "DownArrow", mods = "NONE", action = act.CopyMode("MoveDown") },
+		-- enter mimics tmux, yank then exit
+		{
+			key = "Enter",
+			mods = "NONE",
+			action = act.Multiple({
+				{ CopyTo = "ClipboardAndPrimarySelection" },
+				{ CopyMode = "ClearPattern" },
+				{ CopyMode = "MoveToScrollbackBottom" },
+				{ CopyMode = "Close" },
+			}),
+		},
 	},
 	search_mode = {
 		{ key = "Enter", mods = "NONE", action = act.CopyMode("PriorMatch") },
