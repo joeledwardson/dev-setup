@@ -67,18 +67,18 @@ autoload -U compinit
 compinit
 
 
-# gcloud completions
-if command -v gcloud >/dev/null && [[ ! -e "$HOME/.local/google-cloud-sdk" ]]; then
-  savepath=$(mktemp)
-  wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz --output-document=$savepath
-  tar -xf $savepath -C "$HOME/.local"
-fi
-
-gcloud_zsh="$HOME/.local/google-cloud-sdk/completion.zsh.inc"
-if [[ -e "$gcloud_zsh" ]]; then
-  source "$gcloud_zsh"
-fi
-
+# # gcloud completions
+# if command -v gcloud >/dev/null && [[ ! -e "$HOME/.local/google-cloud-sdk" ]]; then
+#   savepath=$(mktemp)
+#   wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz --output-document=$savepath
+#   tar -xf $savepath -C "$HOME/.local"
+# fi
+#
+# gcloud_zsh="$HOME/.local/google-cloud-sdk/completion.zsh.inc"
+# if [[ -e "$gcloud_zsh" ]]; then
+#   source "$gcloud_zsh"
+# fi
+#
 # Plugins
 zinit light z-shell/zsh-navigation-tools
 zinit light zsh-users/zsh-autosuggestions

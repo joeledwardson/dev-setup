@@ -339,25 +339,42 @@ local function update_motion_counter(distance, pane)
 			current_position.y
 		)
 		latest_position = { x = current_position.x, y = current_position.y }
+		print("resetting relative motion counter from ", relative_motion_counter, " to 0")
 		relative_motion_counter = 0
 	end
 
-	relative_motion_counter = (relative_motion_counter * 10) + distance
+	-- cap relative at max 1000 (actions are repeated on a loop, dont want to crash my pc...)
+	relative_motion_counter = math.min(1000, (relative_motion_counter * 10) + distance)
 end
 
 ---perform the function passed number of times specified by relative motion counter
 ---fallback to 1 if relative motion counter not set
----@param function function
-local function perform_relative_motion(pls)
+---@param motion function
+local function perform_relative_motion(motion)
 	local count = relative_motion_counter > 0 and relative_motion_counter or 1
-	for i = 1, count do
-		pls()
+	print("performing relative motion by ", count, " counts")
+	for _ = 1, count do
+		motion()
 	end
 	relative_motion_counter = 0
 end
 
+--- Wraps a CopyMode action to support relative motion counts
+---@param action any The CopyMode action to wrap
+---@return any The wrapped action callback
+local function with_relative_motion(action)
+	return wezterm.action_callback(function(window, pane)
+		perform_relative_motion(function()
+			window:perform_action(action, pane)
+		end)
+	end)
+end
+
 config.key_tables = {
 	copy_mode = {
+		--
+		-- move to next/previous command
+		--
 		{
 			key = "p",
 			mods = "ALT",
@@ -372,36 +389,9 @@ config.key_tables = {
 				act.CopyMode("MoveForwardSemanticZone"),
 			}),
 		},
-		{
-			key = "2",
-			mode = "NONE",
-			action = wezterm.action_callback(function(_, pane)
-				update_motion_counter(2, pane)
-			end),
-		},
-		--TESTIE JOLLOF
-		{
-			key = "s",
-			mode = "NONE",
-			action = wezterm.action_callback(function(window, pane)
-				window:perform_action(act.CopyMode("MoveRight"))
-			end),
-		},
-		--- motion key with counts
-		{ key = "h", mods = "NONE", action = act.CopyMode("MoveLeft") },
-		{ key = "j", mods = "NONE", action = act.CopyMode("MoveDown") },
-		{ key = "k", mods = "NONE", action = act.CopyMode("MoveUp") },
-		{ key = "l", mods = "NONE", action = act.CopyMode("MoveRight") },
-		{ key = "LeftArrow", mods = "NONE", action = act.CopyMode("MoveLeft") },
-		{
-			key = "RightArrow",
-			mods = "NONE",
-			action = act.CopyMode("MoveRight"),
-		},
-		{ key = "UpArrow", mods = "NONE", action = act.CopyMode("MoveUp") },
-		{ key = "DownArrow", mods = "NONE", action = act.CopyMode("MoveDown") },
 		--
 		-- page up/down navigators (including vim style bindings)
+		--
 		{
 			key = "u",
 			mods = "CTRL",
@@ -431,18 +421,6 @@ config.key_tables = {
 		-- terminal style keys
 		--
 		{ key = "w", mods = "CTRL", action = act.CopyMode("ClearPattern") },
-		--
-		-- tmux style keys
-		--
-		{
-			key = "Enter",
-			mods = "NONE",
-			action = act.Multiple({
-				{ CopyTo = "ClipboardAndPrimarySelection" },
-				{ CopyMode = "ClearPattern" },
-				{ CopyMode = "ClearSelectionMode" },
-			}),
-		},
 
 		--
 		-- selection mode changes
@@ -513,6 +491,10 @@ config.key_tables = {
 		--
 		-- vim style navigation keys
 		--
+		{ key = "h", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveLeft")) },
+		{ key = "j", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveDown")) },
+		{ key = "k", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveUp")) },
+		{ key = "l", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveRight")) },
 		{
 			key = "$",
 			mods = "NONE",
@@ -602,12 +584,8 @@ config.key_tables = {
 			mods = "SHIFT",
 			action = act.CopyMode("MoveToStartOfLineContent"),
 		},
-		{ key = "b", mods = "NONE", action = act.CopyMode("MoveBackwardWord") },
-		{
-			key = "e",
-			mods = "NONE",
-			action = act.CopyMode("MoveForwardWordEnd"),
-		},
+		{ key = "b", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveBackwardWord")) },
+		{ key = "e", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveForwardWordEnd")) },
 		{
 			key = "f",
 			mods = "NONE",
@@ -628,7 +606,7 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.CopyMode({ JumpForward = { prev_char = true } }),
 		},
-		{ key = "w", mods = "NONE", action = act.CopyMode("MoveForwardWord") },
+		{ key = "w", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveForwardWord")) },
 		{ key = "W", mods = "SHIFT", action = act.CopyMode("MoveForwardSemanticZone") },
 		{ key = "W", mods = "NONE", action = act.CopyMode("MoveForwardSemanticZone") },
 		{
@@ -684,6 +662,19 @@ config.key_tables = {
 		{ key = "DownArrow", mods = "NONE", action = act.CopyMode("NextMatch") },
 	},
 }
+
+--
+-- add number count updators
+--
+for i = 0, 9 do
+	table.insert(config.key_tables.copy_mode, {
+		key = tostring(i),
+		mods = "NONE",
+		action = wezterm.action_callback(function(_, pane)
+			update_motion_counter(i, pane)
+		end),
+	})
+end
 
 wezterm.on("update-status", function(window, pane)
 	local old_key_table = global_key_table

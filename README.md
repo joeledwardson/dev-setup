@@ -1255,6 +1255,7 @@ YAZI_LOG=debug yazi
 - Also, can use `;` and `:` to run shell commands for custom application picker
 
 ## A deep dive into mounting
+### lsmod and `/proc`
 Well, to start with `lsmod` (disclaimer, i stole most notes from [here](https://linuxize.com/post/lsmod-command-in-linux/)
 ```bash
 ➜ jollof dev-setup (main) ✗ lsmod | head -n 5
@@ -1330,6 +1331,7 @@ Ngid:   0
 ➜ jollof dev-setup (main) ✗
 ```
 
+### `/dev` directory
 (From claude), understanding the devices `/dev` directory and its contents:
 ```
 
@@ -1527,3 +1529,7 @@ graph TB
     class Apps apps
     class MTP,NCM,MSC proto
 ```
+
+
+### understanding `socat`
+
