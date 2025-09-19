@@ -82,10 +82,6 @@
 
   environment.systemPackages = with pkgs;
     [
-      ### --- Core system utilities ---
-      libnotify # send notifications to daemon
-      spice-vdagent # frontend to spice vdagent (clipboard)
-
       ### core terminal utilities
       git
       vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
@@ -104,6 +100,7 @@
       busybox # has lsof, fuser, killall
       lsof # better than busybox one (otherwise even lsof -h help isnt available!)
       socat # socket utility
+      sheldon # shell plugins
 
       ### terminal emulators
       alacritty
@@ -132,7 +129,7 @@
       nix-du
       devenv
 
-      ### Wayland desktop core packages
+      ### desktop core packages
       wlr-randr
       wl-clipboard # Command-line copy/paste utilities
       grim # Screenshot utility
@@ -143,8 +140,10 @@
       wev # debug hyprland key events (equivalent of xev on X11)
       swaynotificationcenter # notifications
       wtype
+      libnotify # send notifications to daemon
+      spice-vdagent # frontend to spice vdagent (clipboard)
 
-      ### more desktop packages (not specifically hyprland)
+      ### more desktop packages
       xdg-utils # for "open with..." integrations
       hyprshot # screenshotting tool
       dragon-drop # dray and drop utility

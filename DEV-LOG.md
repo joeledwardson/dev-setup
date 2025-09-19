@@ -18,3 +18,7 @@ This is intended to be for ramblings that are not concise as notes to keep as re
 
 3. An alternative option is nushell? could be something more modern that supports data types
 
+#### Vi mode
+the annoying alt backspace thing in zsh that enters into a strange mode where i can't insert it actually vim mode! (which is actually useful)
+
+Also, pure has a colour change to yellow on the prompt when in vi mode! can use `w`, `b`, (`j` and `k` to select commands), so actually really useful

@@ -48,6 +48,12 @@ case "$1" in
     ya pkg install
     echo "updating fish shell plugins..."
     fish -c "fisher update"
+    # setup tmux plugin manager
+    if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
+      echo "tpm not installing, installing now..."
+      git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    fi
+
     restart_hyprland
     echo "done!"
     ;;

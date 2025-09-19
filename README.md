@@ -18,7 +18,11 @@
     - [Flake show](#flake-show)
   - [Lookup syntax](#lookup-syntax)
     - [Loading](#loading)
+    - [Lambda functions](#lambda-functions)
+    - [Nix override attributes](#nix-override-attributes)
+    - [Curried functions](#curried-functions)
   - [Nix derivations](#nix-derivations)
+  - [Nix building](#nix-building)
 - [Mental Notes](#mental-notes)
   - [Partition Management](#partition-management)
   - [Filesystem labels vs Parition Names](#filesystem-labels-vs-parition-names)
@@ -39,6 +43,15 @@
     - [Character Encoding Examples](#character-encoding-examples)
     - [Unicode](#unicode)
     - [Escape Sequences](#escape-sequences)
+  - [Yazi](#yazi)
+  - [A deep dive into mounting](#a-deep-dive-into-mounting)
+    - [lsmod and `/proc`](#lsmod-and-proc)
+    - [`/dev` directory](#dev-directory)
+    - [Diagram explaining mounting](#diagram-explaining-mounting)
+    - [understanding `socat`](#understanding-socat)
+    - [the `/run` directory](#the-run-directory)
+    - [monitoring kernel (lets try `xhci_hcd`)](#monitoring-kernel-lets-try-xhci_hcd)
+    - [udevadm](#udevadm)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -459,24 +472,6 @@ I'm not hoenstly sure exactly what they, except that they are some sort of encla
 Anyway, an example to create a derivation, "instantiate" it to the store
 
 > A note on heredoc
-The `<<` is a `here-document` (NOT SUPPORED IN FISH! [see here](https://fishshell.com/docs/current/fish_for_bash_users.html#heredocs))
-
-`here-document`s feed a command list to STDIN (hence why it wont work with echo, which doesnt read from stdin!)
-
-
-e.g. count lines with `wc -l`  is a simple example to demonstrate using `heredoc` to feed 4 lines to stdin to `wc` and print line count
-```bash
-[joelyboy@desktop-work:~/coding/dev-setup]$ wc -l << 'ENDHEREPLS'
-> line 1
-> line 2
-> line 3
-> line 4
-> ENDHEREPLS
-4
-
-[joelyboy@desktop-work:~/coding/dev-setup]$
-```
-
 Anyway, continuing...
 
 ```bash
@@ -1383,153 +1378,362 @@ Ngid:   0
 /dev/loop0-7        # Loop devices for mounting images
 ```
 
+### Diagram explaining mounting
+Got this from claude (chat [here]())
 
-```mermaid
-graph TB
-    %% Hardware Layer
-    subgraph Hardware["🔌 Hardware Layer"]
-        GoPro["📷 GoPro HERO10<br/>ID: 2672:0056"]
-        USB["USB Port"]
-        GoPro -->|USB Cable| USB
-    end
-
-    %% What device announces
-    USB -->|Announces| MTP["MTP/PTP Interface<br/>Class: Imaging"]
-    USB -->|Announces| NCM["NCM Interface<br/>Class: Communications"]
-    USB -->|Rarely| MSC["Mass Storage<br/>Class: Storage"]
-
-    %% Kernel Layer
-    subgraph Kernel["🐧 Linux Kernel Layer"]
-        USBSub["USB Subsystem<br/>/sys/bus/usb/"]
-        USBFS["usbfs<br/>/dev/bus/usb/002/002"]
-        FUSE["FUSE Module<br/>/dev/fuse"]
-        CDCDriver["cdc_ncm driver"]
-        USBStorage["usb-storage driver"]
-        
-        USBSub --> USBFS
-        USBSub --> CDCDriver
-        USBSub --> USBStorage
-    end
-
-    MTP --> USBSub
-    NCM --> USBSub
-    MSC --> USBSub
-
-    %% udev Layer
-    subgraph UdevLayer["⚙️ udev Device Manager"]
-        UdevDaemon["udevd<br/>Monitors kernel events"]
-        UdevRules["udev rules<br/>/etc/udev/rules.d/<br/>SUBSYSTEM==usb<br/>VENDOR==2672"]
-        UdevActions["Actions:<br/>• Create device nodes<br/>• Set permissions<br/>• Tag device<br/>• Send D-Bus events"]
-        
-        UdevDaemon --> UdevRules
-        UdevRules --> UdevActions
-    end
-
-    USBSub -->|uevent| UdevDaemon
-
-    %% Libraries Layer
-    subgraph Libraries["📚 Libraries Layer"]
-        LibMTP["libmtp<br/>MTP Protocol"]
-        LibGPhoto["libgphoto2<br/>PTP/Camera"]
-        LibFUSE["libfuse<br/>Filesystem API"]
-        GIO["GIO/GLIB<br/>VFS Abstraction"]
-        DBus["D-Bus<br/>IPC System"]
-    end
-
-    USBFS -->|USB commands| LibMTP
-    USBFS -->|USB commands| LibGPhoto
-    FUSE -->|syscalls| LibFUSE
-    UdevActions -->|events| DBus
-
-    %% MTP Mounting Tools
-    subgraph Mounters["🗂️ MTP Mounting Tools"]
-        subgraph ManualFUSE["Manual FUSE Mounters"]
-            SimpleMTPFS["simple-mtpfs<br/>Basic MTP mounter"]
-            JMTPFS["jmtpfs<br/>Java-based<br/>Better unmount"]
-            GoMTPFS["go-mtpfs<br/>Most reliable<br/>Auto-unmount"]
-        end
-
-        subgraph GVFSSystem["GVFS System"]
-            GVFSMonitor["gvfs-mtp-volume-monitor<br/>Watches D-Bus"]
-            GVFSDMTP["gvfsd-mtp<br/>MTP backend daemon"]
-            GVFSD["gvfsd<br/>Main VFS daemon"]
-            
-            GVFSMonitor --> GVFSDMTP
-            GVFSDMTP --> GVFSD
-        end
-
-        subgraph AutoMount["Auto-mounters"]
-            Udiskie["udiskie<br/>Tray icon<br/>Triggers scripts"]
-            Udevil["udevil/devmon<br/>Native MTP support"]
-            SystemdUnit["systemd units<br/>Custom services"]
-        end
-    end
-
-    %% Library connections to mounters
-    LibMTP --> SimpleMTPFS
-    LibMTP --> JMTPFS
-    LibMTP --> GoMTPFS
-    LibMTP --> GVFSDMTP
-    LibFUSE --> SimpleMTPFS
-    LibFUSE --> JMTPFS
-    LibFUSE --> GoMTPFS
-    LibFUSE --> GVFSD
-    DBus --> GVFSMonitor
-    DBus --> Udiskie
-    GIO --> GVFSD
-
-    %% Mount Points
-    subgraph MountPoints["💾 Mount Points & Access"]
-        FUSEMount["FUSE Mounts<br/>~/gopro<br/>~/mtp<br/>/media/..."]
-        GVFSMount["GVFS Mounts<br/>/run/user/1000/gvfs/<br/>mtp:host=..."]
-        NetworkIface["Network Interface<br/>enp0s13f0u3<br/>172.x.x.x"]
-        DirectUSB["Direct USB Access<br/>/dev/bus/usb/002/002"]
-    end
-
-    SimpleMTPFS --> FUSEMount
-    JMTPFS --> FUSEMount
-    GoMTPFS --> FUSEMount
-    GVFSD --> GVFSMount
-    CDCDriver --> NetworkIface
-    LibGPhoto --> DirectUSB
-
-    %% Applications
-    subgraph Apps["🖥️ Application Layer"]
-        FileManager["File Managers<br/>Dolphin/Thunar"]
-        Terminal["Terminal<br/>ls, cp, rsync"]
-        MediaApps["Media Apps<br/>Video/Photo Editors"]
-        GPhoto2CLI["gphoto2 CLI<br/>Direct camera control"]
-        Browser["Web Browser<br/>For NCM webcam"]
-    end
-
-    FUSEMount --> FileManager
-    FUSEMount --> Terminal
-    FUSEMount --> MediaApps
-    GVFSMount --> FileManager
-    GVFSMount --> Terminal
-    DirectUSB --> GPhoto2CLI
-    NetworkIface --> Browser
-
-    %% Styling
-    classDef hardware fill:#e8f4f8,stroke:#2196F3,stroke-width:2px
-    classDef kernel fill:#f3e5f5,stroke:#9C27B0,stroke-width:2px
-    classDef udev fill:#e8f5e9,stroke:#4CAF50,stroke-width:2px
-    classDef libs fill:#e0f7fa,stroke:#00ACC1,stroke-width:2px
-    classDef mounters fill:#fff3e0,stroke:#FF9800,stroke-width:2px
-    classDef mounts fill:#f1f8e9,stroke:#689F38,stroke-width:2px
-    classDef apps fill:#e3f2fd,stroke:#2196F3,stroke-width:2px
-    classDef proto fill:#fff9c4,stroke:#FFC107,stroke-width:1px
-
-    class Hardware hardware
-    class Kernel kernel
-    class UdevLayer udev
-    class Libraries libs
-    class Mounters mounters
-    class MountPoints mounts
-    class Apps apps
-    class MTP,NCM,MSC proto
+This explains how physical hardware layer and device announemnts links to low level kernel up to the application layer
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Hardware Layer                              │
+├─────────────────────────────────────────────────────────────────────┤
+│  [GoPro HERO10] ──USB──> [USB Port] ──> Announces: MTP/PTP + NCM    │
+└─────────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Linux Kernel Layer                             │
+├─────────────────────────────────────────────────────────────────────┤
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐           │
+│  │ USB Subsystem│───>│    usbfs     │───>│    FUSE      │           │
+│  │ 2672:0056    │    │/dev/bus/usb/*│    │ /dev/fuse    │           │
+│  └──────────────┘    └──────────────┘    └──────────────┘           │
+│         │                    │                    │                 │
+│         │                    │                    │                 │
+│    [cdc_ncm driver]     [No driver -         [Kernel module         │
+│     for networking]      userspace]           for filesystems]      │
+└─────────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    udev (Device Manager)                            │
+├─────────────────────────────────────────────────────────────────────┤
+│  1. Monitors kernel events (uevent)                                 │
+│  2. Applies rules: SUBSYSTEM=="usb", VENDOR=="2672"                 │
+│  3. Tags device: ID_MTP_DEVICE=1, ID_GPHOTO2=1                      │
+│  4. Sends D-Bus events                                              │
+│  5. Can trigger systemd services or scripts                         │
+└─────────────────────────────────────────────────────────────────────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    ▼                          ▼
+┌─────────────────────────────┐   ┌───────────────────────────────────┐
+│     Libraries Layer         │   │    MTP Mounting Tools             │
+├─────────────────────────────┤   ├───────────────────────────────────┤
+│ • libmtp - MTP protocol     │   │ Manual FUSE:                      │
+│ • libgphoto2 - PTP/cameras  │   │ • simple-mtpfs (basic)            │
+│ • libfuse - FUSE operations │   │ • jmtpfs (better unmount)         │
+│ • GIO - VFS abstraction     │   │ • go-mtpfs (most reliable)        │
+│ • D-Bus - IPC messaging     │   │                                   │
+└─────────────────────────────┘   │ Automatic (gvfs):                 │
+            │                     │ • gvfs-mtp-volume-monitor         │
+            │                     │ • gvfsd-mtp (backend)             │
+            └────────────────────>│ • gvfsd (main daemon)             │
+                                  │                                   │
+                                  │ Auto-mounters:                    │
+                                  │ • udiskie (monitors D-Bus)        │
+                                  │ • udevil/devmon (powerful)        │
+                                  │ • systemd services (custom)       │
+                                  └───────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Mount Points & Access                          │
+├─────────────────────────────────────────────────────────────────────┤
+│  FUSE Mounts: ~/gopro, ~/mtp, /media/...                            │
+│  GVFS Mounts: /run/user/1000/gvfs/mtp:host=...                      │
+│  Network: enp0s13f0u3 (172.x.x.x)                                   │
+│  Direct USB: /dev/bus/usb/002/002                                   │
+└─────────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       Application Layer                             │
+├─────────────────────────────────────────────────────────────────────┤
+│  [Dolphin] [Terminal] [Video Editors] [Photo Apps] [gphoto2]        │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 
+
 ### understanding `socat`
+Will give a brief overview of socat, a "relay" to transfer data between channels....
+
+Yeah i have no idea what that means in laymans terms, so will do an example
+
+Using `nc` to listen to port `1234` and print the output
+```bash
+joelyboy@desktop-work ~/c/dev-setup (main)> nc -l localhost 1234
+hello there
+i am jollof
+```
+
+Then, in another terminal, can use socat to redirect `STDIO` > `localhost` port `1234`, where we can see (above) it echoes the output
+
+> Thats me typing the two lines!
+
+```bash
+➜ joelyboy dev-setup (main) ✗ socat STDIO TCP:localhost:1234
+hello there
+i am jollof
+```
+
+### the `/run` directory
+I noticed that `udiskis` mounts to `/run/media/jollof` and i had no idea what the `/run` directory is for, so thought I would ask claude.
+
+Apparently is a temporary filesystem in RAM (hence the mount type `tmpfs`), containing "runtime" information. I.e. cleared every boot
+
+```bash
+➜ joelyboy dev-setup (main) ✗ mount -l | grep "/run "
+tmpfs on /run type tmpfs (rw,nosuid,nodev,size=16437536k,mode=755)
+➜ joelyboy dev-setup (main) ✗
+```
+
+Got a diagram from claude here that shows each subdir of `/run`, including the `/run/media/`
+```
+/run/
+│
+├── /run/user/                 # User-specific runtime data
+│   └── 1000/                   # Per-user directories (by UID)
+│       ├── gvfs/               # GNOME virtual filesystem mounts
+│       ├── systemd/            # User systemd session data
+│       └── dbus/               # User D-Bus session bus
+│
+├── /run/media/                 # Removable media mount points
+│   └── <username>/             # Per-user media mounts
+│       └── USB_DRIVE/          # Mounted removable devices
+│
+├── /run/systemd/               # Systemd runtime state
+│   ├── system/                 # System service runtime data
+│   ├── journal/                # Current boot journal logs
+│   ├── seats/                  # Seat (login station) info
+│   ├── sessions/               # Active session data
+│   └── units/                  # Active unit states
+│
+├── /run/lock/                  # Lock files (prevent duplicate processes)
+│   └── subsys/                 # Subsystem locks
+│
+├── /run/shm/                   # Shared memory (tmpfs)
+│
+├── /run/dbus/                  # D-Bus inter-process communication
+│   └── system_bus_socket       # System bus socket file
+│
+├── /run/udev/                  # Device manager runtime data
+│   ├── data/                   # Device database
+│   └── tags/                   # Device tags/properties
+│
+├── /run/NetworkManager/        # Network manager state
+│   ├── resolv.conf             # Generated DNS config
+│   └── system-connections/     # Runtime connections
+│
+├── /run/mount/                 # Temporary mount points (boot)
+│
+├── /run/tmpfiles.d/            # Temp file/dir creation rules
+│
+├── /run/sshd/                  # SSH daemon runtime files
+│
+└── [service-dirs]/             # Service-specific directories
+    ├── docker/                 # Docker runtime
+    ├── postgresql/             # PostgreSQL PID/socket
+    ├── nginx.pid               # Nginx process ID
+    └── ...                     # Other services as installed
+
+Notes:
+- /run is a tmpfs (RAM-based) filesystem - cleared on reboot
+- Typically limited to ~10% of system RAM
+- Replaced /var/run and /var/lock in modern Linux
+- Available early in boot before other filesystems mount
+```
+
+### monitoring kernel (lets try `xhci_hcd`)
+> xhci_hcd is the linux kernel driver that implements eXtensible Host Controller Interface (i.e USB)
+
+can use dmesg with `-w` to watch for new events, then un-plugging and re-plugging in my keyboard can see the events from the kernel
+```bash
+[343561.764190] usb 3-1: USB disconnect, device number 2
+[343564.059114] usb 3-1: new full-speed USB device number 4 using xhci_hcd
+[343564.208263] usb 3-1: New USB device found, idVendor=3434, idProduct=0142, bcdDevice= 1.00
+[343564.208269] usb 3-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[343564.208272] usb 3-1: Product: Keychron Q4
+[343564.208274] usb 3-1: Manufacturer: Keychron
+[343564.208276] usb 3-1: SerialNumber: 63002200115041593232312000000000
+[343564.225505] input: Keychron Keychron Q4 as /devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-1/3-1:1.0/0003:3434:0142.0008/input/input23
+[343564.306168] hid-generic 0003:3434:0142.0008: input,hidraw0: USB HID v1.11 Keyboard [Keychron Keychron Q4] on usb-0000:0a:00.3-1/input0
+[343564.313513] input: Keychron Keychron Q4 Mouse as /devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-1/3-1:1.1/0003:3434:0142.0009/input/input24
+[343564.313651] input: Keychron Keychron Q4 System Control as /devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-1/3-1:1.1/0003:3434:0142.0009/input/input25
+[343564.364254] input: Keychron Keychron Q4 Consumer Control as /devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-1/3-1:1.1/0003:3434:0142.0009/input/input26
+[343564.364334] input: Keychron Keychron Q4 Keyboard as /devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-1/3-1:1.1/0003:3434:0142.0009/input/input27
+[343564.422199] hid-generic 0003:3434:0142.0009: input,hidraw2: USB HID v1.11 Mouse [Keychron Keychron Q4] on usb-0000:0a:00.3-1/input1
+[343564.429463] hid-generic 0003:3434:0142.000A: hiddev97,hidraw3: USB HID v1.11 Device [Keychron Keychron Q4] on usb-0000:0a:00.3-1/input2
+```
+
+can see that kernal has used `xhci_hcd` to load the device. can get some info about the kernel driver!
+```bash
+➜ joelyboy dev-setup (main) ✗ modinfo xhci_hcd
+filename:       /run/booted-system/kernel-modules/lib/modules/6.12.46/kernel/drivers/usb/host/xhci-hcd.ko.xz
+license:        GPL
+author:         Sarah Sharp
+description:    'eXtensible' Host Controller (xHC) Driver
+depends:
+intree:         Y
+name:           xhci_hcd
+retpoline:      Y
+vermagic:       6.12.46 SMP preempt mod_unload
+parm:           link_quirk:Don't clear the chain bit on a link TRB (int)
+parm:           quirks:Bit flags for quirks to be enabled as default (ullong)
+➜ joelyboy dev-setup (main) ✗
+```
+
+Then, can see the events triggered (see the `/run` dir explanation above for events!) of who is using it?
+
+I don't fully understand this, but can see hyprland is listening to dev input events i guess
+```bash
+➜ joelyboy dev-setup (main) ✗ sudo lsof /dev/input/event* | tail -n 20
+lsof: WARNING: can't stat() fuse.portal file system /run/user/1000/doc
+      Output information may be incomplete.
+lsof: WARNING: can't stat() fuse.gvfsd-fuse file system /run/user/1000/gvfs
+      Output information may be incomplete.
+systemd-l 1147     root  39u   CHR  13,66      0t0  947 /dev/input/event2
+systemd-l 1147     root  40u   CHR  13,67      0t0  948 /dev/input/event3
+systemd-l 1147     root  41u   CHR  13,65      0t0  945 /dev/input/event1
+systemd-l 1147     root  42u   CHR  13,69      0t0  531 /dev/input/event5
+systemd-l 1147     root  43u   CHR  13,70      0t0  532 /dev/input/event6
+systemd-l 1147     root  44u   CHR  13,71      0t0  533 /dev/input/event7
+systemd-l 1147     root  45u   CHR  13,72      0t0  534 /dev/input/event8
+systemd-l 1147     root  46u   CHR  13,75      0t0  644 /dev/input/event11
+.Hyprland 1396 joelyboy  20u   CHR  13,74      0t0  536 /dev/input/event10
+.Hyprland 1396 joelyboy  21u   CHR  13,73      0t0  535 /dev/input/event9
+.Hyprland 1396 joelyboy  24u   CHR  13,64      0t0  943 /dev/input/event0
+.Hyprland 1396 joelyboy  25u   CHR  13,68      0t0  949 /dev/input/event4
+.Hyprland 1396 joelyboy  27u   CHR  13,69      0t0  531 /dev/input/event5
+.Hyprland 1396 joelyboy  28u   CHR  13,70      0t0  532 /dev/input/event6
+.Hyprland 1396 joelyboy  29u   CHR  13,71      0t0  533 /dev/input/event7
+.Hyprland 1396 joelyboy  30u   CHR  13,72      0t0  534 /dev/input/event8
+.Hyprland 1396 joelyboy  31u   CHR  13,75      0t0  644 /dev/input/event11
+.Hyprland 1396 joelyboy 274u   CHR  13,66      0t0  947 /dev/input/event2
+.Hyprland 1396 joelyboy 322u   CHR  13,67      0t0  948 /dev/input/event3
+.Hyprland 1396 joelyboy 342u   CHR  13,65      0t0  945 /dev/input/event1
+➜ joelyboy dev-setup (main) ✗
+```
+
+Then can see some more info about these events
+```bash
+➜ joelyboy dev-setup (main) ✗ cat /sys/class/input/event1/device/name
+Keychron Keychron Q4 Mouse
+➜ joelyboy dev-setup (main) ✗ cat /sys/class/input/event2/device/name
+Keychron Keychron Q4 System Control
+➜ joelyboy dev-setup (main) ✗ cat /sys/class/input/event3/device/name
+Keychron Keychron Q4 Consumer Control
+➜ joelyboy dev-setup (main) ✗
+```
+
+### udevadm
+Can export db as such
+```bash
+➜ joelyboy dev-setup (main) ✗ udevadm info --export-db
+P: /devices/LNXSYSTM:00
+P: /devices/LNXSYSTM:00
+M: LNXSYSTM:00
+R: 00
+J: +acpi:LNXSYSTM:00
+U: acpi
+E: DEVPATH=/devices/LNXSYSTM:00
+E: SUBSYSTEM=acpi
+E: MODALIAS=acpi:LNXSYSTM:
+E: USEC_INITIALIZED=5077194
+E: PATH=/nix/store/wj4z7vsjqv6zsapgrnm0pxslpkk49ddk-udev-path/bin:/nix/store/wj4z7vsjqv6zsap>
+E: ID_VENDOR_FROM_DATABASE=The Linux Foundation
+
+P: /devices/LNXSYSTM:00/LNXPWRBN:00
+...
+
+Or get some info about my other disk drive
+```bash
+➜ joelyboy dev-setup (main) ✗ PAGER="" udevadm info /dev/nvme0n1
+P: /devices/pci0000:00/0000:00:01.1/0000:01:00.0/nvme/nvme0/nvme0n1
+M: nvme0n1
+R: 1
+J: b259:0
+U: block
+T: disk
+D: b 259:0
+N: nvme0n1
+L: 0
+S: disk/by-id/nvme-ADATA_SX8200PNP_2L082LSBB1EF
+S: disk/by-path/pci-0000:01:00.0-nvme-1
+S: disk/by-diskseq/1
+S: disk/by-id/nvme-nvme.1cc1-324c3038324c534242314546-414441544120535838323030504e50-00000001
+S: disk/by-id/nvme-ADATA_SX8200PNP_2L082LSBB1EF_1
+Q: 1
+E: DEVPATH=/devices/pci0000:00/0000:00:01.1/0000:01:00.0/nvme/nvme0/nvme0n1
+E: DEVNAME=/dev/nvme0n1
+E: DEVTYPE=disk
+E: DISKSEQ=1
+E: MAJOR=259
+E: MINOR=0
+E: SUBSYSTEM=block
+E: USEC_INITIALIZED=1075704
+E: PATH=/nix/store/wj4z7vsjqv6zsapgrnm0pxslpkk49ddk-udev-path/bin:/nix/store/wj4z7vsjqv6zsapgrnm0pxslpkk49ddk-udev-path/sbin
+E: ID_SERIAL_SHORT=2L082LSBB1EF
+E: ID_WWN=nvme.1cc1-324c3038324c534242314546-414441544120535838323030504e50-00000001
+E: ID_MODEL=ADATA SX8200PNP
+E: ID_REVISION=42G1TBKA
+E: ID_NSID=1
+E: ID_SERIAL=ADATA_SX8200PNP_2L082LSBB1EF_1
+E: ID_PATH=pci-0000:01:00.0-nvme-1
+E: ID_PATH_TAG=pci-0000_01_00_0-nvme-1
+E: ID_PART_TABLE_UUID=9cd5ed3f-b4ac-4c2f-85cc-669ea1a1ae76
+E: ID_PART_TABLE_TYPE=gpt
+E: DEVLINKS=/dev/disk/by-id/nvme-ADATA_SX8200PNP_2L082LSBB1EF /dev/disk/by-path/pci-0000:01:00.0-nvme-1 /dev/disk/by-diskseq/1 /dev/disk/by-id/nvme-nvme.1cc1-324c3038324c534242314546-414441544120535838323030504e50-00000001 /dev/disk/by-id/nvme-ADATA_SX8200PNP_2L082LSBB1EF_1
+E: TAGS=:systemd:
+E: CURRENT_TAGS=:systemd:
+
+➜ joelyboy dev-setup (main) ✗
+```
+
+## Bash scripting
+### Heredocs
+The `<<` is a `here-document` (NOT SUPPORED IN FISH! [see here](https://fishshell.com/docs/current/fish_for_bash_users.html#heredocs))
+
+`here-document`s feed a command list to STDIN (hence why it wont work with echo, which doesnt read from stdin!)
+
+
+e.g. count lines with `wc -l`  is a simple example to demonstrate using `heredoc` to feed 4 lines to stdin to `wc` and print line count
+```bash
+[joelyboy@desktop-work:~/coding/dev-setup]$ wc -l << 'ENDHEREPLS'
+> line 1
+> line 2
+> line 3
+> line 4
+> ENDHEREPLS
+4
+
+[joelyboy@desktop-work:~/coding/dev-setup]$
+```
+
+###Herestring
+The `<<<` is a here string.
+
+Similarly to `heredoc`, it goes AFTER the command.
+
+It seems pretty similar to piping input with echo, but i found with my `bw-view` and `bw-edit` functions that echo prints newlines!. Thus will break `jq` parsers
+
+A simple demonstration below, we can see a multilint string is printed across multi lines (as expected) with `echo`, whereas with `<<<` it pipes directly in
+> Another addition to using `grep |` is id does not create another process
+```bash
+➜ joelyboy dev-setup (main) ✗   json='{"note":"Line1\nLine2\tTabbed"}'  # Contains \n and \t
+➜ joelyboy dev-setup (main) ✗ echo $json
+{"note":"Line1
+Line2   Tabbed"}
+➜ joelyboy dev-setup (main) ✗ echo $json | jq
+jq: parse error: Invalid string: control characters from U+0000 through U+001F must be escaped at line 2, column 13
+➜ joelyboy dev-setup (main) ✗ echo "$json" | jq
+jq: parse error: Invalid string: control characters from U+0000 through U+001F must be escaped at line 2, column 13
+➜ joelyboy dev-setup (main) ✗ jq <<< "$json"
+{
+  "note": "Line1\nLine2\tTabbed"
+}
+➜ joelyboy dev-setup (main) ✗
+```
+
+Unlike `heredoc`, it only takes a stringle string and does NOT require a delimeter
 
