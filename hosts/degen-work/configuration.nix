@@ -2,9 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
-
-{
+{ config, pkgs, ... }: {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
@@ -17,6 +15,7 @@
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 5;
+      gfxmodeEfi = "1024x768";
     };
     efi = {
       canTouchEfiVariables = true;
@@ -31,8 +30,8 @@
   boot.supportedFilesystems = [ "ntfs" ];
 
   # laptop has 2 disks, the other one has a windows partition on it
-  fileSystems."/mnt/windows-2" = {
-    device = "/dev/disk/by-label/Windows";
+  fileSystems."/mnt/windows" = {
+    device = "/dev/disk/by-label/Acer";
     fsType = "ntfs";
     options = [
       "nofail" # prevent system failure if i typed something wrong
@@ -44,9 +43,6 @@
     ];
   };
 
-  # use CUDA for ollama
-  services.ollama.acceleration = "cuda";
-
   # =======================================
   # Bluetooth Configuration
   # =======================================
@@ -57,34 +53,6 @@
 
   # bluetooth GUI service
   services.blueman.enable = true;
-
-  # =======================================
-  # NVIDIA Configuration
-  # =======================================
-  hardware.graphics = { enable = true; };
-
-  # Load NVIDIA driver for Xorg and Wayland
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    # Modesetting is required for most Wayland compositors
-    modesetting.enable = true;
-
-    # Use the NVidia open source kernel module (for Turing and newer GPUs)
-    # RTX 4070 is Ada Lovelace, so this should work well
-    open = false; # Set to true if you want to try the open source module
-
-    # Enable the Nvidia settings menu
-    nvidiaSettings = true;
-
-    # Optionally, you may select a specific driver version
-    package =
-      config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
-
-    # Enable power management (can cause sleep/suspend issues on some laptops)
-    powerManagement.enable = true;
-    powerManagement.finegrained = false;
-  };
 
   # =======================================
   # Accounts Configuration

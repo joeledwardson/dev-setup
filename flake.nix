@@ -19,7 +19,9 @@
           modules = [
             ./modules/nixos-base.nix
             # lapyop keyboard
-            (import ./modules/nixos-keyd.nix { keyboardIds = [ "0414:8005" ]; })
+            (import ./modules/nixos-keyd.nix {
+              keyboardIds = [ "0001:0001:a33e860f" ];
+            })
             ./hosts/degen-work/configuration.nix
           ];
         };
