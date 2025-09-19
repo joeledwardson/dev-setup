@@ -41,6 +41,20 @@
 
   # bluetooth GUI service
   services.blueman.enable = true;
+
+  # =======================================
+  # MTP Support for Android/Camera devices
+  # =======================================
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
+  
+  # MTP filesystem tools for mounting devices
+  environment.systemPackages = with pkgs; [
+    libmtp
+    jmtpfs
+    go-mtpfs
+  ];
+  
   # =======================================
   # Accounts Configuration
   # =======================================
@@ -49,7 +63,7 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "plugdev" ];
     packages = with pkgs;
       [
         #  thunderbird

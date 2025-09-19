@@ -102,6 +102,8 @@
       file # get file type
       dig # has nslookup
       busybox # has lsof, fuser, killall
+      lsof # better than busybox one (otherwise even lsof -h help isnt available!)
+      socat # socket utility
 
       ### terminal emulators
       alacritty
@@ -167,6 +169,7 @@
       nixd
       fnm
       lua
+      glib # contains gio, useful for viewing all mounts (including SMB etc)
 
       ### Database tools
       ruby
@@ -179,7 +182,6 @@
       lazygit
       lazydocker
       graphviz # required for madge npm package
-      claude-code
       tomato-c # pomodoro
       ncdu
 
@@ -224,9 +226,20 @@
       exiftool
       mediainfo
       poppler-utils # pdftoppm required
+
+      # for gvfs
+      wsdd # needed for samba
+
+      # mtp shite
+      libmtp
+      mtpfs
+      simple-mtpfs
+      jmtpfs
     ] ++ (
       # packages to be built from unstable nixpkgs
       with pkgs-unstable; [
+        # get latest claude code, always releasing new cool stuff
+        claude-code
         # mediainfo plugin doesnt work with 25.05
         yazi
         # withPlugins not available on 25.05

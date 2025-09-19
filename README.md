@@ -1254,16 +1254,282 @@ YAZI_LOG=debug yazi
 
 - Also, can use `;` and `:` to run shell commands for custom application picker
 
-## Shells
-1. Started out with ZSH and spent many many many hours twearing with my `zshrc` file. Ultimately got to something vaguely useful, but it still felt...
-- "hacky", like a few weird keybindings entered a strange non-insert state that left me confused
-- slow to startup (relatively)
-- akward syntax highlighting
+## A deep dive into mounting
+### lsmod and `/proc`
+Well, to start with `lsmod` (disclaimer, i stole most notes from [here](https://linuxize.com/post/lsmod-command-in-linux/)
+```bash
+➜ jollof dev-setup (main) ✗ lsmod | head -n 5
+Module                  Size  Used by
+snd_seq_dummy          12288  0
+snd_hrtimer            12288  1
+snd_seq               118784  7 snd_seq_dummy
+qrtr                   57344  2
+➜ jollof dev-setup (main) ✗
+``
 
-2. This led me to fish shell, which just WORKS out the box. but after a while i did notice some quirks that are pretty annoying tbh...
-- completions lacking, case and point `git stash` only has `--help` as a completion. not a good start given how popular git is...
-- `fzf` extension for zsh just... works, its clean easy to read and actually has all the arguments (more of a repetition of the previous point tbh)
-- lacks POSIX compatibility. this is REALLY annoying. its not THAT much better, but writing hyprland scripts (in normal sh) i have to remember its slightly different than fish
+- The used by means how many instances of module are in use (so `snd_seq_dummy` not in use)
+- Size is in bytes
+
+> Apparently, `lsmod` is just a nice way of formatting `/proc/modules` (where `/proc` 
+
+whereby, `/proc` provides a way to see what the kernel is doing (all files are virtual)
+e.g., see live updating cpu usage!
+```bash
+watch cat /proc/cpuinfo
+......
+➜ jollof dev-setup (main) ✗ lsmod | head -n 5
+Module                  Size  Used by
+snd_seq_dummy          12288  0
+snd_hrtimer            12288  1
+snd_seq               118784  7 snd_seq_dummy
+qrtr                   57344  2
+➜ jollof dev-setup (main) ✗
+```
+
+The next kernel style program is `lsof`, which again interacts with `/proc`
+> busybox version of `lsof` is shite, just ignores all arguments! even help! hence have added own package in 'modules/base.nix`
+
+Can see here really useful way to see which commands and processes are using my current dir
+```bash
+➜ jollof modules (main) ✗ lsof +D $(pwd)
+COMMAND    PID   USER  FD   TYPE DEVICE SIZE/OFF     NODE NAME
+zsh       7981 jollof cwd    DIR  259,6     4096 10093313 /home/jollof/coding/dev-setup/modules
+zsh      86586 jollof cwd    DIR  259,6     4096 10093313 /home/jollof/coding/dev-setup/modules
+yazi     86772 jollof cwd    DIR  259,6     4096 10093313 /home/jollof/coding/dev-setup/modules
+lsof    109769 jollof cwd    DIR  259,6     4096 10093313 /home/jollof/coding/dev-setup/modules
+lsof    109770 jollof cwd    DIR  259,6     4096 10093313 /home/jollof/coding/dev-setup/modules
+➜ jollof modules (main) ✗
+```
+
+or even ports (SSH below)
+```bash
+➜ jollof modules (main) ✗ sudo lsof -i :22
+COMMAND  PID USER FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd    1323 root 6u  IPv4  16466      0t0  TCP *:ssh (LISTEN)
+sshd    1323 root 7u  IPv6  16468      0t0  TCP *:ssh (LISTEN)
+```
+
+or, get some info about an active command!
+
+say i run... `watch cat /proc/cpuinfo`
+
+then, i can grab the PID and get some info!
+```bash
+➜ jollof dev-setup (main) ✗ ps aux | grep cpuinfo
+jollof    111138  0.0  0.0   6536  3196 pts/2    S+   20:53   0:00 watch cat /proc/cpuinfo
+jollof    113364  0.0  0.0   6820  2728 pts/4    S+   20:57   0:00 grep cpuinfo
+➜ jollof dev-setup (main) ✗ cat /proc/111138/cmdline
+watchcat/proc/cpuinfo%                                        ➜ jollof dev-setup (main) ✗ ls /proc/111138/fd
+0  1  2
+➜ jollof dev-setup (main) ✗ cat /proc/111138/cmdline
+➜ jollof dev-setup (main) ✗ cat /proc/111138/status | head -n 5
+Name:   watch
+Umask:  0022
+State:  S (sleeping)
+Tgid:   111138
+Ngid:   0
+➜ jollof dev-setup (main) ✗
+```
+
+### `/dev` directory
+(From claude), understanding the devices `/dev` directory and its contents:
+```
+
+/dev/
+├── block/          # Block devices (disks) - symlinks to actual devices
+│   ├── sda -> ../sda
+│   └── nvme0n1 -> ../nvme0n1
+│
+├── bus/            # Bus-specific devices
+│   ├── usb/        # USB devices by bus/device number
+│   │   └── 002/    # Bus 002
+│   │       └── 002 # Device 002 (your GoPro!)
+│   └── pci/        # PCI devices
+│
+├── char/           # Character devices - symlinks
+│
+├── disk/           # Disk devices organized by type
+│   ├── by-id/      # Disks by unique ID
+│   ├── by-label/   # Disks by filesystem label
+│   ├── by-partlabel/
+│   ├── by-partuuid/
+│   ├── by-path/    # Disks by physical path
+│   └── by-uuid/    # Disks by filesystem UUID
+│
+├── input/          # Input devices (keyboard, mouse, etc)
+│   ├── event0      # Keyboard events
+│   └── mice        # Mouse events
+│
+├── mapper/         # Device mapper (LVM, encrypted volumes)
+│
+├── net/            # Network interfaces (usually empty, use /sys/class/net)
+│
+├── pts/            # Pseudo-terminals (SSH sessions, terminals)
+│
+├── shm/            # Shared memory
+│
+└── snd/            # Sound devices
+
+# Key device files:
+/dev/null           # Discards all data written to it
+/dev/zero           # Provides infinite zeros
+/dev/random         # Random data generator
+/dev/urandom        # Non-blocking random data
+/dev/tty            # Current terminal
+/dev/stdin          # Standard input
+/dev/stdout         # Standard output
+/dev/stderr         # Standard error
+/dev/fuse           # FUSE filesystem interface
+/dev/loop0-7        # Loop devices for mounting images
+```
 
 
-3. An alternative option is nushell? could be something more modern that supports data types
+```mermaid
+graph TB
+    %% Hardware Layer
+    subgraph Hardware["🔌 Hardware Layer"]
+        GoPro["📷 GoPro HERO10<br/>ID: 2672:0056"]
+        USB["USB Port"]
+        GoPro -->|USB Cable| USB
+    end
+
+    %% What device announces
+    USB -->|Announces| MTP["MTP/PTP Interface<br/>Class: Imaging"]
+    USB -->|Announces| NCM["NCM Interface<br/>Class: Communications"]
+    USB -->|Rarely| MSC["Mass Storage<br/>Class: Storage"]
+
+    %% Kernel Layer
+    subgraph Kernel["🐧 Linux Kernel Layer"]
+        USBSub["USB Subsystem<br/>/sys/bus/usb/"]
+        USBFS["usbfs<br/>/dev/bus/usb/002/002"]
+        FUSE["FUSE Module<br/>/dev/fuse"]
+        CDCDriver["cdc_ncm driver"]
+        USBStorage["usb-storage driver"]
+        
+        USBSub --> USBFS
+        USBSub --> CDCDriver
+        USBSub --> USBStorage
+    end
+
+    MTP --> USBSub
+    NCM --> USBSub
+    MSC --> USBSub
+
+    %% udev Layer
+    subgraph UdevLayer["⚙️ udev Device Manager"]
+        UdevDaemon["udevd<br/>Monitors kernel events"]
+        UdevRules["udev rules<br/>/etc/udev/rules.d/<br/>SUBSYSTEM==usb<br/>VENDOR==2672"]
+        UdevActions["Actions:<br/>• Create device nodes<br/>• Set permissions<br/>• Tag device<br/>• Send D-Bus events"]
+        
+        UdevDaemon --> UdevRules
+        UdevRules --> UdevActions
+    end
+
+    USBSub -->|uevent| UdevDaemon
+
+    %% Libraries Layer
+    subgraph Libraries["📚 Libraries Layer"]
+        LibMTP["libmtp<br/>MTP Protocol"]
+        LibGPhoto["libgphoto2<br/>PTP/Camera"]
+        LibFUSE["libfuse<br/>Filesystem API"]
+        GIO["GIO/GLIB<br/>VFS Abstraction"]
+        DBus["D-Bus<br/>IPC System"]
+    end
+
+    USBFS -->|USB commands| LibMTP
+    USBFS -->|USB commands| LibGPhoto
+    FUSE -->|syscalls| LibFUSE
+    UdevActions -->|events| DBus
+
+    %% MTP Mounting Tools
+    subgraph Mounters["🗂️ MTP Mounting Tools"]
+        subgraph ManualFUSE["Manual FUSE Mounters"]
+            SimpleMTPFS["simple-mtpfs<br/>Basic MTP mounter"]
+            JMTPFS["jmtpfs<br/>Java-based<br/>Better unmount"]
+            GoMTPFS["go-mtpfs<br/>Most reliable<br/>Auto-unmount"]
+        end
+
+        subgraph GVFSSystem["GVFS System"]
+            GVFSMonitor["gvfs-mtp-volume-monitor<br/>Watches D-Bus"]
+            GVFSDMTP["gvfsd-mtp<br/>MTP backend daemon"]
+            GVFSD["gvfsd<br/>Main VFS daemon"]
+            
+            GVFSMonitor --> GVFSDMTP
+            GVFSDMTP --> GVFSD
+        end
+
+        subgraph AutoMount["Auto-mounters"]
+            Udiskie["udiskie<br/>Tray icon<br/>Triggers scripts"]
+            Udevil["udevil/devmon<br/>Native MTP support"]
+            SystemdUnit["systemd units<br/>Custom services"]
+        end
+    end
+
+    %% Library connections to mounters
+    LibMTP --> SimpleMTPFS
+    LibMTP --> JMTPFS
+    LibMTP --> GoMTPFS
+    LibMTP --> GVFSDMTP
+    LibFUSE --> SimpleMTPFS
+    LibFUSE --> JMTPFS
+    LibFUSE --> GoMTPFS
+    LibFUSE --> GVFSD
+    DBus --> GVFSMonitor
+    DBus --> Udiskie
+    GIO --> GVFSD
+
+    %% Mount Points
+    subgraph MountPoints["💾 Mount Points & Access"]
+        FUSEMount["FUSE Mounts<br/>~/gopro<br/>~/mtp<br/>/media/..."]
+        GVFSMount["GVFS Mounts<br/>/run/user/1000/gvfs/<br/>mtp:host=..."]
+        NetworkIface["Network Interface<br/>enp0s13f0u3<br/>172.x.x.x"]
+        DirectUSB["Direct USB Access<br/>/dev/bus/usb/002/002"]
+    end
+
+    SimpleMTPFS --> FUSEMount
+    JMTPFS --> FUSEMount
+    GoMTPFS --> FUSEMount
+    GVFSD --> GVFSMount
+    CDCDriver --> NetworkIface
+    LibGPhoto --> DirectUSB
+
+    %% Applications
+    subgraph Apps["🖥️ Application Layer"]
+        FileManager["File Managers<br/>Dolphin/Thunar"]
+        Terminal["Terminal<br/>ls, cp, rsync"]
+        MediaApps["Media Apps<br/>Video/Photo Editors"]
+        GPhoto2CLI["gphoto2 CLI<br/>Direct camera control"]
+        Browser["Web Browser<br/>For NCM webcam"]
+    end
+
+    FUSEMount --> FileManager
+    FUSEMount --> Terminal
+    FUSEMount --> MediaApps
+    GVFSMount --> FileManager
+    GVFSMount --> Terminal
+    DirectUSB --> GPhoto2CLI
+    NetworkIface --> Browser
+
+    %% Styling
+    classDef hardware fill:#e8f4f8,stroke:#2196F3,stroke-width:2px
+    classDef kernel fill:#f3e5f5,stroke:#9C27B0,stroke-width:2px
+    classDef udev fill:#e8f5e9,stroke:#4CAF50,stroke-width:2px
+    classDef libs fill:#e0f7fa,stroke:#00ACC1,stroke-width:2px
+    classDef mounters fill:#fff3e0,stroke:#FF9800,stroke-width:2px
+    classDef mounts fill:#f1f8e9,stroke:#689F38,stroke-width:2px
+    classDef apps fill:#e3f2fd,stroke:#2196F3,stroke-width:2px
+    classDef proto fill:#fff9c4,stroke:#FFC107,stroke-width:1px
+
+    class Hardware hardware
+    class Kernel kernel
+    class UdevLayer udev
+    class Libraries libs
+    class Mounters mounters
+    class MountPoints mounts
+    class Apps apps
+    class MTP,NCM,MSC proto
+```
+
+
+### understanding `socat`
+
