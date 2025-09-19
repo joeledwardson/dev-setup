@@ -81,46 +81,6 @@ config.colors = {
 local MOD_KEY = "ALT"
 local act = wezterm.action
 
--- ---@param window Window
--- ---@param key_table string|nil
--- --- set background to a distinct colour if in copy/search mode
--- local function update_copy_colours(window, key_table)
--- 	local overrides = window:get_config_overrides() or {}
--- 	overrides.colors = overrides.colors or {}
--- 	local colours = overrides.colors
--- 	if key_table == nil then
--- 		-- get the copy mode state directly
--- 		key_table = window:active_key_table()
--- 	end
---
--- 	-- Store the current background to avoid unnecessary updates
--- 	local current_bg = colours.background
--- 	local new_bg = "black"
---
--- 	-- set copy mode background distinct colour
--- 	if key_table == "copy_mode" then
--- 		new_bg = "#332811"
--- 	elseif key_table == "search_mode" then
--- 		new_bg = "#331126"
--- 	end
---
--- 	-- Only update if the color actually changed
--- 	if current_bg ~= new_bg then
--- 		-- colours.background = new_bg
--- 		-- window:set_config_overrides(overrides)
--- 	end
--- end
---
--- --- Wrap an action to update colors after execution
--- --- @param action any The wezterm action to perform
--- --- @param target_key_table string|nil Optional key table to set (if nil, will auto-detect)
--- local function with_color_update(action, target_key_table)
--- 	return wezterm.action_callback(function(window, pane)
--- 		window:perform_action(action, pane)
--- 		update_copy_colours(window, target_key_table)
--- 	end)
--- end
-
 --- check pane is available in direction beofre moving, show warning if not
 ---@param window Window
 ---@param pane Pane
@@ -146,18 +106,37 @@ end
 
 config.keys = {
 	--
+	-- joels custom commands
+	--
+	-- go into copy mode and copy back to last command
+	{
+		key = "p",
+		mods = "ALT|SHIFT",
+		action = wezterm.action_callback(function(window, pane)
+			window:perform_action(act.ActivateCopyMode, pane)
+			window:perform_action(
+				act.Multiple({
+					act.CopyMode("ClearPattern"),
+					act.CopyMode({ SetSelectionMode = "Line" }),
+					act.CopyMode("MoveBackwardSemanticZone"),
+					act.CopyMode("MoveUp"),
+				}),
+				pane
+			)
+		end),
+	},
+
+	--
 	-- pane splits
 	--
 	{
 		key = "v",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.SplitVertical({})),
 		action = act.SplitVertical({}),
 	},
 	{
 		key = "s",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.SplitHorizontal({})),
 		action = (act.SplitHorizontal({})),
 	},
 
@@ -221,14 +200,25 @@ config.keys = {
 	{
 		key = "/",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.Search({ CaseInSensitiveString = "" }), "search_mode"),
-		action = act.Search({ CaseInSensitiveString = "" }),
+		action = wezterm.action_callback(function(window, pane)
+			-- go into search mode first (if string is blank it preserves the old one)
+			window:perform_action(act.Search({ CaseInSensitiveString = "" }), pane)
+			-- now in copy mode, clear the search pattern (doesnt work otherwise)
+			window:perform_action(act.CopyMode("ClearPattern"), pane)
+		end),
 	},
 	{
 		key = "c",
 		mods = MOD_KEY,
-		-- action = with_color_update(act.ActivateCopyMode, "copy_mode"),
-		action = act.ActivateCopyMode,
+		action = wezterm.action_callback(function(window, pane)
+			print("hello!")
+			-- go into search mode first (if string is blank it preserves the old one)
+			window:perform_action(act.ActivateCopyMode, pane)
+			-- now in copy mode, clear the search pattern (doesnt work otherwise)
+			window:perform_action(act.CopyMode("ClearPattern"), pane)
+			-- now go to default selection mode to exit search mode
+			window:perform_action(act.CopyMode({ SetSelectionMode = "Cell" }), pane)
+		end),
 	},
 
 	--
@@ -464,7 +454,6 @@ config.key_tables = {
 				if is_empty then
 					window:perform_action(act.CopyMode("MoveToScrollbackBottom"), pane)
 					window:perform_action(act.CopyMode("Close"), pane)
-					-- update_copy_colours(window)
 					return
 				end
 				window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
@@ -647,9 +636,24 @@ config.key_tables = {
 	search_mode = {
 		{ key = "Enter", mods = "NONE", action = act.CopyMode("PriorMatch") },
 		{ key = "Enter", mods = "SHIFT", action = act.CopyMode("NextMatch") },
-		{ key = "Escape", mods = "NONE", action = act.Multiple({
-			act.ActivateCopyMode,
-		}) },
+		{
+			key = "Escape",
+			mods = "NONE",
+			action = wezterm.action_callback(function(window, pane)
+				-- firstly go from search to copy mode
+				window:perform_action(act.ActivateCopyMode, pane)
+
+				-- then, clear pattern, any selected areas
+				window:perform_action(
+					act.Multiple({
+						act.CopyMode("ClearPattern"),
+						act.ClearSelection,
+						act.CopyMode("ClearSelectionMode"),
+					}),
+					pane
+				)
+			end),
+		},
 		{ key = "c", mods = "CTRL", action = act.CopyMode("Close") },
 		{ key = "n", mods = "CTRL", action = act.CopyMode("NextMatch") },
 		{ key = "p", mods = "CTRL", action = act.CopyMode("PriorMatch") },
