@@ -16,6 +16,9 @@
 [advice]
         addIgnoredFile = false
 
+[pull]
+        rebase = true
+
 [user]
         email = "joel.edwardson1@gmail.com"
         name = "joel"

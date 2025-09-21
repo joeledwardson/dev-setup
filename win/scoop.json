@@ -2,19 +2,23 @@
     "buckets": [
         {
             "Name": "main",
-            "Source": "C:\\Users\\joele\\scoop\\buckets\\main",
-            "Updated": "\/Date(1756748027272)\/",
-            "Manifests": 1403
+            "Source": "https://github.com/ScoopInstaller/Main",
+            "Updated": {
+                "value": "\/Date(1758472164000)\/",
+                "DisplayHint": 2,
+                "DateTime": "21 September 2025 17:29:24"
+            },
+            "Manifests": 1402
         },
         {
             "Name": "extras",
             "Source": "https://github.com/ScoopInstaller/Extras",
             "Updated": {
-                "value": "\/Date(1756744228000)\/",
+                "value": "\/Date(1758039149000)\/",
                 "DisplayHint": 2,
-                "DateTime": "01 September 2025 17:30:28"
+                "DateTime": "16 September 2025 17:12:29"
             },
-            "Manifests": 2180
+            "Manifests": 2183
         }
     ],
     "apps": [
@@ -36,8 +40,8 @@
             "Info": "",
             "Source": "main",
             "Name": "clink",
-            "Version": "1.7.22",
-            "Updated": "\/Date(1756748256131)\/"
+            "Version": "1.8.3",
+            "Updated": "\/Date(1758472221941)\/"
         },
         {
             "Info": "",
