@@ -4,11 +4,10 @@ local wezterm = require("wezterm")
 local global_key_table = ""
 
 local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
--- tabline.setup({})
 tabline.setup({
 	options = {
 		icons_enabled = true,
-		theme = "Catppuccin Mocha",
+		theme = "Apple Classic",
 		tabs_enabled = true,
 		theme_overrides = {},
 		section_separators = {
@@ -81,6 +80,20 @@ config.colors = {
 local MOD_KEY = "ALT"
 local act = wezterm.action
 
+--- make pane background red as a warning briefly
+local function pane_warning(window, pane)
+	local overrides = window:get_config_overrides() or {}
+	overrides.colors = overrides.colors or {}
+	local colours = overrides.colors
+	colours.background = "rgb(115,5,5)"
+	window:set_config_overrides(overrides)
+	wezterm.time.call_after(0.2, function()
+		local post_overrides = window:get_config_overrides() or {}
+		post_overrides.colors = { background = nil }
+		window:set_config_overrides(post_overrides)
+	end)
+end
+
 --- check pane is available in direction beofre moving, show warning if not
 ---@param window Window
 ---@param pane Pane
@@ -89,16 +102,7 @@ local function move_pane(window, pane, direction)
 	local tab = window:active_tab()
 	local new_pane = tab:get_pane_direction(direction)
 	if new_pane == nil then
-		local overrides = window:get_config_overrides() or {}
-		overrides.colors = overrides.colors or {}
-		local colours = overrides.colors
-		colours.background = "rgb(115,5,5)"
-		window:set_config_overrides(overrides)
-		wezterm.time.call_after(0.2, function()
-			local post_overrides = window:get_config_overrides() or {}
-			post_overrides.colors = { background = nil }
-			window:set_config_overrides(post_overrides)
-		end)
+		pane_warning(window, pane)
 	else
 		window:perform_action(act.ActivatePaneDirection(direction), pane)
 	end
@@ -217,7 +221,7 @@ config.keys = {
 			-- now in copy mode, clear the search pattern (doesnt work otherwise)
 			window:perform_action(act.CopyMode("ClearPattern"), pane)
 			-- now go to default selection mode to exit search mode
-			window:perform_action(act.CopyMode({ SetSelectionMode = "Cell" }), pane)
+			window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
 		end),
 	},
 
@@ -360,6 +364,18 @@ local function with_relative_motion(action)
 	end)
 end
 
+---
+---@param window Window
+---@param pane Pane
+---@param direction "up"|"down"
+local function move_paragaph(window, pane, direction)
+	local cursor_y = pane:get_cursor_position().y
+	local move_y = 0
+	while cursor_y - move_y >= 0 do
+		pane:get_logical_lines_as_text(10)
+	end
+end
+
 config.key_tables = {
 	copy_mode = {
 		--
@@ -452,10 +468,12 @@ config.key_tables = {
 				local selected_text = window:get_selection_text_for_pane(pane)
 				local is_empty = not (selected_text and selected_text:len() > 0)
 				if is_empty then
+					print("escape pressed and text empty, quiting copy mode...")
 					window:perform_action(act.CopyMode("MoveToScrollbackBottom"), pane)
 					window:perform_action(act.CopyMode("Close"), pane)
 					return
 				end
+				print("esape pressed, selected text is '", selected_text, "', clearing...")
 				window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
 			end),
 		},
@@ -480,6 +498,22 @@ config.key_tables = {
 		--
 		-- vim style navigation keys
 		--
+		{
+			key = "{",
+			mods = "SHIFT",
+			action = wezterm.action_callback(function(window, pane)
+				window:perform_action(act.Search({ Regex = "^\\s*$" }), pane)
+				-- then, clear pattern, any selected areas
+				window:perform_action(
+					act.Multiple({
+						act.CopyMode("PriorMatch"),
+						act.ClearSelection,
+						act.CopyMode("ClearSelectionMode"),
+					}),
+					pane
+				)
+			end),
+		},
 		{ key = "h", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveLeft")) },
 		{ key = "j", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveDown")) },
 		{ key = "k", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveUp")) },
