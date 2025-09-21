@@ -152,6 +152,7 @@
       tokyonight-gtk-theme # gtk theme
       flat-remix-icon-theme # icons theme
       signal-desktop
+      spotify
 
       ### disk management
       udiskie # for status bar disks

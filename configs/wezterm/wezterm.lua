@@ -502,16 +502,65 @@ config.key_tables = {
 			key = "{",
 			mods = "SHIFT",
 			action = wezterm.action_callback(function(window, pane)
-				window:perform_action(act.Search({ Regex = "^\\s*$" }), pane)
-				-- then, clear pattern, any selected areas
-				window:perform_action(
-					act.Multiple({
-						act.CopyMode("PriorMatch"),
-						act.ClearSelection,
-						act.CopyMode("ClearSelectionMode"),
-					}),
-					pane
-				)
+				local dimensions = pane:get_dimensions()
+				print("Pane dimensions: cols is ", dimensions.cols, ", rows is ", dimensions.rows)
+				print(dimensions)
+
+				local cursor = pane:get_cursor_position()
+				print("Cursor position:", cursor.x, cursor.y, cursor.shape)
+
+				-- Save current selection mode state
+				local current_selection = window:get_selection_text_for_pane(pane)
+				local had_selection = current_selection and current_selection ~= ""
+
+				-- Set to cell mode to get cursor position
+				window:perform_action(act.CopyMode({ SetSelectionMode = "Cell" }), pane)
+				local selection_text = window:get_selection_text_for_pane(pane)
+				print("Selection after cell mode:", selection_text)
+
+				-- Restore previous selection state
+				if had_selection then
+					-- Was already in some selection mode, keep it
+				else
+					-- Clear selection mode back to none
+					window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
+				end
+
+				local end_x = dimensions.cols - 1
+				local end_y = cursor.y
+
+				local text_lines = pane:get_text_from_region(0, 0, end_x, end_y)
+				print("Got text from start to x: ", end_x, ", end y: ", end_y)
+
+				-- Reverse the text and split into lines
+				local reversed_text = text_lines:reverse()
+
+				local go_back_lines = 0
+				local match_found = false
+
+				-- Use gmatch to split into lines and iterate
+				for line in reversed_text:gmatch("([^\n]*)\n?") do
+					go_back_lines = go_back_lines + 1
+					if line == "" then
+						print("got a blank line!")
+						match_found = true
+						break
+					end
+
+					if line:match("^%s*$") then
+						print("Found empty line!")
+						match_found = true
+						break
+					end
+				end
+
+				if not match_found then
+					print(" no match found :( ")
+					return
+				end
+				for _ = 1, go_back_lines do
+					window:perform_action(act.CopyMode("MoveUp"), pane)
+				end
 			end),
 		},
 		{ key = "h", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveLeft")) },
@@ -704,7 +753,7 @@ config.key_tables = {
 --
 -- add number count updators
 --
-for i = 0, 9 do
+for i = 1, 9 do
 	table.insert(config.key_tables.copy_mode, {
 		key = tostring(i),
 		mods = "NONE",
