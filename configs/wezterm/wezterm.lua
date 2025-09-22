@@ -578,7 +578,6 @@ config.key_tables = {
 			action = act.CopyMode("MoveToEndOfLineContent"),
 		},
 		{ key = ",", mods = "NONE", action = act.CopyMode("JumpReverse") },
-		{ key = "0", mods = "NONE", action = act.CopyMode("MoveToStartOfLine") },
 		{ key = ";", mods = "NONE", action = act.CopyMode("JumpAgain") },
 		{
 			key = "F",
@@ -753,12 +752,16 @@ config.key_tables = {
 --
 -- add number count updators
 --
-for i = 1, 9 do
+for i = 0, 9 do
 	table.insert(config.key_tables.copy_mode, {
 		key = tostring(i),
 		mods = "NONE",
-		action = wezterm.action_callback(function(_, pane)
-			update_motion_counter(i, pane)
+		action = wezterm.action_callback(function(window, pane)
+			if i == 0 and relative_motion_counter == 0 then
+				window:perform_action(act.CopyMode("MoveToStartOfLine"), pane)
+			else
+				update_motion_counter(i, pane)
+			end
 		end),
 	})
 end
