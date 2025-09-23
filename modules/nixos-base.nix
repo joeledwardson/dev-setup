@@ -219,6 +219,7 @@
       libedit
       imagemagick # for image.nvim
       luajitPackages.magick # lua bindings for imagemagick
+      sql-formatter
 
       ### yazi deps
       ouch
