@@ -134,12 +134,12 @@ config.keys = {
 	-- pane splits
 	--
 	{
-		key = "v",
+		key = "s",
 		mods = MOD_KEY,
 		action = act.SplitVertical({}),
 	},
 	{
-		key = "s",
+		key = "v",
 		mods = MOD_KEY,
 		action = (act.SplitHorizontal({})),
 	},
