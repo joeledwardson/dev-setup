@@ -15,6 +15,7 @@
 
 [advice]
         addIgnoredFile = false
+# hmm annoying as this is, can just remember to do `git add .`
 
 [pull]
         rebase = true

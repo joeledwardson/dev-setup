@@ -105,7 +105,6 @@
       ### terminal emulators
       alacritty
       kitty
-      wezterm
 
       ### graphical applications
       networkmanagerapplet # includes nm-applet (used in polybar)
@@ -239,6 +238,9 @@
     ] ++ (
       # packages to be built from unstable nixpkgs
       with pkgs-unstable; [
+        # hopefully wezterm pushes some changes to copy mode....
+        wezterm
+
         # get latest claude code, always releasing new cool stuff
         claude-code
         # mediainfo plugin doesnt work with 25.05

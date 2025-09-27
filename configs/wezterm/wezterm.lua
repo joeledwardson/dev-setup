@@ -1,46 +1,9 @@
 -- Pull in the wezterm API (see https://github.com/DrKJeff16/wezterm-types)
 ---@type Wezterm
 local wezterm = require("wezterm")
-local global_key_table = ""
 
-local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
-tabline.setup({
-	options = {
-		icons_enabled = true,
-		theme = "Apple Classic",
-		tabs_enabled = true,
-		theme_overrides = {},
-		section_separators = {
-			left = wezterm.nerdfonts.pl_left_hard_divider,
-			right = wezterm.nerdfonts.pl_right_hard_divider,
-		},
-		component_separators = {
-			left = wezterm.nerdfonts.pl_left_soft_divider,
-			right = wezterm.nerdfonts.pl_right_soft_divider,
-		},
-		tab_separators = {
-			left = wezterm.nerdfonts.pl_left_hard_divider,
-			right = wezterm.nerdfonts.pl_right_hard_divider,
-		},
-	},
-	sections = {
-		tabline_a = { "mode" },
-		tabline_b = { "workspace" },
-		tabline_c = { " " },
-		tab_active = {
-			"index",
-			{ "parent", padding = 0 },
-			"/",
-			{ "cwd", padding = { left = 0, right = 1 } },
-			{ "zoomed", padding = 0 },
-		},
-		tab_inactive = { "index", { "process", padding = { left = 0, right = 1 } } },
-		tabline_x = {},
-		tabline_y = {},
-		tabline_z = { "domain" },
-	},
-	extensions = {},
-})
+--- track "global" status of whether we are in norma/copy or search mode
+local global_key_table = ""
 
 -- Debug: print when config loads
 wezterm.log_info("Loading WezTerm config from dev-setup")
@@ -48,15 +11,8 @@ wezterm.log_info("Loading WezTerm config from dev-setup")
 -- This will hold the configuration.
 ---@type Config
 local config = wezterm.config_builder()
-
--- This is where you actually apply your config choices.
--- For example, changing the initial geometry for new windows: (no idea where this came from)
--- config.initial_cols = 120
--- config.initial_rows = 28
-
--- or, changing the font size and color scheme.
+config.disable_default_key_bindings = true
 config.font = wezterm.font("SpaceMonoNF")
--- config.color_scheme = "AdventureTime"
 
 -- Pane focus indication - make inactive panes much more obvious
 config.inactive_pane_hsb = {
@@ -68,20 +24,27 @@ config.inactive_pane_hsb = {
 config.colors = {
 	compose_cursor = "orange",
 	tab_bar = {
+		background = "#1a202c",
+		active_tab = {
+			bg_color = "#805ad5", -- purple for active tab (default)
+			fg_color = "#ffffff",
+		},
 		inactive_tab = {
 			bg_color = "#1b1032",
 			fg_color = "#808080",
 		},
+		inactive_tab_hover = {
+			bg_color = "#2d3748",
+			fg_color = "#a0aec0",
+		},
 	},
 }
-
--- config.window_background_opacity = 0.8
 
 local MOD_KEY = "ALT"
 local act = wezterm.action
 
 --- make pane background red as a warning briefly
-local function pane_warning(window, pane)
+local function pane_warning(window)
 	local overrides = window:get_config_overrides() or {}
 	overrides.colors = overrides.colors or {}
 	local colours = overrides.colors
@@ -102,11 +65,44 @@ local function move_pane(window, pane, direction)
 	local tab = window:active_tab()
 	local new_pane = tab:get_pane_direction(direction)
 	if new_pane == nil then
-		pane_warning(window, pane)
+		pane_warning(window)
 	else
 		window:perform_action(act.ActivatePaneDirection(direction), pane)
 	end
 end
+
+--- same as `ActivateTabRelative` but flashes error if at end rather than wrapping around
+---@param window  Window
+---@param pane Pane
+---@param direction 'left' | 'right'
+local function move_relative_tab(window, pane, direction)
+	print("hi!, moving ", direction)
+	local tabs = window:mux_window():tabs()
+	print(tabs)
+	local active_id = window:active_tab():tab_id()
+	local last_index = #tabs
+	local pos = nil
+
+	for i = 1, last_index do
+		local tab_id = tabs[i]:tab_id()
+		if tab_id == active_id then
+			pos = i
+			break
+		end
+	end
+	print("pos: ", pos, ", tabs: ", last_index, ", direction: ", direction)
+
+	if not pos or (pos == 1 and direction == "left") or (pos == last_index and direction == "right") then
+		pane_warning(window)
+	else
+		window:perform_action(act.ActivateTabRelative(direction == "right" and 1 or -1), pane)
+	end
+end
+
+-- Add the plugin
+-- doesnt work?
+-- TODO
+-- local pivot_panes = wezterm.plugin.require("https://github.com/chrisgve/pivot_panes.wezterm")
 
 config.keys = {
 	--
@@ -118,10 +114,16 @@ config.keys = {
 		mods = "ALT|SHIFT",
 		action = wezterm.action_callback(function(window, pane)
 			window:perform_action(act.ActivateCopyMode, pane)
+			local selected_text = window:get_selection_text_for_pane(pane)
+			if selected_text == "" then
+				-- empty text, reset copy mode and enable it
+				window:perform_action(
+					act.Multiple({ act.CopyMode("ClearSelectionMode"), act.CopyMode({ SetSelectionMode = "Line" }) }),
+					pane
+				)
+			end
 			window:perform_action(
 				act.Multiple({
-					act.CopyMode("ClearPattern"),
-					act.CopyMode({ SetSelectionMode = "Line" }),
 					act.CopyMode("MoveBackwardSemanticZone"),
 					act.CopyMode("MoveUp"),
 				}),
@@ -143,6 +145,8 @@ config.keys = {
 		mods = MOD_KEY,
 		action = (act.SplitHorizontal({})),
 	},
+	-- plugin doesnt work
+	-- { key = "i", mods = MOD_KEY, action = wezterm.action_callback(pivot_panes.toggle_orientation_callback) },
 
 	--
 	-- pane navigation
@@ -180,8 +184,20 @@ config.keys = {
 	--
 	-- tab navigation
 	--
-	{ key = "]", mods = MOD_KEY, action = act.ActivateTabRelative(1) },
-	{ key = "[", mods = MOD_KEY, action = act.ActivateTabRelative(-1) },
+	{
+		key = "]",
+		mods = MOD_KEY,
+		action = wezterm.action_callback(function(window, pane, ...)
+			move_relative_tab(window, pane, "right")
+		end),
+	},
+	{
+		key = "[",
+		mods = MOD_KEY,
+		action = wezterm.action_callback(function(window, pane, ...)
+			move_relative_tab(window, pane, "left")
+		end),
+	},
 	{ key = "t", mods = MOD_KEY, action = act.SpawnTab("CurrentPaneDomain") },
 	{ key = "z", mods = MOD_KEY, action = act.TogglePaneZoomState },
 	{
@@ -244,7 +260,11 @@ config.keys = {
 		mods = "ALT|SHIFT",
 		action = act.ActivateCommandPalette,
 	},
+	{ key = "l", mods = "CTRL|SHIFT", action = act.ShowDebugOverlay },
+	{ key = "v", mods = "CTRL|SHIFT", action = act.PasteFrom("Clipboard") },
+	{ key = "Insert", mods = "SHIFT", action = act.PasteFrom("Clipboard") },
 }
+
 -- format table title using [Z] if zoomed and show copy mode status
 -- > took inspiration from format-window-title https://wezterm.org/config/lua/window-events/format-window-title.html
 wezterm.on("format-tab-title", function(tab, pane, tabs, panes, config)
@@ -263,11 +283,13 @@ wezterm.on("format-tab-title", function(tab, pane, tabs, panes, config)
 		formatted = formatted .. " [Z]"
 	end
 
-	if global_key_table == "copy_mode" then
-		formatted = "[COPY MODE] " .. formatted
-	end
+	-- this doesnt work as it will do it for every tab!
+	-- i.e. every tab will have its title appended as we are not distinguishing key tables between tabs
+	-- so if tab 1 in copy mode, tab2,3,4 not, then all 4 tabs will say [COPY MODE] zsh or whatever...
+	-- if global_key_table == "copy_mode" then
+	-- 	formatted = "[COPY MODE] " .. formatted
+	-- end
 
-	print("FORMATTED TAB TITLE TO BE: ", formatted)
 	return formatted
 end)
 
@@ -364,15 +386,41 @@ local function with_relative_motion(action)
 	end)
 end
 
----
 ---@param window Window
 ---@param pane Pane
 ---@param direction "up"|"down"
 local function move_paragaph(window, pane, direction)
-	local cursor_y = pane:get_cursor_position().y
-	local move_y = 0
-	while cursor_y - move_y >= 0 do
-		pane:get_logical_lines_as_text(10)
+	-- Get initial newline count
+	local selection = window:get_selection_text_for_pane(pane)
+	local _, initial_count = selection:gsub("\n", "")
+	-- if string blank then maybe no selection, maybe not in selection mode? either way clear and re-enter
+	-- otherwise entering line mode (if already in line selection mode) will clear it!
+	if selection == "" then
+		window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
+		window:perform_action(act.CopyMode({ SetSelectionMode = "Line" }), pane)
+	end
+	print("got initial count as: ", initial_count)
+
+	-- count of lines ONCE we encounter some new non-blank content
+	local latest_count = nil
+
+	for i = 1, 500 do
+		print("processing row: ", i)
+		window:perform_action(act.CopyMode(direction == "up" and "MoveUp" or "MoveDown"), pane)
+		local new_selection = window:get_selection_text_for_pane(pane)
+		local _, new_count = new_selection:gsub("\n", "")
+
+		-- check we have gone past a new paragrph of non-blank lines (latest count not nil)
+		-- AND if the count of lines we just got matches the latest one then we must have a blank line!
+		if latest_count ~= nil and new_count == latest_count then
+			break
+		end
+
+		-- set the latest of lines IF we've gone past a block of non-blank liens
+		if new_count ~= initial_count then
+			print("updating count, got some new data!: ", new_count)
+			latest_count = new_count
+		end
 	end
 end
 
@@ -469,8 +517,16 @@ config.key_tables = {
 				local is_empty = not (selected_text and selected_text:len() > 0)
 				if is_empty then
 					print("escape pressed and text empty, quiting copy mode...")
-					window:perform_action(act.CopyMode("MoveToScrollbackBottom"), pane)
-					window:perform_action(act.CopyMode("Close"), pane)
+					window:perform_action(
+						act.Multiple({
+							act.ClearSelection,
+							{ CopyMode = "ClearPattern" },
+							{ CopyMode = "ClearSelectionMode" },
+							{ CopyMode = "MoveToScrollbackBottom" },
+							{ CopyMode = "Close" },
+						}),
+						pane
+					)
 					return
 				end
 				print("esape pressed, selected text is '", selected_text, "', clearing...")
@@ -502,67 +558,17 @@ config.key_tables = {
 			key = "{",
 			mods = "SHIFT",
 			action = wezterm.action_callback(function(window, pane)
-				local dimensions = pane:get_dimensions()
-				print("Pane dimensions: cols is ", dimensions.cols, ", rows is ", dimensions.rows)
-				print(dimensions)
-
-				local cursor = pane:get_cursor_position()
-				print("Cursor position:", cursor.x, cursor.y, cursor.shape)
-
-				-- Save current selection mode state
-				local current_selection = window:get_selection_text_for_pane(pane)
-				local had_selection = current_selection and current_selection ~= ""
-
-				-- Set to cell mode to get cursor position
-				window:perform_action(act.CopyMode({ SetSelectionMode = "Cell" }), pane)
-				local selection_text = window:get_selection_text_for_pane(pane)
-				print("Selection after cell mode:", selection_text)
-
-				-- Restore previous selection state
-				if had_selection then
-					-- Was already in some selection mode, keep it
-				else
-					-- Clear selection mode back to none
-					window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
-				end
-
-				local end_x = dimensions.cols - 1
-				local end_y = cursor.y
-
-				local text_lines = pane:get_text_from_region(0, 0, end_x, end_y)
-				print("Got text from start to x: ", end_x, ", end y: ", end_y)
-
-				-- Reverse the text and split into lines
-				local reversed_text = text_lines:reverse()
-
-				local go_back_lines = 0
-				local match_found = false
-
-				-- Use gmatch to split into lines and iterate
-				for line in reversed_text:gmatch("([^\n]*)\n?") do
-					go_back_lines = go_back_lines + 1
-					if line == "" then
-						print("got a blank line!")
-						match_found = true
-						break
-					end
-
-					if line:match("^%s*$") then
-						print("Found empty line!")
-						match_found = true
-						break
-					end
-				end
-
-				if not match_found then
-					print(" no match found :( ")
-					return
-				end
-				for _ = 1, go_back_lines do
-					window:perform_action(act.CopyMode("MoveUp"), pane)
-				end
+				move_paragaph(window, pane, "up")
 			end),
 		},
+		{
+			key = "}",
+			mods = "SHIFT",
+			action = wezterm.action_callback(function(window, pane)
+				move_paragaph(window, pane, "down")
+			end),
+		},
+
 		{ key = "h", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveLeft")) },
 		{ key = "j", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveDown")) },
 		{ key = "k", mods = "NONE", action = with_relative_motion(act.CopyMode("MoveUp")) },
@@ -699,6 +705,7 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.Multiple({
 				{ CopyTo = "ClipboardAndPrimarySelection" },
+				act.ClearSelection,
 				{ CopyMode = "ClearPattern" },
 				{ CopyMode = "ClearSelectionMode" },
 			}),
@@ -709,7 +716,9 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.Multiple({
 				{ CopyTo = "ClipboardAndPrimarySelection" },
+				act.ClearSelection,
 				{ CopyMode = "ClearPattern" },
+				{ CopyMode = "ClearSelectionMode" },
 				{ CopyMode = "MoveToScrollbackBottom" },
 				{ CopyMode = "Close" },
 			}),
@@ -731,6 +740,8 @@ config.key_tables = {
 						act.CopyMode("ClearPattern"),
 						act.ClearSelection,
 						act.CopyMode("ClearSelectionMode"),
+						-- normally cursor goes to end of word and we want to be at start!
+						act.CopyMode("MoveBackwardWord"),
 					}),
 					pane
 				)
@@ -772,6 +783,73 @@ wezterm.on("update-status", function(window, pane)
 	if old_key_table ~= global_key_table then
 		print("status of key table updated to: ", global_key_table)
 	end
+
+	-- Create mode indicator with colors
+	local mode_text = "NORMAL"
+	local bg_color = "#2d3748" -- dark gray
+	local fg_color = "#a0aec0" -- light gray
+
+	if global_key_table == "copy_mode" then
+		mode_text = "COPY"
+		bg_color = "#0066ff" -- much more striking bright blue
+		fg_color = "#ffffff"
+	elseif global_key_table == "search_mode" then
+		mode_text = "SEARCH"
+		bg_color = "#ffa500" -- bright orange/yellow
+		fg_color = "#000000"
+	end
+
+	-- Update active tab colors based on mode
+	local overrides = window:get_config_overrides() or {}
+	overrides.colors = overrides.colors or {}
+	overrides.colors.tab_bar = overrides.colors.tab_bar or {}
+
+	if global_key_table == "copy_mode" then
+		overrides.colors.tab_bar.active_tab = {
+			bg_color = "#0066ff", -- same striking blue
+			fg_color = "#ffffff",
+		}
+	elseif global_key_table == "search_mode" then
+		overrides.colors.tab_bar.active_tab = {
+			bg_color = "#ffa500", -- same bright orange
+			fg_color = "#000000",
+		}
+	else
+		overrides.colors.tab_bar.active_tab = {
+			bg_color = "#805ad5", -- purple for normal mode
+			fg_color = "#ffffff",
+		}
+	end
+
+	-- Add cursor color based on mode
+	if global_key_table == "copy_mode" then
+		overrides.colors.cursor_bg = "#0066ff"
+		overrides.colors.cursor_fg = "#ffffff"
+	elseif global_key_table == "search_mode" then
+		overrides.colors.cursor_bg = "#ffa500"
+		overrides.colors.cursor_fg = "#000000"
+	else
+		overrides.colors.cursor_bg = "#805ad5"
+		overrides.colors.cursor_fg = "#ffffff"
+	end
+
+	window:set_config_overrides(overrides)
+
+	-- Set the left status with colored mode indicator
+	window:set_left_status(wezterm.format({
+		{ Background = { Color = bg_color } },
+		{ Foreground = { Color = fg_color } },
+		{ Text = " " .. mode_text .. " " },
+		{ Background = { Color = "none" } },
+		{ Foreground = { Color = bg_color } },
+		{ Text = "" }, -- powerline separator
+		"ResetAttributes",
+	}))
+
+	-- Force refresh every 200ms to keep status updated
+	wezterm.time.call_after(0.2, function()
+		window:set_right_status("")
+	end)
 end)
 
 -- Finally, return the configuration to wezterm:
