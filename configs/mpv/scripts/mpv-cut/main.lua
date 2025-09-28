@@ -77,7 +77,8 @@ local function get_transpose(rotate_value)
 		return "transpose=clock"
 	end
 	if rotate_value == 180 then
-		return "hflip"
+		-- rotate twice
+		return "transpose=clock,transpose=clock"
 	end
 
 	if rotate_value == 270 then
