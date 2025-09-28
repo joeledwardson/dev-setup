@@ -170,6 +170,35 @@ Some of the configurations are built from scratch, some based off a templated, o
 - `waybar` shamelessy stolen from https://github.com/d00m1k/SimpleBlueColorWaybar
 - `swaync` shamelessy stolen from https://github.com/schererleander/hyprdots
 
+## Windows installation
+(Yes i know, windows.....)
+
+But we all have to use it sometimes. So i'm minimizing the pain with 2 windows specific additions to the utility `util` with
+- `sh util winpush`
+- `sh util winpull`
+(it's a bash script so need to run it with `sh` from busybox on windows)
+
+But firstly, for the initial setup, need to install scoop and clone the repo
+
+> Command to install scoop [was copied from here](https://scoop.sh/)
+```cmd
+echo "installing scoop....."
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+echo "done installing scoop!"
+echo ""
+
+echo "installing git..."
+winget install -e --id Git.Git
+
+echo "getting repo...."
+git clone https://github.com/joeledwardson/dev-setup.git
+
+echo "running package installers..."
+cd dev-setup && bash util winpull
+```
+
+
 ## Applications
 The `applications` directory is symlinked via `dotbot` to my "custom" directory in `~/.local/share/applications/`.
 

@@ -2,11 +2,11 @@
     "buckets": [
         {
             "Name": "main",
-            "Source": "https://github.com/ScoopInstaller/Main",
+            "Source": "https://github.com/ScoopInstaller/Main.git",
             "Updated": {
-                "value": "\/Date(1758472164000)\/",
+                "value": "\/Date(1758731414000)\/",
                 "DisplayHint": 2,
-                "DateTime": "21 September 2025 17:29:24"
+                "DateTime": "24 September 2025 17:30:14"
             },
             "Manifests": 1402
         },
@@ -14,11 +14,11 @@
             "Name": "extras",
             "Source": "https://github.com/ScoopInstaller/Extras",
             "Updated": {
-                "value": "\/Date(1758039149000)\/",
+                "value": "\/Date(1758731381000)\/",
                 "DisplayHint": 2,
-                "DateTime": "16 September 2025 17:12:29"
+                "DateTime": "24 September 2025 17:29:41"
             },
-            "Manifests": 2183
+            "Manifests": 2185
         }
     ],
     "apps": [
@@ -27,70 +27,70 @@
             "Source": "main",
             "Name": "7zip",
             "Version": "25.01",
-            "Updated": "\/Date(1756748128346)\/"
+            "Updated": "\/Date(1758740596705)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "busybox",
             "Version": "5579-g5749feb35",
-            "Updated": "\/Date(1756748277993)\/"
+            "Updated": "\/Date(1758740597954)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "clink",
             "Version": "1.8.3",
-            "Updated": "\/Date(1758472221941)\/"
+            "Updated": "\/Date(1758740608809)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "ffmpeg",
             "Version": "8.0",
-            "Updated": "\/Date(1756748407674)\/"
+            "Updated": "\/Date(1758740623650)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "gh",
-            "Version": "2.78.0",
-            "Updated": "\/Date(1756748461306)\/"
+            "Version": "2.80.0",
+            "Updated": "\/Date(1758740627417)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "git",
             "Version": "2.51.0",
-            "Updated": "\/Date(1756748149650)\/"
+            "Updated": "\/Date(1758740647410)\/"
         },
         {
             "Info": "",
             "Source": "extras",
             "Name": "mpv",
-            "Version": "0.39.0",
-            "Updated": "\/Date(1756748454451)\/"
+            "Version": "0.40.0",
+            "Updated": "\/Date(1758740654555)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "vim",
             "Version": "9.1.0",
-            "Updated": "\/Date(1756753350519)\/"
+            "Updated": "\/Date(1758740662883)\/"
         },
         {
             "Info": "",
             "Source": "extras",
             "Name": "wezterm",
             "Version": "20240203-110809-5046fc22",
-            "Updated": "\/Date(1756749450848)\/"
+            "Updated": "\/Date(1758740680688)\/"
         },
         {
             "Info": "",
             "Source": "main",
             "Name": "yazi",
             "Version": "25.5.31",
-            "Updated": "\/Date(1756748206733)\/"
+            "Updated": "\/Date(1758740683266)\/"
         }
     ]
 }

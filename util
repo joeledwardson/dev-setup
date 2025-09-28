@@ -28,7 +28,7 @@ case "$1" in
   winpull)
     if [[ -f "$WINGET_FILE" ]]; then
       echo "Importing winget packages..."
-      winget import --import-file "$WINGET_FILE"
+      winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "$WINGET_FILE"
     else
       echo "No winget export file found at $WINGET_FILE"
     fi
