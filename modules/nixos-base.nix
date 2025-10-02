@@ -80,6 +80,12 @@
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
+  # Enable swap (8GB universal size for all systems)
+  swapDevices = [{
+    device = "/var/lib/swapfile";
+    size = 8 * 1024; # 8 GiB
+  }];
+
   environment.systemPackages = with pkgs;
     [
       ### core terminal utilities
@@ -101,6 +107,7 @@
       lsof # better than busybox one (otherwise even lsof -h help isnt available!)
       socat # socket utility
       sheldon # shell plugins
+      lm_sensors # temperature monitoring
 
       ### terminal emulators
       alacritty
@@ -219,6 +226,7 @@
       imagemagick # for image.nvim
       luajitPackages.magick # lua bindings for imagemagick
       sql-formatter
+      sqls
 
       ### yazi deps
       ouch
