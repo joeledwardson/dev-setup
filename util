@@ -79,8 +79,17 @@ case "$1" in
   toc)
     doctoc README.md
     ;;
+  copybrave)
+    echo "checking scratchpads dir is created..."
+    mkdir -p scratchpads
+    echo "copying brave preferences file..."
+    cp ~/.config/BraveSoftware/Brave-Browser/Default/Preferences ./scratchpads/brave-preferences.json
+    echo "fomratting brave preferences...."
+    cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
+    ;;
+
   *)
-    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush}"
+    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush|copybrave}"
     ;;
 esac
 
