@@ -670,6 +670,7 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
+        -- postgres_lsp = {},
         -- denols = {
         --   -- Only activate Deno for projects with deno.json files
         --   root_markers = { 'deno.json', 'deno.jsonc' },

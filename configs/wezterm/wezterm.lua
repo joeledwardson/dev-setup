@@ -117,10 +117,8 @@ config.keys = {
 			local selected_text = window:get_selection_text_for_pane(pane)
 			if selected_text == "" then
 				-- empty text, reset copy mode and enable it
-				window:perform_action(
-					act.Multiple({ act.CopyMode("ClearSelectionMode"), act.CopyMode({ SetSelectionMode = "Line" }) }),
-					pane
-				)
+				window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
+				window:perform_action(act.CopyMode({ SetSelectionMode = "Line" }), pane)
 			end
 			window:perform_action(
 				act.Multiple({

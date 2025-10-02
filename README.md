@@ -1739,7 +1739,7 @@ e.g. count lines with `wc -l`  is a simple example to demonstrate using `heredoc
 [joelyboy@desktop-work:~/coding/dev-setup]$
 ```
 
-###Herestring
+### Herestring
 The `<<<` is a here string.
 
 Similarly to `heredoc`, it goes AFTER the command.
