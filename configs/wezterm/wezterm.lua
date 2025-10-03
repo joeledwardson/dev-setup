@@ -694,6 +694,11 @@ config.key_tables = {
 			mods = "NONE",
 			action = act.CopyMode("MoveToStartOfLine"),
 		},
+		{
+			key = "/",
+			modes = "NONE",
+			action = act.Search({ CaseInSensitiveString = "" }),
+		},
 
 		---
 		--- yank commands
