@@ -71,31 +71,49 @@ local function move_pane(window, pane, direction)
 	end
 end
 
+--- get 1 based index of active tab (0) if not found
+---@param window  Window
+local function get_tab_index(window)
+	local tabs = window:mux_window():tabs()
+	local active_id = window:active_tab():tab_id()
+
+	for i = 1, #tabs do
+		local tab_id = tabs[i]:tab_id()
+		if tab_id == active_id then
+			return i
+		end
+	end
+	return 0
+end
+
 --- same as `ActivateTabRelative` but flashes error if at end rather than wrapping around
 ---@param window  Window
 ---@param pane Pane
 ---@param direction 'left' | 'right'
-local function move_relative_tab(window, pane, direction)
+local function focus_relative_tab(window, pane, direction)
 	print("hi!, moving ", direction)
-	local tabs = window:mux_window():tabs()
-	print(tabs)
-	local active_id = window:active_tab():tab_id()
-	local last_index = #tabs
-	local pos = nil
-
-	for i = 1, last_index do
-		local tab_id = tabs[i]:tab_id()
-		if tab_id == active_id then
-			pos = i
-			break
-		end
-	end
+	local pos = get_tab_index(window)
+	local last_index = #window:mux_window():tabs()
 	print("pos: ", pos, ", tabs: ", last_index, ", direction: ", direction)
 
 	if not pos or (pos == 1 and direction == "left") or (pos == last_index and direction == "right") then
 		pane_warning(window)
 	else
 		window:perform_action(act.ActivateTabRelative(direction == "right" and 1 or -1), pane)
+	end
+end
+
+--- same as `MoveTabRelative` but flashes error if at end rather than wrapping around
+---@param window  Window
+---@param pane Pane
+---@param direction 'left' | 'right'
+local function move_relative_tab(window, pane, direction)
+	print("hi there pls!")
+	local current_index = get_tab_index(window)
+	window:perform_action(act.MoveTabRelative(direction == "left" and -1 or 1), pane)
+	local new_index = get_tab_index(window)
+	if current_index == new_index then
+		pane_warning(window)
 	end
 end
 
@@ -186,14 +204,28 @@ config.keys = {
 		key = "]",
 		mods = MOD_KEY,
 		action = wezterm.action_callback(function(window, pane, ...)
-			move_relative_tab(window, pane, "right")
+			focus_relative_tab(window, pane, "right")
 		end),
 	},
 	{
 		key = "[",
 		mods = MOD_KEY,
 		action = wezterm.action_callback(function(window, pane, ...)
+			focus_relative_tab(window, pane, "left")
+		end),
+	},
+	{
+		key = "{",
+		mods = "SHIFT|ALT",
+		action = wezterm.action_callback(function(window, pane, ...)
 			move_relative_tab(window, pane, "left")
+		end),
+	},
+	{
+		key = "}",
+		mods = "SHIFT|ALT",
+		action = wezterm.action_callback(function(window, pane, ...)
+			move_relative_tab(window, pane, "right")
 		end),
 	},
 	{ key = "t", mods = MOD_KEY, action = act.SpawnTab("CurrentPaneDomain") },
