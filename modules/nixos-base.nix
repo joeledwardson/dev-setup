@@ -168,12 +168,14 @@
       ### languages
       clojure # for metabase
       gcc # for nvim kickstart
-      deno
       uv
       pipx # use this for poetry so can use shell plugin
       go
       nixd
-      fnm
+      # GOING TO TRY DOING THE NIXOS WAY
+      # fnm
+      # deno
+      nodejs_22 # add nodejs global just for claude code
       lua
       glib # contains gio, useful for viewing all mounts (including SMB etc)
 
@@ -248,9 +250,6 @@
       with pkgs-unstable; [
         # hopefully wezterm pushes some changes to copy mode....
         wezterm
-
-        # get latest claude code, always releasing new cool stuff
-        claude-code
         # mediainfo plugin doesnt work with 25.05
         yazi
         # withPlugins not available on 25.05
@@ -260,6 +259,8 @@
           llm-openai-plugin = true;
         })
       ]);
+
+  programs.direnv = { enable = true; };
 
   programs.gnupg.agent = {
     enable = true;
@@ -318,11 +319,6 @@
     ];
   };
 
-  # fnm uses dynamic linked executables which requires a hack to work
-  # TODO move to nix flakes for node versions
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [ fnm ];
-
   programs.fish.enable = true;
   programs.zsh.enable = true;
   # set default shell to zsh
@@ -341,6 +337,7 @@
     XDG_STATE_HOME = "$HOME/.local/state";
     # custom directory as per dotbot configuration
     ZDOTDIR = "$HOME/.config/zsh";
+    PATH = [ "$HOME/.npm-global/bin" ];
   };
 
   # Some programs need SUID wrappers, can be configured further or are

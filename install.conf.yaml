@@ -41,6 +41,7 @@
     ~/.config/yazi: ./configs/yazi
     ~/.config/mimeapps.list: ./configs/mimeapps.list
     ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
+    ~/.npmrc: ./configs/npmrc
 
 
 
