@@ -1267,6 +1267,114 @@ Which (not sure these were designed at the same time), conveniently ties in with
 
 ### Escape Sequences
 To start with the basics, 
+This page is REALLY useful to explain, see [here](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797)
+
+To start with, apparently most of these weird "escape" sequences to do weird and wonderful things with the terminal start with the escape character
+
+Can see from [the ASCII table](https://www.ascii-code.com/) that escape is decimal 27 (as a quick refresher as these come in many formats and i always forget what they are):
+- decimal: `27`
+- octal: `033` or `\033` (3 + 3*8) = 27
+- HEX: `0x1B` (16 + 11) = 27
+
+> like `0x...` is the standard prefix for hex, `\0...` is the standard prefix for octal
+
+The example i will be running with today is an OSC (operating system command?) whith apparently starts with `ESC ]`
+
+so...., in octal that is `\033]`
+
+Somewhat confusingly `\0` is a special sequence with octal, but `\` in general indicates the start of a escape character in terminal.
+I.e. all the following are for the bell symbol
+```bash
+  printf "\a"
+  printf "\007"
+  printf "\x07"
+```
+Now `\007` is just decimal 7, same as `\x07` for hex 7, but the `C-escape` code (as seen in [escape codes gist](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797)) is a C esacpe code? theres only a few, most of which im already familiar with:
+- `\r` for carriages return
+- `\n` for newline 
+etc...
+
+Now putting it together, lets use one of his simple examples. move cursor down # lines is `ESC[#B`.
+
+So...., with the 
+1. `\` to enter escape sequence
+2. `\033` for escape in octal form
+3. `[` to specify CSI
+4. `6B` for 6 lines
+```bash
+➜ jollof dev-setup (main) ✗   printf "\033[6B"
+
+
+
+
+
+
+➜ jollof dev-setup (main) ✗
+```
+
+
+Nice!
+
+Ok well apparently that wasnt the best example. terminal needs screen available to go down? not really sure how this works but that command ^ doesnt always work unless theres text to navigate through? i.e. we've previously navigated UP and THEN we have text to navigate down....
+
+This is perhaps a clearer example..., print 10 numbers
+```bash
+➜ jollof dev-setup (main) ✗ for i in {1..10}; do echo $i; done
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+➜ jollof dev-setup (main) ✗
+```
+Now after running `printf "\033[6A"`, can see its removed 6 lines "up" so to speak!
+```bash
+➜ jollof dev-setup (main) ✗ for i in {1..10}; do echo $i; done
+1
+2
+3
+4
+5
+➜ jollof dev-setup (main) ✗
+```
+
+[The wiki page](https://en.wikipedia.org/wiki/ANSI_escape_code) has perhaps a more complete table of how to format these CSI commands.
+
+For example the cursor up/down comands do not have termination. just
+```
+CSI n A   => Cursor Up	
+CSI n B   => Cursor Down
+CSI n C   => Cursor Forward
+CSI n D   => Cursor Back
+```
+
+BUT for SGR (select graphic rendition) the format is `CSI n m`, where `n` is the action? and `m` is the termination. and actions can be separated by semicolons.
+
+Thus the example in the ithub gist becomes must more clear:
+```
+\x1b[1;31m  # Set style to bold, red foreground.
+```
+Where 1 is bold, 31 is foreground red and m is termination.
+
+Thus, can do a little example with red foreground and magenta background!!
+
+> Will need to run myself to see the colours...
+
+```bash
+➜ jollof dev-setup (main) ✗ printf "\033[1;32;45mHello from red FG and magenta BG\033[0m\n"
+Hello from red FG and magenta BG
+➜ jollof dev-setup (main) ✗
+```
+
+Theres a great imae that shows the colour codes that can be used for both foreground AND background belo
+
+<img src="https://i.sstatic.net/9UVnC.png" />
+
 
 ## Yazi
 Remember if having problems to use (documented [here](https://yazi-rs.github.io/docs/plugins/overview/#logging))
