@@ -148,6 +148,7 @@ config.keys = {
 		end),
 	},
 
+
 	--
 	-- pane splits
 	--

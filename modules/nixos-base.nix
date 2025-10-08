@@ -108,6 +108,7 @@
       socat # socket utility
       sheldon # shell plugins
       lm_sensors # temperature monitoring
+      openssl
 
       ### terminal emulators
       alacritty
@@ -159,6 +160,8 @@
       flat-remix-icon-theme # icons theme
       signal-desktop
       spotify
+      gimp
+      lazpaint
 
       ### disk management
       udiskie # for status bar disks

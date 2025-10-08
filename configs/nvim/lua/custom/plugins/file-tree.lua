@@ -16,7 +16,7 @@ return {
       hijack_cursor = true,
       hijack_netrw = true,
       sync_root_with_cwd = true,
-      hijack_unnamed_buffer_when_opening = true,
+      -- hijack_unnamed_buffer_when_opening = true,
       auto_reload_on_write = true,
       diagnostics = {
         enable = false,
@@ -28,6 +28,7 @@ return {
       actions = {
         open_file = {
           resize_window = true,
+          quit_on_open = true
         },
       },
       update_focused_file = {
