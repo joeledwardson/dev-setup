@@ -4,6 +4,9 @@
       "vertical_tabs_collapsed": true,
       "vertical_tabs_enabled": true,
       "vertical_tabs_on_right": true
+    },
+    "accelerators": {
+      "56215": ["Control+BracketRight"]
     }
   },
   "account_values": {
@@ -14,8 +17,5 @@
     "autofillable_credentials_profile_store_login_database": false
   },
   "default_private_search_provider_guid": "485bf7d3-0215-45af-87dc-538868000001",
-  "default_search_provider": { "guid": "485bf7d3-0215-45af-87dc-538868000001" },
-  "accelerators": {
-    "56215": ["Control+BracketRight"]
-  }
+  "default_search_provider": { "guid": "485bf7d3-0215-45af-87dc-538868000001" }
 }

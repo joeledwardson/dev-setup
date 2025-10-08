@@ -1,8 +1,12 @@
 #!/bin/sh
+set -e
 
 WIN_DIR="win"
 WINGET_FILE="$WIN_DIR/winget.json"
 SCOOP_FILE="$WIN_DIR/scoop.json"
+BRAVE_FILE="$HOME/.config/BraveSoftware/Brave-Browser/Default/Preferences"
+BRAVE_WORK="$HOME/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences"
+
 
 mkdir -p "$WIN_DIR"
 
@@ -83,13 +87,30 @@ case "$1" in
     echo "checking scratchpads dir is created..."
     mkdir -p scratchpads
     echo "copying brave preferences file..."
-    cp ~/.config/BraveSoftware/Brave-Browser/Default/Preferences ./scratchpads/brave-preferences.json
-    echo "fomratting brave preferences...."
+    cp $BRAVE_FILE ./scratchpads/brave-preferences.json
+    echo "formatting brave preferences...."
     cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
+    ;;
+  applybrave)
+    echo "getting temp file..."
+    myfile=$(mktemp)
+    echo "$myfile"
+    echo "applying custom configs to temp file"
+    jq -s '.[0] * .[1]' "$BRAVE_FILE" ./configs/brave/custom.json > "$myfile"
+    echo "copying back to brave settings file"
+    mv "$myfile" "$BRAVE_FILE"
+
+    echo "running again for work profile..."
+    workfile=$(mktemp)
+    echo "$workfile"
+    jq -s '.[0] * .[1]' "$BRAVE_WORK" ./configs/brave/custom.json > "$workfile"
+    mv "$workfile" "$BRAVE_WORK"
+    echo "done"
+
     ;;
 
   *)
-    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush|copybrave}"
+    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush|copybrave|applybrave}"
     ;;
 esac
 
