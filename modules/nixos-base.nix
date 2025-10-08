@@ -263,6 +263,8 @@
         })
       ]);
 
+  # this is needed for stuff like markdown-preview extension in neovim with random binaries
+  programs.nix-ld.enable = true;
   programs.direnv = { enable = true; };
 
   programs.gnupg.agent = {
