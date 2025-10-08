@@ -150,6 +150,16 @@ config.keys = {
 
 
 	--
+	-- JOELS TESTING
+	--
+	{
+		key = "o",
+		mods = MOD_KEY,
+		action = wezterm.action_callback(function(window, pane)
+			print("printing current working dir: ", pane:get_current_working_dir())
+		end),
+	},
+	--
 	-- pane splits
 	--
 	{
@@ -157,10 +167,11 @@ config.keys = {
 		mods = MOD_KEY,
 		action = act.SplitVertical({}),
 	},
+
 	{
 		key = "v",
 		mods = MOD_KEY,
-		action = (act.SplitHorizontal({})),
+		action = act.SplitHorizontal({}),
 	},
 	-- plugin doesnt work
 	-- { key = "i", mods = MOD_KEY, action = wezterm.action_callback(pivot_panes.toggle_orientation_callback) },
@@ -887,6 +898,9 @@ wezterm.on("update-status", function(window, pane)
 		window:set_right_status("")
 	end)
 end)
+
+-- Keep sessions alive when GUI closes
+config.exit_behavior = "Hold"
 
 -- Finally, return the configuration to wezterm:
 return config
