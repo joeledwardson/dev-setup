@@ -18,99 +18,149 @@ restart_hyprland()
   else
     echo "no hyprland active, skipping restart..."
   fi
-  }
+}
 
-case "$1" in
-  winpush)
-    echo "Exporting winget packages..."
-    winget export --nowarn --output "$WINGET_FILE" --include-versions
+show_usage()
+{
+  cat << 'EOF'
+Usage: ./util <command>
 
-    echo "Exporting scoop packages..."
-    scoop export > "$SCOOP_FILE"
-    ;;
+Commands:
+  os          Rebuild NixOS configuration
+  dotfiles    Run dotbot and setup hyprland config
+  yazi        Install yazi plugins
+  fish        Update fish shell plugins
+  tpm         Setup tmux plugin manager
+  clean       Clean nix garbage
+  toc         Run doctoc on README
+  winpush     Export Windows packages
+  winpull     Import Windows packages
+  copybrave   Copy Brave preferences to scratchpads
+  applybrave  Apply custom configs to Brave
+  all         Run all setup commands
+EOF
+}
 
-  winpull)
-    if [[ -f "$WINGET_FILE" ]]; then
-      echo "Importing winget packages..."
-      winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "$WINGET_FILE"
-    else
-      echo "No winget export file found at $WINGET_FILE"
-    fi
+function util()
+{
+  case "$1" in
+    winpush)
+      echo "Exporting winget packages..."
+      winget export --nowarn --output "$WINGET_FILE" --include-versions
 
-    if [[ -f "$SCOOP_FILE" ]]; then
-      echo "Importing scoop packages..."
-      scoop import "$SCOOP_FILE"
-    else
-      echo "No scoop export file found at $SCOOP_FILE"
-    fi
-    ;;
+      echo "Exporting scoop packages..."
+      scoop export > "$SCOOP_FILE"
+      ;;
 
-  os)
-    echo "rebuilding nix..."
-    sudo nixos-rebuild switch --flake .
-    echo "installing yazi plugins..."
-    ya pkg install
-    echo "updating fish shell plugins..."
-    fish -c "fisher update"
-    # setup tmux plugin manager
-    if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
-      echo "tpm not installing, installing now..."
-      git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-    fi
+    winpull)
+      if [[ -f "$WINGET_FILE" ]]; then
+        echo "Importing winget packages..."
+        winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "$WINGET_FILE"
+      else
+        echo "No winget export file found at $WINGET_FILE"
+      fi
 
-    restart_hyprland
-    echo "done!"
-    ;;
-  dotfiles)
-    echo "running dotbot..."
-    dotbot -c install.conf.yaml
-    custom_src=$(realpath "./hosts/$(hostname)/custom.conf")
-    custom_dest=~/.config/hypr/custom.conf
-    if [ -f "$custom_src" ]; then
-      echo "hypr custom.conf exists, symlinking it..."
-      ln -sf "$custom_src" "$custom_dest"
-     elif [ ! -f "$custom_dest" ]; then
-      echo "no custom.conf, creating blank file..."
-      touch "$custom_dest"
-    fi
-    restart_hyprland
-    echo "done!"
-    # TODO sync brave settings? /home/jollof/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences
-    ;;
-  clean)
-    nix-collect-garbage -d
-    ;;
-  toc)
-    doctoc README.md
-    ;;
-  copybrave)
-    echo "checking scratchpads dir is created..."
-    mkdir -p scratchpads
-    echo "copying brave preferences file..."
-    cp $BRAVE_FILE ./scratchpads/brave-preferences.json
-    echo "formatting brave preferences...."
-    cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
-    ;;
-  applybrave)
-    echo "getting temp file..."
-    myfile=$(mktemp)
-    echo "$myfile"
-    echo "applying custom configs to temp file"
-    jq -s '.[0] * .[1]' "$BRAVE_FILE" ./configs/brave/custom.json > "$myfile"
-    echo "copying back to brave settings file"
-    mv "$myfile" "$BRAVE_FILE"
+      if [[ -f "$SCOOP_FILE" ]]; then
+        echo "Importing scoop packages..."
+        scoop import "$SCOOP_FILE"
+      else
+        echo "No scoop export file found at $SCOOP_FILE"
+      fi
+      ;;
 
-    echo "running again for work profile..."
-    workfile=$(mktemp)
-    echo "$workfile"
-    jq -s '.[0] * .[1]' "$BRAVE_WORK" ./configs/brave/custom.json > "$workfile"
-    mv "$workfile" "$BRAVE_WORK"
-    echo "done"
+    os)
+      echo "rebuilding nix..."
+      sudo nixos-rebuild switch --flake .
+      restart_hyprland
+      echo "done"
+      ;;
+    yazi)
+      echo "installing yazi plugins..."
+      ya pkg install
+      echo "done"
+      ;;
+    fish)
+      echo "updating fish shell plugins..."
+      fish -c "fisher update"
+      echo "done"
+      ;;
+    tpm)
+      # setup tmux plugin manager
+      if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
+        echo "tpm not installing, installing now..."
+        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+      else
+        echo "tpm already installed"
+      fi
+      echo "done!"
+      ;;
+    dotfiles)
+      echo "running dotbot..."
+      dotbot -c install.conf.yaml
+      custom_src=$(realpath "./hosts/$(hostname)/custom.conf")
+      custom_dest=~/.config/hypr/custom.conf
+      if [ -f "$custom_src" ]; then
+        echo "hypr custom.conf exists, symlinking it..."
+        ln -sf "$custom_src" "$custom_dest"
+       elif [ ! -f "$custom_dest" ]; then
+        echo "no custom.conf, creating blank file..."
+        touch "$custom_dest"
+      fi
+      restart_hyprland
+      echo "done!"
+      ;;
+    clean)
+      echo "cleaning nix..."
+      nix-collect-garbage -d
+      echo "done"
+      ;;
+    toc)
+      echo "running doctoc..."
+      doctoc README.md
+      echo "done"
+      ;;
+    copybrave)
+      echo "checking scratchpads dir is created..."
+      mkdir -p scratchpads
+      echo "copying brave preferences file..."
+      cp $BRAVE_FILE ./scratchpads/brave-preferences.json
+      echo "formatting brave preferences...."
+      cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
+      ;;
+    applybrave)
+      echo "getting temp file..."
+      myfile=$(mktemp)
+      echo "$myfile"
+      echo "applying custom configs to temp file"
+      jq -s '.[0] * .[1]' "$BRAVE_FILE" ./configs/brave/custom.json > "$myfile"
+      echo "copying back to brave settings file"
+      mv "$myfile" "$BRAVE_FILE"
 
-    ;;
+      echo "running again for work profile..."
+      workfile=$(mktemp)
+      echo "$workfile"
+      jq -s '.[0] * .[1]' "$BRAVE_WORK" ./configs/brave/custom.json > "$workfile"
+      mv "$workfile" "$BRAVE_WORK"
+      echo "done"
+      ;;
+    all)
+      echo "doing all..."
+      util os
+      util dotfiles
+      util yazi
+      util fish
+      util tpm
+      util applybrave
+      echo "done all"
+      
+      ;;
 
-  *)
-    echo "Usage: $0 {os|dotfiles|clean|toc|winpull|winpush|copybrave|applybrave}"
-    ;;
-esac
+    *)
+      show_usage
+      ;;
+  esac
+}
 
+
+
+util $1
