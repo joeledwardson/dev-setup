@@ -47,14 +47,10 @@
   # =======================================
   services.gvfs.enable = true;
   services.udisks2.enable = true;
-  
+
   # MTP filesystem tools for mounting devices
-  environment.systemPackages = with pkgs; [
-    libmtp
-    jmtpfs
-    go-mtpfs
-  ];
-  
+  environment.systemPackages = with pkgs; [ libmtp jmtpfs go-mtpfs ];
+
   # =======================================
   # Accounts Configuration
   # =======================================
@@ -69,4 +65,6 @@
         #  thunderbird
       ];
   };
+  # this stops devenv complaing every time we enter into a shell
+  nix.settings.trusted-users = [ "root" "jollof" ];
 }
