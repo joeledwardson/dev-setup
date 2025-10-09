@@ -1363,6 +1363,8 @@ Where 1 is bold, 31 is foreground red and m is termination.
 
 Thus, can do a little example with red foreground and magenta background!!
 
+
+
 > Will need to run myself to see the colours...
 
 ```bash
@@ -1374,6 +1376,32 @@ Hello from red FG and magenta BG
 Theres a great imae that shows the colour codes that can be used for both foreground AND background belo
 
 <img src="https://i.sstatic.net/9UVnC.png" />
+
+
+Well..... great theres ANOTHER notation of caret notation like
+```
+^N
+^P
+```
+which means `CTRL-n` and `CTRL-p`. simple enough right?
+
+Well..., in the table of ANSI escape codes ([see wiki here](https://en.wikipedia.org/wiki/ANSI_escape_code)), `^[` is for escape whic is the start of CSI and other control codes!
+
+Thus, `\033[` as the start of CSI is equivalent to `^[[`. fml...
+
+AND, in my zshrc this makes more sense now
+```
+bindkey "^[[1;5C" forward-word
+```
+
+although it doesn't. this is actually a terminal INPUT sequence, [see here](https://en.wikipedia.org/wiki/ANSI_escape_code#Terminal_input_sequences).
+
+broken down....
+1. `^[` is escape
+2. `^[[` is `ESC + [` CSI identifier
+3. `1` is "always adedd, rest are optional" according to wiki so i guess it has to be there?
+4. `;5` this adds the `4` modifier for control so `1+4=5`? god i dont know...
+5. `C` is the code for right arrow as seen from the table
 
 
 ## Yazi
@@ -1874,3 +1902,4 @@ jq: parse error: Invalid string: control characters from U+0000 through U+001F m
 
 Unlike `heredoc`, it only takes a stringle string and does NOT require a delimeter
 
+## Neovim misc

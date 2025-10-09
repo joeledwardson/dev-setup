@@ -148,7 +148,6 @@ config.keys = {
 		end),
 	},
 
-
 	--
 	-- JOELS TESTING
 	--
@@ -159,7 +158,12 @@ config.keys = {
 			print("printing current working dir: ", pane:get_current_working_dir())
 		end),
 	},
-	--
+	{
+		key = "\\",
+		mods = MOD_KEY,
+		action = act.CharSelect({}),
+	},
+
 	-- pane splits
 	--
 	{
