@@ -1903,3 +1903,134 @@ jq: parse error: Invalid string: control characters from U+0000 through U+001F m
 Unlike `heredoc`, it only takes a stringle string and does NOT require a delimeter
 
 ## Neovim misc
+## `jq`
+To start with, jq has the "identity" operator `.`, where `jq '.'` is equivalent to `jq`.
+
+And by default it reads from stdin. Can see this just by running it
+
+> That's me typing the inputs and `jq` echoing it back to me (formatted)
+
+
+```bash
+➜ jollof dev-setup (main) ✗ jq '.'
+{"a": 1}
+{
+  "a": 1
+}
+{"b": 2}
+{
+  "b": 2
+}
+3
+3
+```
+
+Or, can extract value of key "a" from user stdin:
+```bash
+➜ jollof dev-setup (main) ✗ jq '.a'
+1
+jq: error (at <stdin>:1): Cannot index number with string "a"
+{"a": 4}
+4
+^C
+➜ jollof dev-setup (main) ✗
+```
+
+which brings us neatly along to the merge operator, `*`, to combine objects together.
+
+can see here it will take my stdin object and merge with `{a:1}`
+```bash
+➜ jollof dev-setup (main) ✗ jq '. * {"a": 1}'
+{"b": 1}
+{
+  "b": 1,
+  "a": 1
+}
+{"a": 9999}
+{
+  "a": 1
+}
+^C
+➜ jollof dev-setup (main) ✗
+```
+
+
+this is NOT to be confused with the mathematical multiplication operator lmao
+```bash
+➜ jollof dev-setup (main) ✗ jq '. * 3'
+10
+30
+100
+300
+^C
+➜ jollof dev-setup (main) ✗
+```
+
+
+now the `-s` operator will join things together, so if i enter a few lines here to STDIN (then press `ctrl-d` to prompt end ofstdin) it will produce an array, rather than processing 1 by 1.
+```bash
+➜ jollof dev-setup (main) ✗ jq -s '.'
+
+1
+2
+3
+[
+  1,
+  2,
+  3
+]
+➜ jollof dev-setup (main) ✗
+```
+
+another great example of heredoc! to pipe some lines of stdin to `jq` and see it process them (all as one!) so don't need to fanny around with multiple commands an `ctrl-d`
+```bash
+➜ jollof dev-setup (main) ✗ jq -s '.' <<EOF
+{"a": 1}
+{"b": 2}
+EOF
+[
+  {
+    "a": 1
+  },
+  {
+    "b": 2
+  }
+]
+➜ jollof dev-setup (main) ✗
+```
+
+and now using the full syntax of jq with
+```
+jq [options...] filter [files...]
+```
+
+can see it here
+
+> without the `-s` its just processing `test1` and `test2` as 2 separate commands...?
+
+```bash
+➜ jollof dev-setup (main) ✗ echo '{"a": 1}' > /tmp/test1.json
+➜ jollof dev-setup (main) ✗ echo '{"b": 2}' > /tmp/test2.json
+➜ jollof dev-setup (main) ✗ jq '.' /tmp/test1.json
+{
+  "a": 1
+}
+➜ jollof dev-setup (main) ✗ jq '.' /tmp/test1.json  /tmp/test2.json
+{
+  "a": 1
+}
+{
+  "b": 2
+}
+➜ jollof dev-setup (main) ✗ jq -s '.' /tmp/test1.json  /tmp/test2.json
+[
+  {
+    "a": 1
+  },
+  {
+    "b": 2
+  }
+]
+➜ jollof dev-setup (main) ✗ jq -s '.' /tmp/test1.json  /tmp/test2.json
+```
+
