@@ -498,6 +498,8 @@ require('lazy').setup {
         { path = 'luvit-meta/library', words = { 'vim%.uv' } },
         -- Other library configs...
         { path = 'wezterm-types', mods = { 'wezterm' } },
+        -- Yazi types from yazi config plugins
+        { path = vim.fn.expand('~/.config/yazi/plugins/types.yazi') },
       },
     },
   },
@@ -1083,7 +1085,23 @@ require('lazy').setup {
     config = function(_, opts)
       require('nvim-treesitter.configs').setup {
 
-        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'sql', 'typescript', 'javascript', 'tsx' },
+        ensure_installed = {
+          'bash',
+          'c',
+          'diff',
+          'html',
+          'lua',
+          'luadoc',
+          'markdown',
+          'markdown_inline',
+          'query',
+          'vim',
+          'vimdoc',
+          'sql',
+          'typescript',
+          'javascript',
+          'tsx',
+        },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = {

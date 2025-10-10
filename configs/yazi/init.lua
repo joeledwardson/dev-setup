@@ -1,4 +1,3 @@
--- ~/.config/yazi/init.lua
 function Linemode:mtime()
 	local time = math.floor(self._file.cha.mtime or 0)
 	if time == 0 then

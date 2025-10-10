@@ -1942,6 +1942,26 @@ then
 :redir END
 ```
 
+
+### Type hints
+So... type hints in lua are.. interesting, why they couldnt just use typescripts way? 😠
+
+Turns out i can configure the lua language server DIRECTLY.
+
+TODO
+I need to research this more, but can configure `workspace.library`?
+e.g. from claude? if i wanted to set some types file for a lib?
+```
+{
+  "workspace.library": ["./yazi_types.lua"]
+}
+```
+
+But i actually already have lazydev installed, which according to claude helps as it can
+- adds nvim library stuffs to lua (guess would be nightmare trying to do myself)
+
+> already added wezterm types in there
+
 ### Finding commands
 With my neovim setup based on kickstart, i have `leader(space)-s-k` to search commands
 
