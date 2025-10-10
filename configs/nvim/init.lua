@@ -697,6 +697,18 @@ require('lazy').setup {
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        jsonls = {
+          settings = {
+            json = {
+              schemas = {
+                {
+                  fileMatch = { '**/swaync/config.json' },
+                  url = 'https://raw.githubusercontent.com/ErikReider/SwayNotificationCenter/main/src/configSchema.json',
+                },
+              },
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
