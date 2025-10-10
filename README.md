@@ -7,6 +7,7 @@
   - [Adding a new devices](#adding-a-new-devices)
   - [NixOS setup](#nixos-setup)
   - [Dotfiles](#dotfiles)
+  - [Windows installation](#windows-installation)
   - [Applications](#applications)
   - [Wallpapers](#wallpapers)
   - [Keyboard re-bindings](#keyboard-re-bindings)
@@ -52,6 +53,13 @@
     - [the `/run` directory](#the-run-directory)
     - [monitoring kernel (lets try `xhci_hcd`)](#monitoring-kernel-lets-try-xhci_hcd)
     - [udevadm](#udevadm)
+  - [Bash scripting](#bash-scripting)
+    - [Heredocs](#heredocs)
+    - [Herestring](#herestring)
+  - [Neovim misc](#neovim-misc)
+    - [Buffers](#buffers)
+    - [Command redirection](#command-redirection)
+  - [`jq`](#jq)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1903,6 +1911,92 @@ jq: parse error: Invalid string: control characters from U+0000 through U+001F m
 Unlike `heredoc`, it only takes a stringle string and does NOT require a delimeter
 
 ## Neovim misc
+### Buffers
+Ok, time to start making some notes on neovim, will be a long journey I'm sure
+
+To start with buffers
+- telescope has `space space` to view buffers
+- `echo bufnr()` (or `echo bufname()` to view buffer name)
+- view `help buffers` to view vim's help
+- according to claude, `ctrl-g` is also view buffer number?
+
+This is however false, as i found out!
+
+> to view vim's list of all commands do `:help index`. then can search for `ctrl-g` and see the following line
+```
+|CTRL-G|	CTRL-G		   display current file name and position
+```
+
+### Command redirection
+see `:help redir`
+e.g.
+```
+:redir >pls.txt
+```
+then
+```
+:registers
+```
+then
+```
+:redir END
+```
+
+### Finding commands
+With my neovim setup based on kickstart, i have `leader(space)-s-k` to search commands
+
+But in general (from claude 😆)
+
+```vim
+  :help index           " All commands overview
+  :help normal-index    " Normal mode commands
+  :help insert-index    " Insert mode commands
+  :help visual-index    " Visual mode commands
+  :help ex-cmd-index    " Ex commands (:commands)
+```
+
+:help index is the closest to "view all keybindings" - it shows built-in Vim commands organized by mode.
+
+For your custom mappings, use:
+```vim
+:nmap    " normal mode
+:imap    " insert mode
+:vmap    " visual mode
+```
+
+
+nice, `cat pls.txt` gives:
+```bash
+Type Name Content
+  l  ""   |CTRL-G|^ICTRL-G^I^I   display current file name and position^J
+  l  "0   |CTRL-G|^ICTRL-G^I^I   display current file name and position^J
+  l  "1     "$schema": "/etc/xdg/swaync/configSchema.json",^J
+.................
+```
+
+### Lua
+so lua in neovim has alot of ways to interact with vim itself, here some of the main ones
+```vim
+vim.api        -- Low-level Neovim API (buffers, windows, keymaps)
+vim.lsp        -- LSP client functions
+vim.diagnostic -- Diagnostics (errors, warnings)
+vim.fn         -- Call Vimscript functions from Lua
+vim.keymap     -- Set keymaps (nicer than vim.api.nvim_set_keymap)
+vim.opt        -- Set options (like set number, set mouse=a)
+```
+
+but also, given that extensions/plugins must register commands with vim itself to be able to call
+
+e.g.
+```vim
+  vim.api.nvim_create_user_command('HelloWorld', function()
+    print('Hello from Lua!')
+  end, {}
+```
+
+registers `HelloWorld` with vim itself (but defined in lua)? so we can call `:HelloWorld`
+
+
 ## `jq`
 To start with, jq has the "identity" operator `.`, where `jq '.'` is equivalent to `jq`.
 
