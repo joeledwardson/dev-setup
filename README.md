@@ -2016,6 +2016,40 @@ e.g.
 
 registers `HelloWorld` with vim itself (but defined in lua)? so we can call `:HelloWorld`
 
+### Lsps
+It seems that most lsp configs are NOT typed. i guess that calling
+```lua
+require('lspconfig')[server_name].setup(server)
+```
+
+would be difficult to type all of them?
+
+BUT all the configurations can be found [here](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls), just have to dig through the docs normally
+
+Now i couldn't get luals to give type hints to work, and `lazydev` docs are about as useful as a sack of potatoes, so I'm digging through myself. (with some help from claude)
+
+Now
+- neovim's state is installed to `~/.local/share/nvim`
+- once again 0 documentation about this very helpfully, found out the `lua ls` from mason is at `~/.local/share/nvim/mason/bin/lua-language-server`
+- soooo, running ``~/.local/share/nvim/mason/bin/lua-language-server --help`, found out can add `--loglevel=debug` to cmd args!
+
+I've yet to figure out how to put this into my own "standard" lib, but having a utility to deep print all lua object  properties.... welllll turns out thats `vim.inspect` 😆. but will put it here for my own learnings
+```lua
+local function printer_util(entry)
+	local function inner(key, value, indent)
+		if type(value) == "table" then
+			print(string.rep("  ", indent) .. tostring(key))
+			for k, v in pairs(value) do
+				inner(k, v, indent + 1)
+			end
+		else
+			print(string.rep("  ", indent) .. tostring(key) .. ": " .. tostring(value))
+		end
+	end
+	inner("_", entry, 0)
+end
+```
+
 
 ## `jq`
 To start with, jq has the "identity" operator `.`, where `jq '.'` is equivalent to `jq`.

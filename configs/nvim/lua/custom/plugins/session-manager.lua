@@ -23,5 +23,6 @@ return {
     { '<leader>pl', '<cmd>SessionManager load_session<CR>', desc = '📌 Load session' },
     { '<leader>ps', '<cmd>SessionManager save_current_session<CR>', desc = '📌 Save session' },
     { '<leader>pd', '<cmd>SessionManager delete_session<CR>', desc = '📌 Delete session' },
+    { '<leader>px', '<cmd>SessionManager delete_current_dir_session<CR>', desc = '📌 Delete current session' },
   },
 }

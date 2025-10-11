@@ -499,7 +499,7 @@ require('lazy').setup {
         -- Other library configs...
         { path = 'wezterm-types', mods = { 'wezterm' } },
         -- Yazi types from yazi config plugins
-        { path = vim.fn.expand('~/.config/yazi/plugins/types.yazi') },
+        { path = vim.fn.expand '~/.config/yazi/plugins/types.yazi' },
       },
     },
   },
@@ -712,12 +712,15 @@ require('lazy').setup {
           },
         },
         lua_ls = {
-          -- cmd = { ... },
+          -- uncomment below to add some juicy loggos
+          -- cmd = { 'lua-language-server', '--loglevel=trace' },
+
           -- filetypes = { ... },
-          -- capabilities = {},
+          -- capabilities = { testiejollof = 1 },
           settings = {
             Lua = {
               completion = {
+                -- see docs here https://luals.github.io/wiki/settings/#completioncallsnippet
                 callSnippet = 'Replace',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
@@ -735,29 +738,28 @@ require('lazy').setup {
       --  You can press `g?` for help in this menu.
       require('mason').setup()
 
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      -- Register LSP configs using Neovim 0.11+ API
+      for server_name, server_config in pairs(servers) do
+        local config = vim.tbl_deep_extend('force', {
+          capabilities = capabilities,
+        }, server_config or {})
 
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+        vim.lsp.config(server_name, config)
+      end
+
       -- nixd is not available via mason, so calling directly
-      require('lspconfig').nixd.setup {}
+      vim.lsp.config('nixd', { capabilities = capabilities })
+
+      require('mason-lspconfig').setup {
+        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        automatic_installation = false,
+      }
     end,
   },
   -- TypeScript Tools moved to custom/plugins/typescript-tools.lua
