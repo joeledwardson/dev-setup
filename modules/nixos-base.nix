@@ -8,6 +8,13 @@
   networking.networkmanager = {
     enable = true;
     plugins = with pkgs; [ networkmanager-openvpn ];
+    dns = "systemd-resolved";
+  };
+
+  services.resolved = {
+    enable = true;
+    domains = [ "~." ];
+    fallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
   };
 
   # Configure network proxy if necessary
@@ -109,6 +116,9 @@
       sheldon # shell plugins
       lm_sensors # temperature monitoring
       openssl
+      man-pages # otherwise dont have man 5 resolv.conf etc?
+      audit # give auditctl
+      tcpdump
 
       ### terminal emulators
       alacritty
