@@ -120,58 +120,10 @@
       audit # give auditctl
       tcpdump
 
-      ### terminal emulators
-      alacritty
-      kitty
-
-      ### graphical applications
-      networkmanagerapplet # includes nm-applet (used in polybar)
-      pavucontrol # pulse audio GTK application (used in polybar)
-      firefox
-      google-chrome
-      brave
-      slack
-      copyq # copy paste manager
-      mpv # new video player
-      bc # software calculator? required for mpv cutter script
-      pinta
-      scrcpy # android screen copy tool
-      remmina # RDP tool
-      gparted # for when im lazy and dont want to use terminal
-      libreoffice
-      vscode
-
       ### nix specific tools
       nix-tree
       nix-du
       devenv
-
-      ### desktop core packages
-      wlr-randr
-      wl-clipboard # Command-line copy/paste utilities
-      grim # Screenshot utility
-      slurp # Region selection tool
-      fuzzel # new launcher to replace rofi/wofi
-      xdg-utils # For xdg-open and similar commands
-      hyprpaper # hyprland wallpaper
-      wev # debug hyprland key events (equivalent of xev on X11)
-      swaynotificationcenter # notifications
-      wtype
-      libnotify # send notifications to daemon
-      spice-vdagent # frontend to spice vdagent (clipboard)
-
-      ### more desktop packages
-      xdg-utils # for "open with..." integrations
-      hyprshot # screenshotting tool
-      dragon-drop # dray and drop utility
-      kdePackages.dolphin # default GUI file manager
-      kdePackages.qtsvg # svg icons for dolphin
-      tokyonight-gtk-theme # gtk theme
-      flat-remix-icon-theme # icons theme
-      signal-desktop
-      spotify
-      gimp
-      lazpaint
 
       ### disk management
       udiskie # for status bar disks
@@ -185,9 +137,6 @@
       pipx # use this for poetry so can use shell plugin
       go
       nixd
-      # GOING TO TRY DOING THE NIXOS WAY
-      # fnm
-      # deno
       nodejs_22 # add nodejs global just for claude code
       lua
       glib # contains gio, useful for viewing all mounts (including SMB etc)
@@ -283,11 +232,6 @@
     pinentryPackage = pkgs.pinentry-curses;
   };
 
-  # enable thunar while i decide if its better than dolpin for me
-  programs.thunar = {
-    enable = true;
-    plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
-  };
   # enable save preferences in thunar
   programs.xfconf.enable = true;
   # other thunar services
@@ -304,13 +248,6 @@
   services.syncthing = {
     enable = true;
     openDefaultPorts = true; # Open ports in the firewall for Syncthing
-  };
-
-  # add qt styling
-  qt = {
-    enable = true;
-    platformTheme = "gtk2"; # or "gnome", "gtk3", "qt5ct"
-    style = "adwaita-dark"; # or "breeze", "fusion", etc.
   };
 
   networking.firewall = {
@@ -345,6 +282,7 @@
     XDG_STATE_HOME = "$HOME/.local/state";
     # custom directory as per dotbot configuration
     ZDOTDIR = "$HOME/.config/zsh";
+    # add npm global to path for global nodejs installation
     PATH = [ "$HOME/.npm-global/bin" ];
   };
 
@@ -361,56 +299,11 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  # enable flakes and nix command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # =======================================
-  # Wayland Configuration
-  # =======================================
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command =
-          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
-        user = "greeter";
-      };
-    };
-  };
-
-  # this is a life saver.
-  # literally no documentation about this anywhere.
-  # might be good to write about this...
-  # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
-  systemd.services.greetd.serviceConfig = {
-    Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
-    StandardError = "journal"; # Without this errors will spam on screen
-    # Without these bootlogs will spam on screen
-    TTYReset = true;
-    TTYVHangup = true;
-    TTYVTDisallocate = true;
-  };
-  programs.waybar = { enable = true; };
-  programs.hyprland = { enable = true; };
-  programs.hyprlock.enable = true;
-
-  # Enable light for brightness control
-  programs.light.enable = true;
-
-  # XDG Portal for desktop integration
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true; # Wayland compositor support
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-  };
-
-  # D-Bus is required for many Wayland applications
+  # D-Bus is required for many Wayland applications (and probably good to have it in general tbh...)
   services.dbus.enable = true;
-
-  # wayland variable (should) make chromium/electron apps run better, see here
-  # https://nixos.wiki/wiki/Wayland
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   # =======================================
   # System version
