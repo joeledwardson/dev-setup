@@ -306,14 +306,6 @@
     openDefaultPorts = true; # Open ports in the firewall for Syncthing
   };
 
-  # see docs, mullvad requires resolved https://nixos.wiki/wiki/Mullvad_VPN
-  # services.mullvad-vpn.enable = true;
-  # services.resolved.enable = true;
-
-  # services.openvpn.services = {
-  #   officeVPN = { config = "config /var/lib/openvpn-work.conf "; };
-  # };
-
   # add qt styling
   qt = {
     enable = true;
