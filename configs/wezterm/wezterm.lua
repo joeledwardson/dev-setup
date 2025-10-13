@@ -149,7 +149,34 @@ config.keys = {
       )
     end),
   },
-
+  {
+    key = 'y',
+    mods = 'ALT|SHIFT',
+    action = act.SwitchToWorkspace {
+      name = 'default',
+    },
+  }, -- Switch to a monitoring workspace, which will have `top` launched into it
+  {
+    key = 'u',
+    mods = 'ALT|SHIFT',
+    action = act.SwitchToWorkspace {
+      name = 'monitoring',
+      spawn = {
+        args = { 'top' },
+      },
+    },
+  },
+  -- Create a new workspace with a random name and switch to it
+  { key = 'i', mods = 'ALT|SHIFT', action = act.SwitchToWorkspace },
+  -- Show the launcher in fuzzy selection mode and have it list all workspaces
+  -- and allow activating one.
+  {
+    key = 's',
+    mods = 'ALT|SHIFT',
+    action = act.ShowLauncherArgs {
+      flags = 'FUZZY|WORKSPACES',
+    },
+  },
   --
   -- JOELS TESTING
   --
@@ -891,15 +918,45 @@ wezterm.on('update-status', function(window, pane)
     { Text = '' }, -- powerline separator
     'ResetAttributes',
   })
-
-  -- Force refresh every 200ms to keep status updated
-  wezterm.time.call_after(0.2, function()
-    window:set_right_status ''
-  end)
 end)
+wezterm.on('update-right-status', function(window, pane)
+  local domain = pane:get_domain_name()
+  local active_workspace = window:active_workspace()
 
+  print('updating right status: ', domain, active_workspace)
+  if domain == 'local' then
+    window:set_right_status(active_workspace)
+  else
+    window:set_right_status(wezterm.format {
+      { Background = { Color = 'maroon' } },
+      { Text = domain .. ': ' .. active_workspace },
+    })
+  end
+end)
 -- Keep sessions alive when GUI closes
 config.exit_behavior = 'Hold'
+
+config.ssh_domains = {
+  {
+    name = 'work',
+    remote_address = 'joelrdp.lcasino.work',
+    -- Optional: specify username separately
+    username = 'joelyboy',
+    -- remote_address = 'example.com',
+  },
+}
+
+config.unix_domains = {
+  {
+    name = 'unix',
+  },
+}
+
+-- This causes `wezterm` to act as though it was started as
+-- `wezterm connect unix` by default, connecting to the unix
+-- domain on startup.
+-- If you prefer to connect manually, leave out this line.
+-- config.default_gui_startup_args = { 'connect', 'unix' }
 
 -- Finally, return the configuration to wezterm:
 return config
