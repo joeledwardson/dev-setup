@@ -252,6 +252,16 @@
 
   networking.firewall = {
     enable = true;
+    allowedTCPPortRanges = [
+      {
+        from = 3000;
+        to = 3099;
+      } # nodejs apps
+      {
+        from = 3000;
+        to = 9000;
+      } # other application ports
+    ];
     allowedTCPPorts = [
       # SSH
       22
@@ -259,8 +269,6 @@
       80
       # https
       443
-      # custom application port (for bot)
-      8282
     ];
   };
 

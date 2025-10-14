@@ -2519,3 +2519,126 @@ graph TB
     style iptables_cmd fill:#ccffcc
     style nft fill:#ccffcc
 ```
+
+### Iptables
+Ahhh, the beast. So from a high level...
+
+Theres ALOT going on here, from mangling to prerouting and all sorts of other lovely logic.
+
+IPtables by default uses table `filter`, (equivalent to `iptables -t filter`), so represents the three green boxes shown in this diagram
+
+<img src="https://stuffphilwrites.com/wp-content/uploads/2024/05/FW-IDS-iptables-Flowchart-v2024-05-22.png" />
+
+For my work desktop i'll paste the output below
+```bash
+➜ joelyboy dev-setup (main) ✗ sudo iptables  -L -n -v
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+  43M   48G nixos-fw   all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 DOCKER-USER  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+    0     0 DOCKER-ISOLATION-STAGE-1  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+    0     0 ACCEPT     all  --  *      docker0  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+    0     0 DOCKER     all  --  *      docker0  0.0.0.0/0            0.0.0.0/0
+    0     0 ACCEPT     all  --  docker0 !docker0  0.0.0.0/0            0.0.0.0/0
+    0     0 ACCEPT     all  --  docker0 docker0  0.0.0.0/0            0.0.0.0/0
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+
+Chain DOCKER (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+
+Chain DOCKER-ISOLATION-STAGE-1 (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 DOCKER-ISOLATION-STAGE-2  all  --  docker0 !docker0  0.0.0.0/0            0.0.0.0/0
+    0     0 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-ISOLATION-STAGE-2 (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 DROP       all  --  *      docker0  0.0.0.0/0            0.0.0.0/0
+    0     0 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain DOCKER-USER (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+    0     0 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain nixos-fw (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+ 109K   44M nixos-fw-accept  all  --  lo     *       0.0.0.0/0            0.0.0.0/0
+  38M   47G nixos-fw-accept  all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+   13   780 nixos-fw-accept  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+    3   180 nixos-fw-accept  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+    1    60 nixos-fw-accept  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+    0     0 nixos-fw-accept  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:8282
+    0     0 nixos-fw-accept  tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22000
+13880 3692K nixos-fw-accept  udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:21027
+    0     0 nixos-fw-accept  udp  --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:22000
+    1    84 nixos-fw-accept  icmp --  *      *       0.0.0.0/0            0.0.0.0/0            icmptype 8
+5141K 1483M nixos-fw-log-refuse  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain nixos-fw-accept (10 references)
+ pkts bytes target     prot opt in     out     source               destination
+  38M   47G ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain nixos-fw-log-refuse (1 references)
+ pkts bytes target     prot opt in     out     source               destination
+  154  9240 LOG        tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp flags:0x17/0x02 LOG flags 0 level 6 prefix "refused connection: "
+5141K 1483M nixos-fw-refuse  all  --  *      *       0.0.0.0/0            0.0.0.0/0            PKTTYPE != unicast
+  154  9240 nixos-fw-refuse  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+
+Chain nixos-fw-refuse (2 references)
+ pkts bytes target     prot opt in     out     source               destination
+5141K 1483M DROP       all  --  *      *       0.0.0.0/0            0.0.0.0/0
+➜ joelyboy dev-setup (main) ✗
+```
+
+And, claude has helpfully created a diagram to show how these link together
+
+> TODO still not sure how those docker tables work? they aren't even connected?
+
+
+```mermaid
+graph TD
+    Start([Incoming Packet<br/>43M packets 48GB]) --> Input[INPUT Chain]
+    Input --> NixosFw[nixos-fw Chain<br/>Custom NixOS firewall]
+    
+    NixosFw --> Check1{From loopback?<br/>IN: lo interface}
+    Check1 -->|Yes 108K pkts| FwAccept1[nixos-fw-accept]
+    Check1 -->|No| Check2{Established<br/>Connection?<br/>RELATED ESTABLISHED}
+    
+    Check2 -->|Yes 38M pkts| FwAccept2[nixos-fw-accept<br/>46GB data]
+    Check2 -->|No| PortCheck{Allowed Port?<br/>----<br/>TCP 22 SSH - 13 pkts<br/>TCP 80 HTTP - 3 pkts<br/>TCP 443 HTTPS - 1 pkt<br/>TCP 8282 - 0 pkts<br/>TCP 22000 Syncthing - 0 pkts<br/>UDP 21027 Syncthing - 13805 pkts<br/>UDP 22000 Syncthing - 0 pkts<br/>ICMP Ping Type 8 - 1 pkt}
+    
+    PortCheck -->|Yes| FwAccept3[nixos-fw-accept]
+    PortCheck -->|No 5.1M pkts| Refuse[nixos-fw-log-refuse]
+    
+    FwAccept1 --> Accept[ACCEPT TARGET]
+    FwAccept2 --> Accept
+    FwAccept3 --> Accept
+    Accept --> End([Packet Delivered])
+    
+    Refuse --> Log{TCP SYN?}
+    Log -->|Yes 154 pkts| LogMsg[LOG refused connection]
+    Log -->|No| CheckType{Packet Type?}
+    LogMsg --> CheckType
+    
+    CheckType -->|Broadcast/Multicast<br/>5.1M pkts| Drop[DROP]
+    CheckType -->|Unicast<br/>154 pkts| Drop
+    
+    style FwAccept1 fill:#B0E0E6
+    style FwAccept2 fill:#B0E0E6
+    style FwAccept3 fill:#B0E0E6
+    style Accept fill:#90EE90
+    style Drop fill:#FFB6C6
+    style Refuse fill:#FFE4B5
+    style End fill:#87CEEB
+    style Start fill:#87CEEB
+    style PortCheck fill:#FFF8DC
+```
+
+
+
+
