@@ -78,7 +78,7 @@
     isNormalUser = true;
     description = "joelyboy";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
     packages = with pkgs;
       [
         #  thunderbird

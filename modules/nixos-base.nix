@@ -223,6 +223,9 @@
         })
       ]);
 
+  # enable docker
+  virtualisation.docker.enable = true;
+
   # this is needed for stuff like markdown-preview extension in neovim with random binaries
   programs.nix-ld.enable = true;
   programs.direnv = { enable = true; };
@@ -258,7 +261,7 @@
         to = 3099;
       } # nodejs apps
       {
-        from = 3000;
+        from = 8000;
         to = 9000;
       } # other application ports
     ];
