@@ -771,7 +771,15 @@ require('lazy').setup {
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require('conform').format({ async = true, lsp_format = 'fallback' }, function(err, did_edit)
+            if err then
+              print 'oh dear, conform is not happy!'
+              print(err)
+            end
+            if not err and not did_edit then
+              print 'did not format?'
+            end
+          end)
         end,
         mode = '',
         desc = '[F]ormat buffer',
