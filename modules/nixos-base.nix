@@ -211,8 +211,6 @@
     ] ++ (
       # packages to be built from unstable nixpkgs
       with pkgs-unstable; [
-        # hopefully wezterm pushes some changes to copy mode....
-        wezterm
         # mediainfo plugin doesnt work with 25.05
         yazi
         # withPlugins not available on 25.05

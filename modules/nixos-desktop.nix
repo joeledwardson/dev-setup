@@ -7,6 +7,7 @@
     ### terminal emulators
     alacritty
     kitty
+    wezterm
 
     ### graphical applications
     networkmanagerapplet # includes nm-applet (used in polybar)
