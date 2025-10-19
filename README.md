@@ -59,7 +59,20 @@
   - [Neovim misc](#neovim-misc)
     - [Buffers](#buffers)
     - [Command redirection](#command-redirection)
-  - [`jq`](#jq)
+    - [Type hints](#type-hints)
+    - [Finding commands](#finding-commands)
+    - [Lua](#lua)
+    - [Lsps](#lsps)
+    - [Understanding the docs](#understanding-the-docs)
+  - [Shell scripting](#shell-scripting)
+    - [`jq`](#jq)
+  - [Networking](#networking)
+    - [Resolv](#resolv)
+      - [Dig](#dig)
+      - [Getent](#getent)
+      - [ss](#ss)
+      - [diagrams](#diagrams)
+    - [Iptables](#iptables)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1927,6 +1940,12 @@ This is however false, as i found out!
 |CTRL-G|	CTRL-G		   display current file name and position
 ```
 
+Right I FINALLY know what the buffer things mean in vim
+
+> (yes i know i could have just done `:h buffers` all this time...)
+
+But, `h` is hidden, `a` is active and 
+
 ### Command redirection
 see `:help redir`
 e.g.
@@ -2003,6 +2022,7 @@ vim.diagnostic -- Diagnostics (errors, warnings)
 vim.fn         -- Call Vimscript functions from Lua
 vim.keymap     -- Set keymaps (nicer than vim.api.nvim_set_keymap)
 vim.opt        -- Set options (like set number, set mouse=a)
+vim.cmd        -- vim commands?
 ```
 
 but also, given that extensions/plugins must register commands with vim itself to be able to call
@@ -2050,6 +2070,108 @@ local function printer_util(entry)
 end
 ```
 
+### Understanding the docs
+Can use `:h notation` to see how the neovim documentation refers to stuff like option chars in `[]` (e.g. `:mes[sages]` could be `:mes` or `:messages`)
+
+Another good one is `:helpgrep` for searching through the help. Although finding help (sections NOT searching) is provided by telescope via `<LEADER>-s-h`
+
+
+Another one is `:h key-notation`.
+
+> something to note is its not mentioned anywhere epxlicitly that sometimes in the docs they use `caret notation`, like `^V` for `ctrl-v`
+
+Didn't know  about execution mode `gQ` either, pretty cool for re-running commands
+
+### Tags
+Just do `:h tagsrch` honestly (short for tag and special search)
+Apparently calling `:ta[g]` is the same as `C-]`
+
+soooo
+`C-]` = `:tag` = `:ta`
+
+Also can name tag to go to? like `:tag help` to go to help tag
+
+So tags are not that fancy after all, just `*tag_here*`. like in the outline help can use `c-]` on `outline-prerequisites` to jump to the tag, but unformatted text is just like this!
+
+```txt
+➜ jollof ~ cat /home/jollof/.local/share/nvim/lazy/outline.nvim/doc/outline.txt
+
+*outline.txt*             For NVIM v0.7.0
+
+==============================================================================
+Table of Contents                                  *outline-table-of-contents*
+
+  - Prerequisites                                      |outline-prerequisites|
+  - Installation                                        |outline-installation|
+  - Setup                                                      |outline-setup|
+  - Configuration                                      |outline-configuration|
+  - Providers                                              |outline-providers|
+  - Commands                                                |outline-commands|
+  - Default keymaps                                  |outline-default-keymaps|
+  - Highlights                                            |outline-highlights|
+  - Lua API                                                  |outline-lua-api|
+  - Tips                                                        |outline-tips|
+  - Recipes                                                  |outline-recipes|
+  - Neovim 0.7                                            |outline-neovim-0.7|
+  - Limitations                                          |outline-limitations|
+  - Related plugins                                  |outline-related-plugins|
+------------------------------------------------------------------------------
+
+PREREQUISITES                                          *outline-prerequisites*
+```
+
+Vim stores these in files (somewhere) to keep an index of tags so can jump between files
+
+
+### Regiters
+`stressed-boomer`
+
+Ahhhh finally, i should have googled this a LONG time ago.
+
+The black hole register means the data dies, so can delete without putting it into the register!.
+
+e.g. `"_d` to delete to black hole register
+
+
+### Tabs
+Didn't realise this b ut I can use `:1tabn` to go to tab 1 and `:4tabn` to go to tab 4 etc
+This is also equiv to `1gt`
+
+Also I can stop doing `:tabnew` and then `:help ...`
+
+And just (if I'd bothered to do this before lol 🤣 `:h :tab`)
+```vim
+:tab :help ...
+```
+
+### Misc
+**Pipe**
+
+So `:help :bar` will explain but can show an example that makes more sense:
+```vim
+:tabnew | :h buffers
+```
+
+Will notice above that the help is in the bottom half of the window if this is called. I.e. the commands are chained NOT piped. My interpretation of this is
+1. open a new tab
+2. open help for buffers
+
+**Set**
+
+So set sets an option but would be interesting to see a test.
+
+I actually have `relativenumber` set in my `init.lua` but I think some plugins must be overriding because when i call `set relativenumber?` to retrieve its blank!
+
+Something more simple is the `:set timeoutlen?` gets me the `timeoutlen = 300` value
+
+**Messages**
+
+Really need to read into this more, but `:NoiceAll` has more messages.
+According to claude `:redraw` can help flush messages? although that doesn't make sense to me as this is Noice and NOT vim internally
+
+TODO
+- read [this](https://github.com/folke/noice.nvim/wiki/A-Guide-to-Messages), noice guide on msgs
+- have a read through `:help ui-messages`
 
 ## Shell scripting
 ### `jq`
@@ -2353,7 +2475,6 @@ So this (not to be confused with 🇩🇪 ss) is for socket listening.
 The classique is `ss -tlnp # -t = TCP, -l = listening, -n = numbers not names, -p = process`
 
 
-
 #### diagrams
 ```mermaid
 graph TB
@@ -2414,7 +2535,6 @@ graph TB
 
 
 ```mermaid
-```mermaid
 graph TB
     subgraph "Packet Capture & Analysis"
         tcpdump["tcpdump<br/>(1988)<br/>✓ CLI standard"]
@@ -2471,7 +2591,6 @@ graph TB
     style iperf3 fill:#ccffcc
 ```
 
-```
 
 
 ```mermaid

@@ -781,6 +781,7 @@ require('lazy').setup {
         vim.lsp.config(server_name, config)
       end
 
+      vim.lsp.config('marksman', { capabilities = capabilities })
       -- nixd is not available via mason, so calling directly
       vim.lsp.config('nixd', { capabilities = capabilities })
 
