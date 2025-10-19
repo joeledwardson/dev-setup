@@ -53,6 +53,7 @@
     gimp
     lazpaint
     guvcview # simple video/image capture
+    rofimoji
   ];
 
   # enable thunar while i decide if its better than dolpin for me

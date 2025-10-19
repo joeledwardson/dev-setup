@@ -23,10 +23,7 @@ pretty-path() {
 }
 
 function reload-tmux {
-  tmux source-file ~/.tmux.conf
-}
-function reload-zsh {
-  source ~/.zshrc
+  tmux source-file ~/.config/tmux/tmux.conf
 }
 
 # copy a file to clipboard

@@ -192,6 +192,8 @@
       luajitPackages.magick # lua bindings for imagemagick
       sql-formatter
       sqls
+      mermaid-cli
+      marksman
 
       ### yazi deps
       ouch
