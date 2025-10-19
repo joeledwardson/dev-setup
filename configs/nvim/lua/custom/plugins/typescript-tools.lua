@@ -1,7 +1,7 @@
 return {
   'pmizio/typescript-tools.nvim',
   dependencies = { 'nvim-lua/plenary.nvim' },
-  ft = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact' },
+  ft = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
   opts = {
     settings = {
       -- tsserver_logs = 'verbose',
