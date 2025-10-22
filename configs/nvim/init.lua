@@ -104,7 +104,7 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
--- Enable mouse mode, can be useful for resizing splits for example!
+-- Enable mouse mode, can be useful for resizing splits for example!niit.
 vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
@@ -189,6 +189,10 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', ']h', function()
+  vim.notify 'hello there'
+end, { desc = 'hello there' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -1242,15 +1246,6 @@ require('lazy').setup {
     end,
   },
   {
-    'stevearc/aerial.nvim',
-    config = function()
-      require('aerial').setup {
-        backends = { 'markdown', 'man', 'help' }, -- Enable for `:help`
-        show_guides = true,
-      }
-    end,
-  }, --lazy
-  {
     'nvim-telescope/telescope-file-browser.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
     config = function(self, opts)
@@ -1376,3 +1371,7 @@ require('lazy').setup {
 vim.opt.exrc = true
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- regexp here to search for tags
+-- \v\|(\S)+\||\*(\S)+\*
+-- '\S\+'\|\*\S\+\*\||\S\+|

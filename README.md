@@ -1551,7 +1551,7 @@ Ngid:   0
 │
 └── snd/            # Sound devices
 
-# Key device files:
+ Key device files:
 /dev/null           # Discards all data written to it
 /dev/zero           # Provides infinite zeros
 /dev/random         # Random data generator
@@ -1946,6 +1946,10 @@ Right I FINALLY know what the buffer things mean in vim
 
 But, `h` is hidden, `a` is active and 
 
+Ahhh and unlisted buffers! that's where help, outline, aerial lazy etc put their buffers! makes sense now.
+
+To view just to `:buffers!` with the exclamation mark
+
 ### Command redirection
 see `:help redir`
 e.g.
@@ -2036,6 +2040,8 @@ e.g.
 
 registers `HelloWorld` with vim itself (but defined in lua)? so we can call `:HelloWorld`
 
+One useful link for documentation on [lua type hints is here](https://luals.github.io/wiki/annotations/)
+
 ### Lsps
 It seems that most lsp configs are NOT typed. i guess that calling
 ```lua
@@ -2123,7 +2129,7 @@ PREREQUISITES                                          *outline-prerequisites*
 Vim stores these in files (somewhere) to keep an index of tags so can jump between files
 
 
-### Regiters
+### Registers
 `stressed-boomer`
 
 Ahhhh finally, i should have googled this a LONG time ago.
@@ -2132,6 +2138,34 @@ The black hole register means the data dies, so can delete without putting it in
 
 e.g. `"_d` to delete to black hole register
 
+oh this is cool!
+```
+:let @{reg-name} = {expr1}			*:let-register* *:let-@*
+			Write the result of the expression {expr1} in register
+```
+
+Like.... erm?
+```vim
+:let @a = bufnr()
+```
+
+to set buffer `a` to buffer number? couldn't think of a better example ‍‍🤷
+
+
+Like.... erm?
+```vim
+:let @a = bufnr()
+```
+
+to set buffer `a` to buffer number? couldn't think of a better example ‍‍🤷
+
+The `+` register is `quoteplus` which apparently is the system clipboard?
+So can do
+```vim
+let @+ = "hello there pls"
+```
+
+To set a string to clipboard
 
 ### Tabs
 Didn't realise this b ut I can use `:1tabn` to go to tab 1 and `:4tabn` to go to tab 4 etc
@@ -2156,6 +2190,17 @@ Will notice above that the help is in the bottom half of the window if this is c
 1. open a new tab
 2. open help for buffers
 
+Ok wow this example taught me alot:
+```vim
+:execute 'r !ls' | '[
+```
+
+read i guess takes not file file name but also bash commands to read in?
+
+And then (remember `|` is NOT pipe but chaining commands), go to mark `[` which is beginning of yank or previously unchanged text (i.e. top of output in english)
+
+> remember that ' is for marks
+
 **Set**
 
 So set sets an option but would be interesting to see a test.
@@ -2169,9 +2214,110 @@ Something more simple is the `:set timeoutlen?` gets me the `timeoutlen = 300` v
 Really need to read into this more, but `:NoiceAll` has more messages.
 According to claude `:redraw` can help flush messages? although that doesn't make sense to me as this is Noice and NOT vim internally
 
+**Delete Command**
+FML..... I was reading the wrong command
+`:[range]d register`
+wondering why it wasn't working.
+
+but this, `:d` is DIFFERENT to `d`, as it is an execution/command
+
 TODO
 - read [this](https://github.com/folke/noice.nvim/wiki/A-Guide-to-Messages), noice guide on msgs
 - have a read through `:help ui-messages`
+
+**Execute**
+Thanks clude, i didn't understand this myself...
+
+Literally just executing stringified expressions, but vim expressions (not terminal).
+
+Like, lets combine a register?
+
+So earlier I was playing around with setting registers. `:echo getreg('a')` prints 3, the buffer name I set earlier.
+
+So then to open the tab with a buffer from register `a` can do
+```vim
+:execute "buffer" getreg('a')`
+```
+
+Or another one(I suppose as we are technically in cmd mode `gg` wouldn't work without the `normal` prefix)
+```vim
+:execute "normal! gg"              " Runs normal mode commands
+```
+
+**Commands vs functions vs expressions**
+An important distinction here is that `getreg` is a vim **function**, NOT a command
+
+- functions cannot be called like `:` as commands are
+- functions can return values
+- functions must be invoked like `run_function()` with parenthesis
+
+Or wait, I (think) command is a bit ambiguous here? A command being like `:e` or `:reg` etc etc.
+
+Ok doing `:h vimeval.txt` would be a good read as it covers vim expressions and its syntax which is pretty key to understanding all of this long term
+
+This table is a super useful reference point from `:help expression` to see how to access different types of vars/registers etc
+```vim
+|expr9|	number			number constant
+	"string"		string constant, backslash is special
+	`'string'`		string constant, ' is doubled
+	[expr1, ...]		|List|
+	`{expr1: expr1, ...}`	|Dictionary|
+	#{key: expr1, ...}	|Dictionary|
+	&option			option value
+	(expr1)			nested expression
+	variable		internal variable
+	va{ria}ble		internal variable with curly braces
+	$VAR			environment variable
+	@r			contents of register "r"
+	function(expr1, ...)	function call
+	func{ti}on(expr1, ...)	function call with curly braces
+	`{args -> expr1}`	lambda expression
+```
+
+**Eval**
+To show here a good usecase, it clearly says in the docs that `:h :echo` that you `:echo {expr}` i.e. echo and expression
+So `:echo 4+5` is 9. where 4+5 is the expression
+
+Or, could have done `:echo eval("4+5")` to achieve the same thing
+
+So...
+- `:execute` executes a string (command written as text). e.g `:execute 'normal gg'`
+- `:echo` executes an expression and prints the result e.g. `:echo x` to print variable `x`
+- `eval` executes a string (expression written as text). e.g. `eval("x")` would retrieve variable `x` 
+
+
+**History**
+Wow must NOT forget these, command line history and search history respectively!
+- `q:`
+- `g/`
+
+### Regexps
+Ok so I (roughly) understand what this magic stuff is about in regexp
+
+Can see from `:set magic?` that its `magic` (and NOT `nomagic`, strange syntax choice here from vim that `true` is `:set magic` and false is `:set nomagic`)... so the `no` is the invert bit?
+
+So the default behaviour is to take everything literally, like brackets (), pipe | etc...
+
+The only exception I have see is `/` which is the last pattern (ok this is much quicker than doing `/` and then up to find last pattern tbf). also backslash `\` must always be escaped
+
+Ok so default is 'magic':
+
+- in magic, in general stuff must be escaped (like `\.` for literal dot)
+- `\m` forces magic mode (e.g. `\m\.` forces magic modes and searches for literal dot)
+- in "no magic" (NOT default), magic characters are generally off (just `.` for literal dot)
+- `\M` forces no magic mode (e.g. `\M.` forces no magic mode and searches for literal dot)
+
+Additional modes
+- "very" magic, even `(` and `)` literals must be escaped
+> this one is SO annoying. given the default is sort od regexp EXCEPT for braces 👿
+- `\v` triggers "very" magic, e.g. `\v\(` to search for `(` char
+- the default is `(` just to search for `(` char
+
+- "very" not magic, even `\$` is required
+- `\V` to trigger "very" not magic
+
+
+
 
 ## Shell scripting
 ### `jq`
@@ -2208,6 +2354,7 @@ jq: error (at <stdin>:1): Cannot index number with string "a"
 ```
 
 which brings us neatly along to the merge operator, `*`, to combine objects together.
+
 
 can see here it will take my stdin object and merge with `{a:1}`
 ```bash

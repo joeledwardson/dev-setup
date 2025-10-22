@@ -1,6 +1,6 @@
 .vscode
 .ansible
-scratchpads
+scratchpads/brave*
 
 # claude code
 .claude
