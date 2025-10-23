@@ -23,5 +23,9 @@ return {
         },
       },
     }
+
+    vim.keymap.set('n', '<C-c>', function()
+      require('notify').dismiss {}
+    end, { desc = 'clear notifications' })
   end,
 }

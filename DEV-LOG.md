@@ -114,6 +114,10 @@ end
 and then call with `:luafile scratchpads/...`
 
 
+One i ALWAYS forget is to view last boot logs, its `journalctl`, NOT `dmesg`.
+```bash
+sudo journalctl -b -1
+```
 
 
 

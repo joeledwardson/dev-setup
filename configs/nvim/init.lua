@@ -787,7 +787,7 @@ require('lazy').setup {
 
       vim.lsp.config('marksman', { capabilities = capabilities })
       -- nixd is not available via mason, so calling directly
-      vim.lsp.config('nixd', { capabilities = capabilities })
+      vim.lsp.enable 'nixd'
 
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)

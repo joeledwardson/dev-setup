@@ -1923,6 +1923,21 @@ jq: parse error: Invalid string: control characters from U+0000 through U+001F m
 
 Unlike `heredoc`, it only takes a stringle string and does NOT require a delimeter
 
+### Color pipes
+I've noticed that alot of linux utilities will not print colour if they thing they are being sent to a TTY terminal they don't print colour.
+
+E.g. with `eza` need to add this and then colours will appear to force it
+```bash
+eza -l --color=always | xargs -I {} echo {}
+```
+
+> I guess the rationale is if the user is piping to another program, escape codes will show up as garbage in a text file for example
+
+Another great example when trawling through syslogs is `dmesg` (seems that `--color=always` is a standardish unix option)
+```bash
+sudo dmesg --color=always | less
+```
+
 ## Neovim misc
 ### Buffers
 Ok, time to start making some notes on neovim, will be a long journey I'm sure
@@ -2906,5 +2921,192 @@ graph TD
 ```
 
 
+## Hardware inspection
+So there are a multitude (fancy word) of tools to analyse hardware on a linux machine, which I will try to summarise here
 
 
+### General hardare tools
+
+```mermaid
+graph TD
+    subgraph Kernel
+        A["dmesg"]
+        B["/proc & /sys"]
+    end
+
+    subgraph Comprehensive
+        C["lshw<br/>⭐ Primary"]
+        D["hwinfo<br/>Detailed"]
+        E["dmidecode<br/>BIOS/Mobo"]
+    end
+
+    subgraph Display
+        F["inxi<br/>Forum posts"]
+        G["neofetch"]
+        H["fastfetch"]
+    end
+
+    A --> C
+    B --> C
+    E --> C
+    C -.-> D
+    C -.-> F
+    G --> H
+
+    classDef kernel fill:#e1f5ff
+    classDef comp fill:#ccffcc
+    classDef display fill:#fff4cc
+    
+    class A,B kernel
+    class C,D,E comp
+    class F,G,H display
+```
+
+### GPUs
+```mermaid
+graph TD
+    A["lspci | grep VGA<br/>Basic detection"]
+    
+    subgraph Vendor
+        B["nvidia-smi<br/>NVIDIA"]
+        C["radeontop<br/>AMD"]
+        D["intel_gpu_top<br/>Intel"]
+    end
+
+    subgraph Graphics_API
+        E["glxinfo<br/>OpenGL"]
+        F["vulkaninfo<br/>Vulkan"]
+    end
+
+    A -.->|if NVIDIA| B
+    A -.->|if AMD| C
+    A -.->|if Intel| D
+
+    classDef basic fill:#e1f5ff
+    classDef vendor fill:#ffddcc
+    classDef api fill:#ccffcc
+    
+    class A basic
+    class B,C,D vendor
+    class E,F api
+```
+
+### PCI and USB
+```mermaid
+graph TD
+    subgraph PCI
+        A["/sys/bus/pci"]
+        B["lspci<br/>⭐ PRIMARY"]
+        C["lspci -v<br/>verbose"]
+    end
+
+    subgraph USB
+        D["/sys/bus/usb"]
+        E["lsusb<br/>⭐ PRIMARY"]
+        F["lsusb -v<br/>verbose"]
+    end
+
+    subgraph Wrappers
+        G["lshw<br/>All-in-one"]
+        H["hwinfo<br/>Detailed"]
+    end
+
+    A --> B
+    B --> C
+    D --> E
+    E --> F
+    B -.-> G
+    E -.-> G
+    G -.-> H
+
+    classDef kernel fill:#e1f5ff
+    classDef primary fill:#ccffcc
+    classDef wrapper fill:#fff4cc
+    
+    class A,D kernel
+    class B,C,E,F primary
+    class G,H wrapper
+```
+### Memory (and swap)
+Can use `free` to see memory usage (AND swap), or `swapon` to manage swap
+```bash
+➜ jollof dev-setup (main) ✗ free -h
+               total        used        free      shared  buff/cache   available
+Mem:            30Gi       4.0Gi        24Gi       329Mi       2.4Gi        26Gi
+Swap:          8.0Gi          0B       8.0Gi
+➜ jollof dev-setup (main) ✗ swapon --show
+NAME              TYPE SIZE USED PRIO
+/var/lib/swapfile file   8G   0B   -2
+➜ jollof dev-setup (main) ✗
+```
+
+## Power
+So I'm just spamming what claude tells me here, I have no idea what I'm doing
+```bash
+➜ jollof dev-setup (main) ✗ cat /sys/power/state
+freeze mem disk
+➜ jollof dev-setup (main) ✗ cat /sys/power/mem_sleep
+[s2idle]
+➜ jollof dev-setup (main) ✗ cat /etc/systemd/logind.conf
+[Login]
+KillUserProcesses=no
+HandlePowerKey=poweroff
+HandlePowerKeyLongPress=ignore
+HandleRebootKey=reboot
+HandleRebootKeyLongPress=poweroff
+HandleSuspendKey=suspend
+HandleSuspendKeyLongPress=hibernate
+HandleHibernateKey=hibernate
+HandleHibernateKeyLongPress=ignore
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=suspend
+HandleLidSwitchDocked=ignore
+```
+
+Apparently `systemd-logind` manages login sessions from users, and sleep etc, so is responsible for managing the `logind.conf` as seen above.
+
+Can see when i logged in here!
+```bash
+➜ jollof ~ sudo systemctl status systemd-logind.service
+[sudo] password for jollof:
+● systemd-logind.service - User Login Management
+     Loaded: loaded (/etc/systemd/system/systemd-logind.service; enabled; preset: ignored)
+    Drop-In: /nix/store/5va37sr6fil452syg2hg1a2185mah7ns-system-units/systemd-logind.service.d
+             └─overrides.conf
+     Active: active (running) since Thu 2025-10-23 11:51:09 CEST; 1h 34min ago
+ Invocation: 928c9a619ad246a2a506588591d5a6f5
+       Docs: man:sd-login(3)
+             man:systemd-logind.service(8)
+             man:logind.conf(5)
+             man:org.freedesktop.login1(5)
+   Main PID: 1240 (systemd-logind)
+     Status: "Processing requests..."
+         IP: 0B in, 0B out
+         IO: 396K read, 0B written
+      Tasks: 1 (limit: 37236)
+   FD Store: 19 (limit: 768)
+     Memory: 2.1M (peak: 4.3M)
+        CPU: 307ms
+     CGroup: /system.slice/systemd-logind.service
+             └─1240 /nix/store/iq67az90s1wh3962rnja9cpvnzfh8kpg-systemd-257.8/lib/systemd/systemd-logind
+
+Oct 23 11:51:09 degen-home systemd[1]: Started User Login Management.
+Oct 23 11:51:09 degen-home systemd-logind[1240]: Watching system buttons on /dev/input/event17 (keyd virtual keyboard)
+Oct 23 11:51:12 degen-home systemd-logind[1240]: New session 1 of user greeter.
+Oct 23 11:51:12 degen-home systemd-logind[1240]: New session 2 of user greeter.
+Oct 23 11:51:19 degen-home systemd-logind[1240]: Session 1 logged out. Waiting for processes to exit.
+Oct 23 11:51:19 degen-home systemd-logind[1240]: Removed session 1.
+Oct 23 11:51:19 degen-home systemd-logind[1240]: New session 3 of user jollof.
+Oct 23 11:51:19 degen-home systemd-logind[1240]: New session 4 of user jollof.
+Oct 23 11:51:30 degen-home systemd-logind[1240]: Removed session 2.
+Oct 23 12:17:11 degen-home systemd-logind[1240]: Watching system buttons on /dev/input/event21 (WH-1000XM4 (AVRCP))
+➜ jollof ~
+```
+
+
+Apparently these are the args passed to the linux kernel at boot? (See [here](https://man7.org/linux/man-pages/man5/proc_cmdline.5.html#:~:text=DESCRIPTION%20top,CONFIG_BOOT_CONFIG%20will%20also%20be%20displayed.))
+
+```bash
+➜ jollof ~ cat /proc/cmdline
+BOOT_IMAGE=(hd0,gpt1)//kernels/47gxa8zq9zxry85dphqjxlvyrqrx3k3b-linux-6.12.47-bzImage init=/nix/store/wpxcxz7l9dapqg5d6z743z9c61zn6bjs-nixos-system-degen-home-25.05.20250914.9a09444/init loglevel=4 lsm=landlock,yama,bpf
+```

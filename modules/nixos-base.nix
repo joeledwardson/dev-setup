@@ -17,6 +17,16 @@
     fallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
   };
 
+  # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
+  services.postgresql = {
+    enable = true;
+    ensureDatabases = [ "mydatabase" ];
+    authentication = pkgs.lib.mkOverride 10 ''
+      #type database  DBuser  auth-method
+      local all       all     trust
+    '';
+  };
+
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -90,7 +100,7 @@
   # Enable swap (8GB universal size for all systems)
   swapDevices = [{
     device = "/var/lib/swapfile";
-    size = 8 * 1024; # 8 GiB
+    size = 32 * 1024; # 32 GiB
   }];
 
   environment.systemPackages = with pkgs;
@@ -104,8 +114,6 @@
       curl
       unzip
       parted
-      libinput # input device management tool
-      usbutils # usb utilities (like lsusb)
       nettools # ifconfig, netstat etc
       keyd # allows calling keyd manually (useful for keyd monitor etc..)
       file # get file type
@@ -114,11 +122,21 @@
       lsof # better than busybox one (otherwise even lsof -h help isnt available!)
       socat # socket utility
       sheldon # shell plugins
-      lm_sensors # temperature monitoring
       openssl
       man-pages # otherwise dont have man 5 resolv.conf etc?
       audit # give auditctl
       tcpdump
+
+      # hardware tools
+      lm_sensors # temperature monitoring
+      libinput # input device management tool
+      usbutils # usb utilities (like lsusb)
+      lshw
+      hwinfo
+      dmidecode
+      fastfetch
+      smartmontools
+      inxi
 
       ### nix specific tools
       nix-tree
