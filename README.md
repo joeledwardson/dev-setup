@@ -258,6 +258,39 @@ To use it, set:
 ```bash
 export ZSH_DEBUGRC=true
 ```
+
+## Secrets
+###  Syncthing
+So Am keeping my secrets in syncthing which requires peer to peer connection to operate
+
+> Would be interesting to read into, how it pierces NAT?
+
+According to [this documentation](https://forum.syncthing.net/t/device-behind-nat-is-sometimes-connected-without-relays/15684/7) there are some ways that it pierces NAT but honestly this is a whole tpoic in itself...
+
+I have enabled it in NixOS so (should) be available from http://localhost:8384/
+
+Can see the files to my `Sync` folder (requires root)
+```bash
+sudo ls -la /var/lib/syncthing/Sync
+```
+
+### Work VPN setup
+I have put my work VPN in syncthing which can be imported by network manager as a ovpn configuration file.
+
+Script below imports 
+```bash
+read -r VPN_PASS
+if [[ -z "$VPN_PASS" ]]; then
+  echo "no password provided"
+else
+nmcli c import type openvpn file /var/lib/syncthing/Sync/work.ovpn
+nmcli c show work
+nmcli c modify work vpn.user-name Joel_Edwardson
+nmcli c modify work vpn.secrets "password=$VPN_PASS"
+nmcli c modify work +vpn.data "password-flags=0"
+fi
+```
+
 # Nix Notes
 Nix is an... interesting language, so these are my notes/thoughts along the way
 

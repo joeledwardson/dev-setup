@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, commonGroups, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -59,14 +59,12 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" "video" "plugdev" "docker" ];
-    packages = with pkgs;
-      [
-        #  thunderbird
-      ];
+    extraGroups = commonGroups;
+    packages = [ ];
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" ];
+  services.syncthing.user = "jollof";
 
   # =======================================
   # Graphics

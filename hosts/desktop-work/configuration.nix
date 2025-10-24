@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, commonGroups, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -78,23 +78,10 @@
     isNormalUser = true;
     description = "joelyboy";
     initialPassword = "password";
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
-    packages = with pkgs;
-      [
-        #  thunderbird
-      ];
+    extraGroups = commonGroups;
+    packages = [ ];
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "joelyboy" ];
-
-  # enable docker
-  users.extraGroups.docker.members = [ "joelyboy" ];
-  virtualisation.docker = {
-    enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
-  };
-
+  services.syncthing.user = "joelyboy";
 }
