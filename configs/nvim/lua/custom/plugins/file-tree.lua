@@ -8,9 +8,6 @@ return {
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
     },
-    keys = {
-      { '<leader>e', '<cmd>NvimTreeToggle<cr>', desc = 'Open Explorer' },
-    },
     opts = {
       reload_on_bufenter = true,
       hijack_cursor = true,
@@ -28,7 +25,7 @@ return {
       actions = {
         open_file = {
           resize_window = true,
-          quit_on_open = true
+          quit_on_open = true,
         },
       },
       update_focused_file = {

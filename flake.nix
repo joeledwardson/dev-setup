@@ -4,13 +4,19 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, nur, ... }:
     let
+      my-system = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
-        system = "x86_64-linux";
+        system = my-system;
         config.allowUnfree = true;
+        overlays = [ nur.overlay ];
       };
     in {
       nixosConfigurations = {

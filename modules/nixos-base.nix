@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, lib, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
 
@@ -103,143 +103,149 @@
     size = 32 * 1024; # 32 GiB
   }];
 
-  environment.systemPackages = with pkgs;
-    [
-      ### core terminal utilities
-      git
-      vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
-      wget
-      nix-search-cli # helpful nix-search command
-      pciutils # check pci utils
-      curl
-      unzip
-      parted
-      nettools # ifconfig, netstat etc
-      keyd # allows calling keyd manually (useful for keyd monitor etc..)
-      file # get file type
-      dig # has nslookup
-      busybox # has lsof, fuser, killall
-      lsof # better than busybox one (otherwise even lsof -h help isnt available!)
-      socat # socket utility
-      sheldon # shell plugins
-      openssl
-      man-pages # otherwise dont have man 5 resolv.conf etc?
-      audit # give auditctl
-      tcpdump
+  environment.systemPackages = with pkgs; [
+    ### core terminal utilities
+    git
+    vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
+    wget
+    nix-search-cli # helpful nix-search command
+    pciutils # check pci utils
+    curl
+    unzip
+    parted
+    nettools # ifconfig, netstat etc
+    keyd # allows calling keyd manually (useful for keyd monitor etc..)
+    file # get file type
+    dig # has nslookup
+    busybox # has lsof, fuser, killall
+    lsof # better than busybox one (otherwise even lsof -h help isnt available!)
+    socat # socket utility
+    sheldon # shell plugins
+    openssl
+    man-pages # otherwise dont have man 5 resolv.conf etc?
+    audit # give auditctl
+    tcpdump
 
-      # hardware tools
-      lm_sensors # temperature monitoring
-      libinput # input device management tool
-      usbutils # usb utilities (like lsusb)
-      lshw
-      hwinfo
-      dmidecode
-      fastfetch
-      smartmontools
-      inxi
+    # hardware tools
+    lm_sensors # temperature monitoring
+    libinput # input device management tool
+    usbutils # usb utilities (like lsusb)
+    lshw
+    hwinfo
+    dmidecode
+    fastfetch
+    smartmontools
+    inxi
 
-      ### nix specific tools
-      nix-tree
-      nix-du
-      devenv
+    ### nix specific tools
+    nix-tree
+    nix-du
+    devenv
 
-      ### disk management
-      udiskie # for status bar disks
-      ntfs3g # in case of running `ntfslabel` to re-label windows partition
-      exfat # in case of running `exfatlabel` to re-label SD cards etc
+    ### disk management
+    udiskie # for status bar disks
+    ntfs3g # in case of running `ntfslabel` to re-label windows partition
+    exfat # in case of running `exfatlabel` to re-label SD cards etc
 
-      ### languages
-      clojure # for metabase
-      gcc # for nvim kickstart
-      uv
-      pipx # use this for poetry so can use shell plugin
-      go
-      nixd
-      nodejs_22 # add nodejs global just for claude code
-      lua
-      glib # contains gio, useful for viewing all mounts (including SMB etc)
+    ### languages
+    clojure # for metabase
+    gcc # for nvim kickstart
+    uv
+    pipx # use this for poetry so can use shell plugin
+    go
+    nixd
+    nodejs_22 # add nodejs global just for claude code
+    lua
+    glib # contains gio, useful for viewing all mounts (including SMB etc)
 
-      ### Database tools
-      ruby
-      lazysql
-      pgcli
-      rabbitmq-server
-      postgresql_17
+    ### Database tools
+    ruby
+    lazysql
+    pgcli
+    rabbitmq-server
+    postgresql_17
 
-      ### TUI style tools
-      lazygit
-      lazydocker
-      graphviz # required for madge npm package
-      tomato-c # pomodoro
-      ncdu
+    ### TUI style tools
+    lazygit
+    lazydocker
+    graphviz # required for madge npm package
+    tomato-c # pomodoro
+    ncdu
 
-      ### CLI tools
-      tldr
-      bat
-      gh
-      glab
-      tmux
-      fzf
-      dotbot # required for dotfiles configuration
-      google-cloud-sdk
-      bitwarden-cli
-      eza
-      gnumake # provides `make` command
-      fd # alternative to find
-      delta # fancy syntax highlighting and pager for git
-      jq
-      yq-go
-      kbd # has showkey
-      doctoc # for updating my README toc!
-      btop # fancy version of top
+    ### CLI tools
+    tldr
+    bat
+    gh
+    glab
+    tmux
+    fzf
+    dotbot # required for dotfiles configuration
+    google-cloud-sdk
+    bitwarden-cli
+    eza
+    gnumake # provides `make` command
+    fd # alternative to find
+    delta # fancy syntax highlighting and pager for git
+    jq
+    yq-go
+    kbd # has showkey
+    doctoc # for updating my README toc!
+    btop # fancy version of top
 
-      ### video processing
-      ffmpeg
+    ### video processing
+    ffmpeg
 
-      ### neovim
-      neovim
-      ### dependencies for neovim
-      ripgrep
-      prettierd
-      stylua
-      nixfmt-classic
-      tree-sitter
-      readline
-      libedit
-      imagemagick # for image.nvim
-      luajitPackages.magick # lua bindings for imagemagick
-      sql-formatter
-      sqls
-      mermaid-cli
-      marksman
+    ### neovim
+    neovim
+    ### dependencies for neovim
+    ripgrep
+    prettierd
+    stylua
+    nixfmt-classic
+    tree-sitter
+    readline
+    libedit
+    imagemagick # for image.nvim
+    luajitPackages.magick # lua bindings for imagemagick
+    sql-formatter
+    sqls
+    mermaid-cli
+    marksman
+    shellcheck
+    shfmt
 
-      ### yazi deps
-      ouch
-      rich-cli
-      exiftool
-      mediainfo
-      poppler-utils # pdftoppm required
+    ### yazi deps
+    ouch
+    rich-cli
+    exiftool
+    mediainfo
+    poppler-utils # pdftoppm required
 
-      # for gvfs
-      wsdd # needed for samba
+    # for gvfs
+    wsdd # needed for samba
 
-      # mtp shite
-      libmtp
-      mtpfs
-      simple-mtpfs
-      jmtpfs
-    ] ++ (
-      # packages to be built from unstable nixpkgs
-      with pkgs-unstable; [
-        # mediainfo plugin doesnt work with 25.05
-        yazi
-        # withPlugins not available on 25.05
-        (llm.withPlugins {
-          llm-anthropic = true;
-          llm-ollama = true;
-          llm-openai-plugin = true;
-        })
-      ]);
+    # mtp shite
+    libmtp
+    mtpfs
+    simple-mtpfs
+    jmtpfs
+
+    ### unstable packages
+    pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
+    # withPlugins not available on 25.05
+    (pkgs-unstable.llm.withPlugins {
+      llm-anthropic = true;
+      llm-ollama = true;
+      llm-openai-plugin = true;
+    })
+
+    ### user packages
+    (python3.withPackages (p:
+      with p; [
+        pip
+        pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server
+      ]))
+  ];
 
   # enable docker
   virtualisation.docker.enable = true;

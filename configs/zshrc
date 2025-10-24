@@ -29,8 +29,8 @@ function reload-tmux {
 # copy a file to clipboard
 function copyfile {
     # Resolve the full path of the file
-    local fullpath=$(realpath $1)
-    if [ ! -e $fullpath ]; then
+    local fullpath=$(realpath "$1")
+    if [ ! -e "$fullpath" ]; then
         echo "Error: Invalid file path" >&2
         return 1
     fi
@@ -66,6 +66,12 @@ if command -v fzf >/dev/null; then source <(fzf --zsh); fi
 
 # setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
+
+# nvim alias to clear session and start
+alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_session()'"
+
+# i dont like the name status default as sometimes i want git log --patch
+alias gl='git log'
 
 function bw-setup() {
   current_status="$(bw status | jq -r .status)"
@@ -123,7 +129,7 @@ function bw-edit() {
     selected_id=$(jq -r '.[] | .id + " " + .name + " " + .login.username' <<< "$bw_items" | fzf --with-nth 2.. | awk '{print $1}')
 
     # check user selected an item
-    if test -z $selected_id; then
+    if test -z "$selected_id"; then
         echo "no item selected!"
         return 1
     fi
@@ -133,29 +139,29 @@ function bw-edit() {
     tmpfile=$(mktemp)
 
     # write JSON to temp file
-    jq -r ".[] | select(.id == \"$selected_id\")" <<< "$bw_items" >$tmpfile
+    jq -r ".[] | select(.id == \"$selected_id\")" <<< "$bw_items" >"$tmpfile"
 
     # check file not empty
-    if test -z "$(cat -A $tmpfile)"; then
+    if test -z "$(cat -A "$tmpfile")"; then
         echo "error, json is empty!"
         return 1
     fi
 
     # open in editor (this blocks until editor closes)
-    $EDITOR $tmpfile
+    $EDITOR "$tmpfile"
 
-    if test "$(cat $tmpfile)" = "$item_json"; then
+    if test "$(cat "$tmpfile")" = "$item_json"; then
         echo "no changes made, exiting..."
-        rm -f $tmpfile
+        rm -f "$tmpfile"
         return 0
     fi
 
     # update bitwarden with edited JSON
     echo "sending updated JSON to bitwarden..."
-    cat $tmpfile | bw encode | bw edit item $selected_id
+    cat "$tmpfile" | bw encode | bw edit item "$selected_id"
 
     # cleanup
-    rm -f $tmpfile
+    rm -f "$tmpfile"
 
     echo "Item $selected_id updated successfully"
 }
@@ -194,7 +200,7 @@ zstyle ':completion:*:git-checkout:*' sort false
 # NOTE: don't use escape sequences (like '%F{red}%d%f') here, fzf-tab will ignore them
 zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 # force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
 zstyle ':completion:*' menu no
 # preview directory's content with eza when completing cd
@@ -254,10 +260,10 @@ add-zsh-hook preexec tmux_preexec
 add-zsh-hook precmd tmux_precmd
 
 
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
-if [ -e $HOME/.config/zshrclocal ]; then
-  source $HOME/.config/zshrclocal
+if [ -e "$HOME"/.config/zshrclocal ]; then
+  source "$HOME"/.config/zshrclocal
 fi
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then

@@ -636,6 +636,39 @@ Hello from a flake!
 
 
 
+## Nix inspection (nixpkgs and more)
+A good one is `nix flake metadata` after building this to see what `nixpkgs` is pinned to
+```bash
+➜ jollof dev-setup (main) ✗ nix flake metadata
+warning: Git tree '/home/jollof/coding/dev-setup' is dirty
+Resolved URL:  git+file:///home/jollof/coding/dev-setup
+Description:   NixOS configuration of joel
+Path:          /nix/store/p60sr5h6pgfa66b59n6cllmb4iixcz83-source
+Revision:      635c008bcbb3f3080a9539f47c498da25b602375-dirty
+Last modified: 2025-10-23 15:04:13
+Fingerprint:   bc01275b322600e68894578c978ba61dc745fb529f73c90904a4271aab9b0dfe
+Inputs:
+├───nixpkgs: github:NixOS/nixpkgs/9a094440e02a699be5c57453a092a8baf569bdad?narHash=sha256-Vp9K5ol6h0J90jG7Rm4RWZsCB3x7v5VPx588TQ1dkfs%3D (2025-09-14 00:35:52)
+├───nixpkgs-unstable: github:NixOS/nixpkgs/e643668fd71b949c53f8626614b21ff71a07379d?narHash=sha256-NY3kSorgqE5LMm1LqNwGne3ZLMF2/ILgLpFr1fS4X3o%3D (2025-09-24 05:06:22)
+└───nur: github:nix-community/NUR/402529374b6642ed0a3c6e7cd26f47b475bb46ea?narHash=sha256-oP/0YzBq2TzFSgAOxKWxhnDgn1OYX0CfX6huYhdtXWE%3D (2025-10-24 12:40:00)
+    ├───flake-parts: github:hercules-ci/flake-parts/205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9?narHash=sha256-4pDvzqnegAfRkPwO3wmwBhVi/Sye1mzps0zHWYnP88c%3D (2024-12-04 11:43:21)
+    │   └───nixpkgs-lib follows input 'nur/nixpkgs'
+    └───nixpkgs follows input 'nixpkgs'
+➜ jollof dev-setup (main) ✗
+```
+
+And can do registry list
+```bash
+➜ jollof dev-setup (main) ✗ nix registry list -v
+system flake:nixpkgs path:/nix/store/805qxiz47zwd8hm35hbpk3ifr8slpj2r-source
+global flake:agda github:agda/agda
+global flake:arion github:hercules-ci/arion
+global flake:blender-bin github:edolstra/nix-warez?dir=blender
+global flake:bundlers github:NixOS/bundlers
+global flake:cachix github:cachix/cachix
+global flake:composable github:ComposableFi/composable
+...
+```
 
 # Mental Notes
 Trying to get my head round the crazy world of linux and computers in general

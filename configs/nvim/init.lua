@@ -114,9 +114,9 @@ vim.opt.showmode = false
 -- --  Schedule the setting after `UiEnter` because it can increase startup-time.
 -- --  Remove this option if you want your OS clipboard to remain independent.
 -- --  See `:help 'clipboard'`
--- vim.schedule(function()
---   vim.opt.clipboard = 'unnamedplus'
--- end)
+vim.schedule(function()
+  vim.opt.clipboard = 'unnamedplus'
+end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -419,7 +419,11 @@ require('lazy').setup {
         --
         defaults = {
           mappings = {
-            i = { ['<c-enter>'] = 'to_fuzzy_refine', ['<C-l>'] = actions.cycle_history_next, ['<C-h>'] = actions.cycle_history_prev },
+            i = {
+              ['<c-enter>'] = 'to_fuzzy_refine',
+              ['<C-l>'] = actions.cycle_history_next,
+              ['<C-h>'] = actions.cycle_history_prev,
+            },
           },
         },
         pickers = {
@@ -760,6 +764,9 @@ require('lazy').setup {
           },
           filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
         },
+        bashls = {
+          filetypes = { 'sh', 'zsh' },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -771,9 +778,6 @@ require('lazy').setup {
       require('mason').setup()
 
       local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       -- Register LSP configs using Neovim 0.11+ API
@@ -806,11 +810,11 @@ require('lazy').setup {
         function()
           require('conform').format({ async = true, lsp_format = 'fallback' }, function(err, did_edit)
             if err then
-              print 'oh dear, conform is not happy!'
-              print(err)
+              vim.notify('oh dear, conform is not happy!', 'error')
+              vim.notify(err, 'error')
             end
             if not err and not did_edit then
-              print 'did not format?'
+              print 'no changes to format'
             end
           end)
         end,
@@ -818,40 +822,46 @@ require('lazy').setup {
         desc = '[F]ormat buffer',
       },
     },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 5000,
-          lsp_format = lsp_format_opt,
-        }
-      end,
-      formatters_by_ft = {
-        sql = { 'sql_formatter' },
-        nix = { 'nixfmt' },
-        lua = { 'stylua' },
-        json = { 'prettierd', 'prettier', stop_after_first = true },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        javascript = { 'prettierd', 'prettier', stop_after_first = true },
-        typescript = { 'prettierd', 'prettier', stop_after_first = true },
-        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
-        fish = { 'fish_indent', stop_after_first = true },
-      },
-    },
+    config = function()
+      require('conform').setup {
+        log_level = vim.log.levels.DEBUG,
+        notify_on_error = false,
+        format_on_save = function(bufnr)
+          -- Disable "format_on_save lsp_fallback" for languages that don't
+          -- have a well standardized coding style. You can add additional
+          -- languages here or re-enable it for the disabled ones.
+          local disable_filetypes = { c = true, cpp = true }
+          local lsp_format_opt
+          if disable_filetypes[vim.bo[bufnr].filetype] then
+            lsp_format_opt = 'never'
+          else
+            lsp_format_opt = 'fallback'
+          end
+          return {
+            timeout_ms = 5000,
+            lsp_format = lsp_format_opt,
+          }
+        end,
+        formatters_by_ft = {
+          sql = { 'sql_formatter' },
+          nix = { 'nixfmt' },
+          lua = { 'stylua' },
+          json = { 'prettierd', 'prettier', stop_after_first = true },
+          -- Conform can also run multiple formatters sequentially
+          -- python = { "isort", "black" },
+          --
+          -- You can use 'stop_after_first' to run the first available formatter from the list
+          javascript = { 'prettierd', 'prettier', stop_after_first = true },
+          typescript = { 'prettierd', 'prettier', stop_after_first = true },
+          javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+          typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+          fish = { 'fish_indent', stop_after_first = true },
+          bash = { 'shfmt', 'shellcheck' },
+          zsh = { 'shfmt', 'shellcheck' },
+          sh = { 'shfmt', 'shellcheck' },
+        },
+      }
+    end,
   },
 
   { -- Autocompletion
@@ -1053,7 +1063,12 @@ require('lazy').setup {
   --     vim.cmd.colorscheme 'tokyonight-moon'
   --   end,
   -- },
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -1367,6 +1382,18 @@ require('lazy').setup {
   },
 }
 
+-- for some reason the lazy window sets file type AFTER opening
+-- so listen for FileType event (instead of window/buffer opened)
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function(args)
+    local file_type = vim.bo[args.buf].filetype
+    if file_type ~= 'lazy' then
+      return
+    end
+
+    vim.api.nvim_buf_set_name(args.buf, 'LAZY')
+  end,
+})
 -- enable local neovim/vim settings
 vim.opt.exrc = true
 -- The line beneath this is called `modeline`. See `:help modeline`
