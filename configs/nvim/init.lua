@@ -793,12 +793,6 @@ require('lazy').setup {
       vim.lsp.config('marksman', { capabilities = capabilities })
       -- nixd is not available via mason, so calling directly
       vim.lsp.enable 'nixd'
-      -- vim.lsp.config('tmuxy', {
-      --   cmd = { 'tmux-language-server' },
-      --   filetypes = { 'tmux' },
-      --   root_dir = vim.fs.root(0, { '.tmux.conf', '.git' }) or vim.fn.getcwd(),
-      -- })
-      --
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
@@ -1384,15 +1378,6 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.opt.exrc = true
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-vim.api.nvim_create_autocmd({ 'BufEnter' }, {
-  pattern = { 'tmux.conf', '.tmux.conf' },
-  callback = function()
-    vim.lsp.start {
-      name = 'tmux',
-      cmd = { 'tmux-language-server' },
-    }
-  end,
-})
 
 -- regexp here to search for tags
 -- \v\|(\S)+\||\*(\S)+\*
