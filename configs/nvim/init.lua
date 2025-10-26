@@ -1374,6 +1374,7 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.api.nvim_buf_set_name(args.buf, 'LAZY')
   end,
 })
+
 -- enable local neovim/vim settings
 vim.opt.exrc = true
 -- The line beneath this is called `modeline`. See `:help modeline`

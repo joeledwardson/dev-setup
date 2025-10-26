@@ -92,10 +92,20 @@ end, { desc = 'dismiss notify popup and clear hlsearch' })
 
 vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
-end)
+end, { desc = 'open diagnostic' })
 
 -- You can add your own plugins here or in other files in this directory!
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
-return {}
+return {
+  {
+    'y3owk1n/undo-glow.nvim',
+    version = '*', -- remove this if you want to use the `main` branch
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+}
