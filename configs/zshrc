@@ -61,6 +61,14 @@ fi
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
+# add navi repos if not there already
+if command -v navi >/dev/null; then
+    if [[ ! -d "$HOME/.local/share/navi/cheats/denisidoro__cheats" ]]; then
+        navi repo add denisidoro/cheats
+    fi
+fi
+
+
 # custom completions
 if command -v glab >/dev/null; then source <(glab completion -s zsh); fi
 if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then source <(docker completion zsh); fi
