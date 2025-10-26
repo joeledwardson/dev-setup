@@ -80,6 +80,7 @@ return {
         api.config.mappings.default_on_attach(bufnr)
 
         -- custom mappings
+        -- 👿
         vim.keymap.set('n', 's', api.node.open.vertical_no_picker, ops 'Open Horizontal')
         vim.keymap.set('n', 'S', api.node.open.horizontal_no_picker, ops 'Open Vertical')
       end

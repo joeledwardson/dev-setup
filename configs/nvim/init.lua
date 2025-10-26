@@ -346,7 +346,8 @@ require('lazy').setup {
       -- Document existing key chains
       spec = {
         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-        { '<leader>d', group = '[D]ocument' },
+        { '<leader>d', group = '[d]ocument' },
+        { '<leader>D', group = '[D]atabase' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
@@ -1043,26 +1044,6 @@ require('lazy').setup {
       vim.cmd 'colorscheme kanagawa'
     end,
   },
-
-  -- {
-  --   'folke/tokyonight.nvim',
-  --   priority = 1000,
-  --   config = function()
-  --     local tokyo = require 'tokyonight'
-  --     tokyo.setup {
-  --       style = 'night',
-  --       transparent = true,
-  --       on_highlights = function(hl, c)
-  --         hl.LineNrAbove = { fg = c.red }
-  --         hl.LineNrBelow = { fg = c.magenta }
-  --       end,
-  --     }
-  --   end,
-  --   init = function()
-  --     -- Then apply the colorscheme
-  --     vim.cmd.colorscheme 'tokyonight-moon'
-  --   end,
-  -- },
   {
     'folke/todo-comments.nvim',
     event = 'VimEnter',

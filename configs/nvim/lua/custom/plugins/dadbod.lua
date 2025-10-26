@@ -19,16 +19,12 @@ return {
       vim.g.db_ui_use_nvim_notify = 1
       vim.g.db_ui_win_position = 'left'
 
-      require('which-key').register {
-        ['<leader>D'] = {
-          name = '󰆼 Db Tools',
-          u = { '<cmd>DBUIToggle<cr>', ' DB UI Toggle' },
-          f = { '<cmd>DBUIFindBuffer<cr>', ' DB UI Find buffer' },
-          r = { '<cmd>DBUIRenameBuffer<cr>', ' DB UI Rename buffer' },
-          l = { '<cmd>DBUILastQueryInfo<cr>', ' DB UI Last query infos' },
-        },
-      }
-
+      vim.keymap.set('n', '<leader>Df', '<cmd>DBUIFindBuffer<cr>', { desc = '[D]B [f]ind buffer' })
+      vim.keymap.set('n', '<leader>Dl', '<cmd>DBUILastQueryInfo<cr>', { desc = '[D]B [l]ast query infos' })
+      vim.keymap.set('n', '<leader>Dr', '<cmd>DBUIRenameBuffer<cr>', { desc = '[D]B [r]ename buffer' })
+      vim.keymap.set('n', '<leader>Du', '<cmd>DBUIToggle<cr>', { desc = '[D]B [t]oggle' })
+      -- }
+      --
       -- Save query keybinding (works in sql buffers)
       vim.keymap.set('n', '<leader>W', '<Plug>(DBUI_SaveQuery)', { desc = 'Save query permanently' })
     end,

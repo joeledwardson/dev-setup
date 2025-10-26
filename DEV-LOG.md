@@ -26,6 +26,7 @@ Also, pure has a colour change to yellow on the prompt when in vi mode! can use 
 ## October 2025
 Hmmm I should really put more notes from 'README.md` in here (or just break it up better) so I have a concise view of sections and not just random meanderings
 
+### Completion
 Well, the completion thing is REALLY annoying as sometimes it breaks and I have no idea why. Taking some notes off claude to try and debug it next time it happens
 
 ```bash
@@ -94,6 +95,7 @@ Or
 
   Want me to create a custom debug command that runs all these checks and outputs a report for you?
 
+### Print buffers
 So tried a super simple script to print windows and associated buffers as below (can save in scratchpads)
 ```lua
 local wins = vim.api.nvim_list_wins()
@@ -113,11 +115,20 @@ end
 
 and then call with `:luafile scratchpads/...`
 
+Well i've moved scratchpads to a commited dir to git now (except for the brave preferences files). And the updated scripts lives in `./scratchpads/print_bufs.lua`
 
+### Previous boot log
 One i ALWAYS forget is to view last boot logs, its `journalctl`, NOT `dmesg`.
 ```bash
 sudo journalctl -b -1
 ```
 
+### Substitute
+Well it turns out mini surround replaces the s key, which would be nice to see the menu?
+But claude made a good suggestion just using `c` for change. `cl` changes (left) which is the same thing as s...
+
+### Stylua
+While i remember, stylua complaining was nothing to do with conform. It was installed by LSP (for some reason I had added it to list of LSP configurations 🤦‍♂️)
+So if i see that one again can just remember to do `:LspUninstall stylua`
 
 

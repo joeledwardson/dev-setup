@@ -8,9 +8,7 @@ vim.opt.tabstop = 2
 vim.opt.number = true
 -- alt shift H is used by tmux for window switching
 vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
-vim.keymap.set('n', '<leader>Du', '<cmd>DBUIToggle<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>Df', '<cmd>DBUIFindBuffer<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
+-- vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
 -- folds
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
