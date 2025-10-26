@@ -1360,6 +1360,10 @@ require('lazy').setup {
     loader = true, -- Show detailed plugin loading info in :Lazy profile
     require = true, -- Track require calls during plugin loading
   },
+  checker = {
+    enabled = false, -- no update unless i call it specifically
+    notify = false, -- notify on update
+  },
 }
 
 -- for some reason the lazy window sets file type AFTER opening
