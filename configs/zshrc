@@ -3,10 +3,12 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
 
-# history settings
+# history settings (see https://zsh.sourceforge.io/Doc/Release/Parameters.html)
 # Add these near the top of your .zshrc
 HISTFILE=~/.zsh_history
 HISTSIZE=50000
+# not sure why shellcheck doesnt like this one below, its a documented option?
+# shellcheck disable=SC2034
 SAVEHIST=50000
 # History settings
 setopt SHARE_HISTORY          # Share history between sessions
@@ -29,7 +31,7 @@ function reload-tmux {
 # copy a file to clipboard
 function copyfile {
     # Resolve the full path of the file
-    local fullpath=$(realpath "$1")
+    local -r fullpath=$(realpath "$1")
     if [ ! -e "$fullpath" ]; then
         echo "Error: Invalid file path" >&2
         return 1
@@ -48,6 +50,7 @@ compinit
 eval "$(sheldon source)"
 
 # show hostname
+# shellcheck disable=SC2034
 DRACULA_DISPLAY_CONTEXT=1
 
 # fnm completion and shell

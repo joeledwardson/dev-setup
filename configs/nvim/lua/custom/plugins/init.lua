@@ -10,12 +10,12 @@ vim.opt.number = true
 vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 -- vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
 -- folds
-vim.opt.foldmethod = 'expr'
-vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-vim.opt.foldenable = true
-vim.opt.foldlevel = 99 -- start with all folds open
-vim.opt.foldlevelstart = 99 -- start with all folds open
-vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
+-- vim.opt.foldmethod = 'expr'
+-- vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+-- vim.opt.foldenable = true
+-- vim.opt.foldlevel = 99 -- start with all folds open
+-- vim.opt.foldlevelstart = 99 -- start with all folds open
+-- vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
 
 -- Window focus highlighting (NC = Non-Current/inactive windows)
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
@@ -94,6 +94,11 @@ vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
 
+-- remap space, newline chars in normal mode to add (see :h i_CTRL-G_u)
+vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true })
+-- same for newline
+vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
+
 -- You can add your own plugins here or in other files in this directory!
 --  I promise not to create any merge conflicts in this directory :)
 --
@@ -106,6 +111,17 @@ return {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
+    },
+    {
+      'chrisgrieser/nvim-origami',
+      event = 'VeryLazy',
+      opts = {}, -- needed even when using default config
+
+      -- recommended: disable vim's auto-folding
+      init = function()
+        vim.opt.foldlevel = 99
+        vim.opt.foldlevelstart = 99
+      end,
     },
   },
 }

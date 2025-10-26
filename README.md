@@ -283,11 +283,11 @@ read -r VPN_PASS
 if [[ -z "$VPN_PASS" ]]; then
   echo "no password provided"
 else
-nmcli c import type openvpn file /var/lib/syncthing/Sync/work.ovpn
-nmcli c show work
-nmcli c modify work vpn.user-name Joel_Edwardson
-nmcli c modify work vpn.secrets "password=$VPN_PASS"
-nmcli c modify work +vpn.data "password-flags=0"
+  nmcli c import type openvpn file /var/lib/syncthing/Sync/work.ovpn
+  nmcli c show work
+  nmcli c modify work vpn.user-name Joel_Edwardson
+  nmcli c modify work vpn.secrets "password=$VPN_PASS"
+  nmcli c modify work +vpn.data "password-flags=0"
 fi
 ```
 
@@ -2398,6 +2398,68 @@ Additional modes
 - `\V` to trigger "very" not magic
 
 
+### Mappings
+I ALWAYS get lost looking at the strange mapping syntax in vim `nnnoommapremap` shite. So i got claude to write me a diagram of the `i` (for insert), vs `no` for no remapping and various combinations....
+
+| Command | Mode | Description |
+|---------|------|-------------|
+| `nmap` | **n**ormal | When you're just moving around |
+| `imap` | **i**nsert | When you're typing text |
+| `vmap` | **v**isual | When you've selected text |
+| `xmap` | e**x**tended visual | Visual block mode (strict visual) |
+| `omap` | **o**perator-pending | After d, c, y, etc |
+| `smap` | **s**elect | Select mode (like visual but different) |
+| `cmap` | **c**ommand-line | When typing `:commands` |
+| `tmap` | **t**erminal | In terminal buffer |
+
+
+#### Special Combinations
+| Command | Modes | Description |
+|---------|-------|-------------|
+| `:map` | n, v, o | Works in normal, visual, and operator-pending |
+| `:map!` | i, c | Works in insert and command-line modes |
+
+> The `no` in `noremap`
+
+**"no" = "NO remap"** — it means **disable remapping** of the right-hand side. The "no" is a prefix meaning "don't allow remapping".
+
+#### :map vs :noremap — The Key Difference
+
+### :map (allows remapping)
+```vim
+:map a b
+:map b c
+```
+**You press:** `a`
+- → remapped to `b`
+- → remapped again to `c`
+- **Result:** `c` executes
+
+⚠️ Can cause chains and loops!
+
+#### :noremap (disables remapping)
+```vim
+:noremap a b
+:map b c
+```
+**You press:** `a`
+- → mapped to `b` (literal, won't scan again)
+- **Result:** `b` executes
+
+✓ Safe and predictable!
+
+#### All the `noremap` variants
+
+| Command | Mode | Description |
+|---------|------|-------------|
+| `nnoremap` | normal | No remap |
+| `inoremap` | insert | No remap |
+| `vnoremap` | visual | No remap |
+| `xnoremap` | visual block | No remap |
+| `onoremap` | operator-pending | No remap |
+| `snoremap` | select | No remap |
+| `cnoremap` | command-line | No remap |
+| `tnoremap` | terminal | No remap |
 
 
 ## Shell scripting
