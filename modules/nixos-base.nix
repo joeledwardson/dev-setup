@@ -241,10 +241,6 @@
 
     ### user packages
     pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server
-    # (pkgs-unstable.python3.withPackages (p:
-    #   with p; [
-    #     pip
-    #   ]))
   ];
 
   # enable docker
