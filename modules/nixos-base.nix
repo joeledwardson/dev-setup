@@ -192,6 +192,8 @@
     doctoc # for updating my README toc!
     btop # fancy version of top
     navi
+    terraform
+    terraformer
 
     ### video processing
     ffmpeg
