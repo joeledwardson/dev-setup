@@ -23,6 +23,7 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    'mxsdev/nvim-dap-vscode-js',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -107,7 +108,10 @@ return {
     dap.adapters = {
       ['pwa-node'] = {
         type = 'server',
-        host = '127.0.01',
+        -- debugging does NOT work unless set to ipv6, this might change per PC?
+        -- by runnning and ~/.local/share/nvim/mason/bin/js-debug-adapter, it said Debug server listening at ::1:8123
+        -- but worth checking first, might need to update this in the future?
+        host = '::1',
         port = '${port}',
         executable = {
           command = 'js-debug-adapter',
@@ -127,26 +131,35 @@ return {
       },
     }
 
-    for _, language in ipairs { 'typescript', 'javascript' } do
-      -- js-debug-adapter options:
-      -- https://github.com/microsoft/vscode-js-debug/blob/main/OPTIONS.md
-      dap.configurations[language] = {
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch file',
-          program = '${file}',
-          cwd = '${workspaceFolder}',
-        },
-        {
-          type = 'pwa-node',
-          request = 'attach',
-          name = 'Attach to process ID',
-          processId = utils.pick_process,
-          cwd = '${workspaceFolder}',
-        },
-      }
-    end
+    dap.configurations['javascript'] = {
+      {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'Launch file',
+        program = '${file}',
+        cwd = '${workspaceFolder}',
+        sourceMaps = true,
+        smartStep = true,
+        skipFiles = { '<node_internals>/**', 'node_modules/**' },
+      },
+    }
+
+    -- VSCode-compatible config with source maps and skip files
+    dap.configurations['typescript'] = {
+      {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'Launch file',
+        program = '${file}',
+        cwd = '${workspaceFolder}',
+        runtimeExecutable = 'npx',
+        runtimeArgs = { 'ts-node', '${file}' },
+        sourceMaps = true,
+        smartStep = true,
+        skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        outputCapture = 'std',
+      },
+    }
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
@@ -182,9 +195,9 @@ return {
     --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     -- end
 
-    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
+    -- dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+    -- dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+    -- dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
     -- Install golang specific config
     require('dap-go').setup {
