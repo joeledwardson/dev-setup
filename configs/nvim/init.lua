@@ -768,24 +768,24 @@ require('lazy').setup {
           },
         },
         -- vue_ls = {},
-        vtsls = {
-          settings = {
-            complete_function_calls = true,
-            vtsls = {
-              enableMoveToFileCodeAction = true,
-              autoUseWorkspaceTsdk = true,
-              experimental = {
-                completion = {
-                  -- https://github.com/yioneko/vtsls/blob/main/packages/service/configuration.schema.json#L1259-L1271
-                  enableServerSideFuzzyMatch = true,
-                  entriesLimit = 3000,
-                },
-              },
-            },
-            javascript = vtslsSettings,
-            typescript = vtslsSettings,
-          },
-        },
+        -- vtsls = {
+        --   settings = {
+        --     complete_function_calls = true,
+        --     vtsls = {
+        --       enableMoveToFileCodeAction = true,
+        --       autoUseWorkspaceTsdk = true,
+        --       experimental = {
+        --         completion = {
+        --           -- https://github.com/yioneko/vtsls/blob/main/packages/service/configuration.schema.json#L1259-L1271
+        --           enableServerSideFuzzyMatch = true,
+        --           entriesLimit = 3000,
+        --         },
+        --       },
+        --     },
+        --     javascript = vtslsSettings,
+        --     typescript = vtslsSettings,
+        --   },
+        -- },
         -- settings = {
         --   vtsls = {
         --     tsserver = {

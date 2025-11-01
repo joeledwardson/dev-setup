@@ -2003,6 +2003,29 @@ Another great example when trawling through syslogs is `dmesg` (seems that `--co
 ```bash
 sudo dmesg --color=always | less
 ```
+### Options
+`getopts` is usedful, i (think) its just fancy iterator through bash $@ args?
+e.g. checking a `-x` flag
+```bash
+➜ joelyboy dash (master) ✗ echo 'getopts x opt; echo $opt' > testie.sh
+➜ joelyboy dash (master) ✗ ./testie.sh
+?
+➜ joelyboy dash (master) ✗ ./testie.sh -x
+x
+```
+
+
+e.g. multi args (yes im too lazy to do it over multi line in while to make it clearer)
+```bash
+➜ joelyboy dash (master) ✗ echo 'while getopts xyz opt; do echo $opt; done' > testie.sh
+➜ joelyboy dash (master) ✗ ./testie.sh -x
+x
+➜ joelyboy dash (master) ✗ ./testie.sh -xyz
+x
+y
+z
+➜ joelyboy dash (master) ✗
+```
 
 ## Neovim misc
 ### Buffers

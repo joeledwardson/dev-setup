@@ -148,6 +148,33 @@ print(pls.plugins)
 
 There is a throwaway [comment here](https://www.lazyvim.org/configuration/plugins#%EF%B8%8F-adding--disabling-plugin-keymaps) on their docs but it doesn't exactly do much explanation... 🤦‍♂️
 
+So with claudes help I also managed to track custom user events to find when nvim DAP is loaded (as its lazy?)
+```lua
+local user_event_path = vim.fn.getcwd() .. "/user_events.log"
+local f = io.open(user_event_path, "a")
+vim.api.nvim_create_autocmd("User", {
+	callback = function(args)
+		if f ~= nil then
+			f:write("got a user event!\n" .. vim.inspect(args) .. "\n")
+		end
+	end,
+})
+```
+
+And with that, found what i was after when nvim dap is loaded (on pressing f7 to bring up the UI)
+```
+{
+  buf = 3,
+  data = "nvim-dap-ui",
+  event = "User",
+  file = "LazyLoad",
+  id = 150,
+  match = "LazyLoad"
+}
+```
+
+
+
 ### Debugging
 Well I'm FINALLY getting around to attempting to configure debugging, given the need is here.
 
@@ -177,4 +204,41 @@ end
 printer_util("hi")
 dap = require('dap')
 printer_util(dap.configurations)
+```
+
+ok and FINALLY, i have per project no env variable...
+```lua
+... (see above)
+printer_util(dap.configurations)
+
+=> "_: hi"
+"_"
+"  go"
+"    1"
+"      type: delve"
+"      program: ${workspaceFolder}"
+"      request: launch"
+"      name: Delve: Debug"
+"    2"
+    ...
+....
+"  typescript"
+"    1"
+"      program: ${file}"
+"      env"
+"        NO_COLOR: 1"
+"      sourceMaps: true"
+"      cwd: ${workspaceFolder}"
+"      skipFiles"
+"        1: <node_internals>/**"
+"        2: node_modules/**"
+"      request: launch"
+"      smartStep: true"
+"      runtimeExecutable: npx"
+"      name: Launch file"
+"      runtimeArgs"
+"        1: ts-node"
+"        2: ${file}"
+"      type: pwa-node"
+"      outputCapture: std"
 ```

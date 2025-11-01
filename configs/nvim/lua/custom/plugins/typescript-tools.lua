@@ -4,7 +4,7 @@ return {
   ft = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
   opts = {},
   -- replaced by vtsls for now, otherwise too slow for big projects
-  enabled = false,
+  -- enabled = false,
   -- eh, maybe one way ill get round to fixing this garbage from claude. a globa typescript errors window would be nice...
   -- TODO
   --
