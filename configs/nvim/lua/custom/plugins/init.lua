@@ -17,6 +17,9 @@ vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 -- vim.opt.foldlevelstart = 99 -- start with all folds open
 -- vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
 
+-- vim.o.foldmethod = 'expr'
+-- vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+
 -- Window focus highlighting (NC = Non-Current/inactive windows)
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   callback = function()
@@ -45,6 +48,8 @@ vim.api.nvim_create_autocmd('CmdlineLeave', {
 vim.keymap.set({ 'n' }, '<Leader>k', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'toggle signature' })
+
+-- vim.keymap.set('n', 'z', 'zxz')
 
 vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
 vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
@@ -114,7 +119,9 @@ return {
   --   },
   --   },
   {
+    -- (sigh) breaks with big typescript projects
     'chrisgrieser/nvim-origami',
+    enabled = false,
     event = 'VeryLazy',
     opts = {}, -- needed even when using default config
 
@@ -122,6 +129,30 @@ return {
     init = function()
       vim.opt.foldlevel = 99
       vim.opt.foldlevelstart = 99
+    end,
+  },
+  {
+    'kevinhwang91/nvim-ufo',
+    dependencies = { 'kevinhwang91/promise-async' },
+    lazy = false,
+    config = function()
+      -- Option 3: treesitter as a main provider instead
+      -- (Note: the `nvim-treesitter` plugin is *not* needed.)
+      -- ufo uses the same query files for folding (queries/<lang>/folds.scm)
+      -- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
+      require('ufo').setup {
+        provider_selector = function(bufnr, filetype, buftype)
+          return { 'treesitter', 'indent' }
+        end,
+      }
+      vim.o.foldcolumn = '1' -- '0' is not bad
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+
+      -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
+      vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+      vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
     end,
   },
   {
@@ -180,5 +211,67 @@ return {
       fuzzy = { implementation = 'prefer_rust_with_warning' },
     },
     opts_extend = { 'sources.default' },
+  },
+  {
+    'lewis6991/satellite.nvim',
+    config = function()
+      require('satellite').setup {
+        current_only = false,
+        winblend = 50,
+        zindex = 40,
+        excluded_filetypes = {},
+        width = 2,
+        handlers = {
+          cursor = {
+            enable = true,
+            -- Supports any number of symbols
+            symbols = { '⎺', '⎻', '⎼', '⎽' },
+            -- symbols = { '⎻', '⎼' }
+            -- Highlights:
+            -- - SatelliteCursor (default links to NonText
+          },
+          search = {
+            enable = true,
+            -- Highlights:
+            -- - SatelliteSearch (default links to Search)
+            -- - SatelliteSearchCurrent (default links to SearchCurrent)
+          },
+          diagnostic = {
+            enable = true,
+            signs = { '-', '=', '≡' },
+            min_severity = vim.diagnostic.severity.HINT,
+            -- Highlights:
+            -- - SatelliteDiagnosticError (default links to DiagnosticError)
+            -- - SatelliteDiagnosticWarn (default links to DiagnosticWarn)
+            -- - SatelliteDiagnosticInfo (default links to DiagnosticInfo)
+            -- - SatelliteDiagnosticHint (default links to DiagnosticHint)
+          },
+          gitsigns = {
+            enable = true,
+            signs = { -- can only be a single character (multibyte is okay)
+              add = '│',
+              change = '│',
+              delete = '-',
+            },
+            -- Highlights:
+            -- SatelliteGitSignsAdd (default links to GitSignsAdd)
+            -- SatelliteGitSignsChange (default links to GitSignsChange)
+            -- SatelliteGitSignsDelete (default links to GitSignsDelete)
+          },
+          marks = {
+            enable = true,
+            show_builtins = false, -- shows the builtin marks like [ ] < >
+            key = 'm',
+            -- Highlights:
+            -- SatelliteMark (default links to Normal)
+          },
+          quickfix = {
+            signs = { '-', '=', '≡' },
+            -- Highlights:
+            -- SatelliteQuickfix (default links to WarningMsg)
+          },
+        },
+      }
+    end,
   },
 }
