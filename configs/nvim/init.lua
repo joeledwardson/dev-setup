@@ -883,7 +883,7 @@ require('lazy').setup {
           }
         end,
         formatters_by_ft = {
-          sql = { 'sql_formatter' },
+          sql = { 'sqlfluff' },
           nix = { 'nixfmt' },
           lua = { 'stylua' },
           json = { 'prettier', stop_after_first = true },
@@ -905,6 +905,14 @@ require('lazy').setup {
             env = {
               FORCE_COLOR = '0',
             },
+          },
+          sqlfluff = {
+            command = 'sqlfluff',
+            args = { 'format', '--dialect=postgres', '-' },
+            stdin = true,
+            cwd = function()
+              return vim.fn.getcwd()
+            end,
           },
         },
       }

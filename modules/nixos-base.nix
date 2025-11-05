@@ -216,6 +216,7 @@
     marksman
     shellcheck
     shfmt
+    sqlfluff
 
     ### yazi deps
     ouch
