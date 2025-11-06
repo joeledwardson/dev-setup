@@ -235,6 +235,7 @@
     jmtpfs
 
     ### unstable packages
+    pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     # withPlugins not available on 25.05
     (pkgs-unstable.llm.withPlugins {
