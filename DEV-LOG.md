@@ -238,7 +238,65 @@ printer_util(dap.configurations)
 "      name: Launch file"
 "      runtimeArgs"
 "        1: ts-node"
-"        2: ${file}"
+"        2: ${file}" ]
 "      type: pwa-node"
 "      outputCapture: std"
 ```
+
+## November 2025
+Ok I have some time gonna try and finally figure out how to setup networking properly so mullvad works
+Well firstly i found the arch docs for [resolv.conf here](https://man.archlinux.org/man/resolved.conf.5)
+
+Ok the domains = "~." makes a bit more sense now. have asked claude to give some examples.
+
+```mermaid
+graph TD
+    A["Your Laptop"] --> B["Two Network Connections"]
+    B --> C["eth0<br/>(Wired - Office Network)<br/>DNS: 10.0.0.1, 10.0.0.2"]
+    B --> D["wlan0<br/>(WiFi - Home)<br/>DNS: 8.8.8.8, 8.8.4.4"]
+    
+    C --> E["eth0 Config:<br/>Domains=~corp.local"]
+    D --> F["wlan0 Config:<br/>Domains=~home.local"]
+    
+    E --> G["Query: database.corp.local"]
+    F --> H["Query: printer.home.local"]
+    
+    G --> I["✓ Uses Office DNS<br/>10.0.0.1 or 10.0.0.2"]
+    H --> J["✓ Uses Home WiFi DNS<br/>8.8.8.8 or 8.8.4.4"]
+    
+    K["WITHOUT route-only domains ~"] --> L["❌ Both queries might use<br/>same default DNS<br/>and fail!"]
+```
+
+Need to figure out this shite
+```vim
+echo expand("%:p")
+```
+
+**Schemas**
+ALso JSON schema is fine.... I was being the pleb that it is the schema that defines whether one can haveaa additional properties or not....
+So vscode json schema is absolutely fine....
+
+In fact, i actually broken the entire JSON schema validation by me trying to hack together the path for json schema path for SWAYNC.
+
+Well... now its working again and setup basic schema validation for JSON and YAML via schema store plugin (thanks to whoever made that!)
+
+
+** Lua type checking **
+
+
+**TODO comments**
+Wow.....,  I'm dumb, turns out todo-comments actually says that it matches any text *followed by a colon* in the docs, that's why it wasn't working before...
+
+**Theme**
+So have been using using kanagawa up until now but finding it a bit ... lackluster, idk anything specific but just not me.
+
+Plus i overrode the colours for diff view ages ago and it has been messing up my colours schema ever since.
+
+> TODO: still need to get around to making some notes about highlight groups
+
+Ok REALLY liking onedark so far, seems really clear, easy to read and nice to look at
+
+But so far:
+- kanagawa: colours nice, but a bit lackluster, diff view not that clear. markdown render doesn't play nice
+- lemons: bit too harsh back/yellow combination for me
+- nanode: not "clear" enough for me, the contrast between the green and the background and comments (brackets etc)

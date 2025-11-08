@@ -1,5 +1,5 @@
 {
-  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "$schema": "https://raw.githubusercontent.com/ErikReider/SwayNotificationCenter/main/src/configSchema.json",
   "positionX": "right",
   "positionY": "top",
   "control-center-margin-top": 0,

@@ -1,0 +1,83 @@
+return {
+  'navarasu/onedark.nvim',
+  priority = 1000, -- make sure to load this before all the other start plugins
+  config = function()
+    require('onedark').setup {
+      style = 'darker',
+    }
+    require('onedark').load()
+  end,
+}
+
+-- {
+--   'Kaikacy/Lemons.nvim',
+--   version = '*', -- for stable release
+--   lazy = false,
+--   priority = 1000,
+--   config = function()
+--     vim.cmd.colorscheme 'lemons'
+--     -- or
+--     -- require("lemons").load()
+--     -- there is no difference between these two
+--   end,
+-- },
+-- {
+--   'rebelot/kanagawa.nvim',
+--   priority = 1000,
+--   config = function()
+--     -- Default options:
+--     require('kanagawa').setup {
+--       compile = false, -- enable compiling the colorscheme
+--       undercurl = true, -- enable undercurls
+--       commentStyle = { italic = true },
+--       functionStyle = {},
+--       keywordStyle = { italic = true },
+--       statementStyle = { bold = true },
+--       typeStyle = {},
+--       transparent = false, -- do not set background color
+--       dimInactive = false, -- dim inactive window `:h hl-NormalNC`
+--       terminalColors = true, -- define vim.g.terminal_color_{0,17}
+--       colors = { -- add/modify theme and palette colors
+--         palette = {},
+--         theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+--       },
+--       overrides = function(colors) -- add/modify highlights
+--         local palette = colors.palette
+--         return {
+--           -- Use springGreen for diff add (brighter than winterGreen)
+--           DiffAdd = { bg = palette.springGreen },
+--           -- Other diff colors from palette for better visibility
+--           DiffDelete = { bg = palette.autumnRed },
+--           DiffChange = { bg = palette.crystalBlue },
+--           DiffText = { bg = palette.lightBlue },
+--         }
+--       end,
+--       theme = 'wave', -- Load "wave" theme
+--       background = { -- map the value of 'background' option to a theme
+--         dark = 'wave', -- try "dragon" !
+--         light = 'lotus',
+--       },
+--     }
+--
+--     -- setup must be called before loading
+--     vim.cmd 'colorscheme kanagawa'
+--   end,
+-- },
+-- {
+--   'KijitoraFinch/nanode.nvim',
+--   priority = 1000,
+--   config = function()
+--     require('nanode').setup {
+--       transparent = false,
+--     }
+--     vim.cmd.colorscheme 'nanode'
+--   end,
+-- }
+-- {
+--   'AlexvZyl/nordic.nvim',
+--   lazy = false,
+--   priority = 1000,
+--   config = function()
+--     require('nordic').load()
+--   end,
+-- },

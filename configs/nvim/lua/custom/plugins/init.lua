@@ -21,25 +21,24 @@ vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 -- vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
 
 -- Window focus highlighting (NC = Non-Current/inactive windows)
-vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
-  callback = function()
-    vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
-    vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
-  end,
-})
-
--- Command mode highlighting (keeping your original)
-vim.api.nvim_create_autocmd('CmdlineEnter', {
-  callback = function()
-    -- vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' })
-  end,
-})
-
-vim.api.nvim_create_autocmd('CmdlineLeave', {
-  callback = function()
-    -- vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
-  end,
-})
+-- vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
+--   callback = function()
+--     vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
+--     vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
+--   end,
+-- })
+--
+-- -- Command mode highlighting (keeping your original)
+-- vim.api.nvim_create_autocmd('CmdlineEnter', {
+--   callback = function()
+--     -- vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' }) end,
+-- })
+--
+-- vim.api.nvim_create_autocmd('CmdlineLeave', {
+--   callback = function()
+--     -- vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
+--   end,
+-- })
 
 -- vim.keymap.set({ 'n' }, '<C-k>', function()
 --   require('lsp_signature').toggle_float_win()
@@ -103,6 +102,8 @@ end, { desc = 'open diagnostic' })
 vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true })
 -- same for newline
 vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
+
+-- TODO
 
 -- You can add your own plugins here or in other files in this directory!
 --  I promise not to create any merge conflicts in this directory :)
@@ -203,6 +204,11 @@ return {
         default = { 'lsp', 'path', 'snippets', 'buffer' },
       },
 
+      cmdline = {
+        keymap = { preset = 'inherit' },
+        completion = { menu = { auto_show = true } },
+      },
+
       -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
       -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
       -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
@@ -273,5 +279,24 @@ return {
         },
       }
     end,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+    ft = 'markdown',
+    config = function()
+      require('render-markdown').setup()
+    end,
+  },
+  {
+    'folke/todo-comments.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    event = 'VimEnter',
+    opts = {},
   },
 }

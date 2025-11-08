@@ -1,116 +1,113 @@
 {
-	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
-	"CreationDate" : "2025-09-28T20:30:07.318-00:00",
-	"Sources" : 
-	[
+	"$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+	"CreationDate": "2025-09-28T20:30:07.318-00:00",
+	"Sources": [
 		{
-			"Packages" : 
-			[
+			"Packages": [
 				{
-					"PackageIdentifier" : "MullvadVPN.MullvadVPN",
-					"Version" : "2025.9.0"
+					"PackageIdentifier": "MullvadVPN.MullvadVPN",
+					"Version": "2025.9.0"
 				},
 				{
-					"PackageIdentifier" : "Git.Git",
-					"Version" : "2.51.0"
+					"PackageIdentifier": "Git.Git",
+					"Version": "2.51.0"
 				},
 				{
-					"PackageIdentifier" : "Notepad++.Notepad++",
-					"Version" : "8.8.5"
+					"PackageIdentifier": "Notepad++.Notepad++",
+					"Version": "8.8.5"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.Office",
-					"Version" : "16.0.19127.20264"
+					"PackageIdentifier": "Microsoft.Office",
+					"Version": "16.0.19127.20264"
 				},
 				{
-					"PackageIdentifier" : "dotPDN.PaintDotNet",
-					"Version" : "5.1.9"
+					"PackageIdentifier": "dotPDN.PaintDotNet",
+					"Version": "5.1.9"
 				},
 				{
-					"PackageIdentifier" : "NordSecurity.NordVPN",
-					"Version" : "7.49.4.0"
+					"PackageIdentifier": "NordSecurity.NordVPN",
+					"Version": "7.49.4.0"
 				},
 				{
-					"PackageIdentifier" : "OpenVPNTechnologies.OpenVPN",
-					"Version" : "2.6.1404"
+					"PackageIdentifier": "OpenVPNTechnologies.OpenVPN",
+					"Version": "2.6.1404"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.Edge",
-					"Version" : "140.0.3485.94"
+					"PackageIdentifier": "Microsoft.Edge",
+					"Version": "140.0.3485.94"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.OneDrive",
-					"Version" : "23.038.0219.0001"
+					"PackageIdentifier": "Microsoft.OneDrive",
+					"Version": "23.038.0219.0001"
 				},
 				{
-					"PackageIdentifier" : "chrisant996.Clink",
-					"Version" : "1.8.3"
+					"PackageIdentifier": "chrisant996.Clink",
+					"Version": "1.8.3"
 				},
 				{
-					"PackageIdentifier" : "Paragon.LinuxFileSystems",
-					"Version" : "5.2.1183"
+					"PackageIdentifier": "Paragon.LinuxFileSystems",
+					"Version": "5.2.1183"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.VCRedist.2015+.x64",
-					"Version" : "14.44.35211.0"
+					"PackageIdentifier": "Microsoft.VCRedist.2015+.x64",
+					"Version": "14.44.35211.0"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.DotNet.DesktopRuntime.8",
-					"Version" : "8.0.20"
+					"PackageIdentifier": "Microsoft.DotNet.DesktopRuntime.8",
+					"Version": "8.0.20"
 				},
 				{
-					"PackageIdentifier" : "Anthropic.ClaudeCode",
-					"Version" : "1.0.123"
+					"PackageIdentifier": "Anthropic.ClaudeCode",
+					"Version": "1.0.123"
 				},
 				{
-					"PackageIdentifier" : "Brave.Brave",
-					"Version" : "140.1.82.172"
+					"PackageIdentifier": "Brave.Brave",
+					"Version": "140.1.82.172"
 				},
 				{
-					"PackageIdentifier" : "Spotify.Spotify",
-					"Version" : "1.2.73.474.g7b30bb2b"
+					"PackageIdentifier": "Spotify.Spotify",
+					"Version": "1.2.73.474.g7b30bb2b"
 				},
 				{
-					"PackageIdentifier" : "SlackTechnologies.Slack",
-					"Version" : "4.46.96"
+					"PackageIdentifier": "SlackTechnologies.Slack",
+					"Version": "4.46.96"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.VisualStudioCode",
-					"Version" : "1.104.1"
+					"PackageIdentifier": "Microsoft.VisualStudioCode",
+					"Version": "1.104.1"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.Teams",
-					"Version" : "25241.203.3947.4411"
+					"PackageIdentifier": "Microsoft.Teams",
+					"Version": "25241.203.3947.4411"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.AppInstaller",
-					"Version" : "1.26.430.0"
+					"PackageIdentifier": "Microsoft.AppInstaller",
+					"Version": "1.26.430.0"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.UI.Xaml.2.7",
-					"Version" : "7.2409.9001.0"
+					"PackageIdentifier": "Microsoft.UI.Xaml.2.7",
+					"Version": "7.2409.9001.0"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.UI.Xaml.2.8",
-					"Version" : "8.2501.31001.0"
+					"PackageIdentifier": "Microsoft.UI.Xaml.2.8",
+					"Version": "8.2501.31001.0"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.VCLibs.Desktop.14",
-					"Version" : "14.0.33728.0"
+					"PackageIdentifier": "Microsoft.VCLibs.Desktop.14",
+					"Version": "14.0.33728.0"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.WindowsTerminal",
-					"Version" : "1.23.12371.0"
+					"PackageIdentifier": "Microsoft.WindowsTerminal",
+					"Version": "1.23.12371.0"
 				}
 			],
-			"SourceDetails" : 
-			{
-				"Argument" : "https://cdn.winget.microsoft.com/cache",
-				"Identifier" : "Microsoft.Winget.Source_8wekyb3d8bbwe",
-				"Name" : "winget",
-				"Type" : "Microsoft.PreIndexed.Package"
+			"SourceDetails": {
+				"Argument": "https://cdn.winget.microsoft.com/cache",
+				"Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+				"Name": "winget",
+				"Type": "Microsoft.PreIndexed.Package"
 			}
 		}
 	],
-	"WinGetVersion" : "1.11.430"
+	"WinGetVersion": "1.11.430"
 }
