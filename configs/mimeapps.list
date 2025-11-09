@@ -7,3 +7,7 @@ x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/sgnl=signal.desktop
 x-scheme-handler/signalcaptcha=signal.desktop
+image/jpeg=gimp.desktop
+image/webp=gimp.desktop
+image/png=gimp.desktop
+

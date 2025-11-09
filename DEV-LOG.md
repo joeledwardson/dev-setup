@@ -300,3 +300,298 @@ But so far:
 - kanagawa: colours nice, but a bit lackluster, diff view not that clear. markdown render doesn't play nice
 - lemons: bit too harsh back/yellow combination for me
 - nanode: not "clear" enough for me, the contrast between the green and the background and comments (brackets etc)
+
+### Lua
+Ok so metatables? another excellently documented feature in Lua... [here](https://www.lua.org/pil/13.html) 😠
+
+So.... its just a really poorly implemented version of classes and methods? this language just keeps on giving doesn't it...
+```lua
+
+me={age=31}
+solene={age=29}
+mt = {
+  __add = function(a,b)
+    local newAge = a.age + b.age
+    return {age=newAge}
+  end
+}
+
+setmetatable(me, mt)
+setmetatable(solene, mt)
+
+print(me + solene)
+
+=> {
+  age = 60
+}
+```
+
+An example of how not to do lua (lol). To be fair it does say in the docs that the metamethod `__index` is only called when a field is absent in the table
+```lua
+local myObj = {name="jollof", age=31}
+mt = {
+  __index = function(tbl, key)
+    print("you are accesing the key: ", key)
+    return tbl[key]
+  end
+}
+setmetatable(myObj, mt)
+
+=> {
+  age = 31,
+  name = "jollof",
+  <metatable> = {
+    __index = <function 1>
+  }
+}
+myObj.name
+
+=> "jollof"
+myObj.age
+
+=> 31
+
+myObj.ohdear
+
+=> [1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+[1] "you are accesing the key: ", [2] "ohdear"
+```
+
+> yay infinite loop!
+
+I (think) this explains a bit better
+- create a "namespace" with default values, constructor
+- constructor to set metatable to new instance of object and then just return the object
+- define meteatable index if the requested key does not exist in the (user) object
+- if not in user object then query the prototype
+- in my testie debug example, i log an error (even if the key exists in prototype!)
+
+```lua
+-- create a namespace
+Window = {}
+-- create the prototype with default values
+Window.prototype = {x=0, y=0, width=100, height=100, }
+-- create a metatable
+Window.mt = {}
+-- declare the constructor function
+function Window.new (o)
+  setmetatable(o, Window.mt)
+  return o
+end
+Window.mt.__index = function (table, key)
+  print("oh dear, trying to access ", key)
+  return Window.prototype[key]
+end
+
+
+
+myWindow = Window.new({pls=1})
+
+myWindow.pls
+
+=> 1
+
+myWindow.x
+
+=> [1] "oh dear, trying to access ", [2] "x"
+0
+
+myWindow.height
+
+=> [1] "oh dear, trying to access ", [2] "height"
+100
+
+myWindow.asdfasdfasdf
+
+=> [1] "oh dear, trying to access ", [2] "asdfasdfasdf"
+```
+
+Well after all that there is no actual way to know the variables and methods that a person as defined when providing an object (i.e. nvim extensions) without actually reviewing the `__index` function as its provided as code.
+
+> that is, unless the author has been kind enough to provide a `.lua` file with the `M.<func_here>` stubs file
+
+Fuck, turns out blink snippets just don't need to go into insert mode! just need to use `<tab>` and `<s-tab>`
+
+### Markdown LSP (dive into `icu` not working on NIXOS?)
+Ok well `markdown-oxide` is crap (keeps treating # at end of a line as a h1...)
+
+So trying out marksman but its complaining about `icu`? which smells distinctly like a NixOS problem rather than marksman itself.
+
+So I (tried) using `icu` in systemPackages and rebuilding but no luck unfortunately.
+
+Interesting to take a dive into nix build, where we are actually building a nix package ourselves! still not sure what the real life use case of this but oh well (or maybe the situation I'm in now?)
+
+```bash
+➜ jollof dev-setup (main) ✗ nix-build '<nixpkgs>' -A icu --no-out-link
+/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+➜ jollof dev-setup (main) ✗ ls -la /nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+
+total 7352
+dr-xr-xr-x    4 root root      4096 Jan  1  1970 .
+drwxrwxr-t 6893 root nixbld 7507968 Nov  9 16:06 ..
+dr-xr-xr-x    2 root root      4096 Jan  1  1970 lib
+dr-xr-xr-x    3 root root      4096 Jan  1  1970 share
+```
+
+Ok, I'm getting a bit lost here so I will try my best to log all of this down in my findings
+When i do `nix-shell` it DOES work but I'm not sure why?. the path isn't actually the same (`icupkg` is one of the packages included when installing `icu`)
+```bash
+➜ jollof dev-setup (main) ✗ nix-shell -p icu
+
+[nix-shell:~/coding/dev-setup]$ which icupkg
+/nix/store/fkg8mlga46zabn5vzwazdwb9ws4z7m5w-icu4c-76.1-dev/bin/icupkg
+
+[nix-shell:~/coding/dev-setup]$
+```
+
+
+I'm coming across `nix eval` again but honestly I can't remember how it works.
+
+Well apparently it defaults to a file? Or it requires an argument to tell it whether its a file or expression typically (the `--expr` or `--file`, see [docs](https://nix.dev/manual/nix/2.18/command-ref/new-cli/nix3-eval))
+
+Nice an easy example to refresh my memory (remember that builins.trace 2nd arg is the return val)
+```bash
+➜ jollof dev-setup (main) ✗   nix eval --expr 'builtins.trace "hi" 1'
+trace: hi
+1
+➜ jollof dev-setup (main) ✗
+```
+
+Ok well I've tried adding an example `./scratchpads/hello.nix` and now going to "instatiate" it? which will add a derivation to the store
+```bash
+➜ jollof scratchpads (main) ✗ nix-instantiate hello.nix
+
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+/nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv
+➜ jollof scratchpads (main) ✗
+```
+
+And now inspect the derivation?
+```bash
+➜ jollof scratchpads (main) ✗ nix derivation show /nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv
+
+{
+  "/nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv": {
+    "args": [
+      "-c",
+      "echo 'Hello world!' > $out"
+    ],
+    "builder": "/bin/sh",
+    "env": {
+      "builder": "/bin/sh",
+      "name": "hello-text",
+      "out": "/nix/store/qn7dpn3an7la7w4br1ahkg06kmkhxi1l-hello-text",
+      "system": "x86_64-linux"
+    },
+    "inputDrvs": {},
+    "inputSrcs": [],
+    "name": "hello-text",
+    "outputs": {
+      "out": {
+        "path": "/nix/store/qn7dpn3an7la7w4br1ahkg06kmkhxi1l-hello-text"
+      }
+    },
+    "system": "x86_64-linux"
+  }
+}
+```
+
+And now "realising" it (I have 0 idea what im doing....)
+```bash
+➜ jollof scratchpads (main) ✗ nix-store --realise /nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv
+
+this derivation will be built:
+  /nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv
+building '/nix/store/b4xsz860fm5ni2ds5hg0m71vw9jk5mgl-hello-text.drv'...
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+/nix/store/qn7dpn3an7la7w4br1ahkg06kmkhxi1l-hello-text
+➜ jollof scratchpads (main) ✗ bat /nix/store/qn7dpn3an7la7w4br1ahkg06kmkhxi1l-hello-text
+
+───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       │ File: /nix/store/qn7dpn3an7la7w4br1ahkg06kmkhxi1l-hello-text
+───────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1   │ Hello world!
+───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+➜ jollof scratchpads (main) ✗
+```
+
+But.... at least I understand the diagram the guy posted on stackoverflow [derivation workflow](https://i.sstatic.net/NqxsO.png)
+<img src="https://i.sstatic.net/NqxsO.png" />
+
+Perhaps this is a better example of an actual program (even though all it does is print hello world...), it IS STILL a binary
+```bash
+➜ jollof scratchpads (main) ✗ nix-instantiate hello-world.nix
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+/nix/store/zjg421rhc7hfahgv3qhc30v25p5q8545-hello-world.drv
+➜ jollof scratchpads (main) ✗ nix-store --realise /nix/store/zjg421rhc7hfahgv3qhc30v25p5q8545-hello-world.drv
+
+this derivation will be built:
+  /nix/store/zjg421rhc7hfahgv3qhc30v25p5q8545-hello-world.drv
+building '/nix/store/zjg421rhc7hfahgv3qhc30v25p5q8545-hello-world.drv'...
+warning: you did not specify '--add-root'; the result might be removed by the garbage collector
+/nix/store/5nfhr4s73z9krcykw6hzxnf89jwswv0w-hello-world
+➜ jollof scratchpads (main) ✗ /nix/store/5nfhr4s73z9krcykw6hzxnf89jwswv0w-hello-world
+
+Hello, World!
+➜ jollof scratchpads (main) ✗
+
+Ahhhh, a crucial part of the derivation system is it has the system in there! so A different platform will produce a different derivation!
+
+That's the first detail beside the generic "rEProDUCible" garbage out of google/chatGPT i've seen that helps explain why derivations are needed (over just nix code)
+
+
+Well the `path-info` seems easy enough to understad...
+```bash
+➜ jollof scratchpads (main) ✗ nix path-info nixpkgs#icu
+/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+➜ jollof scratchpads (main) ✗
+
+As i suspected, `-r` for recursive means everything it depends on
+```bash
+➜ jollof scratchpads (main) ✗ nix path-info -r nixpkgs#icu
+/nix/store/16hvpw4b3r05girazh4rnwbw0jgjkb4l-xgcc-14.3.0-libgcc
+/nix/store/7r0k7ywzmgkscjxgzmgwsng0545h8id6-libunistring-1.3
+/nix/store/2q1vszdygbs1icp1cd18a4d11zcsc97y-libidn2-2.3.8
+/nix/store/4j6p91af1bfgnn31agg1c9ijr0kyg6gi-gcc-14.3.0-libgcc
+/nix/store/g8zyryr9cr6540xsyg4avqkwgxpnwj2a-glibc-2.40-66
+/nix/store/dj06r96j515npcqi9d8af1d1c60bx2vn-gcc-14.3.0-lib
+/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+```
+
+Also the treeview is pretty cool...
+```bash
+[nix-shell:~/coding/dev-setup/scratchpads]$ exit
+exit
+➜ jollof scratchpads (main) ✗ # get the store path for icu
+p=$(nix path-info nixpkgs#icu)
+
+➜ jollof scratchpads (main) ✗ echo $p
+/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+➜ jollof scratchpads (main) ✗ nix-store -q --tree "$p"
+/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1
+├───/nix/store/g8zyryr9cr6540xsyg4avqkwgxpnwj2a-glibc-2.40-66
+│   ├───/nix/store/16hvpw4b3r05girazh4rnwbw0jgjkb4l-xgcc-14.3.0-libgcc
+│   ├───/nix/store/2q1vszdygbs1icp1cd18a4d11zcsc97y-libidn2-2.3.8
+│   │   ├───/nix/store/7r0k7ywzmgkscjxgzmgwsng0545h8id6-libunistring-1.3
+│   │   │   └───/nix/store/7r0k7ywzmgkscjxgzmgwsng0545h8id6-libunistring-1.3 [...]
+│   │   └───/nix/store/2q1vszdygbs1icp1cd18a4d11zcsc97y-libidn2-2.3.8 [...]
+│   └───/nix/store/g8zyryr9cr6540xsyg4avqkwgxpnwj2a-glibc-2.40-66 [...]
+├───/nix/store/dj06r96j515npcqi9d8af1d1c60bx2vn-gcc-14.3.0-lib
+│   ├───/nix/store/4j6p91af1bfgnn31agg1c9ijr0kyg6gi-gcc-14.3.0-libgcc
+│   ├───/nix/store/g8zyryr9cr6540xsyg4avqkwgxpnwj2a-glibc-2.40-66 [...]
+│   └───/nix/store/dj06r96j515npcqi9d8af1d1c60bx2vn-gcc-14.3.0-lib [...]
+└───/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1 [...]
+➜ jollof scratchpads (main) ✗
+```

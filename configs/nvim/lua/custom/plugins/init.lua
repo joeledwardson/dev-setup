@@ -119,19 +119,7 @@ return {
   --     -- refer to the configuration section below
   --   },
   --   },
-  {
-    -- (sigh) breaks with big typescript projects
-    'chrisgrieser/nvim-origami',
-    enabled = false,
-    event = 'VeryLazy',
-    opts = {}, -- needed even when using default config
 
-    -- recommended: disable vim's auto-folding
-    init = function()
-      vim.opt.foldlevel = 99
-      vim.opt.foldlevelstart = 99
-    end,
-  },
   {
     'kevinhwang91/nvim-ufo',
     dependencies = { 'kevinhwang91/promise-async' },
@@ -290,8 +278,15 @@ return {
     opts = {},
     ft = 'markdown',
     config = function()
-      require('render-markdown').setup()
+      require('render-markdown').setup { enabled = false }
     end,
+    keys = { {
+      '<leader>tm',
+      function()
+        require('render-markdown').toggle()
+      end,
+      desc = 'toggle markdown render',
+    } },
   },
   {
     'folke/todo-comments.nvim',

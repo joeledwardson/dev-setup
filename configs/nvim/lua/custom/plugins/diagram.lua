@@ -4,7 +4,6 @@ return {
   dependencies = {
     { '3rd/image.nvim', opts = {} }, -- you'd probably want to configure image.nvim manually instead of doing this
   },
-  pls = '1',
   opts = { -- you can just pass {}, defaults below
     events = {
       render_buffer = {}, --no auto rendering

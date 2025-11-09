@@ -3,7 +3,6 @@ return {
   '3rd/image.nvim',
   lazy = false,
   build = false, -- Don't run build commands
-  pls = '1',
   opts = {
     backend = 'kitty', -- or "ueberzug"
     integrations = {

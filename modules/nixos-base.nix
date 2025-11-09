@@ -141,6 +141,7 @@
     nix-tree
     nix-du
     devenv
+    nix-index
 
     ### disk management
     udiskie # for status bar disks
@@ -320,6 +321,8 @@
     ZDOTDIR = "$HOME/.config/zsh";
     # add npm global to path for global nodejs installation
     PATH = [ "$HOME/.npm-global/bin" ];
+    # disable some weird setting from .net, otherwise marksman fails complaining about icu?
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
   };
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -713,6 +713,8 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
+        marksman = {},
+
         -- postgres_lsp = {},
         -- denols = {
         --   -- Only activate Deno for projects with deno.json files
@@ -861,7 +863,6 @@ require('lazy').setup {
         vim.lsp.config(server_name, config)
       end
 
-      vim.lsp.config('marksman', { capabilities = capabilities })
       -- nixd is not available via mason, so calling directly
       vim.lsp.enable 'nixd'
       require('mason-lspconfig').setup {
