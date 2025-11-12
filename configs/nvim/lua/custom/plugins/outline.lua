@@ -6,6 +6,13 @@ return {
     require('outline').setup {
       providers = {
         priority = { 'lsp', 'coc', 'markdown', 'norg', 'treesitter', 'man' },
+      }, -- Configuration for each provider (3rd party providers are supported)
+      lsp = {
+        -- Lsp client names to ignore
+        blacklist_clients = { 'postgres_lsp' },
+      },
+      treesitter = {
+        filetypes = { 'sql' }, -- ensure treesitter only activates for sql filetype
       },
     }
     local utils = require 'joels-lua-utils'

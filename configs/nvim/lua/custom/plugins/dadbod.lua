@@ -4,7 +4,7 @@ return {
     dependencies = {
       { 'tpope/vim-dotenv', lazy = true },
       { 'tpope/vim-dadbod', lazy = true },
-      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', lazy = true },
     },
     cmd = {
       'DBUI',
@@ -27,6 +27,18 @@ return {
       --
       -- Save query keybinding (works in sql buffers)
       vim.keymap.set('n', '<leader>W', '<Plug>(DBUI_SaveQuery)', { desc = 'Save query permanently' })
+    end,
+    config = function()
+      -- Setup completion only for dadbod UI buffers
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'sql', 'mysql', 'plsql' },
+        callback = function()
+          -- Only enable completion if this is a dadbod buffer
+          if vim.b.db or vim.b.dbui then
+            require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+          end
+        end,
+      })
     end,
   },
 }

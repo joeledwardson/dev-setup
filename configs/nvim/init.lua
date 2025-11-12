@@ -671,16 +671,6 @@ require('lazy').setup {
       -- local mason_registry = require('mason-registry')
       -- local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
       -- For Mason v2,
-      local vue_language_server_path = vim.fn.expand '$MASON/packages' .. '/vue-language-server' .. '/node_modules/@vue/language-server'
-      -- or even
-      -- local vue_language_server_path = vim.fn.stdpath('data') .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
-      -- local vue_language_server_path = '/path/to/@vue/language-server'
-      local vue_plugin = {
-        name = '@vue/typescript-plugin',
-        location = vue_language_server_path,
-        languages = { 'vue' },
-        configNamespace = 'typescript',
-      }
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -690,32 +680,14 @@ require('lazy').setup {
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local vtslsSettings = {
-        updateImportsOnFileMove = { enabled = 'always' },
-        format = {
-          enable = false,
-          insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-          insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-        },
-        preferences = {
-          importModuleSpecifier = os.getenv 'LSP_TS_IMPORT_MODULE_SPECIFIER_PROJECT_RELATIVE' and 'project-relative' or 'auto',
-        },
-        inlayHints = {
-          parameterNames = { enabled = 'literals' },
-          parameterTypes = { enabled = true },
-          variableTypes = { enabled = true },
-          propertyDeclarationTypes = { enabled = true },
-          functionLikeReturnTypes = { enabled = true },
-          enumMemberValues = { enabled = true },
-        },
-      }
+      ---@type table<string,vim.lsp.Config>
       local servers = {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
         marksman = {},
 
-        -- postgres_lsp = {},
+        postgres_lsp = { cmd = { 'postgres-language-server', 'lsp-proxy' }, root_markers = { 'postgres-language-server.jsonc' } },
         -- denols = {
         --   -- Only activate Deno for projects with deno.json files
         --   root_markers = { 'deno.json', 'deno.jsonc' },
@@ -865,6 +837,38 @@ require('lazy').setup {
 
       -- nixd is not available via mason, so calling directly
       vim.lsp.enable 'nixd'
+      -- TODO: fix hard coded pg schema for atlas
+      vim.lsp.config['atlas'] = { filetypes = { 'atlas-schema-postgresql' }, capabilities = capabilities, root_markers = { 'schema.pg.hcl' } }
+
+      vim.lsp.enable 'atlas'
+
+      vim.filetype.add {
+        filename = {
+          ['atlas.hcl'] = 'atlas-config',
+        },
+        pattern = {
+          ['.*/*.my.hcl'] = 'atlas-schema-mysql',
+          ['.*/*.pg.hcl'] = 'atlas-schema-postgresql',
+          ['.*/*.lt.hcl'] = 'atlas-schema-sqlite',
+          ['.*/*.ch.hcl'] = 'atlas-schema-clickhouse',
+          ['.*/*.ms.hcl'] = 'atlas-schema-mssql',
+          ['.*/*.rs.hcl'] = 'atlas-schema-redshift',
+          ['.*/*.test.hcl'] = 'atlas-test',
+          ['.*/*.plan.hcl'] = 'atlas-plan',
+          ['.*/*.rule.hcl'] = 'atlas-rule',
+        },
+      }
+
+      vim.treesitter.language.register('hcl', 'atlas-config')
+      vim.treesitter.language.register('hcl', 'atlas-schema-mysql')
+      vim.treesitter.language.register('hcl', 'atlas-schema-postgresql')
+      vim.treesitter.language.register('hcl', 'atlas-schema-sqlite')
+      vim.treesitter.language.register('hcl', 'atlas-schema-clickhouse')
+      vim.treesitter.language.register('hcl', 'atlas-schema-mssql')
+      vim.treesitter.language.register('hcl', 'atlas-schema-redshift')
+      vim.treesitter.language.register('hcl', 'atlas-test')
+      vim.treesitter.language.register('hcl', 'atlas-plan')
+      vim.treesitter.language.register('hcl', 'atlas-rule')
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
@@ -872,7 +876,9 @@ require('lazy').setup {
     end,
   },
   -- TypeScript Tools moved to custom/plugins/typescript-tools.lua
-  { -- Autoformat
+  {
+    -- Autoformat
+    -- configuration for toggling autoformat shamelessly stolen from github here: https://github.com/stevearc/conform.nvim/issues/192
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
@@ -893,12 +899,47 @@ require('lazy').setup {
         mode = '',
         desc = '[F]ormat buffer',
       },
+      {
+        '<leader>tf',
+        function()
+          -- If autoformat is currently disabled for this buffer,
+          -- then enable it, otherwise disable it
+          if vim.b.disable_autoformat then
+            vim.cmd 'FormatEnable'
+            vim.notify 'Enabled autoformat for current buffer'
+          else
+            vim.cmd 'FormatDisable!'
+            vim.notify 'Disabled autoformat for current buffer'
+          end
+        end,
+        desc = 'Toggle autoformat for current buffer',
+      },
+      {
+        '<leader>tF',
+        function()
+          -- If autoformat is currently disabled globally,
+          -- then enable it globally, otherwise disable it globally
+          if vim.g.disable_autoformat then
+            vim.cmd 'FormatEnable'
+            vim.notify 'Enabled autoformat globally'
+          else
+            vim.cmd 'FormatDisable'
+            vim.notify 'Disabled autoformat globally'
+          end
+        end,
+        desc = 'Toggle autoformat globally',
+      },
     },
     config = function()
       require('conform').setup {
         log_level = vim.log.levels.DEBUG,
         notify_on_error = false,
         format_on_save = function(bufnr)
+          -- ignore formatting if custom disable flag is enabled (globally or buffer)
+          if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+            return
+          end
+
           -- Disable "format_on_save lsp_fallback" for languages that don't
           -- have a well standardized coding style. You can add additional
           -- languages here or re-enable it for the disabled ones.
@@ -915,7 +956,7 @@ require('lazy').setup {
           }
         end,
         formatters_by_ft = {
-          sql = { 'sqlfluff' },
+          sql = { 'sql_formatter' },
           nix = { 'nixfmt' },
           lua = { 'stylua' },
           json = { 'prettier', stop_after_first = true },
@@ -933,21 +974,44 @@ require('lazy').setup {
           sh = { 'shfmt', 'shellcheck' },
         },
         formatters = {
+          sql_formatter = {
+            prepend_args = { '--language', 'postgresql' },
+          },
           prettier = {
             env = {
               FORCE_COLOR = '0',
             },
           },
-          sqlfluff = {
-            command = 'sqlfluff',
-            args = { 'format', '--dialect=postgres', '-' },
+          prettier_sql = {
+            command = 'prettier',
+            args = { '--language', 'postgresql', '--stdin-filepath', '$FILENAME' },
             stdin = true,
-            cwd = function()
-              return vim.fn.getcwd()
-            end,
+            env = {
+              FORCE_COLOR = '0',
+            },
           },
         },
       }
+
+      vim.api.nvim_create_user_command('FormatDisable', function(args)
+        if args.bang then
+          -- :FormatDisable! disables autoformat for this buffer only
+          vim.b.disable_autoformat = true
+        else
+          -- :FormatDisable disables autoformat globally
+          vim.g.disable_autoformat = true
+        end
+      end, {
+        desc = 'Disable autoformat-on-save',
+        bang = true, -- allows the ! variant
+      })
+
+      vim.api.nvim_create_user_command('FormatEnable', function()
+        vim.b.disable_autoformat = false
+        vim.g.disable_autoformat = false
+      end, {
+        desc = 'Re-enable autoformat-on-save',
+      })
     end,
   },
 
@@ -961,6 +1025,7 @@ require('lazy').setup {
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
 
+      require('mini.indentscope').setup {}
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
@@ -989,7 +1054,7 @@ require('lazy').setup {
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
-    -- enabled = false,
+    enabled = false,
     config = function()
       require('treesitter-context').setup {
         -- Standard configuration options
@@ -1174,16 +1239,6 @@ require('lazy').setup {
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
     },
-  },
-  -- install without yarn or npm
-  {
-    'iamcco/markdown-preview.nvim',
-    lazy = false,
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    ft = { 'markdown' },
-    build = function()
-      vim.fn['mkdp#util#install']()
-    end,
   },
   {
     'debugloop/telescope-undo.nvim',
