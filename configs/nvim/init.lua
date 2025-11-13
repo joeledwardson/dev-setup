@@ -685,9 +685,11 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         pyright = {},
+
         marksman = {},
 
         postgres_lsp = { cmd = { 'postgres-language-server', 'lsp-proxy' }, root_markers = { 'postgres-language-server.jsonc' } },
+
         -- denols = {
         --   -- Only activate Deno for projects with deno.json files
         --   root_markers = { 'deno.json', 'deno.jsonc' },

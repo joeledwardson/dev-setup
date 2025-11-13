@@ -4,7 +4,7 @@ if [[ -z "$choice" ]]; then
     exit
 fi
 
-to_file=$(echo -e "yes\nno" | fuzzel --prompt="would you like to save to a file?" --dmenu)
+to_file=$(echo -e "no\nyes" | fuzzel --prompt="would you like to save to a file?" --dmenu)
 
 if [[ -z "$to_file" ]]; then
     notify-send "screenshot cancelled"

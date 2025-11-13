@@ -264,7 +264,12 @@ function tmux_precmd() {
   print -Pn '\e]133;B\a'
 }
 
-
+zvm_vi_yank () {
+	zvm_yank
+  echo "pls"
+	printf %s "${CUTBUFFER}" | wl-copy
+	zvm_exit_visual_mode
+}
 # Add hooks
 autoload -U add-zsh-hook
 add-zsh-hook preexec tmux_preexec
