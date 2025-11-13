@@ -595,3 +595,87 @@ p=$(nix path-info nixpkgs#icu)
 └───/nix/store/girp43cxvqpjq4ad56r8girsq8na5bxh-icu4c-76.1 [...]
 ➜ jollof scratchpads (main) ✗
 ```
+
+### SSHing clipboard
+Ahhh back to this old fun.
+
+So apparently kitty supports OSC52 by default (so no additional configuration needed!). 
+
+So just trying to remind myself about escape codes... `\033` is the octal form of 27 (or escape)  then `[` is to do a CSI.
+
+E.g. for a temrinal bell (number 7) it would be `printf "\a"` (for the control codes, or c0). remember that bell is a "general" code so does not need the `[` for CSI.
+
+ANYWAY
+
+claude gave this example which is to use OSC 52: the standard `\033` for 27 and ESC then `]` (NOT `[` for CSI) to get OSC.
+
+- then `52` (for OSC 52)
+- `c` for clipbaord
+- then apparently it needs to be encoded?
+
+so...
+
+```bash
+echo -ne "\033]52;c;$(echo -n "hello world" | base64)\a"
+```
+
+into any modern clipboard that supports OSC 52 (should) send that to clipboard which will work over SSH!
+
+```mermaid
+graph TD
+    ESC["ESC (\\033, \\x1B, ^[)"]
+    
+    ESC --> CSI["[ → CSI<br/>Control Sequence Introducer"]
+    ESC --> OSC["] → OSC<br/>Operating System Command"]
+    ESC --> DCS["P → DCS<br/>Device Control String"]
+    ESC --> OTHER["Other Sequences"]
+    
+    %% CSI Branch
+    CSI --> CSI_FORMAT["Format: ESC [ params ; params letter"]
+    CSI_FORMAT --> CSI_EXAMPLES["Examples:"]
+    CSI_EXAMPLES --> CSI_EX1["\\033[2J - Clear screen"]
+    CSI_EXAMPLES --> CSI_EX2["\\033[1;31m - Bold red text"]
+    CSI_EXAMPLES --> CSI_EX3["\\033[10;20H - Move cursor to row 10, col 20"]
+    CSI_EXAMPLES --> CSI_EX4["\\033[?25l - Hide cursor"]
+    CSI_EXAMPLES --> CSI_EX5["\\033[38;5;214m - 256 color (214)"]
+    CSI_EXAMPLES --> CSI_EX6["\\033[38;2;255;0;128m - RGB color"]
+    
+    CSI_FORMAT --> CSI_TERMINATOR["Terminators (letters):"]
+    CSI_TERMINATOR --> CSI_TERM_LIST["m = SGR (colors/style)<br/>H = cursor position<br/>J = erase display<br/>K = erase line<br/>A/B/C/D = cursor move<br/>s/u = save/restore cursor<br/>h/l = set/reset mode"]
+    
+    %% OSC Branch
+    OSC --> OSC_FORMAT["Format: ESC ] number ; text ST"]
+    OSC_FORMAT --> OSC_EXAMPLES["Examples:"]
+    OSC_EXAMPLES --> OSC_EX1["\\033]0;Window Title\\a - Set window title"]
+    OSC_EXAMPLES --> OSC_EX2["\\033]52;c;base64text\\a - Clipboard"]
+    OSC_EXAMPLES --> OSC_EX3["\\033]7;file://hostname/path\\a - Set working dir"]
+    OSC_EXAMPLES --> OSC_EX4["\\033]8;;http://example.com\\aLink\\033]8;;\\a - Hyperlink"]
+    
+    OSC_FORMAT --> OSC_TERMINATOR["Terminators:"]
+    OSC_TERMINATOR --> OSC_TERM_LIST["\\a (BEL, \\007)<br/>or<br/>\\033\\\\ (ESC \\)"]
+    
+    %% DCS Branch
+    DCS --> DCS_FORMAT["Format: ESC P params ; data ESC \\"]
+    DCS_FORMAT --> DCS_EXAMPLES["Examples:"]
+    DCS_EXAMPLES --> DCS_EX1["\\033P1$r1;24r\\033\\\\ - DECSTBM margins"]
+    DCS_EXAMPLES --> DCS_EX2["\\033P0;1|17/ab\\033\\\\ - Sixel graphics"]
+    DCS_EXAMPLES --> DCS_EX3["\\033Pq#0;2;0;0;0#1\\033\\\\ - DECRQSS"]
+    
+    DCS_FORMAT --> DCS_NOTE["Note: Less common today<br/>Used for Sixel graphics,<br/>tmux passthrough,<br/>terminal queries"]
+    
+    %% Other sequences
+    OTHER --> OTHER_LIST["ESC M - Reverse linefeed<br/>ESC 7 - Save cursor (DECSC)<br/>ESC 8 - Restore cursor (DECRC)<br/>ESC = - Keypad app mode<br/>ESC > - Keypad num mode<br/>ESC c - Full reset (RIS)"]
+    
+    %% Styling
+    classDef escapeBox fill:#ffdddd,stroke:#cc0000,stroke-width:3px
+    classDef csiBox fill:#ddffdd,stroke:#00cc00,stroke-width:2px
+    classDef oscBox fill:#ddddff,stroke:#0000cc,stroke-width:2px
+    classDef dcsBox fill:#ffffdd,stroke:#cccc00,stroke-width:2px
+    classDef exampleBox fill:#f0f0f0,stroke:#888,stroke-width:1px
+    
+    class ESC escapeBox
+    class CSI,CSI_FORMAT,CSI_TERMINATOR,CSI_TERM_LIST csiBox
+    class OSC,OSC_FORMAT,OSC_TERMINATOR,OSC_TERM_LIST oscBox
+    class DCS,DCS_FORMAT,DCS_NOTE dcsBox
+    class CSI_EXAMPLES,CSI_EX1,CSI_EX2,CSI_EX3,CSI_EX4,CSI_EX5,CSI_EX6,OSC_EXAMPLES,OSC_EX1,OSC_EX2,OSC_EX3,OSC_EX4,DCS_EXAMPLES,DCS_EX1,DCS_EX2,DCS_EX3,OTHER_LIST exampleBox
+```

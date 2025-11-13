@@ -1,5 +1,4 @@
 {
-  "barbecue": { "branch": "main", "commit": "cd7e7da622d68136e13721865b4d919efd6325ed" },
   "blink.cmp": { "branch": "main", "commit": "327fff91fe6af358e990be7be1ec8b78037d2138" },
   "conform.nvim": { "branch": "master", "commit": "fbcb4fa7f34bfea9be702ffff481a8e336ebf6ed" },
   "diagram.nvim": { "branch": "master", "commit": "99f0415ac157d69e7208bc93504fb70d180d6b44" },
@@ -39,9 +38,9 @@
   "nvim-lsp-file-operations": { "branch": "master", "commit": "9744b738183a5adca0f916527922078a965515ed" },
   "nvim-lspconfig": { "branch": "master", "commit": "e688b486fe9291f151eae7e5c0b5a5c4ef980847" },
   "nvim-luapad": { "branch": "master", "commit": "176686eb616a5ada5dfc748f2b5109194bbe8a71" },
-  "nvim-navic": { "branch": "master", "commit": "099b4c8cdc3e9ea026ea6b2a0d315e2d28362242" },
   "nvim-nio": { "branch": "master", "commit": "21f5324bfac14e22ba26553caf69ec76ae8a7662" },
   "nvim-notify": { "branch": "master", "commit": "8701bece920b38ea289b457f902e2ad184131a5d" },
+  "nvim-osc52": { "branch": "main", "commit": "04cfaba1865ae5c53b6f887c3ca7304973824fb2" },
   "nvim-spectre": { "branch": "master", "commit": "72f56f7585903cd7bf92c665351aa585e150af0f" },
   "nvim-tree.lua": { "branch": "master", "commit": "321bc61580fd066b76861c32de3319c3a6d089e7" },
   "nvim-treesitter": { "branch": "master", "commit": "42fc28ba918343ebfd5565147a42a26580579482" },

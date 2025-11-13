@@ -21,7 +21,7 @@
   services.postgresql = {
     enable = true;
     ensureDatabases = [ "mydatabase" ];
-    extensions = ps: [ ps.plpgsql_check ps.timescaledb ps.timescaledb_toolkit ];
+    extensions = ps: [ ps.plpgsql_check ];
     settings = { shared_preload_libraries = "timescaledb"; };
     authentication = pkgs.lib.mkOverride 10 ''
       #type  database  DBuser  origin          auth-method

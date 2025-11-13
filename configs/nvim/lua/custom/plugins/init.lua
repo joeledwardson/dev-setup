@@ -320,4 +320,23 @@ return {
       vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
     end,
   },
+  {
+    'ojroques/nvim-osc52',
+    lazy = false,
+    config = function()
+      require('osc52').setup {
+        max_length = 0, -- Maximum length of selection (0 for no limit)
+        silent = false, -- Disable message on successful copy
+        trim = false, -- Trim surrounding whitespaces before copy
+        tmux_passthrough = false, -- Use tmux passthrough (requires tmux: set -g allow-passthrough on)
+      }
+      local function copy()
+        local event = vim.v.event
+        if event.operator == 'y' and (event.regname == '+' or event.regname == '') then
+          require('osc52').copy_register '+'
+        end
+      end
+      vim.api.nvim_create_autocmd('TextYankPost', { callback = copy })
+    end,
+  },
 }

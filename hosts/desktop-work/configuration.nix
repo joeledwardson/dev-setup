@@ -45,6 +45,13 @@
   # use CUDA for ollama
   services.ollama.acceleration = "cuda";
 
+  # add timescale to postgres extensions
+  services.postgresql.extensions = ps: [
+    ps.plpgsql_check
+    ps.timescaledb
+    ps.timescaledb_toolkit
+  ];
+
   # =======================================
   # NVIDIA Configuration
   # =======================================
