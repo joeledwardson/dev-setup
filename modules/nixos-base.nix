@@ -22,7 +22,6 @@
     enable = true;
     ensureDatabases = [ "mydatabase" ];
     extensions = ps: [ ps.plpgsql_check ];
-    settings = { shared_preload_libraries = "timescaledb"; };
     authentication = pkgs.lib.mkOverride 10 ''
       #type  database  DBuser  origin          auth-method
       local  all       all                     trust

@@ -46,6 +46,7 @@
   services.ollama.acceleration = "cuda";
 
   # add timescale to postgres extensions
+  services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
   services.postgresql.extensions = ps: [
     ps.plpgsql_check
     ps.timescaledb
