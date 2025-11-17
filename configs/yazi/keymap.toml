@@ -159,3 +159,14 @@ desc = "Rename bookmark by key"
 on = [ "u", "R" ]
 run = "plugin yamb rename_by_fzf"
 desc = "Rename bookmark by fzf"
+
+[[mgr.prepend_keymap]]
+on = [ ";", "s" ]
+run = "search --via=fd --args='--hidden --no-ignore'"
+desc = "jollof special search"
+
+[[mgr.prepend_keymap]]
+on = [ ";", "S" ]
+run = "search --via=rg --args='--hidden --no-ignore'"
+desc = "jollof special search"
+
