@@ -168,5 +168,5 @@ desc = "jollof special search"
 [[mgr.prepend_keymap]]
 on = [ ";", "S" ]
 run = "search --via=rg --args='--hidden --no-ignore'"
-desc = "jollof special search"
+desc = "jollof special find"
 
