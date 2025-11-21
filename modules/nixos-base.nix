@@ -17,6 +17,8 @@
     fallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
   };
 
+  services.mullvad-vpn.enable = true;
+
   # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
   services.postgresql = {
     enable = true;
