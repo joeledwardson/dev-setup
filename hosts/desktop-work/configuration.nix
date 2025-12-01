@@ -42,9 +42,6 @@
 
   networking.hostName = "desktop-work"; # Define your hostname.
 
-  # use CUDA for ollama
-  services.ollama.acceleration = "cuda";
-
   # add timescale to postgres extensions
   services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
   services.postgresql.extensions = ps: [
