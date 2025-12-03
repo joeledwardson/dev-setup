@@ -135,7 +135,7 @@ return {
       {
         type = 'pwa-node',
         request = 'launch',
-        name = 'Launch file',
+        name = 'Launch JS file',
         program = '${file}',
         cwd = '${workspaceFolder}',
         sourceMaps = true,
@@ -149,7 +149,7 @@ return {
       {
         type = 'pwa-node',
         request = 'launch',
-        name = 'Launch file',
+        name = 'Launch TS file',
         program = '${file}',
         cwd = '${workspaceFolder}',
         runtimeExecutable = 'npx',

@@ -53,42 +53,6 @@ end, { silent = true, noremap = true, desc = 'toggle signature' })
 vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
 vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
 
--- use poetry executable as python path (if exists)
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client == nil or client.name == nil or client.name ~= 'pyright' then
-      return
-    end
-
-    local venv = vim.env.VIRTUAL_ENV
-    if not venv or venv == '' then
-      return
-    end
-
-    local executable = vim.fn.system({ 'poetry', 'env', 'info', '--executable' }):gsub('%s+$', '')
-    print 'got python executable'
-    if not executable or executable == '' then
-      return
-    end
-
-    if vim.fn.filereadable(executable) ~= 1 then
-      print('executable is not a valid file? ', executable)
-      return
-    end
-
-    -- Update Pyright config using the LSP protocol directly
-    client.config.settings = client.config.settings or {}
-    client.config.settings.python = client.config.settings.python or {}
-    client.config.settings.python.pythonPath = executable
-
-    -- Notify the server about the updated configuration
-    client.notify('workspace/didChangeConfiguration', {
-      settings = client.config.settings,
-    })
-  end,
-})
-
 vim.keymap.set('n', '<Esc>', function()
   vim.cmd 'nohlsearch' -- Clear search highlighting
   require('notify').dismiss()
