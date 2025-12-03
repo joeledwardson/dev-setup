@@ -74,8 +74,6 @@
   # =======================================
   # NVIDIA Configuration
   # =======================================
-  # use CUDA for ollama (NVIDIA ONLY)
-  services.ollama.acceleration = "cuda";
 
   hardware.graphics = { enable = true; };
 

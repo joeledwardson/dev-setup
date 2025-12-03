@@ -246,7 +246,6 @@
     # withPlugins not available on 25.05
     (pkgs-unstable.llm.withPlugins {
       llm-anthropic = true;
-      llm-ollama = true;
       llm-openai-plugin = true;
     })
 
@@ -271,12 +270,6 @@
   # other thunar services
   services.gvfs.enable = true; # Mount, trash, and other functionalities
   services.tumbler.enable = true; # Thumbnail support for images
-
-  services.ollama = {
-    enable = true;
-    # Optional: preload models, see https://ollama.com/library
-    loadModels = [ "deepseek-r1:1.5b" ];
-  };
 
   # Example for /etc/nixos/configuration.nix
   services.syncthing = {
