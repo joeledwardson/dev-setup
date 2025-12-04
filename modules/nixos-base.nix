@@ -130,6 +130,7 @@
     man-pages # otherwise dont have man 5 resolv.conf etc?
     audit # give auditctl
     tcpdump
+    nmap
 
     # hardware tools
     lm_sensors # temperature monitoring
