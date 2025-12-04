@@ -843,6 +843,7 @@ require('lazy').setup {
       vim.lsp.config['atlas'] = { filetypes = { 'atlas-schema-postgresql' }, capabilities = capabilities, root_markers = { 'schema.pg.hcl' } }
 
       vim.lsp.enable 'atlas'
+      vim.lsp.enable 'terraformls'
 
       vim.filetype.add {
         filename = {
@@ -958,6 +959,7 @@ require('lazy').setup {
           }
         end,
         formatters_by_ft = {
+          terraform = { 'terraform_fmt' },
           sql = { 'sql_formatter' },
           nix = { 'nixfmt' },
           lua = { 'stylua' },
