@@ -50,6 +50,17 @@
     ps.timescaledb_toolkit
   ];
 
+  # add VM support
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      qemu.swtpm.enable = true; # TPM support
+      onBoot = "ignore"; # Don't auto-start VMs on boot
+    };
+    spiceUSBRedirection.enable = true;
+  };
+  programs.virt-manager.enable = true;
+
   # =======================================
   # NVIDIA Configuration
   # =======================================
@@ -83,7 +94,8 @@
     isNormalUser = true;
     description = "joelyboy";
     initialPassword = "password";
-    extraGroups = commonGroups;
+    # add libvrtd groups (see https://wiki.nixos.org/wiki/Virt-manager)
+    extraGroups = commonGroups ++ [ "libvirtd" ];
     packages = [ ];
   };
   # this stops devenv complaing every time we enter into a shell
