@@ -16,7 +16,7 @@
       pkgs-unstable = import nixpkgs-unstable {
         system = mySystem;
         config.allowUnfree = true;
-        overlays = [ nur.overlay ];
+        overlays = [ nur.overlays.default ];
       };
       commonGroups = [
         "networkmanager" # give user access to network manager (see https://wiki.nixos.org/wiki/NetworkManager)
