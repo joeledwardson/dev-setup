@@ -207,7 +207,7 @@
 
     ### neovim
     neovim
-    ### dependencies for neovim
+    ### neovim dependencies
     ripgrep
     prettierd
     stylua
@@ -224,6 +224,7 @@
     shellcheck
     shfmt
     sqlfluff
+    systemd-lsp
 
     ### yazi deps
     ouch

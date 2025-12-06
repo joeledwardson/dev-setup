@@ -67,6 +67,19 @@ vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true 
 -- same for newline
 vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 
+-- Automatically set filetype and start LSP for specific systemd unit file patterns
+vim.api.nvim_create_autocmd('BufEnter', {
+  pattern = { '*.service', '*.mount', '*.device', '*.nspawn', '*.target', '*.timer' },
+  callback = function()
+    vim.bo.filetype = 'systemd'
+    vim.lsp.start {
+      name = 'systemd_ls',
+      cmd = { 'systemd-lsp' }, -- Update this path to your systemd-lsp binary
+      root_dir = vim.fn.getcwd(),
+    }
+  end,
+})
+
 -- TODO
 
 -- You can add your own plugins here or in other files in this directory!
