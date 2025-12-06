@@ -54,6 +54,7 @@
     lazpaint
     guvcview # simple video/image capture
     rofimoji
+    nomachine-client
   ];
 
   # enable thunar while i decide if its better than dolpin for me
