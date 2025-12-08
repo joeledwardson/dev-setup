@@ -31,6 +31,12 @@
   # for windows support
   boot.supportedFilesystems = [ "ntfs" ];
 
+  services.sabnzbd = { enable = true; };
+  services.nzbget = { enable = true; };
+  services.sonarr = { enable = true; };
+  services.radarr = { enable = true; };
+  services.prowlarr = { enable = true; };
+
   # =======================================
   # Bluetooth Configuration
   # =======================================
