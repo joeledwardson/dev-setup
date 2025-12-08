@@ -316,4 +316,7 @@ return {
       vim.api.nvim_create_autocmd('TextYankPost', { callback = copy })
     end,
   },
+  {
+    'grafana/vim-alloy',
+  },
 }

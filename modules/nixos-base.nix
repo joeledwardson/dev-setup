@@ -226,6 +226,9 @@
     sqlfluff
     systemd-lsp
 
+    # other editors
+    helix # lets try this out!
+
     ### yazi deps
     ouch
     rich-cli
@@ -241,6 +244,9 @@
     mtpfs
     simple-mtpfs
     jmtpfs
+
+    # work stuff
+    grafana-alloy
 
     ### unstable packages
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
