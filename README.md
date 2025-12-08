@@ -612,6 +612,69 @@ Note: "Qt can mimic GTK" means when you set QT_QPA_PLATFORMTHEME=gtk2,
 Qt apps try to read GTK theme settings and match their appearance
 ```
 
+## XDG Desktop Portals
+
+Desktop portals provide a standardized way for sandboxed apps (Flatpak, browsers) to access system features like file choosers, screen sharing, and notifications without breaking sandbox security.
+
+```mermaid
+sequenceDiagram
+    participant Chrome
+    participant xdg-desktop-portal
+    participant xdg-desktop-portal-gtk
+    participant GTK File Chooser
+
+    Note over Chrome: User presses Ctrl-O<br/>to open file
+    Chrome->>xdg-desktop-portal: D-Bus call:<br/>org.freedesktop.portal.FileChooser.OpenFile
+    Note over xdg-desktop-portal: Portal daemon routes<br/>to available backend
+    xdg-desktop-portal->>xdg-desktop-portal-gtk: Forward request
+    xdg-desktop-portal-gtk->>GTK File Chooser: Show native GTK<br/>file picker dialog
+    GTK File Chooser-->>xdg-desktop-portal-gtk: User selects file
+    xdg-desktop-portal-gtk-->>xdg-desktop-portal: Return file path
+    xdg-desktop-portal-->>Chrome: Return file path
+```
+
+### How it works
+
+1. **xdg-desktop-portal** (main daemon) - Routes portal requests to appropriate backends
+2. **Portal backends** - Implement actual UI/functionality:
+   - `xdg-desktop-portal-gtk` - GTK file choosers (lightweight)
+   - `xdg-desktop-portal-kde` - Qt/KDE file choosers (feature-rich)
+   - `xdg-desktop-portal-hyprland` - Hyprland-specific (screenshots, screensharing)
+
+### Inspecting portal services
+
+```bash
+# Check running portal services (user services, not system!)
+systemctl --user status xdg-desktop-portal.service
+systemctl --user status xdg-desktop-portal-gtk.service
+
+# List all portal services
+systemctl --user list-units 'xdg-desktop-portal*'
+
+# Watch portal activity in real-time
+journalctl --user -u xdg-desktop-portal-gtk.service -f
+
+# Check which backends are available
+ls -la /run/current-system/sw/share/xdg-desktop-portal/portals/
+
+# Monitor D-Bus portal calls
+dbus-monitor --session "destination=org.freedesktop.portal.Desktop"
+```
+
+### Customizing portal backends
+
+You can configure which backend handles which portal feature via config files:
+
+```bash
+# System-wide config
+/etc/xdg-desktop-portal/hyprland-portals.conf
+
+# User config (overrides system)
+~/.config/xdg-desktop-portal/portals.conf
+```
+
+**Note:** Desktop portals expect GUI applications. TUI file managers like `yazi` cannot be used as portal backends because the portal spec requires graphical dialogs. However, you could theoretically write a custom portal backend that wraps yazi in a terminal window, but this would break many assumptions apps make about file pickers.
+
 ## Linux file permissions
 No matter how many times i read about file permissions on linux: groups,id,read,write,execute etc i seem to forget the syntaxes.
 
