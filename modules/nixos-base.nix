@@ -247,6 +247,7 @@
 
     # work stuff
     grafana-alloy
+    cloud-init
 
     ### unstable packages
     pkgs-unstable.postgres-language-server # connectionString argument only released recently

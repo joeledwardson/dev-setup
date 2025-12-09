@@ -46,6 +46,9 @@ function copyfile {
 autoload -U compinit
 compinit
 
+# Load bash completions compatibility for tools like Terraform
+autoload -U +X bashcompinit && bashcompinit
+
 # load sheldon plugins
 eval "$(sheldon source)"
 
@@ -72,8 +75,9 @@ fi
 # custom completions
 if command -v glab >/dev/null; then source <(glab completion -s zsh); fi
 if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then source <(docker completion zsh); fi
-if command -v gh >/dev/null; then source <(gh completion -s zsh); fi  
+if command -v gh >/dev/null; then source <(gh completion -s zsh); fi
 if command -v fzf >/dev/null; then source <(fzf --zsh); fi
+if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
 
 # setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
