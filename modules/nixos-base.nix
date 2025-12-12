@@ -201,6 +201,7 @@
     navi
     terraform
     terraformer
+    skopeo
 
     ### video processing
     ffmpeg
@@ -248,6 +249,7 @@
     # work stuff
     grafana-alloy
     cloud-init
+    vault
 
     ### unstable packages
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
