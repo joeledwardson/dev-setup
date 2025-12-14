@@ -55,6 +55,7 @@
     guvcview # simple video/image capture
     rofimoji
     nomachine-client
+    wifi-qr
   ];
 
   # enable thunar while i decide if its better than dolpin for me
