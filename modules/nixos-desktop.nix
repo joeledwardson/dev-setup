@@ -56,6 +56,7 @@
     rofimoji
     nomachine-client
     wifi-qr
+    zenity
   ];
 
   # enable thunar while i decide if its better than dolpin for me
