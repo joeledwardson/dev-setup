@@ -200,7 +200,6 @@
     btop # fancy version of top
     navi
     terraform
-    terraformer
     skopeo
     ansible
 
