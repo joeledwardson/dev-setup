@@ -202,6 +202,7 @@
     terraform
     terraformer
     skopeo
+    ansible
 
     ### video processing
     ffmpeg
