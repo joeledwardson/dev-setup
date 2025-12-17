@@ -24,7 +24,10 @@
     remmina # RDP tool
     gparted # for when im lazy and dont want to use terminal
     libreoffice
+
+    ### coding editors
     vscode
+    code-cursor
 
     ### desktop core packages
     wlr-randr

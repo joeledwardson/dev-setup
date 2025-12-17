@@ -201,7 +201,6 @@
     navi
     terraform
     skopeo
-    ansible
 
     ### video processing
     ffmpeg
