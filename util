@@ -29,7 +29,6 @@ Commands:
   os          Rebuild NixOS configuration
   dotfiles    Run dotbot and setup hyprland config
   yazi        Install yazi plugins
-  fish        Update fish shell plugins
   tpm         Setup tmux plugin manager
   clean       Clean nix garbage
   toc         Run doctoc on README
@@ -79,11 +78,6 @@ function util()
       ya pkg install
       echo "done"
       ;;
-    fish)
-      echo "updating fish shell plugins..."
-      fish -c "fisher update"
-      echo "done"
-      ;;
     tpm)
       # setup tmux plugin manager
       if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
@@ -123,7 +117,7 @@ function util()
       echo "checking scratchpads dir is created..."
       mkdir -p scratchpads
       echo "copying brave preferences file..."
-      cp $BRAVE_FILE ./scratchpads/brave-preferences.json
+      cp "$BRAVE_FILE" ./scratchpads/brave-preferences.json
       echo "formatting brave preferences...."
       cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
       ;;
@@ -148,7 +142,6 @@ function util()
       util os
       util dotfiles
       util yazi
-      util fish
       util tpm
       util applybrave
       echo "done all"
@@ -163,4 +156,4 @@ function util()
 
 
 
-util $1
+util "$1"

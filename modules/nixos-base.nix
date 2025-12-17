@@ -309,7 +309,6 @@
     ];
   };
 
-  programs.fish.enable = true;
   programs.zsh.enable = true;
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
