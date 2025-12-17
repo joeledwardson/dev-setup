@@ -679,3 +679,111 @@ graph TD
     class DCS,DCS_FORMAT,DCS_NOTE dcsBox
     class CSI_EXAMPLES,CSI_EX1,CSI_EX2,CSI_EX3,CSI_EX4,CSI_EX5,CSI_EX6,OSC_EXAMPLES,OSC_EX1,OSC_EX2,OSC_EX3,OSC_EX4,DCS_EXAMPLES,DCS_EX1,DCS_EX2,DCS_EX3,OTHER_LIST exampleBox
 ```
+
+## December 2025
+Really trying to get my head around vim variables and schenanegins
+
+ok so `g:` is for vim variables?
+like
+```vim
+:echo g:colors_name
+```
+
+like when we set variables in nvim setings! like
+```lua
+vim.g.mapleader = " "
+```
+The vim equivalent of setting these variables would be
+```vim
+let g:loaded_netrw = 1
+```
+Ahhhh set, this is where my confusion comes from between `let` which is for setting options! (see `:h :set`)
+
+Getting confused again.... `:let g:loaded_netw = 1` is setting the value of the **global** variable `loaded_netw`. Likewise 
+
+God... ok
+- `g:colors_name` is a global variable
+- `let` accesses **variables**
+- `g:` and `v:` are types of variables
+- `vim.opt` is an **option**
+- `set` accesses `options`
+
+Ok, asked gemini to do me a table to help clear this up!
+
+| Feature | **Global Variables (`g:`)** | **Editor Options (`opt`)** |
+| :--- | :--- | :--- |
+| **Description** | Custom data used by plugins or themes. | Built-in settings hard-coded into the engine. |
+| **Analogy** | A sticky note left for a plugin to read. | A physical switch or dial on the machine itself. |
+| **Example** | `g:colors_name` (Current theme name) | `number` (Show line numbers in gutter) |
+
+### Command Cheat Sheet (Get & Set)
+
+| Action | **Global Variable** (Example: `colors_name`) | **Editor Option** (Example: `number`) |
+| :--- | :--- | :--- |
+| **Lua (Set)** | `vim.g.colors_name = "gruvbox"` | `vim.opt.number = true` |
+| **Lua (Get)** | `print(vim.g.colors_name)` | `print(vim.opt.number:get())` |
+| **Vimscript (Set)** | `let g:colors_name = "gruvbox"` | `set number` |
+| **Vimscript (Get)** | `echo g:colors_name` | `set number?` |
+
+And now for buffers etc
+
+| Action | **Global Scope** (Everywhere) | **Buffer Scope** (Current File Only) |
+| :--- | :--- | :--- |
+| **Concept** | Applies to the entire editor session. | Applies **only** to the currently open file/tab. |
+| **Variable Prefix** | `g:` (Vim) / `vim.g` (Lua) | `b:` (Vim) / `vim.b` (Lua) |
+| **Option Object** | `vim.opt` | `vim.bo` |
+| **Lua Set Variable** | `vim.g.my_var = 1` | `vim.b.my_var = 1` |
+| **Lua Set Option** | `vim.opt.scrolloff = 8` | `vim.bo.shiftwidth = 2` |
+| **Vim Set Variable** | `let g:my_var = 1` | `let b:my_var = 1` |
+| **Vim Set Option** | `set scrolloff=8` | `setlocal shiftwidth=2` |
+
+And globals
+### Lua Globals (`_G`) vs. Vim Globals (`vim.g`)
+
+| Feature | **Vim Global (`vim.g`)** | **Lua Global (`_G`)** |
+| :--- | :--- | :--- |
+| **What it is** | A bridge to the **Vimscript** engine. | The global namespace for the **Lua** language. |
+| **Primary Use** | Configuring plugins (e.g., `markdown-preview`). | defining functions callable from Vimscript (`v:lua`). |
+| **Visibility** | Seen by `.vim` files and older plugins. | Seen by all `.lua` files and the `v:lua` bridge. |
+| **Set Command** | `vim.g.my_var = 1` | `_G.my_func = function() ... end` |
+| **Get Command** | `print(vim.g.my_var)` | `_G.my_func()` |
+| **Vimscript Access** | `echo g:my_var` | `call v:lua.my_func()` |
+
+
+Summary of the "Big Three"
+- vim.opt: Switches/knobs for the Editor (Line numbers, tabs).
+- vim.g: Settings for Plugins (Theme names, enable/disable flags).
+- _G: Logic for Functions (Your custom code that needs to run everywhere).
+
+Ok so....
+In a lua console
+```lua
+_G.pls = function()
+  print("hello?")
+  return "no output :("
+end
+```
+
+Then can do EITHER `:lua print(pls())` or `:lua print(_G.pls())` as `_G` is the global namespace!
+
+Then, the equivalent in vim is 
+
+> notice that `print()` does not appear, as it goes to message history?
+> `vim.notify` WILL print however
+
+This STILL doesn't make sense to me - but I guess that the lua print() is only really for debugging? In general an API show either log to a file or notify?
+
+I found the docs [here](https://neovim.io/doc/user/lua.html#lua-commands) where it says lua `print()` redirects its output to the nvim message area?
+
+Ok well the various types of printing in vim and lua are frying my brain a bit - especially since `print()` in lua claims to print to the message area but... does not? well gemini (tried) to explain
+| Method | Command | Behavior | Persistence |
+| :--- | :--- | :--- | :--- |
+| **Lua Print** | `print("msg")` | Sends to msg-layer | Often overwritten instantly |
+| **Vim Cmd** | `vim.cmd('echo "msg"')` | Standard Vim echo | Stays until next keypress |
+| **Vim API** | `vim.api.nvim_echo(...)` | Chunked & Highlighted | High (configured via args) |
+| **Notify** | `vim.notify("msg")` | General notification | Depends on UI (popup or cmd) |
+
+
+`vim.notify()` is fairly modern so that does make sense honestly. its the others
+
+Ok NEVER MIND - it was because i was in the lua console - i assume `print()` is found to a different messages area or something

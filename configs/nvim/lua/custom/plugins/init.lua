@@ -67,6 +67,15 @@ vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true 
 -- same for newline
 vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 
+-- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+--   callback = function(event)
+--     local fileext = vim.fn.expand '%:e'
+--     local filename = vim.fn.expand '%:t:r'
+--
+--     vim.print('got a buf name: ', vim.api.nvim_buf_get_name(event.buf))
+--   end,
+-- })
+
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
 vim.api.nvim_create_autocmd('BufEnter', {
   pattern = { '*.service', '*.mount', '*.device', '*.nspawn', '*.target', '*.timer' },
@@ -280,6 +289,46 @@ return {
     build = function()
       vim.fn['mkdp#util#install']()
     end,
+    init = function()
+      vim.cmd [[
+        function! OpenMarkdownPreview(url)
+          " Default to the original URL (fallback)
+          let l:final_url = a:url
+          
+          try
+            " 1. Try to fetch the preferred source IP
+            let l:cmd = "ip -j route get 1.1.1.1 | jq -r '.[0].prefsrc'"
+            let l:ip = trim(system(l:cmd))
+
+            " 2. Validate: If command failed (exit code != 0) or IP is empty, abort
+            if v:shell_error != 0 || empty(l:ip)
+              throw "IP detection command returned error or empty"
+            endif
+
+            " 3. Success: Swap localhost for the real IP
+            let l:final_url = substitute(a:url, 'localhost\|127.0.0.1', l:ip, 'g')
+
+          catch
+            " 4. Failure: Log the error but keep l:final_url as localhost
+            echomsg "Warning: IP detection failed (" . v:exception . "). Using localhost."
+          endtry
+
+          " 5. Set Register + Manual OSC52 Trigger
+          let @+ = l:final_url
+          lua require('osc52').copy_register('+')
+
+          " 6. Feedback
+          redraw!
+          echomsg "Preview URL Copied: " . l:final_url
+        endfunction
+
+
+        " open to all ips
+        let g:mkdp_open_to_the_world = 1
+        " Tell the plugin to use this function
+        let g:mkdp_browserfunc = 'OpenMarkdownPreview'
+      ]]
+    end,
     keys = { { '<leader>tp', ':MarkdownPreviewToggle<CR>', desc = 'toggle markdown preview' } },
   },
   {
@@ -318,5 +367,10 @@ return {
   },
   {
     'grafana/vim-alloy',
+  },
+
+  -- in case not using noice
+  {
+    'rcarriga/nvim-notify',
   },
 }
