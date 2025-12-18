@@ -88,31 +88,9 @@ alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_sessio
 # i dont like the name status default as sometimes i want git log --patch
 alias gl='git log'
 
-function bw-setup() {
-  current_status="$(bw status | jq -r .status)"
-  case $current_status in
-      "unauthenticated")
-          echo "Please log in first with 'bw login' before setting up session"
-          return 1
-
-          ;;
-      "locked")
-          echo "locked, please unlock..."
-          unlock_result=$(bw unlock --raw)
-          if [[ "$?" -ne "0" ]]; then
-            echo "Failed to unlock!"
-            return 1
-          fi
-          export BW_SESSION="$unlock_result"
-          ;;
-      "unlocked")
-          echo "Already unlocked"
-          ;;
-      *)
-          echo "unknown status $current_status"
-          return 1
-          ;;
-  esac
+function bw-use-work () {
+    BITWARDENCLI_APPDATA_DIR="$(realpath ~/.config/bw-work)"
+    export BITWARDENCLI_APPDATA_DIR
 }
 
 function bw-view() {
