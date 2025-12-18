@@ -2945,3 +2945,35 @@ Apparently these are the args passed to the linux kernel at boot? (See [here](ht
 ➜ jollof ~ cat /proc/cmdline
 BOOT_IMAGE=(hd0,gpt1)//kernels/47gxa8zq9zxry85dphqjxlvyrqrx3k3b-linux-6.12.47-bzImage init=/nix/store/wpxcxz7l9dapqg5d6z743z9c61zn6bjs-nixos-system-degen-home-25.05.20250914.9a09444/init loglevel=4 lsm=landlock,yama,bpf
 ```
+
+## Virtualisation
+A graph, curtesy of gemini
+``` mermaid
+graph TD
+    subgraph "User Space (UI & Control)"
+        VM[virt-manager <br/><i>GUI Application</i>]
+        VS[virsh <br/><i>CLI Tool</i>]
+    end
+
+    subgraph "Management Layer (The Brain)"
+        LVD["libvirtd (Daemon) <br/><i>Enabled in NixOS config</i>"]
+    end
+
+    subgraph "Execution Layer (The Virtual Hardware)"
+        QEMU["QEMU <br/><i>Emulates CPU/Mobo/USB</i>"]
+        SWTPM["swtpm <br/><i>Virtual TPM Chip</i>"]
+        SPICE["SPICE <br/><i>Display & USB Redirection</i>"]
+    end
+
+    subgraph "Kernel Layer (The Speed)"
+        KVM["KVM <br/><i>Kernel-level Acceleration</i>"]
+    end
+
+    %% Connections
+    VM --> LVD
+    VS --> LVD
+    LVD --> QEMU
+    QEMU --- SWTPM
+    QEMU --- SPICE
+    QEMU --> KVM
+```
