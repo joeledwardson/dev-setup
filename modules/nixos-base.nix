@@ -343,7 +343,29 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = { StreamLocalBindUnlink = "yes"; };
+  };
+
+  # Add ~/.local/bin to PATH for xdg-open wrapper
+  environment.localBinInPath = true;
+
+  # systemd user service for xdg-open SSH forwarding
+  systemd.user.services.open-forward = {
+    description = "xdg-open SSH forwarder socket listener";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "default.target" ];
+    enable = true;
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pkgs.coreutils}/bin/rm -f /tmp/open-forward.sock";
+      ExecStart = ''
+        ${pkgs.socat}/bin/socat UNIX-LISTEN:/tmp/open-forward.sock,fork EXEC:"xargs xdg-open"'';
+      Restart = "always";
+      RestartSec = 3;
+    };
+  };
 
   # enable flakes and nix command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

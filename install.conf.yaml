@@ -41,3 +41,5 @@
     ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
     ~/.npmrc: ./configs/npmrc
     ~/.claude/claude.md: ./configs/claude/claude.md
+    ~/.local/bin/xdg-open: ./configs/bin/xdg-open
+    ~/.ssh/config: ./configs/ssh/config

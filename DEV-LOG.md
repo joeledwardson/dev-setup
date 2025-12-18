@@ -787,3 +787,148 @@ Ok well the various types of printing in vim and lua are frying my brain a bit -
 `vim.notify()` is fairly modern so that does make sense honestly. its the others
 
 Ok NEVER MIND - it was because i was in the lua console - i assume `print()` is found to a different messages area or something
+
+### xdg-open over SSH (socat forwarding)
+
+**The complete flow (step by step)**
+
+1. **Local machine**: systemd starts `open-forward.service` on login
+   - Runs: `socat UNIX-LISTEN:/tmp/open-forward.sock,fork EXEC:"xargs xdg-open"`
+   - Creates socket at `/tmp/open-forward.sock`, waiting for connections
+
+2. **You SSH to remote**: `ssh user@remote`
+   - SSH reads `~/.ssh/config`, sees `RemoteForward /tmp/open-forward-%r.sock /tmp/open-forward.sock`
+   - `%r` expands to remote username (e.g., `joel`)
+   - SSH creates `/tmp/open-forward-joel.sock` on remote, tunneled back to local socket
+
+3. **On remote**: something calls `xdg-open https://example.com`
+   - Shell finds `~/.local/bin/xdg-open` first (due to PATH ordering)
+   - Our wrapper script runs instead of system xdg-open
+
+4. **Wrapper script checks**: `[ -S "/tmp/open-forward-$USER.sock" ]`
+   - Socket exists? → forward the URL through it
+   - No socket? → fallback to system `/run/current-system/sw/bin/xdg-open`
+
+5. **URL flows through tunnel**:
+   - `printf '%s' "https://example.com" | socat - UNIX-CONNECT:/tmp/open-forward-joel.sock`
+   - Data goes: remote socket → SSH tunnel → local socket
+
+6. **Local socat receives URL**:
+   - Pipes it to `xargs xdg-open`
+   - Your local browser opens the URL
+
+**SSH config tokens**
+
+When you run `ssh joel@remote-server`:
+- `%r` = `joel` (remote username - who you're logging in AS)
+- `%u` = your local username (on machine running ssh)
+- `%h` = `remote-server` (remote hostname)
+
+Since RemoteForward creates the socket on the REMOTE machine, `%r` matches `$USER` there.
+
+**Concrete example: which socket name is used where?**
+
+Setup:
+- Machine A (local laptop): logged in as `joelyboy`
+- Machine B (remote server): will SSH in as `test-user`
+
+```
+MACHINE A (local)                        MACHINE B (remote)
+logged in as: joelyboy                   logging in as: test-user
+
+~/.ssh/config says:
+RemoteForward /tmp/open-forward-%r.sock /tmp/open-forward.sock
+                      │                         │
+                      │                         └── local socket (on A)
+                      └── remote socket (on B), %r = test-user
+
+So when you run: ssh test-user@machineB
+
+MACHINE A                                MACHINE B
+─────────                                ─────────
+systemd runs socat listening on:         SSH creates socket at:
+/tmp/open-forward.sock                   /tmp/open-forward-test-user.sock
+        ▲                                        │
+        │         SSH TUNNEL                     │
+        └────────────────────────────────────────┘
+
+On Machine B, xdg-open wrapper checks:
+SOCK="/tmp/open-forward-${USER}.sock"
+     = /tmp/open-forward-test-user.sock  ← matches!
+```
+
+**Why the username matters (multi-user scenario)**
+
+```
+Machine B has two users SSHing in simultaneously:
+
+User 1: alice@machineA  →  ssh test-user@machineB
+User 2: bob@machineA    →  ssh admin@machineB
+
+Without username suffix (both use /tmp/open-forward.sock):
+  - alice connects first, creates socket
+  - bob connects, StreamLocalBindUnlink DELETES alice's socket
+  - alice's forwarding breaks!
+
+With username suffix:
+  - alice → /tmp/open-forward-test-user.sock
+  - bob   → /tmp/open-forward-admin.sock
+  - both work independently
+```
+
+**socat basics**
+
+`socat` creates a bidirectional channel between two "addresses". Syntax: `socat ADDRESS1 ADDRESS2`
+
+Common address types:
+- `UNIX-LISTEN:/path` - Create a listening Unix socket at path
+- `UNIX-CONNECT:/path` - Connect to existing Unix socket
+- `-` - stdin/stdout
+- `EXEC:"command"` - Execute command, pipe data to it
+
+**Testing locally (no SSH needed)**
+
+Terminal 1 - start listener:
+```sh
+socat UNIX-LISTEN:/tmp/test-open.sock,fork EXEC:"xargs xdg-open"
+```
+
+Terminal 2 - send URL:
+```sh
+echo "https://example.com" | socat - UNIX-CONNECT:/tmp/test-open.sock
+# Browser should open!
+```
+
+**Inspecting sockets**
+
+```sh
+ss -xl | grep open-forward  # -x for unix, -l for listening
+ls -la /tmp/open-forward.sock  # it's just a file (type 's' for socket)
+```
+
+**Architecture diagram**
+
+```
+[LOCAL MACHINE]                              [REMOTE MACHINE]
+
+1. systemd starts socat                      3. something calls xdg-open URL
+        │                                            │
+        ▼                                            ▼
+   socat listening on                        4. ~/.local/bin/xdg-open (wrapper)
+   /tmp/open-forward.sock                           │
+        ▲                                           ▼
+        │                                    5. socket exists? yes
+        │                                           │
+        │         SSH TUNNEL                        ▼
+        │    ◄─────────────────────────     6. socat sends URL to socket
+        │    RemoteForward                   /tmp/open-forward-$USER.sock
+        │
+        ▼
+7. socat receives URL
+        │
+        ▼
+   EXEC:"xargs xdg-open"
+        │
+        ▼
+8. LOCAL browser opens!
+```

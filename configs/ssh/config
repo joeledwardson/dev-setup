@@ -1,0 +1,4 @@
+# Forward xdg-open socket to remote machines
+# %r = remote username (expands to $USER on remote machine)
+Host *
+    RemoteForward /tmp/open-forward-%r.sock /tmp/open-forward.sock
