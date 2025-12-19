@@ -31,6 +31,21 @@
   # for windows support
   boot.supportedFilesystems = [ "ntfs" ];
 
+  # mount windows from other partition
+  fileSystems."/mnt/joelyboy/windows" = {
+    device = "/dev/disk/by-label/OS";
+    fsType = "ntfs3";
+    options = [
+      "users" # allows any user to mount and unmount
+      "nofail" # prevent system failure if i typed something wrong
+      "rw"
+      "uid=1000"
+      "gid=100"
+      "dmask=022"
+      "fmask=133"
+    ];
+
+  };
   services.sabnzbd = { enable = true; };
   services.nzbget = { enable = true; };
   services.sonarr = { enable = true; };
