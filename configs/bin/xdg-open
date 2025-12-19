@@ -3,11 +3,19 @@
 # Falls back to system xdg-open if tunnel socket doesn't exist
 
 SOCK="/tmp/open-forward-${USER}.sock"
+FALLBACK=/run/current-system/sw/bin/xdg-open
 
 if [ -S "$SOCK" ]; then
     # Socket exists - forward to local machine
-    printf '%s' "$1" | socat - UNIX-CONNECT:"$SOCK"
+    if printf '%s' "$1" | socat - UNIX-CONNECT:"$SOCK"; then
+        echo "succesfully piped into socket $SOCK"
+        exit 0
+    else
+        echo "Warning: Failed to forward through SSH tunnel, falling back to local xdg-open" >&2
+        $FALLBACK "$@"
+    fi
 else
     # No tunnel - use system xdg-open
-    /run/current-system/sw/bin/xdg-open "$@"
+    echo "no socket - falling back xdg open"
+    $FALLBACK "$@"
 fi

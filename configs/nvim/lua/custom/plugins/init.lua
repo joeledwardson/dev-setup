@@ -67,6 +67,9 @@ vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true 
 -- same for newline
 vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 
+-- remap capital Y to yank and then move cursor to end (helpful when yanking big blocks of text)
+vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
+
 -- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
 --   callback = function(event)
 --     local fileext = vim.fn.expand '%:e'

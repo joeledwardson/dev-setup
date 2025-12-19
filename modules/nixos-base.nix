@@ -361,9 +361,12 @@
       Type = "simple";
       ExecStartPre = "${pkgs.coreutils}/bin/rm -f /tmp/open-forward.sock";
       ExecStart = ''
-        ${pkgs.socat}/bin/socat UNIX-LISTEN:/tmp/open-forward.sock,fork EXEC:"xargs xdg-open"'';
+        ${pkgs.socat}/bin/socat -d -d UNIX-LISTEN:/tmp/open-forward.sock,fork,reuseaddr SYSTEM:'read url; echo "Opening: $url" >&2; xdg-open "$url"' '';
       Restart = "always";
       RestartSec = 3;
+      # Ensure output goes to journal
+      StandardOutput = "journal";
+      StandardError = "journal";
     };
   };
 
