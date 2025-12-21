@@ -321,8 +321,12 @@ else
   nmcli c modify work vpn.user-name Joel_Edwardson
   nmcli c modify work vpn.secrets "password=$VPN_PASS"
   nmcli c modify work +vpn.data "password-flags=0"
+  nmcli c modify work ipv4.dns "8.8.8.8 1.1.1.1"
+  nmcli c modify work ipv4.ignore-auto-dns no
 fi
 ```
+
+> According to claude, we have to forcifully set the dns otherwise it does not work? - have added claudes notes in ./DEV-LOG.md
 
 # Mental Notes
 Trying to get my head round the crazy world of linux and computers in general

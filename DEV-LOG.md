@@ -932,3 +932,76 @@ ls -la /tmp/open-forward.sock  # it's just a file (type 's' for socket)
         ▼
 8. LOCAL browser opens!
 ```
+
+
+### Fixing DNS for work VPN
+DNS servers werent being set by the VPN (which they should be) - claudes summary:
+
+#### Problem
+
+VPN connected successfully but all internet connectivity lost:
+
+```bash
+nmcli c up work
+# Connection successfully activated...
+ping google.com  # hangs
+ping 8.8.8.8     # works fine
+```
+
+**Root cause**: Split responsibility between routing and DNS resolution.
+
+The VPN correctly became the default route for IP traffic:
+```
+default via 10.200.8.1 dev tun0 proto static metric 50
+```
+
+But `resolvectl status` showed tun0 had **no DNS servers**:
+```
+Link 9 (tun0)
+    Current Scopes: LLMNR/IPv4 LLMNR/IPv6
+    Protocols: -DefaultRoute        # <-- not handling DNS
+    Default Route: no               # <-- DNS queries ignored
+```
+
+DNS queries still went to Virgin Media (194.168.4.100) via wlp98s0, but those packets got routed through the VPN tunnel where Virgin's DNS was unreachable.
+
+```
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│ ping 8.8.8.8│ ──── │   tun0      │ ──── │  ✓ Works    │
+│ (direct IP) │      │ (VPN route) │      │             │
+└─────────────┘      └─────────────┘      └─────────────┘
+
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│ping google  │ ──── │ DNS query to│ ──── │ routed via  │ ──── │ ✗ Timeout   │
+│             │      │ 194.168.4.100│     │ tun0        │      │ unreachable │
+└─────────────┘      └─────────────┘      └─────────────┘      └─────────────┘
+```
+
+#### Fix
+
+Assign DNS servers to the VPN connection:
+
+```bash
+nmcli c modify work ipv4.dns "8.8.8.8 1.1.1.1"
+nmcli c down work && nmcli c up work
+```
+
+#### Result
+
+```
+Link 10 (tun0)
+    Current Scopes: DNS LLMNR/IPv4 LLMNR/IPv6
+    Protocols: +DefaultRoute        # <-- now handling DNS
+    Current DNS Server: 8.8.8.8
+    DNS Servers: 8.8.8.8 1.1.1.1
+    Default Route: yes              # <-- DNS queries go here
+
+Link 2 (wlp98s0)
+    Default Route: no               # <-- demoted, no longer used for DNS
+```
+
+Now DNS queries route through tun0 to reachable public DNS servers.
+
+#### Why OpenVPN didn't push DNS
+
+The work OpenVPN server isn't configured to push DNS settings (`push "dhcp-option DNS x.x.x.x"`). Client-side config works around this.

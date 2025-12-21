@@ -17,16 +17,21 @@
             # remap caps to combination of ctrl and escape
             capslock = "overload(control, esc)";
             # remap space to custom layer function
-            space = "overload(custom, space)";
+            rightalt = "overload(custom, rightalt)";
           };
           # my custom layer, used with space bar
           custom = {
-            h = "left";
-            j = "down";
-            k = "up";
-            l = "right";
-            u = "pageup";
-            d = "pagedown";
+            q = "home";
+            e = "end";
+
+            a = "left";
+            s = "down";
+            w = "up";
+            d = "right";
+
+            k = "pageup";
+            j = "pagedown";
+
             x = "delete";
             i = "insert";
           };

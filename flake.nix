@@ -57,7 +57,12 @@
             ./hosts/degen-home/configuration.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
-              keyboardIds = [ "0001:0001:70533846" ];
+              keyboardIds = [
+                # built in keyboard 
+                "0001:0001:70533846"
+                # home external keyboard from Tim's bedroom
+                "1c4f:0002:3c76615e"
+              ];
             })
           ];
         };

@@ -1,3 +1,6 @@
+- plugins:
+    - plugins/dotbot-if
+
 - defaults:
     link:
       relink: true
@@ -44,3 +47,16 @@
     # TODO: fix this!
     # ~/.local/bin/xdg-open: ./configs/bin/xdg-open
     ~/.ssh/config: ./configs/ssh/config
+
+  # create custom conf if doesnt exist
+- if:
+    cond: "[ ! -f ~/.config/hypr/custom.conf ]"
+    met:
+      - create: ~/.config/hypr/custom.conf
+
+  # degen home custom configs
+- if:
+    cond: '[ "$(hostname)" = "degen-home" ]'
+    met:
+      - link:
+          ~/.config/hypr/custom.conf: ./hosts/degen-home/custom.conf
