@@ -45,8 +45,7 @@
       ~/.npmrc: ./configs/npmrc
       ~/.claude/CLAUDE.md: ./configs/claude/claude.md
       ~/.claude/settings.json: ./configs/claude/settings.json
-      # TODO: fix this!
-      # ~/.local/bin/xdg-open: ./configs/bin/xdg-open
+      ~/.local/bin/xdg-open: ./configs/bin/xdg-open
       ~/.ssh/config: ./configs/ssh/config
 
   # create custom conf if doesnt exist
