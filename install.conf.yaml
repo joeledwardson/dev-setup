@@ -48,11 +48,15 @@
       ~/.local/bin/xdg-open: ./configs/bin/xdg-open
       ~/.ssh/config: ./configs/ssh/config
 
-  # create custom conf if doesnt exist
+  # create custom and monitors conf if doesnt exist
 - if:
       cond: "[ ! -f ~/.config/hypr/custom.conf ]"
       met:
           - create: ~/.config/hypr/custom.conf
+- if:
+      cond: "[ ! -f ~/.config/hypr/monitors.conf ]"
+      met:
+          - create: ~/.config/hypr/monitors.conf
 
   # degen home custom configs
 - if:

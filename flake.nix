@@ -4,13 +4,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, nur, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nur, ... }:
     let
       mySystem = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
@@ -25,14 +26,12 @@
         "plugdev" # this is required (I think) for udiskie
         "docker" # non root access to docker
       ];
+      commonSpecialArgs = { inherit inputs commonGroups pkgs-unstable; };
     in {
       nixosConfigurations = {
         # work laptop
         "degen-work" = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit pkgs-unstable;
-            commonGroups = commonGroups;
-          };
+          specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
             ./modules/nixos-desktop.nix
@@ -46,11 +45,7 @@
 
         # work (WFH) laptop
         "degen-home" = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit pkgs-unstable;
-            commonGroups = commonGroups;
-          };
-
+          specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
             ./modules/nixos-desktop.nix
@@ -69,11 +64,7 @@
 
         # desktop home PC
         "jollof-home" = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit pkgs-unstable;
-            commonGroups = commonGroups;
-          };
-
+          specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
             ./modules/nixos-desktop.nix
@@ -83,10 +74,8 @@
 
         # desktop work PC
         "desktop-work" = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit pkgs-unstable;
-            commonGroups = commonGroups;
-          };
+
+          specialArgs = commonSpecialArgs;
 
           modules = [
             ./modules/nixos-base.nix

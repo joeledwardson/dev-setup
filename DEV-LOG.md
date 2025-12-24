@@ -1005,3 +1005,125 @@ Now DNS queries route through tun0 to reachable public DNS servers.
 #### Why OpenVPN didn't push DNS
 
 The work OpenVPN server isn't configured to push DNS settings (`push "dhcp-option DNS x.x.x.x"`). Client-side config works around this.
+
+
+### Nixos @ symbol
+Can use the @ symbol to reference object args (kind of like `args: {x: number, y: number}` in js)
+```nix
+
+nix-repl> addWithAlias = args@{ x, y, ... }: x + y + args.z
+
+nix-repl> addWithAlias
+«lambda @ «string»:1:2»
+
+nix-repl> addWithAlias { x = 5; y = 10; z = 2; }
+17
+
+nix-repl>
+
+nix-repl>
+```
+
+
+### Vimscript functions
+So weird weird details of how functions work in vim
+- `system()` is a FUNCTION
+- `:echo` is a COMMAND
+
+and functions CANNOT be called directly from the command line!
+
+Hence why `:system(...)` does not work! need `:echo` or `:call` to invoke it
+
+Even weirder... even inside a vimscript function this still applies? which seems strange to me but oh well... So like doing `:` to invoke a command the same applies in vimscript in will complain if you try and do
+```vim
+function! OpenMarkdownPreview(url)
+  system('echo hi')
+end
+```
+will yield
+```
+E492: Not an editor command: system('echo hi')
+```
+
+as you need echo or call!
+
+### DBus (Interacting with system services)
+
+DBus is a message bus system that allows applications to talk to one another. You can interact with it using `busctl`.
+
+**1. List available services on the user bus**
+```bash
+busctl --user list | head -n 5
+# NAME                                PID PROCESS
+# :1.0                               2111 systemd
+# :1.1                               2124 .agent-wrapped
+# org.freedesktop.Notifications      2345 dunst
+```
+
+**2. Introspect a service (see methods/properties)**
+```bash
+busctl --user introspect org.freedesktop.Notifications /org/freedesktop/Notifications
+# NAME                          TYPE      SIGNATURE RESULT/VALUE
+# .Notify                       method    susssasa{sv}i u
+# .Dnd                          property  b         false
+```
+
+**3. Call a method (Send a notification)**
+```bash
+# Note: Single quotes are CRITICAL for ZSH users (signature AND strings with '!')
+busctl --user call org.freedesktop.Notifications /org/freedesktop/Notifications \
+  org.freedesktop.Notifications Notify 'susssasa{sv}i' \
+  "Gemini-CLI" 0 "dialog-information" "Hello" 'Sent via DBus!' 0 0 5000
+# u 1 (returns the notification ID)
+```
+
+**4. Get a property**
+```bash
+busctl --user get-property org.freedesktop.Notifications /org/freedesktop/Notifications \
+  org.freedesktop.Notifications Dnd
+# b false
+```
+
+### DBus Concepts & Troubleshooting
+
+**1. ZSH Issue: Quotes & Expansion**
+- **The Signature**: `{sv}` is interpreted as brace expansion. You **must** use single quotes: `'susssasa{sv}i'`.
+- **The Message**: `!` inside double quotes triggers history expansion in interactive ZSH. Use single quotes: `'Sent via DBus!'`.
+
+```bash
+# BAD (ZSH tries to expand {sv} and !)
+busctl ... Notify susssasa{sv}i ... "Hello!"
+
+# GOOD
+busctl ... Notify 'susssasa{sv}i' ... 'Hello!'
+```
+
+**2. The Hierarchy: Service vs Object vs Interface**
+It helps to think of it like an Object-Oriented generic URL:
+`Service` -> `Object` -> `Interface` -> `Method`
+
+| Term | Analogy | Example |
+| :--- | :--- | :--- |
+| **Service** | The **Domain Name** (DNS) | `org.freedesktop.Notifications` |
+| **Object Path** | The **File Path** (URL path) | `/org/freedesktop/Notifications` |
+| **Interface** | The **Class Type** (Java/C#) | `org.freedesktop.Notifications` |
+| **Method** | The **Function** | `Notify(...)` |
+
+**3. "Are you guessing the path?"**
+No. While they often match the service name (replacing `.` with `/`), they don't have to. You find them using `tree`:
+```bash
+busctl --user tree org.freedesktop.Notifications
+# └─ /org
+#   └─ /org/freedesktop
+#     └─ /org/freedesktop/Notifications  <-- The Object Path
+```
+
+**4. "Is that a socket path?"**
+No. It looks like a file path, but it is a **logical name** used purely within DBus to organize objects inside a service. It does not exist on your hard drive.
+
+Pretty cool i can see the notify method in dbus directly here!
+```
+➜ jollof dev-setup (main) ✗ busctl --user introspect org.freedesktop.Notifications /org/freedesktop/Notifications | grep -i notify
+.Notify                             method    susssasa{sv}i u            -
+➜ jollof dev-setup (main) ✗
+```

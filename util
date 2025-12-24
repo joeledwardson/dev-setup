@@ -85,6 +85,10 @@ util() {
     echo "done!"
     ;;
   dotfiles)
+    echo "configuring git submodules"
+    # need dotbot plugins to init before dotbot can be called
+    git submodule update --init
+
     echo "running dotbot..."
     dotbot -c install.conf.yaml
     restart_hyprland

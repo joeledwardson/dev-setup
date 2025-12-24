@@ -1,7 +1,13 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, lib, ... }:
+{ pkgs, inputs, ... }:
+let
+in {
+  # import hyprdynamicmonitors module - this provides the systemd option (i think?)
+  imports = [ inputs.hyprdynamicmonitors.nixosModules.default ];
 
-{
+  # hyprdynamicmonitors - auto monitor (for lid etc) - this enables the systemd service
+  # there are more options! see https://hyprdynamicmonitors.filipmikina.com/docs/advanced/systemd/#nix
+  services.hyprdynamicmonitors.enable = true;
 
   environment.systemPackages = with pkgs; [
     ### terminal emulators
@@ -60,7 +66,12 @@
     nomachine-client
     wifi-qr
     zenity
+    # hyprdynamicmonitors from custom github url
+    inputs.hyprdynamicmonitors.packages.${pkgs.system}.default
   ];
+
+  # upower required for hyprdynamicmonitors
+  services.upower = { enable = true; };
 
   # enable thunar while i decide if its better than dolpin for me
   programs.thunar = {

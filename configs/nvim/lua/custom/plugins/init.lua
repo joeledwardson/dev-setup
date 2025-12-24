@@ -69,6 +69,8 @@ vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 
 -- remap capital Y to yank and then move cursor to end (helpful when yanking big blocks of text)
 vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
+-- remap D to delete to null buffer
+vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
 
 -- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
 --   callback = function(event)
@@ -81,7 +83,7 @@ vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
 vim.api.nvim_create_autocmd('BufEnter', {
-  pattern = { '*.service', '*.mount', '*.device', '*.nspawn', '*.target', '*.timer' },
+  pattern = { '*.service', '*.socket', '*.mount', '*.device', '*.nspawn', '*.target', '*.timer' },
   callback = function()
     vim.bo.filetype = 'systemd'
     vim.lsp.start {
@@ -319,6 +321,13 @@ return {
           " 5. Set Register + Manual OSC52 Trigger
           let @+ = l:final_url
           lua require('osc52').copy_register('+')
+
+          " then open
+          let l:open_cmd = printf("xdg-open %s", l:final_url)
+          let l:result = system(l:open_cmd)
+          if v:shell_error != 0
+            echohl ErrorMsg | echomsg "xdg-open failed: " . l:result | echohl None
+          endif
 
           " 6. Feedback
           redraw!
