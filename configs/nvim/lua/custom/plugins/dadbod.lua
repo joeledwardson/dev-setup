@@ -26,7 +26,7 @@ return {
       -- }
       --
       -- Save query keybinding (works in sql buffers)
-      vim.keymap.set('n', '<leader>W', '<Plug>(DBUI_SaveQuery)', { desc = 'Save query permanently' })
+      vim.keymap.set('n', '<leader>Ds', '<Plug>(DBUI_SaveQuery)', { desc = '[D]B [S]ave query permanently' })
     end,
     config = function()
       -- Setup completion only for dadbod UI buffers
@@ -35,7 +35,7 @@ return {
         callback = function()
           -- Only enable completion if this is a dadbod buffer
           if vim.b.db or vim.b.dbui then
-            require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+            require('cmp').setup.buffer { sources = { { name = 'vim-dadbod-completion' } } }
           end
         end,
       })

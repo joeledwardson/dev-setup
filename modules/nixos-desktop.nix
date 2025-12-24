@@ -8,7 +8,6 @@ in {
   # hyprdynamicmonitors - auto monitor (for lid etc) - this enables the systemd service
   # there are more options! see https://hyprdynamicmonitors.filipmikina.com/docs/advanced/systemd/#nix
   services.hyprdynamicmonitors.enable = true;
-
   environment.systemPackages = with pkgs; [
     ### terminal emulators
     alacritty
@@ -93,8 +92,9 @@ in {
     enable = true;
     settings = {
       default_session = {
+        # hyprland-uwsm.desktop is defined in the wiki (has uwsm) - see docs with nixos here https://wiki.hypr.land/Useful-Utilities/Systemd-start/#uwsm
         command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         user = "greeter";
       };
     };
@@ -119,7 +119,11 @@ in {
   # Wayland Configuration
   # =======================================
   programs.waybar = { enable = true; };
-  programs.hyprland = { enable = true; };
+  programs.hyprland = {
+    enable = true;
+    # systemd graphical-session.target required for hyprdynamicmonitors
+    withUWSM = true;
+  };
   programs.hyprlock.enable = true;
 
   # Enable light for brightness control

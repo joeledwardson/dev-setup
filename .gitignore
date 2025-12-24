@@ -1,6 +1,6 @@
 .vscode
 .ansible
-scratchpads/brave*
+scratchpads
 
 # claude code
 .claude
@@ -15,5 +15,6 @@ configs/yazi/flavors
 
 # dont commit nvim injections added by tree-sitter-language-injection plugin
 configs/nvim/after/queries
+
 
 
