@@ -1127,3 +1127,113 @@ Pretty cool i can see the notify method in dbus directly here!
 .Notify                             method    susssasa{sv}i u            -
 ➜ jollof dev-setup (main) ✗
 ```
+
+### Systemd Learning
+#### 1. Visibility of units
+When running `systemctl --user status`, it defaults to showing the **active service tree** (specifically `default.target`).
+- **Sockets** often sit quietly in the background waiting for a connection. Unless they are actively processing something or triggered an error, they might not show up in the main status tree.
+- To see sockets specifically: `systemctl --user list-sockets` (this shows what ports/files systemd is listening on).
+- To see *everything* systemd knows about (loaded units): `systemctl --user list-units`
+
+#### 2. The `@` symbol (Template Units)
+The `@` symbol denotes a **Template Unit**.
+- **Normal Unit:** `my-service.service` -> One config, one instance.
+- **Template Unit:** `my-socket@.service` -> One config, **many** possible instances.
+
+When you have `Accept=yes` in a socket file (`my-socket.socket`), systemd does this magic:
+1. It listens on port 8888.
+2. Connection comes in from IP `1.2.3.4`.
+3. Systemd looks for a service named `my-socket@.service`.
+4. It instantiates it as `my-socket@0-127.0.0.1:8888-1.2.3.4:5678.service` (or similar unique ID).
+5. It runs that specific instance for that specific connection.
+
+This is how SSH works (`sshd@.service`) handling multiple users at once!
+
+#### 3. What is a "Unit"?
+A **Unit** is just the generic object name for "thing systemd manages".
+Everything in systemd is a unit. The suffix tells you what *type* of unit it is:
+- `.service`: A process/script (The Worker)
+- `.socket`: A network port/file (The Phone Line)
+- `.timer`: A schedule (The Alarm Clock)
+- `.target`: A group of other units (like "Multi-User Mode" or "Graphical Mode")
+- `.mount`: A filesystem mount point
+
+They link together via dependencies:
+- **Timer** `Wants` -> **Service** (starts it when time is up)
+- **Socket** `Activates` -> **Service** (starts it when call comes in)
+- **Target** `Wants` -> **Services** (starts bunch of them at boot)
+
+#### Jollof notes
+Ok (above is gemini)
+
+So if i enabled the `my-socket.socket` and then I've opened 2 zshs with this
+```zsh
+➜ jollof dev-setup (main) ✗ nc localhost 8888
+Hello from Systemd Socket! Type something and press Enter:
+asdf
+asdf
+```
+
+then I can see below
+```
+➜ jollof dev-setup (main) ✗ systemctl --user list-sockets
+LISTEN                                        UNIT                     ACTIVATES
+[::]:8888                                     my-socket.socket         my-socket@2-12289-::1:8888-::1:36326.service
+                                                                       my-socket@1-8193-::1:8888-::1:60746.service
+/run/user/1000/bus                            dbus.socket              dbus.service
+/run/user/1000/gnupg/S.gpg-agent              gpg-agent.socket         gpg-agent.service
+/run/user/1000/pipewire-0                     pipewire.socket          pipewire.service
+/run/user/1000/pipewire-0-manager             pipewire.socket          pipewire.service
+/run/user/1000/pulse/native                   pipewire-pulse.socket    pipewire-pulse.service
+/run/user/1000/speech-dispatcher/speechd.sock speech-dispatcher.socket speech-dispatcher.service
+
+7 sockets listed.
+Pass --all to see loaded but inactive sockets, too.
+➜ jollof dev-setup (main) ✗
+```
+My socket has 2 connections! It's activated the template and I can see `my-socket@1....` and `my-socket@2`
+
+
+
+### Systemd Naming & Implicit Links
+- **Implicit by Name (Magic Naming)**: By default, `my-name.socket` activates `my-name.service` (or `my-name@.service` if `Accept=yes`).
+- **Explicit Override**: Use `Service=other-service.service` in the `[Socket]` section to break the naming convention and trigger a different unit.
+
+#### Accept=yes vs Accept=no
+- **Accept=yes**: Systemd accepts the connection itself and spawns a **new instance** of the template service (`@.service`) for *each* incoming connection. This is how SSH handles multiple simultaneous users.
+- **Accept=no (Default)**: Systemd passes the *listening* socket to a single service instance. The service is responsible for calling `accept()` (like a web server or database).
+
+### Systemd Hierarchy: Slices, Scopes, and Services
+
+**The Concept:**
+Think of it like a file system for processes.
+*   **Cgroups (Control Groups):** The actual directories in the kernel that track processes.
+*   **Slices (`.slice`):** The "folders". They organize things hierarchically and control resources (e.g., "System gets 80% CPU, User gets 20%").
+*   **Services (`.service`) & Scopes (`.scope`):** The "files". These contain the actual running processes.
+
+**The Tree:**
+1.  **Root (`-.slice`)**: The top of the tree.
+2.  **`user.slice`**: Holds all user sessions.
+3.  **`user-1000.slice`**: Your specific user (UID 1000).
+4.  **`user@1000.service`**: The systemd manager instance for *you*.
+    *   **`app.slice`**: Applications started by the GUI or systemd (like `firefox`, `my-socket`).
+    *   **`session.slice`**: Core session stuff (like `dbus`, `pipewire`).
+
+**Interactive Commands:**
+
+1.  **Visualize the Tree:**
+    `systemd-cgls`
+    *Shows the entire hierarchy recursively.*
+
+2.  **Monitor Resources (The "Top" for Cgroups):**
+    `systemd-cgtop`
+    *Shows CPU/Memory usage per Slice/Service.*
+
+3.  **Inspect Your User Tree:**
+    `systemctl --user status`
+    *Shows what your specific systemd instance is managing right now.*
+
+4.  **Creating a Temporary Scope (Fun Test):**
+    Run a command in a specific slice to limit its resources.
+    `systemd-run --user --scope -p MemoryMax=10M --unit=my-test bash`
+    *(This starts a bash shell that systemd kills if it uses >10MB RAM).*

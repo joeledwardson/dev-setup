@@ -1,66 +1,68 @@
 - plugins:
-      - plugins/dotbot-if
+    - plugins/dotbot-if
 
 - defaults:
-      link:
-          relink: true
-          force: true
-          create: true
+    link:
+      relink: true
+      force: true
+      create: true
 
 - clean: ["~"]
 
 - clean:
-      ~/:
-          force: true
-      ~/.config:
-          recursive: true
+    ~/:
+      force: true
+    ~/.config:
+      recursive: true
 
 - link:
-      ~/.vim/vimrc: ./configs/vimrc
-      ~/.config/waybar: ./configs/waybar
-      ~/.config/swaync: ./configs/swaync
-      ~/.config/zsh/.zshrc: ./configs/zshrc
-      ~/.config/nvim: ./configs/nvim
-      ~/.config/tmux/tmux.conf: ./configs/tmux.conf
-      ~/.config/git/config: ./configs/gitconfig
-      ~/.config/git/ignore: ./configs/gitignore
-      ~/.config/copyq/copyq.conf: ./configs/copyq.conf
-      ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
-      ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
-      ~/.config/hypr/scripts: ./configs/hypr/scripts
-      ~/.config/hypr/wallpapers: ./wallpapers
-      ~/.config/kitty/kitty.conf: ./configs/kitty.conf
-      ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
-      ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
-      ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
-      ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
-      ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
-      ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
-      ~/.local/share/applications/custom: ./applications
-      ~/.config/mpv/input.conf: ./configs/mpv/input.conf
-      ~/.config/mpv/scripts: ./configs/mpv/scripts
-      ~/.config/yazi: ./configs/yazi
-      ~/.config/mimeapps.list: ./configs/mimeapps.list
-      ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
-      ~/.npmrc: ./configs/npmrc
-      ~/.claude/CLAUDE.md: ./configs/claude/claude.md
-      ~/.claude/settings.json: ./configs/claude/settings.json
-      ~/.local/bin/xdg-open: ./configs/bin/xdg-open
-      ~/.ssh/config: ./configs/ssh/config
+    ~/.vim/vimrc: ./configs/vimrc
+    ~/.config/waybar: ./configs/waybar
+    ~/.config/swaync: ./configs/swaync
+    ~/.config/zsh/.zshrc: ./configs/zshrc
+    ~/.config/nvim: ./configs/nvim
+    ~/.config/tmux/tmux.conf: ./configs/tmux.conf
+    ~/.config/git/config: ./configs/gitconfig
+    ~/.config/git/ignore: ./configs/gitignore
+    ~/.config/copyq/copyq.conf: ./configs/copyq.conf
+    ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+    ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
+    ~/.config/hypr/scripts: ./configs/hypr/scripts
+    ~/.config/hypr/wallpapers: ./wallpapers
+    ~/.config/kitty/kitty.conf: ./configs/kitty.conf
+    ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
+    ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
+    ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
+    ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
+    ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
+    ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
+    ~/.local/share/applications/custom: ./applications
+    ~/.config/mpv/input.conf: ./configs/mpv/input.conf
+    ~/.config/mpv/scripts: ./configs/mpv/scripts
+    ~/.config/yazi: ./configs/yazi
+    ~/.config/mimeapps.list: ./configs/mimeapps.list
+    ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
+    ~/.npmrc: ./configs/npmrc
+    ~/.claude/CLAUDE.md: ./configs/claude/claude.md
+    ~/.claude/settings.json: ./configs/claude/settings.json
+    ~/.local/bin/xdg-open: ./configs/bin/xdg-open
+    ~/.ssh/config: ./configs/ssh/config
 
-  # create custom and monitors conf if doesnt exist
+# create custom and monitors conf if doesnt exist
 - if:
-      cond: "[ ! -f ~/.config/hypr/custom.conf ]"
-      met:
-          - create: ~/.config/hypr/custom.conf
-- if:
-      cond: "[ ! -f ~/.config/hypr/monitors.conf ]"
-      met:
-          - create: ~/.config/hypr/monitors.conf
+    cond: "[ ! -f ~/.config/hypr/custom.conf ]"
+    met:
+      - shell:
+          - touch  ~/.config/hypr/custom.conf
 
-  # degen home custom configs
 - if:
-      cond: '[ "$(hostname)" = "degen-home" ]'
-      met:
-          - link:
-                ~/.config/hypr/custom.conf: ./hosts/degen-home/custom.conf
+    cond: "[ ! -f ~/.config/hypr/monitors.conf ]"
+    met:
+      - shell:
+          - touch ~/.config/hypr/monitors.conf
+# degen home custom configs
+# - if:
+#     cond: '[ "$(hostname)" = "degen-home" ]'
+#     met:
+#       - link:
+#           ~/.config/hypr/custom.conf: ./hosts/degen-home/custom.conf
