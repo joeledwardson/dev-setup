@@ -38,6 +38,8 @@
     options = [
       "users" # allows any user to mount and unmount
       "nofail" # prevent system failure if i typed something wrong
+      "x-systemd.automount" # add this
+      "x-systemd.idle-timeout=60" # optional: unmount after 60s idle
       "rw"
       "uid=1000"
       "gid=100"
