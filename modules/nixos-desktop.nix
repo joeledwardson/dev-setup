@@ -7,7 +7,12 @@ in {
 
   # hyprdynamicmonitors - auto monitor (for lid etc) - this enables the systemd service
   # there are more options! see https://hyprdynamicmonitors.filipmikina.com/docs/advanced/systemd/#nix
-  services.hyprdynamicmonitors.enable = true;
+  services.hyprdynamicmonitors = {
+    enable = true;
+    # enable lid events for laptops
+    extraFlags = [ "--enable-lid-events" ];
+    configPath = "%h/.config/hyprdynamicmonitors/config.toml";
+  };
   environment.systemPackages = with pkgs; [
     ### terminal emulators
     alacritty

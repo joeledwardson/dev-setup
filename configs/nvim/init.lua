@@ -1252,12 +1252,6 @@ require('lazy').setup {
         'nvim-telescope/telescope.nvim',
         dependencies = { 'nvim-lua/plenary.nvim' },
       },
-      {
-        'nvim-telescope/telescope-live-grep-args.nvim',
-        -- This will not install any breaking changes.
-        -- For major updates, this must be adjusted manually.
-        version = '^1.0.0',
-      },
     },
     keys = {
       { -- lazy style key map
@@ -1269,15 +1263,15 @@ require('lazy').setup {
     opts = {
       extensions = {
         undo = {
-          use_delta = true,
-          use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
-          side_by_side = false,
-          vim_diff_opts = {
-            ctxlen = vim.o.scrolloff,
-          },
-          entry_format = 'state #$ID, $STAT, $TIME',
-          time_format = '',
-          saved_only = false,
+          -- use_delta = true,
+          -- use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
+          -- side_by_side = false,
+          -- vim_diff_opts = {
+          --   ctxlen = vim.o.scrolloff,
+          -- },
+          -- entry_format = 'state #$ID, $STAT, $TIME',
+          -- time_format = '',
+          -- saved_only = false,
         },
       },
     },
@@ -1288,7 +1282,7 @@ require('lazy').setup {
       -- defaults, as well as each extension).
       telescope.setup(opts)
       telescope.load_extension 'undo'
-      telescope.load_extension 'live-grep-args'
+      -- telescope.load_extension 'live-grep-args'
     end,
   },
   {

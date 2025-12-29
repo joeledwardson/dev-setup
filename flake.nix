@@ -4,7 +4,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors";
+    hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors?ref=v1.4.0";
+
+    # hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
