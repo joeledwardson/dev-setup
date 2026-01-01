@@ -1237,3 +1237,40 @@ Think of it like a file system for processes.
     Run a command in a specific slice to limit its resources.
     `systemd-run --user --scope -p MemoryMax=10M --unit=my-test bash`
     *(This starts a bash shell that systemd kills if it uses >10MB RAM).*
+
+### Treesitter
+Why no matter how many times do i google this i forget it ffs - TOGGLING TREESITTER TREEEEEEE......
+```vim
+:InspectTree
+```
+
+### Qmk compiling
+I haven't compiled my QMK keyboard in an age so here's the command again
+
+I think i will keep space as special key on my keychron as right alt is a bit hard to access under right thumb. But I will move keymaps to matching `./modules/nixos-keyd.nix` 
+
+1. To setup
+```bash
+gh repo clone joeledwardson/qmk_firmware ~/qmk_firmware
+cd ~/qmk_firmware
+qmk setup
+```
+
+2. Finding my keyboard
+```bash
+➜ joelyboy qmk_firmware (master) ✗ qmk list-keyboards | grep -i q4
+keychron/q4/ansi/v1
+keychron/q4/ansi/v2
+keychron/q4/iso
+p3d/q4z
+➜ joelyboy qmk_firmware (master) ✗
+
+```
+
+3. compiling: `qmk compile -kb keychron/q4/iso -km joelyboy`
+
+4. unplug keyboard and re-plug in pressing the flash button underneath the space bar
+
+> Will need another keyboard at this stage
+
+5. then `qmk compile -kb keychron/q4/iso -km joelyboy`
