@@ -28,11 +28,13 @@
   };
 
   # =======================================
-  # Keyboard Building Configuration
+  # Media server (for testing)
   # =======================================
-  hardware.keyboard.qmk.enable = true;
-  environment.systemPackages = with pkgs; [ via qmk ];
-  services.udev.packages = [ pkgs.via ];
+  services.sabnzbd = { enable = true; };
+  services.nzbget = { enable = true; };
+  services.sonarr = { enable = true; };
+  services.radarr = { enable = true; };
+  services.prowlarr = { enable = true; };
 
   # =======================================
   # Mount Configuration
@@ -47,23 +49,12 @@
   #   options = [
   #     "nofail" # prevent system failure if i typed something wrong
   #     "rw"
-  #     "uid=1000"
+  #     "uid=1002"
   #     "gid=100"
   #     "dmask=022"
   #     "fmask=133"
   #   ];
-  #
   # };
-
-  # mount old ubuntu partition
-  fileSystems."/mnt/jollof/minty" = {
-    device = "/dev/disk/by-label/ubuntu";
-    fsType = "ext4";
-    options = [
-      "users" # allows any user to mount and unmount
-      "nofail" # prevent system failure if i typed something wrong
-    ];
-  };
 
   # =======================================
   # Networking Configuration
