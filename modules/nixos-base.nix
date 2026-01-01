@@ -108,6 +108,10 @@
     size = 32 * 1024; # 32 GiB
   }];
 
+  # keyboard building config
+  hardware.keyboard.qmk.enable = true;
+  services.udev.packages = [ pkgs.via ];
+
   environment.systemPackages = with pkgs; [
     ### core terminal utilities
     git
@@ -164,6 +168,9 @@
     nodejs_22 # add nodejs global just for claude code
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
+
+    ### keyboards
+    qmk
 
     ### Database tools
     ruby

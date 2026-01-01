@@ -72,6 +72,9 @@ in {
     zenity
     # hyprdynamicmonitors from custom github url
     inputs.hyprdynamicmonitors.packages.${pkgs.system}.default
+
+    ### keyboards
+    via
   ];
 
   # upower required for hyprdynamicmonitors
@@ -98,8 +101,10 @@ in {
     settings = {
       default_session = {
         # hyprland-uwsm.desktop is defined in the wiki (has uwsm) - see docs with nixos here https://wiki.hypr.land/Useful-Utilities/Systemd-start/#uwsm
+        # command =
+        #   "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
+          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "greeter";
       };
     };
