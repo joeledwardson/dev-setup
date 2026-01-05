@@ -43,12 +43,12 @@
   networking.hostName = "desktop-work"; # Define your hostname.
 
   # add timescale to postgres extensions
-  services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
-  services.postgresql.extensions = ps: [
-    ps.plpgsql_check
-    ps.timescaledb
-    ps.timescaledb_toolkit
-  ];
+  # services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
+  # services.postgresql.extensions = ps: [
+  #   ps.plpgsql_check
+  #   ps.timescaledb
+  #   ps.timescaledb_toolkit
+  # ];
 
   # add VM support
   virtualisation = {
