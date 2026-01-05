@@ -48,6 +48,10 @@
     ];
 
   };
+
+  # =======================================
+  # Media server
+  # =======================================
   services.sabnzbd = { enable = true; };
   services.nzbget = { enable = true; };
   services.sonarr = { enable = true; };

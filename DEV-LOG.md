@@ -1274,3 +1274,41 @@ p3d/q4z
 > Will need another keyboard at this stage
 
 5. then `qmk compile -kb keychron/q4/iso -km joelyboy`
+
+## January 2026
+Wow new year!
+Should review all these notes at some ponit for a bit of reflection on the year.
+
+Feels like problem after problem I'm solving in pursuit of the "perfect system" but it will never be perfect lol
+
+Anyway....
+
+### Revisiting `lsof`
+So gemini came up with this, using `lsof` to listen to open files to find processes that are listening and finding ports. Context is i wanted to find the port that `sabnzbd` was listening on!
+```bash
+➜ jollof dev-setup (main) ✗ sudo lsof -i -P -n -c sabnzbd | grep -i listen
+lsof: WARNING: can't stat() fuse.gvfsd-fuse file system /run/user/1002/gvfs
+      Output information may be incomplete.
+lsof: WARNING: can't stat() fuse.portal file system /run/user/1002/doc
+      Output information may be incomplete.
+systemd        1            root 729u  IPv4  17381      0t0  TCP 127.0.0.1:631 (LISTEN)
+sshd      138238            root   6u  IPv4 246743      0t0  TCP *:22 (LISTEN)
+sshd      138238            root   7u  IPv6 246745      0t0  TCP *:22 (LISTEN)
+systemd-r 138246 systemd-resolve  12u  IPv4 264651      0t0  TCP *:5355 (LISTEN)
+systemd-r 138246 systemd-resolve  14u  IPv6 264659      0t0  TCP *:5355 (LISTEN)
+systemd-r 138246 systemd-resolve  23u  IPv4 264667      0t0  TCP 127.0.0.53:53 (LISTEN)
+systemd-r 138246 systemd-resolve  25u  IPv4 264669      0t0  TCP 127.0.0.54:53 (LISTEN)
+.postgres 138341        postgres   6u  IPv6 270343      0t0  TCP [::1]:5432 (LISTEN)
+.postgres 138341        postgres   7u  IPv4 270344      0t0  TCP 127.0.0.1:5432 (LISTEN)
+syncthing 138406          jollof  13u  IPv6 270360      0t0  TCP *:22000 (LISTEN)
+syncthing 138406          jollof  29u  IPv4 267453      0t0  TCP 127.0.0.1:8384 (LISTEN)
+Prowlarr  180815        prowlarr 340u  IPv6 407811      0t0  TCP *:9696 (LISTEN)
+Radarr    180819          radarr 359u  IPv6 396267      0t0  TCP *:7878 (LISTEN)
+Sonarr    180822          sonarr 366u  IPv6 405579      0t0  TCP *:8989 (LISTEN)
+nzbget    180836          nzbget   3u  IPv4 389849      0t0  TCP *:6789 (LISTEN)
+python3.1 180925         sabnzbd   7u  IPv4 403487      0t0  TCP 127.0.0.1:8080 (LISTEN)
+markdown- 192067          jollof  25u  IPv4 448020      0t0  TCP *:8336 (LISTEN)
+➜ jollof dev-setup (main) ✗
+```
+
+Can see above its 8080
