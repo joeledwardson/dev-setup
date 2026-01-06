@@ -51,6 +51,7 @@
   # ];
 
   # add VM support
+  environment.systemPackages = with pkgs; [ vagrant ];
   virtualisation = {
     libvirtd = {
       enable = true;
