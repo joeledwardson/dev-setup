@@ -110,7 +110,6 @@
 
   # keyboard building config
   hardware.keyboard.qmk.enable = true;
-  services.udev.packages = [ pkgs.via ];
 
   environment.systemPackages = with pkgs; [
     ### core terminal utilities
