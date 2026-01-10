@@ -94,6 +94,17 @@ vim.api.nvim_create_autocmd('BufEnter', {
   end,
 })
 
+-- replace jinja template file types with original ft
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.j2',
+  callback = function()
+    local inner = vim.fn.expand('%:r'):match '%.([^.]+)$'
+    if inner then
+      vim.bo.filetype = inner
+    end
+  end,
+})
+
 -- TODO
 
 -- You can add your own plugins here or in other files in this directory!
