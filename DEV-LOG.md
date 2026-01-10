@@ -1312,3 +1312,39 @@ markdown- 192067          jollof  25u  IPv4 448020      0t0  TCP *:8336 (LISTEN)
 ```
 
 Can see above its 8080
+
+### NixOS Module System - Auto-injected Args
+In `flake.nix` I explicitly create `pkgs-unstable`:
+```nix
+pkgs-unstable = import nixpkgs-unstable { ... };
+commonSpecialArgs = { inherit inputs commonGroups pkgs-unstable; };
+```
+
+But in modules like `nixos-base.nix`, I use `{ pkgs, pkgs-unstable, ... }` - where does `pkgs` come from?
+
+`pkgs` is **automatically provided** by `nixpkgs.lib.nixosSystem`. When you call it, NixOS evaluates nixpkgs for your system and injects `pkgs` into all modules.
+
+`specialArgs` is only for **extra** args NixOS doesn't know about (like `pkgs-unstable`).
+
+Other auto-injected module args: `config`, `lib`, `options`, `modulesPath`
+
+Docs: https://nixos.org/manual/nixos/stable/#sec-writing-modules
+
+### Inherit in nixos
+Brief refresher on inherit (i always forget)
+```nix
+
+nix-repl> let a=10; in {b=a+20;a=a;}
+{
+  a = 10;
+  b = 30;
+}
+
+nix-repl> let a=10; in {b=a+20; inherit a;}
+{
+  a = 10;
+  b = 30;
+}
+
+nix-repl>
+```
