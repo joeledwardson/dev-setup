@@ -396,4 +396,8 @@ return {
   {
     'rcarriga/nvim-notify',
   },
+  -- ansiblels requires file type 'yaml.ansible' (see config here: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ansiblels), this plugin sets that up (plus other things i dont use)
+  {
+    'mfussenegger/nvim-ansible',
+  },
 }
