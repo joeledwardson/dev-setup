@@ -71,6 +71,26 @@ if command -v navi >/dev/null; then
     fi
 fi
 
+# see https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-completion.html
+function setup-aws () {
+    # check exists
+    if ! command -v aws >/dev/null; then
+        return
+    fi
+
+    local aws_path aws_dir aws_completer
+    aws_path=$(readlink -f aws)
+    aws_dir=$(dirname "$aws_path")
+    aws_completer="$aws_dir/aws_completer"
+
+    # check aws completer exists
+    if [[ ! -e "$aws_completer" ]]; then
+        echo "AWS completion path does not exist!" >&2
+        return
+    fi
+
+    complete -C "$aws_completer" aws
+}
 
 # custom completions
 if command -v glab >/dev/null; then source <(glab completion -s zsh); fi
@@ -78,6 +98,7 @@ if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then source 
 if command -v gh >/dev/null; then source <(gh completion -s zsh); fi
 if command -v fzf >/dev/null; then source <(fzf --zsh); fi
 if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
+setup-aws
 
 # setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
@@ -157,6 +178,11 @@ function bw-edit() {
     rm -f "$tmpfile"
 
     echo "Item $selected_id updated successfully"
+}
+
+# get the latest gitlab CI/CD pipeline and view it (quicker version of `gitlab ci list`, manually coping ID and then `gitlab ci view <ID>`)
+function check-glab-ci {
+    glab ci list --output json --per-page 1 | jq -r '.[0].id' | xargs -I {} glab ci view #{}
 }
 
 # control left/right because im lazy and dont want to un-learn
