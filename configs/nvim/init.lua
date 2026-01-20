@@ -845,6 +845,7 @@ require('lazy').setup {
       vim.lsp.enable 'terraformls'
       vim.lsp.enable 'systemd_ls'
       vim.lsp.enable 'gopls'
+      vim.lsp.enable 'ansiblels'
 
       vim.filetype.add {
         filename = {
