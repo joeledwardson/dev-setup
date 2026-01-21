@@ -209,6 +209,7 @@
     skopeo # useful for searching remote docker tags (required for video consumer)
     awscli2
     grafana-loki # has logcli
+    ansible
 
     ### video processing
     ffmpeg

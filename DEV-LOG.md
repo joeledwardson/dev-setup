@@ -1399,3 +1399,60 @@ Argument is
 Argument is -apples
 ➜ joelyboy ~
 ```
+
+### lsof & ss deep dive (socket files)
+
+**lsof columns** ([man page](https://man7.org/linux/man-pages/man8/lsof.8.html)):
+
+| Column | Meaning | Example |
+|--------|---------|---------|
+| COMMAND | Process name (truncated to 9 chars) | `dockerd`, `systemd` |
+| PID | Process ID | `1879` |
+| USER | Owner | `root` |
+| FD | File Descriptor + mode suffix | `594u`, `3u` |
+| TYPE | File type | `unix` (socket), `REG` (file), `DIR` |
+| DEVICE | Device identifier (kernel address for sockets) | `0xffff8a6a933e3000` |
+| SIZE/OFF | Size or offset | `0t0` (0 offset) |
+| NODE | Inode number | `13739` |
+| NAME | File path + socket info | `/run/docker.sock type=STREAM` |
+
+**FD suffixes** ([docs](https://man7.org/linux/man-pages/man8/lsof.8.html#OUTPUT)):
+- `u` = read+write
+- `r` = read only
+- `w` = write only
+- `cwd` = current working dir
+- `txt` = program text (code)
+- `mem` = memory-mapped file
+
+**COMMAND column**: Yes, `systemd` means the process named "systemd" (PID 1, the init system). It holds the socket FD because systemd created it via socket activation.
+
+---
+
+**ss columns** ([man page](https://man7.org/linux/man-pages/man8/ss.8.html)):
+
+```
+u_str LISTEN 0 4096 /run/docker.sock 13739 * 0 users:(("dockerd",pid=1879,fd=3))
+```
+
+| Field | Meaning |
+|-------|---------|
+| `u_str` | Unix stream socket (`u_dgr` = datagram, `u_seq` = seqpacket) |
+| `LISTEN` | Socket state |
+| `0` | Recv-Q (queued bytes) |
+| `4096` | Send-Q (backlog for LISTEN) |
+| `/run/docker.sock` | Local address (path) |
+| `13739` | Inode |
+| `*` | Peer address (none for LISTEN) |
+| `0` | Peer port/inode |
+
+**users field**: `users:(("dockerd",pid=1879,fd=3),("systemd",pid=1,fd=595))`
+- List of processes with this socket open
+- Format: `("command",pid=PID,fd=FD_NUMBER)`
+- Multiple entries = multiple processes sharing the socket (socket activation)
+
+**Why 2 entries for docker.sock?**
+Systemd creates the socket (socket activation), then passes FDs to dockerd. Both hold references.
+
+Docs:
+- lsof: https://man7.org/linux/man-pages/man8/lsof.8.html
+- ss: https://man7.org/linux/man-pages/man8/ss.8.html
