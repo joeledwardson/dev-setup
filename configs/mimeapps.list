@@ -1,13 +1,15 @@
+[Added Associations]
+video/mp4=mpv-3.desktop;mpv-2.desktop;
 
 [Default Applications]
+image/jpeg=gimp.desktop
+image/png=gimp.desktop
+image/webp=gimp.desktop
 text/html=brave-browser.desktop
+video/mp4=mpv-3.desktop;
+x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/http=brave-browser.desktop
 x-scheme-handler/https=brave-browser.desktop
-x-scheme-handler/about=brave-browser.desktop
-x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/sgnl=signal.desktop
 x-scheme-handler/signalcaptcha=signal.desktop
-image/jpeg=gimp.desktop
-image/webp=gimp.desktop
-image/png=gimp.desktop
-
+x-scheme-handler/unknown=brave-browser.desktop
