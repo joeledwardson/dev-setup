@@ -71,6 +71,21 @@ if command -v navi >/dev/null; then
     fi
 fi
 
+# see https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-completion.html
+function setup-aws () {
+    local aws_path aws_dir aws_completer
+    aws_path=$(readlink -f "$(which aws)")
+    aws_dir=$(dirname "$aws_path")
+    aws_completer="$aws_dir/aws_completer"
+
+    # check aws completer exists
+    if [[ ! -e "$aws_completer" ]]; then
+        echo "AWS completion path does not exist!" >&2
+        return
+    fi
+
+    complete -C "$aws_completer" aws
+}
 
 # custom completions
 if command -v glab >/dev/null; then source <(glab completion -s zsh); fi
@@ -78,6 +93,7 @@ if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then source 
 if command -v gh >/dev/null; then source <(gh completion -s zsh); fi
 if command -v fzf >/dev/null; then source <(fzf --zsh); fi
 if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
+if command -v aws >/dev/null; then setup-aws; fi
 
 # setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
@@ -88,11 +104,13 @@ alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_sessio
 # i dont like the name status default as sometimes i want git log --patch
 alias gl='git log'
 
+# change bitwarden data directory to work location to separate from personal
 function bw-use-work () {
     BITWARDENCLI_APPDATA_DIR="$(realpath ~/.config/bw-work)"
     export BITWARDENCLI_APPDATA_DIR
 }
 
+# find and view a bitwarden entry
 function bw-view() {
     # get all items from bitwarden
     bw_items=$(bw list items)
@@ -110,6 +128,7 @@ function bw-view() {
     jq -r ".[] | select(.id == \"$selected_id\")" <<< "$bw_items" | yq -p=json
 }
 
+# find and edit a bitwarden entry
 function bw-edit() {
     # get all items from bitwarden
     bw_items=$(bw list items)
@@ -157,6 +176,21 @@ function bw-edit() {
     rm -f "$tmpfile"
 
     echo "Item $selected_id updated successfully"
+}
+
+# get the latest gitlab CI/CD pipeline and view it (quicker version of `gitlab ci list`, manually coping ID and then `gitlab ci view <ID>`)
+function check-glab-ci {
+    glab ci list --output json --per-page 1 | jq -r '.[0].id' | xargs -I {} glab ci view #{}
+}
+
+# encode a URI (useful in postgres passwords for connection strings)
+function encode-uri {
+    if [[ -z "$1" ]]; then
+        printf "Error: argument must be supplied\n" >&2
+        return 1;
+    fi
+    # pass $pwd as a raw string to avoid any escaping to jq, then apply the @uri encoding
+    jq -rn --arg pwd "$1" '$pwd | @uri'
 }
 
 # control left/right because im lazy and dont want to un-learn

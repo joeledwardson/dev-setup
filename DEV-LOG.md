@@ -1312,3 +1312,147 @@ markdown- 192067          jollof  25u  IPv4 448020      0t0  TCP *:8336 (LISTEN)
 ```
 
 Can see above its 8080
+
+### NixOS Module System - Auto-injected Args
+In `flake.nix` I explicitly create `pkgs-unstable`:
+```nix
+pkgs-unstable = import nixpkgs-unstable { ... };
+commonSpecialArgs = { inherit inputs commonGroups pkgs-unstable; };
+```
+
+But in modules like `nixos-base.nix`, I use `{ pkgs, pkgs-unstable, ... }` - where does `pkgs` come from?
+
+`pkgs` is **automatically provided** by `nixpkgs.lib.nixosSystem`. When you call it, NixOS evaluates nixpkgs for your system and injects `pkgs` into all modules.
+
+`specialArgs` is only for **extra** args NixOS doesn't know about (like `pkgs-unstable`).
+
+Other auto-injected module args: `config`, `lib`, `options`, `modulesPath`
+
+Docs: https://nixos.org/manual/nixos/stable/#sec-writing-modules
+
+### Inherit in nixos
+Brief refresher on inherit (i always forget)
+```nix
+
+nix-repl> let a=10; in {b=a+20;a=a;}
+{
+  a = 10;
+  b = 30;
+}
+
+nix-repl> let a=10; in {b=a+20; inherit a;}
+{
+  a = 10;
+  b = 30;
+}
+
+nix-repl>
+```
+
+### Bash piping args
+Well I'm finally getting round to trying to get my head round `-s` and `--` in bash!
+
+So.... `-s` is to take commands from stdinput. so with piping, can see without this it expects a file
+```bash
+➜ joelyboy ~ bash echo hi
+/run/current-system/sw/bin/echo: /run/current-system/sw/bin/echo: cannot execute binary file
+➜ joelyboy ~
+```
+ahhhh, not this didn't work as `-s` expects from STDIN but i passed them as arguments! so it just opens a shell
+```bash
+➜ joelyboy ~ bash -s echo hi
+
+[joelyboy@desktop-work:~]$ ^C
+```
+
+here is a proper working example:
+```bash
+➜ joelyboy ~ echo 'echo hi' | bash -s
+hi
+➜ joelyboy ~
+```
+
+Now, as we know in bash double quotations "" expand args, so below will try to expand `$1`, and find nothing!
+```bash
+➜ joelyboy ~ echo "echo Argument is: $1" | bash -s 'apples'
+Argument is:
+➜ joelyboy ~
+```
+
+Whereas this works! as `$1` is NOT expanded before piping
+```bash
+➜ joelyboy ~ echo 'echo Argument is $1' | bash -s 'apples'
+Argument is apples
+➜ joelyboy ~
+```
+
+So, interestingly then, by default `bash` takes first param as script path to run and then `$2`, `$3` etc as positional args to pass to the script.
+I.e. `bash testie.sh 'hiya'` runs `testie.sh` with `$1` as 'hiya'
+
+BUT, if `-s` is passed the first one from stdin is the script and then all args following are positionals to the script taken from stdin
+
+Finally, when we see `--` it just means to not treat `-some_opt` stuff as options. Like this where `-apples` I guess bash thinks is an option (although interesting it didn't complain or throw an error)
+```bash
+➜ joelyboy ~ echo 'echo Argument is $1' | bash -s -apples
+Argument is
+➜ joelyboy ~ echo 'echo Argument is $1' | bash -s -- -apples
+Argument is -apples
+➜ joelyboy ~
+```
+
+### lsof & ss deep dive (socket files)
+
+**lsof columns** ([man page](https://man7.org/linux/man-pages/man8/lsof.8.html)):
+
+| Column | Meaning | Example |
+|--------|---------|---------|
+| COMMAND | Process name (truncated to 9 chars) | `dockerd`, `systemd` |
+| PID | Process ID | `1879` |
+| USER | Owner | `root` |
+| FD | File Descriptor + mode suffix | `594u`, `3u` |
+| TYPE | File type | `unix` (socket), `REG` (file), `DIR` |
+| DEVICE | Device identifier (kernel address for sockets) | `0xffff8a6a933e3000` |
+| SIZE/OFF | Size or offset | `0t0` (0 offset) |
+| NODE | Inode number | `13739` |
+| NAME | File path + socket info | `/run/docker.sock type=STREAM` |
+
+**FD suffixes** ([docs](https://man7.org/linux/man-pages/man8/lsof.8.html#OUTPUT)):
+- `u` = read+write
+- `r` = read only
+- `w` = write only
+- `cwd` = current working dir
+- `txt` = program text (code)
+- `mem` = memory-mapped file
+
+**COMMAND column**: Yes, `systemd` means the process named "systemd" (PID 1, the init system). It holds the socket FD because systemd created it via socket activation.
+
+---
+
+**ss columns** ([man page](https://man7.org/linux/man-pages/man8/ss.8.html)):
+
+```
+u_str LISTEN 0 4096 /run/docker.sock 13739 * 0 users:(("dockerd",pid=1879,fd=3))
+```
+
+| Field | Meaning |
+|-------|---------|
+| `u_str` | Unix stream socket (`u_dgr` = datagram, `u_seq` = seqpacket) |
+| `LISTEN` | Socket state |
+| `0` | Recv-Q (queued bytes) |
+| `4096` | Send-Q (backlog for LISTEN) |
+| `/run/docker.sock` | Local address (path) |
+| `13739` | Inode |
+| `*` | Peer address (none for LISTEN) |
+| `0` | Peer port/inode |
+
+**users field**: `users:(("dockerd",pid=1879,fd=3),("systemd",pid=1,fd=595))`
+- List of processes with this socket open
+- Format: `("command",pid=PID,fd=FD_NUMBER)`
+- Multiple entries = multiple processes sharing the socket (socket activation)
+
+**Why 2 entries for docker.sock?**
+Systemd creates the socket (socket activation), then passes FDs to dockerd. Both hold references.
+
+Docs:
+- lsof: https://man7.org/linux/man-pages/man8/lsof.8.html
+- ss: https://man7.org/linux/man-pages/man8/ss.8.html

@@ -78,6 +78,9 @@ in {
     shotcut
   ];
 
+  # keyboard settings
+  services.udev.packages = [ pkgs.via ];
+
   # upower required for hyprdynamicmonitors
   services.upower = { enable = true; };
 

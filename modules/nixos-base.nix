@@ -110,7 +110,6 @@
 
   # keyboard building config
   hardware.keyboard.qmk.enable = true;
-  services.udev.packages = [ pkgs.via ];
 
   environment.systemPackages = with pkgs; [
     ### core terminal utilities
@@ -207,7 +206,10 @@
     btop # fancy version of top
     navi
     terraform
-    skopeo
+    skopeo # useful for searching remote docker tags (required for video consumer)
+    awscli2
+    grafana-loki # has logcli
+    ansible
 
     ### video processing
     ffmpeg
@@ -256,6 +258,7 @@
     grafana-alloy
     cloud-init
     vault
+    ansible-lint
 
     ### unstable packages
     pkgs-unstable.postgres-language-server # connectionString argument only released recently

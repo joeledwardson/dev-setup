@@ -2,11 +2,15 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, commonGroups, ... }:
+args@{ config, commonGroups, ... }:
 
 {
-  imports = [ # Include the results of the hardware scan.
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
+
+    # add the nixarr module
+    args.nixarr_flake.nixosModules.default
   ];
 
   # =======================================
@@ -27,14 +31,29 @@
     };
   };
 
-  # =======================================
-  # Media server (for testing)
-  # =======================================
-  services.sabnzbd = { enable = true; };
-  services.nzbget = { enable = true; };
-  services.sonarr = { enable = true; };
-  services.radarr = { enable = true; };
-  services.prowlarr = { enable = true; };
+  # # =======================================
+  # # Media server (for testing)
+  # # =======================================
+  # services.sabnzbd = { enable = true; };
+  # services.nzbget = { enable = true; };
+  # services.sonarr = { enable = true; };
+  # services.radarr = { enable = true; };
+  # services.prowlarr = { enable = true; };
+
+  nixarr = {
+    enable = true;
+    mediaDir = "/data/media";
+    stateDir = "/data/media/.state/nixarr";
+
+    sabnzbd.enable = true;
+    prowlarr.enable = true;
+    sonarr.enable = true;
+    radarr.enable = true;
+
+    # Optional: VPN for downloads
+    # vpn.enable = true;
+    # sabnzbd.vpn.enable = true;
+  };
 
   # =======================================
   # Mount Configuration

@@ -5,14 +5,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors?ref=v1.4.0";
+    nixarr.url = "github:rasmus-kirk/nixarr";
 
-    # hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
+  # inputs are resolved to flakes. i.e. hyprdynamicmonitors is now an accessible flake
   outputs = inputs@{ nixpkgs, nixpkgs-unstable, nur, ... }:
     let
       mySystem = "x86_64-linux";
@@ -28,7 +29,10 @@
         "plugdev" # this is required (I think) for udiskie
         "docker" # non root access to docker
       ];
-      commonSpecialArgs = { inherit inputs commonGroups pkgs-unstable; };
+      commonSpecialArgs = {
+        nixarr_flake = inputs.nixarr;
+        inherit inputs commonGroups pkgs-unstable;
+      };
     in {
       nixosConfigurations = {
         # work laptop
