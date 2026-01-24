@@ -73,8 +73,9 @@ in {
     # hyprdynamicmonitors from custom github url
     inputs.hyprdynamicmonitors.packages.${pkgs.system}.default
 
-    ### keyboards
-    via
+
+    # video editing
+    shotcut
   ];
 
   # upower required for hyprdynamicmonitors
