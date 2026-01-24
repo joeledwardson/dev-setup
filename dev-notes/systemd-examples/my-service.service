@@ -1,0 +1,6 @@
+[Unit]
+Description=My Simple Hello World Service
+
+[Service]
+Type=oneshot
+ExecStart=/home/jollof/coding/dev-setup/systemd-examples/hello_service.sh

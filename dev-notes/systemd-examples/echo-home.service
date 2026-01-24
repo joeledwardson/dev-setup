@@ -1,0 +1,12 @@
+[Unit]
+Description=Demo: echo home directory
+
+[Service]
+Type=oneshot
+# This WON'T work - $HOME doesn't expand in unit files:
+# ExecStart=/bin/sh -c 'echo "HOME var: $HOME"'
+# This WILL work - %h is systemd's home specifier:
+ExecStart=/bin/sh -c 'echo "Home is: %h, var is $HOME"'
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=My Echo Socket
+
+[Socket]
+ListenStream=8888
+# this is the magic! piece that links it to my-socket@.service
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

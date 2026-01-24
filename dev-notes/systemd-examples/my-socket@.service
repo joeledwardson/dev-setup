@@ -1,0 +1,7 @@
+[Unit]
+Description=Socket activated echo service
+
+[Service]
+ExecStart=/bin/bash -c "echo 'Hello from Systemd Socket! Type something and press Enter:'; cat"
+StandardInput=socket
+StandardOutput=socket
