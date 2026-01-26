@@ -1456,3 +1456,12 @@ Systemd creates the socket (socket activation), then passes FDs to dockerd. Both
 Docs:
 - lsof: https://man7.org/linux/man-pages/man8/lsof.8.html
 - ss: https://man7.org/linux/man-pages/man8/ss.8.html
+
+
+## API/HTTP requests client
+So having used postman in the past and wanting to move to a vim based giga-chad 💪 TUI will review the options:
+
+- atac: crashed on importing cloudflare openAPI schema (it is large but not great....)
+- posting: more promising but cloudflare uses openapi spec `3.0.3` and posting based off `openapi-pydantic` package which likes `3.1.x`
+- resto: 281 stars... last release 2022 
+- resterm: lets go

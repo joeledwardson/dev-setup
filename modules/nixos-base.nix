@@ -210,6 +210,7 @@
     awscli2
     grafana-loki # has logcli
     ansible
+    go-task # has taskfile
 
     ### video processing
     ffmpeg

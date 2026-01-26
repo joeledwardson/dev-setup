@@ -56,6 +56,7 @@
   "render-markdown.nvim": { "branch": "main", "commit": "07d088bf8bdadd159eb807b90eaee86a4778383f" },
   "satellite.nvim": { "branch": "main", "commit": "d6c681e3b01e45a899eae5569d0cf08849479683" },
   "schemastore.nvim": { "branch": "main", "commit": "806187c790d93625564708c286e16142d87a5cc9" },
+  "sort.nvim": { "branch": "main", "commit": "57127706a3a4cbe4b640b5ece3f5af1ffe9c05ce" },
   "telescope-file-browser.nvim": { "branch": "master", "commit": "3610dc7dc91f06aa98b11dca5cc30dfa98626b7e" },
   "telescope-fzf-native.nvim": { "branch": "main", "commit": "6fea601bd2b694c6f2ae08a6c6fab14930c60e2c" },
   "telescope-ui-select.nvim": { "branch": "master", "commit": "6e51d7da30bd139a6950adf2a47fda6df9fa06d2" },
@@ -76,5 +77,6 @@
   "vim-fugitive": { "branch": "master", "commit": "61b51c09b7c9ce04e821f6cf76ea4f6f903e3cf4" },
   "vim-sleuth": { "branch": "master", "commit": "be69bff86754b1aa5adcbb527d7fcd1635a84080" },
   "wezterm-types": { "branch": "main", "commit": "a1000dd3b2763e539c45982d0b7de507b265882e" },
-  "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
+  "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" },
+  "yanky.nvim": { "branch": "main", "commit": "04fc42b94305d94948c9c197f679336668af3292" }
 }

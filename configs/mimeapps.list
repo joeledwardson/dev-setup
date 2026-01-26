@@ -13,3 +13,12 @@ x-scheme-handler/https=brave-browser.desktop
 x-scheme-handler/sgnl=signal.desktop
 x-scheme-handler/signalcaptcha=signal.desktop
 x-scheme-handler/unknown=brave-browser.desktop
+image/jpeg=gimp.desktop
+image/webp=gimp.desktop
+image/png=gimp.desktop
+
+image/jpeg=gimp.desktop
+image/webp=gimp.desktop
+image/png=gimp.desktop
+x-scheme-handler/postman=Postman.desktop
+

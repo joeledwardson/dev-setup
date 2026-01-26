@@ -400,4 +400,23 @@ return {
   {
     'mfussenegger/nvim-ansible',
   },
+  {
+    'gbprod/yanky.nvim',
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+    keys = {
+      { '<leader>y', '<cmd>YankyRingHistory<cr>', mode = { 'n', 'x' }, desc = 'Open Yank History' },
+    },
+  },
+  {
+    'sQVe/sort.nvim',
+    config = function()
+      require('sort').setup {
+        -- Optional configuration overrides.
+      }
+    end,
+  },
 }
