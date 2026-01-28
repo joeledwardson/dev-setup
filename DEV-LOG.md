@@ -1895,3 +1895,20 @@ OURS = what I have
 THEIRS = what’s coming in
 CENTER = what I commit
 ```
+
+### Wincmd?
+So apparently `:tabdo` executes for each tab?
+
+Nice! so like
+```lua
+:tabdo :echo bufname()
+```
+
+Goes and prints bufname for each tab (active buffer)
+
+Ahhhh
+`:wincmd =` is the same as `C-W =` a window command...
+
+Interestingly, the reason the the `outline` escapes from this when its called (and graciously so, wouldn't want the outline taking up half the page horizontally...)
+
+It is the `winfixwidth` property that forces the win to stay constant (when `C-w =` is called)
