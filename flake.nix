@@ -89,6 +89,17 @@
             ./hosts/desktop-work/configuration.nix
           ];
         };
+
+        # streaming box
+        "streaming-server" = nixpkgs.lib.nixosSystem {
+          specialArgs = commonSpecialArgs;
+          modules = [
+            ./modules/nixos-base.nix
+            ./modules/nixos-desktop.nix
+            ./hosts/streaming-server/configuration.nix
+          ];
+        };
+
       };
 
     };
