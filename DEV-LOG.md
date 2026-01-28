@@ -1,7 +1,11 @@
+[toc]
+
 # Development Log
 A summary of not particularly concise thoughts, notes and rambles along the way of my development journey of setting up my PC.
 
 This is intended to be for ramblings that are not concise as notes to keep as reference points in the `README`, more rather a log of discoveries
+
+
 
 ## September 2025
 #### Shells
@@ -1354,8 +1358,7 @@ Well I'm finally getting round to trying to get my head round `-s` and `--` in b
 
 So.... `-s` is to take commands from stdinput. so with piping, can see without this it expects a file
 ```bash
-➜ joelyboy ~ bash echo hi
-/run/current-system/sw/bin/echo: /run/current-system/sw/bin/echo: cannot execute binary file
+➜ joelyboy ~ bash echo hi /run/current-system/sw/bin/echo: /run/current-system/sw/bin/echo: cannot execute binary file
 ➜ joelyboy ~
 ```
 ahhhh, not this didn't work as `-s` expects from STDIN but i passed them as arguments! so it just opens a shell
@@ -1458,10 +1461,437 @@ Docs:
 - ss: https://man7.org/linux/man-pages/man8/ss.8.html
 
 
-## API/HTTP requests client
+### API/HTTP requests client
 So having used postman in the past and wanting to move to a vim based giga-chad 💪 TUI will review the options:
 
 - atac: crashed on importing cloudflare openAPI schema (it is large but not great....)
 - posting: more promising but cloudflare uses openapi spec `3.0.3` and posting based off `openapi-pydantic` package which likes `3.1.x`
 - resto: 281 stars... last release 2022 
 - resterm: lets go
+
+### Nixarr setup
+Decided to go with nixarr (lets give it a try).
+
+At some point i would like to review using configarr or whatever its called to sync config files...
+
+Because i keep forgetting (and they changed the ports)... its:
+- radarr: 7878
+- prowlarr: 9696
+- sabnzbd: 6336 (changed from 8080)
+
+* Step 1 *
+so go to sabnzbd:6336 to setup.
+
+Newshosting is the ... download server?
+
+Then just add host `new.newhosting.com` - (then get username and pass - saved in bitwarden, can login to dashboard here: https://controlpanel.newshosting.com/customer/)
+
+important to note that on the newhosting dash [here](https://controlpanel.newshosting.com/customer/index.php) it states 30 max connections so in the [server config](http://localhost:6336/config/server/) i set the connections to 30
+
+* Step 2 *
+Using nzbgeek as the ... indexer?>
+
+Just have to go to prowlarr and add indexer...
+
+Can get API key from [here](https://nzbgeek.info/dashboard.php?myaccount) on nzbgeek but i think its the same as the password?
+
+
+* Step 3 *
+Have added in prowlarr apps [here](http://localhost:9696/settings/applications) radarr so that radarr can pull the indexer from prowlarr (i.e. just nzbgeek at the moment)
+
+* Step 4 *
+Go to [radarr download client](http://localhost:7878/settings/downloadclients) and add sabnzbd
+
+### Recyclarr
+So this is not in true NixOS style but its nice to have a tool to configure trash guides that is NOT through the UI.
+
+Configarr worth looking at after for a more "complete" declarative option
+
+### Radarr/Sonarr Quality System (Claude)
+
+The quality system can be confusing. Here's how it all fits together:
+
+**1. Quality Profile Structure:**
+
+```mermaid
+graph TD
+    QP["Quality Profile<br/>'HD-1080p'"]
+    QP --> SET["Settings"]
+    SET --> CUT["Cutoff: Bluray-1080p"]
+    SET --> UPG["Upgrades: Yes"]
+
+    QP --> RANK["Quality Rankings"]
+    RANK --> Q1["1. Bluray-1080p Remux"]
+    RANK --> Q2["2. Bluray-1080p"]
+    RANK --> Q3["3. WEB 1080p ←group"]
+    RANK --> Q4["4. HDTV-1080p"]
+```
+
+**2. Quality Groups (expand a ranking):**
+
+```mermaid
+graph TD
+    GRP["WEB 1080p<br/>(group)"]
+    GRP --> A["WEBDL-1080p"]
+    GRP --> B["WEBRip-1080p"]
+    GRP --> C["AMZN WEB-DL"]
+
+    NOTE["All treated as EQUAL<br/>no upgrade between them"]
+    style NOTE fill:#fff3cd
+```
+
+**3. Custom Formats:**
+
+```mermaid
+graph TD
+    CF["Custom Format<br/>'HD Bluray Tier 01'"]
+    CF --> COND["Conditions"]
+    COND --> C1["Source: Bluray"]
+    COND --> C2["Resolution: 1080p"]
+    COND --> C3["Group: FraMeSToR"]
+
+    COND --> LOGIC["ALL must match"]
+    LOGIC --> SCORE["+1800 score"]
+```
+
+**4. How matching works:**
+
+```mermaid
+graph TD
+    REL["Release filename"]
+    REL --> PARSE["Parser"]
+
+    PARSE --> P1["Source: Bluray"]
+    PARSE --> P2["Res: 1080p"]
+    PARSE --> P3["Remux: Yes"]
+
+    P1 --> CHECK["Check conditions"]
+    P2 --> CHECK
+    P3 --> CHECK
+
+    CHECK --> MATCH["All pass? → Apply score"]
+    CHECK --> FAIL["Any fail? → No score"]
+```
+
+**The Hierarchy:**
+
+| Level | What it is | Example |
+|-------|-----------|---------|
+| **Quality Profile** | Assigned to movie/show | "HD-1080p" |
+| **Quality** | Format+resolution | Bluray-1080p |
+| **Quality Group** | Equals within ranking | WEB 1080p |
+| **Custom Format** | Bonus/penalty scoring | "Tier 01" +1800 |
+| **Condition** | Rule in custom format | Source=Bluray |
+
+**The Big Picture - How It All Fits Together:**
+
+```mermaid
+graph TD
+    subgraph "A RELEASE (the file)"
+        REL["Movie.2024.1080p.BluRay.x264-GROUP"]
+        REL --> PROPS["Has properties:"]
+        PROPS --> SRC["Source"]
+        PROPS --> RES["Resolution"]
+        PROPS --> COD["Codec"]
+        PROPS --> RMX["Remux flag"]
+        PROPS --> GRP["Release Group"]
+        PROPS --> SVC["Service tag"]
+    end
+```
+
+**1. Source** = WHERE did the video come from?
+
+```mermaid
+graph TD
+    SOURCE["Source<br/>(origin of video)"]
+
+    SOURCE --> DISC["DISC sources"]
+    DISC --> BD["Bluray"]
+    DISC --> DVD["DVD"]
+
+    SOURCE --> WEB["WEB sources"]
+    WEB --> WEBDL["WEB-DL<br/>(direct download)"]
+    WEB --> WEBRIP["WEBRip<br/>(screen capture)"]
+
+    SOURCE --> TV["BROADCAST"]
+    TV --> HDTV["HDTV"]
+
+    SVC["Service tags<br/>(which streaming)"]
+    SVC --> NF["NF = Netflix"]
+    SVC --> AMZN["AMZN = Amazon"]
+    SVC --> DSNP["DSNP = Disney+"]
+
+    WEB -.->|"can have"| SVC
+```
+
+> **Bluray IS a source** - it means "ripped from a Bluray disc"
+>
+> **NF/AMZN are service tags** - they tell you WHICH streaming service, but the source is still "WEB"
+
+**2. Remux** = a FLAG, not a source
+
+```mermaid
+graph TD
+    DISC["Disc Source<br/>(Bluray/DVD)"]
+    DISC --> CHOICE{"Re-encoded?"}
+
+    CHOICE -->|"NO"| REMUX["REMUX<br/>exact copy, huge file"]
+    CHOICE -->|"YES"| ENCODE["Encode<br/>compressed, smaller"]
+
+    ENCODE --> CODEC["Codec used:"]
+    CODEC --> X264["x264"]
+    CODEC --> X265["x265/HEVC"]
+```
+
+> Remux only applies to disc sources. WEB-DL is already "not re-encoded" but we don't call it remux.
+
+**3. How Radarr builds a "Quality":**
+
+```mermaid
+graph LR
+    QUAL["Quality in Radarr"]
+    QUAL --> FORMULA["= Source + Resolution"]
+
+    FORMULA --> EX1["Bluray-1080p"]
+    FORMULA --> EX2["WEBDL-1080p"]
+    FORMULA --> EX3["Bluray-2160p Remux"]
+    FORMULA --> EX4["HDTV-720p"]
+```
+
+> A "Quality" is just Source + Resolution combined. Radarr has ~30 built-in qualities.
+
+**4. The Full Tree:**
+
+```mermaid
+graph TD
+    PROFILE["Quality Profile<br/>'HD-1080p'"]
+
+    PROFILE --> QUALS["List of Qualities<br/>(ranked best→worst)"]
+    PROFILE --> CFS["Custom Format Scores<br/>(bonus/penalty)"]
+    PROFILE --> SETTINGS["Settings<br/>(cutoff, upgrades)"]
+
+    QUALS --> Q1["Bluray-1080p Remux"]
+    QUALS --> Q2["Bluray-1080p"]
+    QUALS --> QGRP["WEB 1080p ← GROUP"]
+    QUALS --> Q4["HDTV-1080p"]
+
+    QGRP --> QG1["WEBDL-1080p"]
+    QGRP --> QG2["WEBRip-1080p"]
+
+    CFS --> CF1["HD Bluray Tier 01: +1800"]
+    CFS --> CF2["NF: +50"]
+    CFS --> CF3["BR-DISK: -10000"]
+```
+
+**Quality Groups explained:**
+
+A group bundles multiple qualities as EQUAL rank. Inside a group, no upgrades happen between members.
+
+```
+Quality Group: "WEB 1080p"
+├── WEBDL-1080p   ─┐
+├── WEBRip-1080p  ─┼── all scored the SAME
+└── (any WEB src) ─┘
+
+Won't upgrade WEBRip → WEBDL
+But custom formats CAN still prefer one via scoring
+```
+
+**5. Where do Custom Formats come from?**
+
+```mermaid
+graph TD
+    CF["Custom Formats"]
+    CF --> SRC1["Create manually in UI"]
+    CF --> SRC2["Import via Recyclarr"]
+    CF --> SRC3["Import JSON from Trash Guides"]
+
+    SRC2 --> TG["Trash Guides"]
+    SRC3 --> TG
+
+    TG --> TIERS["Defines Tier 01/02/03<br/>based on release group reputation"]
+```
+
+> Custom Formats are just pattern matchers YOU define (or import). They scan release names and add/subtract scores.
+
+**6. NF: Source vs Custom Format - what's the difference?**
+
+```
+RELEASE: "Movie.2024.1080p.NF.WEB-DL.x264-GROUP"
+                          │
+         Parser extracts: │
+                          ▼
+┌─────────────────────────────────────────────┐
+│ Source: WEB-DL        ← Radarr built-in     │
+│ Resolution: 1080p     ← Radarr built-in     │
+│ Quality: WEBDL-1080p  ← Source + Resolution │
+└─────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────┐
+│ Custom Format "NF" checks:                  │
+│   Condition: title contains "NF"? YES       │
+│   → Apply score: +50                        │
+└─────────────────────────────────────────────┘
+
+Final score = Quality rank + Custom Format scores
+```
+
+> "NF" in the filename is just text. The Custom Format "NF" is a rule that DETECTS that text and adds score.
+
+**Jargon Summary Table:**
+
+| Term | Category | Meaning |
+|------|----------|---------|
+| Bluray | Source | From physical disc |
+| WEB-DL | Source | Direct stream download |
+| WEBRip | Source | Screen captured stream |
+| HDTV | Source | TV broadcast capture |
+| Remux | Flag | No re-encoding (disc only) |
+| x264/x265 | Codec | Compression method |
+| 1080p/2160p | Resolution | Pixel dimensions |
+| NF/AMZN/DSNP | Service tag | Which streaming platform |
+| FraMeSToR | Release group | Team that made the release |
+| Tier 01/02/03 | Trash Guide rank | Quality ranking of groups |
+
+**Filename example decoded:**
+
+```
+Movie.2024.1080p.BluRay.REMUX.AVC.TrueHD.7.1-FraMeSToR
+       │    │      │     │    │    │   │      │
+       │    │      │     │    │    │   │      └── Release group
+       │    │      │     │    │    │   └── Audio channels
+       │    │      │     │    │    └── Audio codec
+       │    │      │     │    └── Video codec
+       │    │      │     └── Remux flag (not re-encoded)
+       │    │      └── Source: disc
+       │    └── Resolution
+       └── Year
+```
+
+**Scoring Example:**
+
+In your quality profile, custom formats get scores:
+
+| Custom Format | Score | Description |
+|--------------|-------|-------------|
+| HD Bluray Tier 01 | +1800 | Best encode groups (FraMeSToR, etc) |
+| HD Bluray Tier 02 | +1050 | Good encode groups |
+| HD Bluray Tier 03 | -1000 | Lower quality encodes |
+| BR-DISK | -10000 | Avoid raw disc rips |
+
+When a release matches multiple formats, scores ADD UP. Higher total = preferred.
+
+**Cutoff vs Upgrade:**
+
+```
+Current: WEB-1080p (score: 500)
+Cutoff:  Bluray-1080p (score: 1000)
+
+→ Will upgrade to Bluray because current < cutoff
+
+New release: Bluray-1080p + "Tier 01" format (+1800)
+Total score: 1000 + 1800 = 2800
+
+→ Upgrades because new score > current score
+```
+
+**Why Groups?**
+
+Quality groups treat multiple sources as equivalent. E.g., "WEB 1080p" group:
+- WEBDL-1080p (Netflix direct)
+- WEBRip-1080p (screen capture)
+- AMZN WEB-DL
+
+All ranked the SAME. Won't upgrade WEBRip→WEBDL, but custom format scores can still prefer one.
+
+Docs: https://wiki.servarr.com/radarr/settings#quality-profiles
+
+### Quality profiles (my notes)
+Well.... what claude wrote is... verbose....
+
+Will try to simplify my best i can do
+
+```mermaid
+graph TD
+A[Quality Profile\nHD Bluray + WEB];
+A --> B[Qualities List];
+B --> C[Bluray-1080p];
+B --> D[WEB 1080p group];
+B --> E[Bluray-720p];
+
+D --> G[WEBDL-1080p];
+D --> H[WEBRip-1080p];
+
+A --> S[Scoring];
+S --> T1[HD Bluray Tier 01\n+1800 good score];
+
+T1 --> C1[Not remux\ngood as remux is massive];
+T1 --> C2[BLURAY\nmust be from bluray disk];
+T1 --> C3[Not 2160p\nI guess dont want massive res];
+
+S -->T2[x265\n-1000 bad score, 265 heavy processing];
+T2 --> C4[x265\nmust be encoded with x265];
+```
+
+
+### Git diffs
+So have played around with diffs in neovim but nevery really understood how it worked....
+
+Got ChatGPT to outline a super simple repo to play around with the `DiffView` extension.
+
+I think I understand now that 
+```
+BASE   = common ancestor
+OURS   = your current branch (HEAD)
+THEIRS = incoming change
+```
+
+Where theirs e.g. is when we pop a stash (i.e. what the stash "wants")
+
+`BASE` is a bit misleading... it's in most cases (I can see) the starting point of a stash (i.e. what it was before the stash was done). But that is NOT the same as the prior commit to OURS! I guess its more the last time that `OURS` and `THEIRS` was the same? (makes more sense below)
+
+This is the example
+
+```bash
+git init
+echo "line 1" > file.txt
+echo "line 2" >> file.txt
+git add file.txt
+git commit -m "base"
+
+# create stash
+echo "line 2 - stash change" > file.txt
+echo "line 3 from stash" >> file.txt
+git stash push -m "stash version"
+
+# create branch change
+echo "line 2 - branch change" > file.txt
+echo "line 3 from branch" >> file.txt
+git commit -am "branch change"
+
+# apply stash (conflict)
+git stash apply
+```
+
+(I have added a prefix for the git stuff so it doesnt think theres a conflict here)
+```
+XXXX <<<<<<< Updated upstream        ← OURS (branch / HEAD)
+line 2 - branch change
+line 3 from branch
+XXXX ||||||| Stash base              ← BASE (common ancestor)
+line 1
+line 2
+XXXX =======
+line 2 - stash change           ← THEIRS (stash)
+line 3 from stash
+XXXX >>>>>>> Stashed changes
+```
+
+And as ChatGPT puts it...
+```
+BASE = where both started
+OURS = what I have
+THEIRS = what’s coming in
+CENTER = what I commit
+```

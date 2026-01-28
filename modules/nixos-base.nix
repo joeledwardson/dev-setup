@@ -184,6 +184,7 @@
     graphviz # required for madge npm package
     tomato-c # pomodoro
     ncdu
+    tmuxai
 
     ### CLI tools
     tldr

@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-args@{ config, commonGroups, ... }:
+args@{ pkgs, config, commonGroups, ... }:
 
 {
   imports = [
@@ -49,6 +49,7 @@ args@{ config, commonGroups, ... }:
     prowlarr.enable = true;
     sonarr.enable = true;
     radarr.enable = true;
+    plex.enable = true;
 
     # Optional: VPN for downloads
     # vpn.enable = true;
@@ -116,7 +117,7 @@ args@{ config, commonGroups, ... }:
     description = "jollof";
     initialPassword = "password";
     extraGroups = commonGroups;
-    packages = [ ];
+    packages = [ pkgs.recyclarr ];
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" ];
