@@ -31,6 +31,21 @@ args@{ pkgs, config, commonGroups, ... }:
     };
   };
 
+  # =======================================
+  # Virtualisation Configuration
+  # =======================================
+  # add VM support
+  environment.systemPackages = with pkgs; [ vagrant ];
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      qemu.swtpm.enable = true; # TPM support
+      onBoot = "ignore"; # Don't auto-start VMs on boot
+    };
+    spiceUSBRedirection.enable = true;
+  };
+  programs.virt-manager.enable = true;
+
   # # =======================================
   # # Media server (for testing)
   # # =======================================

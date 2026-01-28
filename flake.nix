@@ -95,7 +95,6 @@
           specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
-            ./modules/nixos-desktop.nix
             ./hosts/streaming-server/configuration.nix
           ];
         };
