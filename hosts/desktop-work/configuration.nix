@@ -41,7 +41,13 @@
   };
 
   networking.hostName = "desktop-work"; # Define your hostname.
+  services.tailscale.enable = true;
+  programs.obs-studio = {
+    enable = true;
 
+    # optional Nvidia hardware acceleration
+    package = (pkgs.obs-studio.override { cudaSupport = true; });
+  };
   # add timescale to postgres extensions
   # services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
   # services.postgresql.extensions = ps: [
