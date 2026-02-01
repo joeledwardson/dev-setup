@@ -21,4 +21,5 @@ image/jpeg=gimp.desktop
 image/webp=gimp.desktop
 image/png=gimp.desktop
 x-scheme-handler/postman=Postman.desktop
+x-scheme-handler/webcal=brave-browser.desktop
 

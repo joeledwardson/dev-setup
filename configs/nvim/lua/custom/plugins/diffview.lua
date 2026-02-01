@@ -7,6 +7,7 @@ return {
         -- Optional: Add any specific configuration here
       }
     end,
+    lazy = false,
     keys = {
       {
         '<leader>tv',
