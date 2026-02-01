@@ -98,6 +98,9 @@ if command -v aws >/dev/null; then setup-aws; fi
 # setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
 
+# kitty ssh
+alias s="kitten ssh"
+
 # nvim alias to clear session and start
 alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_session()'"
 

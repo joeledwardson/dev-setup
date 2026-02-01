@@ -67,6 +67,9 @@ args@{ pkgs, config, commonGroups, ... }:
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "streamer" ];
+
+  # kitty terminal support for SSH
+  environment.systemPackages = [ pkgs.kitty.terminfo ];
   services.syncthing.user = "streamer";
 
 }
