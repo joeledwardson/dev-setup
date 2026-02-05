@@ -1912,3 +1912,12 @@ Ahhhh
 Interestingly, the reason the the `outline` escapes from this when its called (and graciously so, wouldn't want the outline taking up half the page horizontally...)
 
 It is the `winfixwidth` property that forces the win to stay constant (when `C-w =` is called)
+
+## February 2026
+### Timescale DB NixOS
+Strange bug.... cannot rebuild nixos with timescale DB as `postgresql-setup.service` hangs.. (never comples).
+
+Have to:
+1. go into `localhost` postgres and drop `timescaledb` and `timescaledb_toolkit` extensions
+2. rebuild nixos
+3. go back into `localhost` and re-install extensions
