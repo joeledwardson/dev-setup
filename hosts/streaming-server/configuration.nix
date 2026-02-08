@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-args@{ pkgs, config, commonGroups, ... }:
+args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
 
 {
   imports = [
@@ -63,7 +63,7 @@ args@{ pkgs, config, commonGroups, ... }:
     description = "jollof";
     initialPassword = "password";
     extraGroups = commonGroups;
-    packages = [ pkgs.recyclarr ];
+    packages = with pkgs; [ recyclarr pkgs-unstable.stremio ];
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "streamer" ];
