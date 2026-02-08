@@ -94,8 +94,6 @@ if command -v gh >/dev/null; then source <(gh completion -s zsh); fi
 if command -v fzf >/dev/null; then source <(fzf --zsh); fi
 if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
 if command -v aws >/dev/null; then setup-aws; fi
-
-# setup direnv
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
 
 # kitty ssh

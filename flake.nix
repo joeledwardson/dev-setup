@@ -19,7 +19,11 @@
       mySystem = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
         system = mySystem;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          # this is required for stremio (some nixos nonsense IDK)
+          permittedInsecurePackages = [ "qtwebengine-5.15.19" ];
+        };
         overlays = [ nur.overlays.default ];
       };
       commonGroups = [

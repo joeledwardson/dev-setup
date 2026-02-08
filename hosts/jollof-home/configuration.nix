@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-args@{ pkgs, config, commonGroups, ... }:
+args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
 
 {
   imports = [
@@ -34,8 +34,8 @@ args@{ pkgs, config, commonGroups, ... }:
   # =======================================
   # Virtualisation Configuration
   # =======================================
-  # add VM support
-  environment.systemPackages = with pkgs; [ vagrant ];
+  # add VM support (vagrant) and test out stremio for streaming server
+  environment.systemPackages = with pkgs; [ vagrant pkgs-unstable.stremio ];
   virtualisation = {
     libvirtd = {
       enable = true;
