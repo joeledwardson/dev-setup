@@ -134,6 +134,7 @@
     audit # give auditctl
     tcpdump
     nmap
+    httpie # nice terminal alternative to postman
 
     # hardware tools
     lm_sensors # temperature monitoring
@@ -151,6 +152,7 @@
     nix-du
     devenv
     nix-index
+    nix-inspect
 
     ### disk management
     udiskie # for status bar disks
