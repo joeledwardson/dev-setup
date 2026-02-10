@@ -82,6 +82,7 @@ util() {
     else
       echo "tpm already installed"
     fi
+    tmux source-file ~/.config/tmux/tmux.conf
     echo "done!"
     ;;
   dotfiles)
