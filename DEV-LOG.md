@@ -1467,7 +1467,15 @@ So having used postman in the past and wanting to move to a vim based giga-chad 
 - atac: crashed on importing cloudflare openAPI schema (it is large but not great....)
 - posting: more promising but cloudflare uses openapi spec `3.0.3` and posting based off `openapi-pydantic` package which likes `3.1.x`
 - resto: 281 stars... last release 2022 
-- resterm: lets go
+- resterm: lets go: still struggling with errors trying to import metabase openAPI json (which IS a valid openapi `3.1` so I assume same problem as the others, not updated for latest)
+- openapi-tui: 
+- atac (UPDATE): trying v0.22.1 from unstable nix packages: same issue with metabase API....
+- resterm (UPDATE): trying v0.21.3 from unstable nix packages: same problem
+- openapi-tui: DOES work for `v.3.1` openapi BUT i try the `:send` command and nothing happens....
+
+Ok, this seems to be a common theme... found a [link here](https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0) that explains `exclusiveMinimum` which seems to be plaguing these TUIs
+
+So... lets try a down-converter for openapi?
 
 ### Nixarr setup
 Decided to go with nixarr (lets give it a try).
