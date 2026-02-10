@@ -208,6 +208,9 @@ bindkey '^P' up-history          # Ctrl-P for previous command
 bindkey '^?' backward-delete-char
 bindkey '^W' backward-kill-word  # This will use WORDCHARS
 
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line  # Ctrl+x Ctrl+e (standard)
 
 autoload -U select-word-style
 
