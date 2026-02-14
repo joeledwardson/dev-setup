@@ -1,0 +1,102 @@
+# https://taskfile.dev/
+version: '3'
+
+vars:
+  WIN_DIR: win
+  WINGET_FILE: '{{.WIN_DIR}}/winget.json'
+  SCOOP_FILE: '{{.WIN_DIR}}/scoop.json'
+  BRAVE_FILE: '{{.HOME}}/.config/BraveSoftware/Brave-Browser/Default/Preferences'
+  BRAVE_WORK: '{{.HOME}}/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences'
+
+tasks:
+  restart-hyprland:
+    internal: true
+    preconditions:
+      - command -v hyprctl
+      - test -n "$HYPRLAND_INSTANCE_SIGNATURE"
+    cmds:
+      - hyprctl reload
+
+  os:
+    desc: Rebuild NixOS configuration
+    cmds:
+      - sudo nixos-rebuild switch --flake .
+      - task: restart-hyprland
+
+  dotfiles:
+    desc: Run dotbot and setup hyprland config
+    cmds:
+      - git submodule update --init
+      - dotbot -c install.conf.yaml
+      - task: restart-hyprland
+
+  yazi:
+    desc: Install yazi plugins
+    cmds:
+      - ya pkg install
+
+  tpm:
+    desc: Setup tmux plugin manager
+    cmds:
+      - git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+      - tmux source-file ~/.config/tmux/tmux.conf
+    status:
+      - test -e "$HOME/.tmux/plugins/tpm"
+
+  clean:
+    desc: Clean nix garbage
+    cmds:
+      - nix-collect-garbage -d
+
+  toc:
+    desc: Run doctoc on README
+    cmds:
+      - doctoc README.md
+
+  winpush:
+    desc: Export Windows packages
+    cmds:
+      - mkdir -p {{.WIN_DIR}}
+      - winget export --nowarn --output "{{.WINGET_FILE}}" --include-versions
+      - scoop export > "{{.SCOOP_FILE}}"
+
+  winpull:
+    desc: Import Windows packages
+    preconditions:
+      - test -f "{{.WINGET_FILE}}"
+      - test -f "{{.SCOOP_FILE}}"
+    cmds:
+      - winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "{{.WINGET_FILE}}"
+      - scoop import "{{.SCOOP_FILE}}"
+
+  copybrave:
+    desc: Copy Brave preferences to scratchpads
+    preconditions:
+      - test -f "{{.BRAVE_FILE}}"
+    cmds:
+      - mkdir -p scratchpads
+      - cp "{{.BRAVE_FILE}}" ./scratchpads/brave-preferences.json
+      - cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
+
+  applybrave:
+    desc: Apply custom configs to Brave
+    preconditions:
+      - test -f "{{.BRAVE_FILE}}"
+    cmds:
+      - |
+        myfile=$(mktemp)
+        jq -s '.[0] * .[1]' "{{.BRAVE_FILE}}" ./configs/brave/custom.json > "$myfile"
+        mv "$myfile" "{{.BRAVE_FILE}}"
+      - |
+        workfile=$(mktemp)
+        jq -s '.[0] * .[1]' "{{.BRAVE_WORK}}" ./configs/brave/custom.json > "$workfile"
+        mv "$workfile" "{{.BRAVE_WORK}}"
+
+  all:
+    desc: Run all setup commands
+    cmds:
+      - task: os
+      - task: dotfiles
+      - task: yazi
+      - task: tpm
+      - task: applybrave
