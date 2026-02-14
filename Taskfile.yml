@@ -1,15 +1,15 @@
 # https://taskfile.dev/
-version: '3'
+version: "3"
 
 vars:
   WIN_DIR: win
-  WINGET_FILE: '{{.WIN_DIR}}/winget.json'
-  SCOOP_FILE: '{{.WIN_DIR}}/scoop.json'
-  BRAVE_FILE: '{{.HOME}}/.config/BraveSoftware/Brave-Browser/Default/Preferences'
-  BRAVE_WORK: '{{.HOME}}/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences'
+  WINGET_FILE: "{{.WIN_DIR}}/winget.json"
+  SCOOP_FILE: "{{.WIN_DIR}}/scoop.json"
+  BRAVE_FILE: "{{.HOME}}/.config/BraveSoftware/Brave-Browser/Default/Preferences"
+  BRAVE_WORK: "{{.HOME}}/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences"
 
 tasks:
-  restart-hyprland:
+  hyprland:
     internal: true
     preconditions:
       - command -v hyprctl
@@ -91,6 +91,14 @@ tasks:
         workfile=$(mktemp)
         jq -s '.[0] * .[1]' "{{.BRAVE_WORK}}" ./configs/brave/custom.json > "$workfile"
         mv "$workfile" "{{.BRAVE_WORK}}"
+
+  dev:build:
+    desc: Build dev container
+    cmd: docker build --file dev-image/Dockerfile.dev -t dev-image --progress=plain .
+
+  dev:container:
+    desc: Run a dev container
+    cmd: docker run -it -v ~/.claude:/root/.claude dev-image:latest zsh
 
   all:
     desc: Run all setup commands

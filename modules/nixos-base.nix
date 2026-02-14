@@ -270,11 +270,12 @@
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.claude-code # always want latest claude code
-    # withPlugins not available on 25.05
-    (pkgs-unstable.llm.withPlugins {
-      llm-anthropic = true;
-      llm-openai-plugin = true;
-    })
+
+    # UPDATE 2026-02: remove as it breaks in lastest version - not really using it atm
+    # (pkgs-unstable.llm.withPlugins {
+    #   llm-anthropic = true;
+    #   llm-openai-plugin = true;
+    # })
 
     ### user packages
     pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server

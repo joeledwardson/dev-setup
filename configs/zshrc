@@ -202,6 +202,12 @@ bindkey "^[[1;5D" backward-word
 bindkey '^N' down-history        # Ctrl-N for next command
 bindkey '^P' up-history          # Ctrl-P for previous command
 
+# if in xterm (not kitty or other proper terminal), it wont automatically bind these
+bindkey "^[[H" beginning-of-line   # Home
+bindkey "^[[F" end-of-line         # End
+bindkey "^[OH" beginning-of-line   # Home (application mode)
+bindkey "^[OF" end-of-line         # End (application mode)
+
 # otherwise cant delete words if pasted over new lines
 bindkey '^?' backward-delete-char
 bindkey '^W' backward-kill-word  # This will use WORDCHARS
@@ -286,7 +292,6 @@ function tmux_precmd() {
 
 zvm_vi_yank () {
 	zvm_yank
-  echo "pls"
 	printf %s "${CUTBUFFER}" | wl-copy
 	zvm_exit_visual_mode
 }

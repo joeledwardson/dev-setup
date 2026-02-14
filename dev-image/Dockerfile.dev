@@ -1,0 +1,73 @@
+FROM alpine:3.23.3
+ENV HOME=/root
+WORKDIR $HOME
+
+# libstdc++ needed for claude code
+RUN apk add bash curl libstdc++
+# this takes forever to run so do it first
+RUN curl -sSL https://claude.ai/install.sh | bash
+
+# add alpine packages (see ./modules/nixos-base.nix for my default headless packages)
+# this is a trimmed down set to keep the container small-ish
+RUN apk add \
+zsh \
+fzf \
+git \
+eza \
+man-pages \
+tmux \
+direnv \
+jq \
+fastfetch \
+fd \
+github-cli \
+ripgrep \
+vim \
+neovim \
+wget \
+unzip \
+net-tools \
+file \
+socat \
+bat \
+uv \ 
+yazi \
+skim \
+delta \
+ncurses # could be useful for terminal info
+
+# going to ignore navi for now as its annoying with its initial prompt to import
+# navi \ 
+# skim # needed by navi but not bundled by apk
+
+
+# see https://sheldon.cli.rs/Installation.html#pre-built-binaries
+RUN curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+    | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+
+ENV ZDOTDIR=$HOME/.config/zsh
+ENV PATH="$HOME/.local/bin:$PATH"
+ENV EDITOR=vim
+
+RUN uv tool install dotbot
+RUN git clone https://github.com/joeledwardson/dev-setup.git
+
+# setup dotbot plugins
+RUN cd $HOME/dev-setup && git submodule update --init
+# run dotbot
+RUN cd $HOME/dev-setup && dotbot -c install.conf.yaml
+
+
+# change default shell (see https://wiki.alpinelinux.org/wiki/Shell_management)
+RUN apk add shadow
+RUN chsh root -s "$(which zsh)"
+
+# load zsh plugins
+RUN sheldon lock
+
+# dont run initial prompt for login, see here: https://tessl.io/blog/configuring-claude-code/
+COPY dev-image/claude.json $HOME/.claude.json
+
+# claude yolo alias
+COPY dev-image/zshrclocal $HOME/.config/zshrclocal
+
