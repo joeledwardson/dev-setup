@@ -66,8 +66,8 @@ RUN chsh root -s "$(which zsh)"
 RUN sheldon lock
 
 # dont run initial prompt for login, see here: https://tessl.io/blog/configuring-claude-code/
-COPY dev-image/claude.json $HOME/.claude.json
+COPY ./claude.json $HOME/.claude.json
 
 # claude yolo alias
-COPY dev-image/zshrclocal $HOME/.config/zshrclocal
+COPY ./zshrclocal $HOME/.config/zshrclocal
 

@@ -94,7 +94,7 @@ tasks:
 
   dev:build:
     desc: Build dev container
-    cmd: docker build --file dev-image/Dockerfile.dev -t dev-image --progress=plain .
+    cmd: docker build --file dev-image/Dockerfile.dev -t dev-image --progress=plain dev-image
 
   dev:container:
     desc: Run a dev container
