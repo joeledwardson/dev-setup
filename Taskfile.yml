@@ -21,14 +21,14 @@ tasks:
     desc: Rebuild NixOS configuration
     cmds:
       - sudo nixos-rebuild switch --flake .
-      - task: restart-hyprland
+      - task: hyprland
 
   dotfiles:
     desc: Run dotbot and setup hyprland config
     cmds:
       - git submodule update --init
       - dotbot -c install.conf.yaml
-      - task: restart-hyprland
+      - task: hyprland
 
   yazi:
     desc: Install yazi plugins
