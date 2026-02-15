@@ -95,6 +95,7 @@ if command -v fzf >/dev/null; then source <(fzf --zsh); fi
 if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
 if command -v aws >/dev/null; then setup-aws; fi
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
+if command -v zoxide >/dev/null; then eval "$(zoxide init zsh)"; fi
 
 # kitty ssh
 alias s="kitten ssh"

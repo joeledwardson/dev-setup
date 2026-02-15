@@ -216,6 +216,8 @@
     grafana-loki # has logcli
     ansible
     go-task # has taskfile
+    zellij # to eventually replace tmux
+    zoxide
 
     ### video processing
     ffmpeg

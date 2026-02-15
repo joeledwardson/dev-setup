@@ -10,6 +10,8 @@ RUN curl -sSL https://claude.ai/install.sh | bash
 # add alpine packages (see ./modules/nixos-base.nix for my default headless packages)
 # this is a trimmed down set to keep the container small-ish
 RUN apk add \
+openssh-keygen \
+openssh-client \
 zsh \
 fzf \
 git \
