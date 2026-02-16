@@ -1,0 +1,17 @@
+# claude code in YOLO mode: see https://github.com/anthropics/claude-code/issues/9184#issuecomment-3594539302
+alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
+
+# ANSI CSI (Control Sequence Introducer) crash course:
+# \e[  = ESI escape (also \033[ or \x1b[)
+# Then semicolon-separated codes, closed with 'm':
+#   0 = reset all    1 = bold       2 = dim
+#   31-37 = FG colors (red,green,yellow,blue,magenta,cyan,white)
+#   91-97 = bright versions of above
+# Example: \e[1;36m = bold + cyan
+echo ""
+echo -e "\e[1;35m  Welcome to jollof's sandbox container!\e[0m"
+echo ""
+echo -e "  To give claude god tier permissions, run: \e[1;96myolo-claude\e[0m"
+echo ""
+echo -e "  \e[2;32menjoy ✨\e[0m"
+echo ""

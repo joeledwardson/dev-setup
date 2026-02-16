@@ -1937,3 +1937,13 @@ because i always forget, to enable and disable auto-formatting (conform) for a s
 :FormatDisable!
 :FormatEnable!
 ```
+
+### Vim mode ZSH
+Well after many hours of searching, i found out why by default a docker container does NOT support vim mode in ZSH (I never installed the zsh vi mode plugin as it's glitchy).
+
+Turns out we need the `EDITOR` variable if its set to vim or something like `vi` ZSH will enable vim bindings... 😆
+
+> Docer here: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html
+
+### Migration to taskfile
+Need to update my readme at some point, have moved from utility script to `Taskfile`

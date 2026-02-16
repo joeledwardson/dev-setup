@@ -4,5 +4,8 @@
       "WebFetch",
       "WebSearch"
     ]
+  },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
   }
 }
