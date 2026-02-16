@@ -1929,3 +1929,11 @@ Have to:
 1. go into `localhost` postgres and drop `timescaledb` and `timescaledb_toolkit` extensions
 2. rebuild nixos
 3. go back into `localhost` and re-install extensions
+
+
+### Autoformat enabling and disabling
+because i always forget, to enable and disable auto-formatting (conform) for a specific buffer
+```vim
+:FormatDisable!
+:FormatEnable!
+```
