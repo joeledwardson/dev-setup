@@ -213,6 +213,7 @@
     terraform
     skopeo # useful for searching remote docker tags (required for video consumer)
     awscli2
+    ssm-session-manager-plugin
     grafana-loki # has logcli
     ansible
     go-task # has taskfile

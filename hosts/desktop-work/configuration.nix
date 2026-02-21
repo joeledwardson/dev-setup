@@ -103,7 +103,7 @@
     initialPassword = "password";
     # add libvrtd groups (see https://wiki.nixos.org/wiki/Virt-manager)
     extraGroups = commonGroups ++ [ "libvirtd" ];
-    packages = [ ];
+    packages = with pkgs; [ drawio ];
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "joelyboy" ];
