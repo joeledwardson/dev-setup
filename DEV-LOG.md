@@ -1947,3 +1947,17 @@ Turns out we need the `EDITOR` variable if its set to vim or something like `vi`
 
 ### Migration to taskfile
 Need to update my readme at some point, have moved from utility script to `Taskfile`
+
+### Recap on magic mode replacements
+gosh. i alwasy forget this. the magic modes by deafult escape *most* (except brackets and stuff. definitely star * symbol)
+
+So for an example i wanted to do - replace all non star with star (realised i could have just replaced all chars would have been simpler but whatever, skill issue)
+
+| Mode | Command Syntax | The "Magic" Logic |
+|------|---------------|-------------------|
+| Very Magic (`\v`) | `:%s/\v[^*]/*/g` | High Octane: No backslash needed. Inside `[]`, the `*` is assumed to be literal. The `\v` at the start makes the brackets "live" automatically. |
+| Magic (`\m`) | `:%s/[^*]/*/g` | The Default: This is what you used. Brackets are special by default, but the `*` inside them is treated as a literal character. |
+| Nomagic (`\M`) | `:%s/\[^*\]/*/g` | Old School: You have to escape the brackets `\[ \]` to make them act as a "set." Otherwise, Vim looks for a literal `[` character. |
+| Very Nomagic (`\V`) | `:%s/\V[^*]/*/g` | Literal Mode: Almost everything is literal. Surprisingly, `[ ]` still work as a set here, but the `*` is strictly a character. |
+
+

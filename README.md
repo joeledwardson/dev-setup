@@ -294,15 +294,17 @@ sudo ls -la /var/lib/syncthing/Sync
 ### Work VPN setup
 I have put my work VPN in syncthing which can be imported by network manager as a ovpn configuration file.
 
+> UPDATE FEBRUARY 2026 - password is now based on jumpcloud! and user is JoelEdwardson
+
 Script below imports 
 ```bash
-read -r VPN_PASS
-if [[ -z "$VPN_PASS" ]]; then
+if [[ -z "$VPN_PATH" ]]; then
+  echo "no VPN_PATH found"
+else if [[ -z "$VPN_PASS" ]]; then
   echo "no password provided"
 else
-  nmcli c import type openvpn file /var/lib/syncthing/Sync/work.ovpn
-  nmcli c show work
-  nmcli c modify work vpn.user-name Joel_Edwardson
+  nmcli c import type openvpn file "$VPN_PATH"
+  nmcli c modify work vpn.user-name JoelEdwardson
   nmcli c modify work vpn.secrets "password=$VPN_PASS"
   nmcli c modify work +vpn.data "password-flags=0"
   nmcli c modify work ipv4.dns "8.8.8.8 1.1.1.1"
