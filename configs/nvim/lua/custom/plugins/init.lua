@@ -46,6 +46,29 @@ vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 -- remap D to delete to null buffer
 vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
 
+--- remap custom fold
+vim.keymap.set('n', 'zX', function()
+  -- get current line number
+  local lineNumber = vim.fn.line '.'
+  -- if above a closed fold then just open, works fine
+  local foldClosedLine = vim.fn.foldclosed(lineNumber)
+  if foldClosedLine ~= -1 then
+    vim.cmd 'normal! zO'
+    return
+  end
+
+  -- if current line higher fold number then we ARE on a fold and need to close it before opening
+  local currentFoldIndex = vim.fn.foldlevel(lineNumber)
+  local aboveFoldIndex = vim.fn.foldlevel(lineNumber - 1)
+  if currentFoldIndex > aboveFoldIndex then
+    vim.cmd 'normal! zczO'
+    return
+  end
+
+  -- not sure whats going on here, not on a closed or open fold
+  vim.notify('no fold to open!', vim.log.levels.WARN)
+end, { desc = 'jollof recursive fold opener' })
+
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
 vim.api.nvim_create_autocmd('BufEnter', {
   pattern = { '*.service', '*.socket', '*.mount', '*.device', '*.nspawn', '*.target', '*.timer' },

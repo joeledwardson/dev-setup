@@ -1998,3 +1998,68 @@ Similarly, can test it with
 ```lua
 echo v:lua.vim.treesitter.foldexpr(line('.'))
 ```
+
+#### foldlevel / foldlevelstart
+
+`foldlevel` is the **active threshold** for a buffer — folds deeper than N are closed.
+
+```
+foldlevel=0   → all folds closed
+foldlevel=1   → only level-1 folds open
+foldlevel=99  → everything open
+```
+
+`foldlevelstart` sets the initial `foldlevel` when a buffer opens. Default is 0 (all closed).
+
+```lua
+vim.opt.foldlevelstart = 99  -- start with all folds open
+```
+
+**Commands that change foldlevel:**
+| Command | Effect |
+|---------|--------|
+| `zM` | set foldlevel=0 (close all) |
+| `zR` | set foldlevel=max (open all) |
+| `zm` | foldlevel -= 1 (close one more level) |
+| `zr` | foldlevel += 1 (open one more level) |
+
+**Manual fold commands (ignore foldlevel):**
+| Command | Effect |
+|---------|--------|
+| `zo` | open fold under cursor |
+| `zO` | open ALL nested folds under cursor |
+| `zc` | close fold under cursor |
+| `zC` | close ALL nested folds under cursor |
+| `za` | toggle fold under cursor |
+
+**Try it — make a test file:**
+```lua
+-- save as /tmp/test_folds.lua and open in nvim
+local outer = {
+  inner_a = {
+    deep = {
+      "level 3"
+    }
+  },
+  inner_b = {
+    "level 2"
+  },
+}
+
+function example()
+  if true then
+    for i = 1, 10 do
+      print(i)
+    end
+  end
+end
+```
+
+Then:
+1. open it — everything should be open (`foldlevelstart=99`)
+2. `zM` — everything collapses
+3. cursor on `local outer` line, `zO` — opens outer + all nested
+4. `zM` again, then `zr` — opens one level at a time
+5. `:set foldlevel?` — see current value
+
+Docs: `:h foldlevel`, `:h foldlevelstart`
