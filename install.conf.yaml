@@ -47,7 +47,7 @@
     ~/.claude/settings.json: ./configs/claude/settings.json
     ~/.local/bin/xdg-open: ./configs/bin/xdg-open
     ~/.ssh/config: ./configs/ssh/config
-    ~/.config/zellij/config.kdl: ./configs/config.kdl
+    ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
 
 # create custom and monitors conf if doesnt exist
 - if:
@@ -61,9 +61,3 @@
     met:
       - shell:
           - touch ~/.config/hypr/monitors.conf
-# degen home custom configs
-# - if:
-#     cond: '[ "$(hostname)" = "degen-home" ]'
-#     met:
-#       - link:
-#           ~/.config/hypr/custom.conf: ./hosts/degen-home/custom.conf
