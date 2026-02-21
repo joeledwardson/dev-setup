@@ -111,6 +111,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
+---@type LazyPluginSpec[]
 return {
   -- {
   --   'y3owk1n/undo-glow.nvim',
@@ -192,6 +193,15 @@ return {
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
         default = { 'lsp', 'path', 'snippets', 'buffer' },
+        -- FROM DADBOD COMPLETION: see https://github.com/kristijanhusak/vim-dadbod-completion
+        per_filetype = {
+          sql = { 'snippets', 'dadbod', 'buffer' },
+        },
+        -- add vim-dadbod-completion to your completion providers
+        providers = {
+          dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
+        },
+        -- END DADBOD COMPLETION
       },
 
       cmdline = {

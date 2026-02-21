@@ -1060,7 +1060,7 @@ require('lazy').setup {
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
-    enabled = false,
+    -- enabled = false,
     config = function()
       require('treesitter-context').setup {
         -- Standard configuration options
