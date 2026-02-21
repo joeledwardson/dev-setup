@@ -6,56 +6,29 @@ vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.number = true
--- alt shift H is used by tmux for window switching
-vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
--- vim.api.nvim_set_keymap('i', '<C-b>', 'cmp#complete()', { noremap = true, expr = true })
--- folds
--- vim.opt.foldmethod = 'expr'
--- vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
--- vim.opt.foldenable = true
--- vim.opt.foldlevel = 99 -- start with all folds open
--- vim.opt.foldlevelstart = 99 -- start with all folds open
--- vim.keymap.set('n', 'zO', 'zxzczA', { desc = 'Open fold and enter insert' })
 
+-- use treesitter for folding: see https://neovim.io/doc/user/treesitter.html
 -- vim.o.foldmethod = 'expr'
 -- vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
--- Window focus highlighting (NC = Non-Current/inactive windows)
--- vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
---   callback = function()
---     vim.api.nvim_set_hl(0, 'NormalNC', { bg = '#302b10' }) -- inactive windows
---     vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE' }) -- active window stays default
---   end,
--- })
---
--- -- Command mode highlighting (keeping your original)
--- vim.api.nvim_create_autocmd('CmdlineEnter', {
---   callback = function()
---     -- vim.api.nvim_set_hl(0, 'Normal', { bg = '#302b10' }) end,
--- })
---
--- vim.api.nvim_create_autocmd('CmdlineLeave', {
---   callback = function()
---     -- vim.api.nvim_set_hl(0, 'Normal', { fg = 'NONE', bg = 'NONE' })
---   end,
--- })
+-- retain selection when shifting
+vim.keymap.set('v', '>', '>gv', { noremap = true })
+vim.keymap.set('v', '<', '<gv', { noremap = true })
 
--- vim.keymap.set({ 'n' }, '<C-k>', function()
---   require('lsp_signature').toggle_float_win()
--- end, { silent = true, noremap = true, desc = 'toggle signature' })
-
+-- alt shift H is used by tmux (and zellij) for window switching
+vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'toggle signature' })
-
--- vim.keymap.set('n', 'z', 'zxz')
 
 vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
 vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
 
 vim.keymap.set('n', '<Esc>', function()
   vim.cmd 'nohlsearch' -- Clear search highlighting
-  require('notify').dismiss()
+  require('notify').dismiss { pending = true, silent = true }
 end, { desc = 'dismiss notify popup and clear hlsearch' })
 
 vim.keymap.set('n', '<leader>e', function()
@@ -71,15 +44,6 @@ vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 -- remap D to delete to null buffer
 vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
-
--- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
---   callback = function(event)
---     local fileext = vim.fn.expand '%:e'
---     local filename = vim.fn.expand '%:t:r'
---
---     vim.print('got a buf name: ', vim.api.nvim_buf_get_name(event.buf))
---   end,
--- })
 
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
 vim.api.nvim_create_autocmd('BufEnter', {
@@ -105,12 +69,23 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
--- TODO
+-- Jump to next/previous URL
+vim.keymap.set('n', ']l', '/https:\\/\\/<CR>', { desc = 'Next URL' })
+vim.keymap.set('n', '[l', '?https:\\/\\/<CR>', { desc = 'Previous URL' })
+
+-- Treat zellij scrollback dump files as bash (they normally are)
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '/tmp/*.dump',
+  callback = function()
+    vim.bo.filetype = 'bash'
+  end,
+})
 
 -- You can add your own plugins here or in other files in this directory!
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
+---@type LazyPluginSpec[]
 return {
   -- {
   --   'y3owk1n/undo-glow.nvim',
@@ -122,30 +97,6 @@ return {
   --   },
   --   },
 
-  {
-    'kevinhwang91/nvim-ufo',
-    dependencies = { 'kevinhwang91/promise-async' },
-    lazy = false,
-    config = function()
-      -- Option 3: treesitter as a main provider instead
-      -- (Note: the `nvim-treesitter` plugin is *not* needed.)
-      -- ufo uses the same query files for folding (queries/<lang>/folds.scm)
-      -- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
-      require('ufo').setup {
-        provider_selector = function(bufnr, filetype, buftype)
-          return { 'treesitter', 'indent' }
-        end,
-      }
-      vim.o.foldcolumn = '1' -- '0' is not bad
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-      vim.o.foldlevelstart = 99
-      vim.o.foldenable = true
-
-      -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
-      vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-      vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
-    end,
-  },
   {
     'saghen/blink.cmp',
     -- optional: provides snippets for the snippet source

@@ -1961,3 +1961,40 @@ So for an example i wanted to do - replace all non star with star (realised i co
 | Very Nomagic (`\V`) | `:%s/\V[^*]/*/g` | Literal Mode: Almost everything is literal. Surprisingly, `[ ]` still work as a set here, but the `*` is strictly a character. |
 
 
+
+### Nvim prev pos
+Wow.... how have i never known this....
+To go back to previous cursor positoin
+- ''
+- ``
+
+` conflicts with my lua console so can use ''
+
+
+### Revisiting folding
+So can do it like this (with LSP)
+```lua
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+```
+
+See `:h vim.lsp.foldexpr()` for more details on how it works
+
+An interactive way to see it for current line is
+```lua
+:echo v:lua.vim.lsp.foldexpr(line('.'))
+```
+
+Whereby `line('.')` is current line (see `:h :line()`) and the `vim.lsp.foldexpr()` takes an arg of the current line number
+
+To use treesitter it must be
+```lua
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+```
+see https://neovim.io/doc/user/treesitter.html#vim.treesitter.foldexpr()
+
+Similarly, can test it with 
+```lua
+echo v:lua.vim.treesitter.foldexpr(line('.'))
+```

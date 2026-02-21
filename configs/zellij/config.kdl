@@ -226,16 +226,22 @@ keybinds clear-defaults=true {
     }
     // ****************** END DEFAULT KEYBINDINGS ********************************
 
-      shared_except "locked" {
+    shared_except "locked" {
         bind "Alt q" {
           LaunchOrFocusPlugin "zj-quit" {
             floating true
           }
         }
-      }
+    }
+    shared_except "locked" "scroll" {
+        bind "Alt Shift e" { EditScrollback; }
+    }
 
 }
 
+// explicit nvim editor for srcollback
+// scrollback_editor "~/.config/zellij/nvim-bash.sh"
+scrollback_editor "nvim"
 
 // Plugin aliases - can be used to change the implementation of Zellij
 // changing these requires a restart to take effect

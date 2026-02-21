@@ -59,6 +59,8 @@ RUN cd $HOME/dev-setup && git submodule update --init
 # run dotbot
 RUN cd $HOME/dev-setup && dotbot -c install.conf.yaml
 
+# install lazy plugins
+RUN nvim --headless "+Lazy! sync" +qa
 
 # change default shell (see https://wiki.alpinelinux.org/wiki/Shell_management)
 RUN apk add shadow
@@ -72,4 +74,5 @@ COPY ./claude.json $HOME/.claude.json
 
 # claude yolo alias
 COPY ./zshrclocal $HOME/.config/zshrclocal
+
 
