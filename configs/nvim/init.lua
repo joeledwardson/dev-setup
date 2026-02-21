@@ -1092,6 +1092,7 @@ require('lazy').setup {
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+    keys = { { '<leader>tt', ':InspectTree<CR>', { desc = 'Toggle treesitter' } } },
     config = function(_, opts)
       require('nvim-treesitter.configs').setup {
 

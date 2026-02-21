@@ -12,6 +12,7 @@ vim.opt.number = true
 -- vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldlevelstart = 99
 
 -- retain selection when shifting
 vim.keymap.set('v', '>', '>gv', { noremap = true })
