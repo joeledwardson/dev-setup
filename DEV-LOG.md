@@ -2015,51 +2015,56 @@ foldlevel=99  → everything open
 vim.opt.foldlevelstart = 99  -- start with all folds open
 ```
 
-**Commands that change foldlevel:**
-| Command | Effect |
-|---------|--------|
-| `zM` | set foldlevel=0 (close all) |
-| `zR` | set foldlevel=max (open all) |
-| `zm` | foldlevel -= 1 (close one more level) |
-| `zr` | foldlevel += 1 (open one more level) |
+### Treesitter and folding
+Ok so claude came up with a very interesting note about treesitter and how it supports folding.
 
-**Manual fold commands (ignore foldlevel):**
-| Command | Effect |
-|---------|--------|
-| `zo` | open fold under cursor |
-| `zO` | open ALL nested folds under cursor |
-| `zc` | close fold under cursor |
-| `zC` | close ALL nested folds under cursor |
-| `za` | toggle fold under cursor |
+Treesitter has flags for types of treesitter (nodes?) on which to do folds. For SQL this is https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/sql/folds.scm here where it is JUST `statement` notes. (`WITH`, `SELECT`) i believe but not including union selects?
 
-**Try it — make a test file:**
-```lua
--- save as /tmp/test_folds.lua and open in nvim
-local outer = {
-  inner_a = {
-    deep = {
-      "level 3"
-    }
-  },
-  inner_b = {
-    "level 2"
-  },
-}
+So if i go into a `sql` file with `select * .... union all select` the second `select` is NOT a statement hence can't fold on it!
 
-function example()
-  if true then
-    for i = 1, 10 do
-      print(i)
-    end
-  end
-end
+So have some options:
+- use LSP for SQL?
+- override treesitter to add fold commands for union/select?
+
+> also need to add fallback to indent for `:LspInfo` which is of filetype `checkhealth` no supported by treesitter or LSP (i assume)
+
+Also.... trying out the `sqls` and `sqlls` couldnt get folding to work?
+
+Well.... checking out https://neovim.io/doc/user/lsp.html it says you need "textDocument/foldingRange" to support folding?
+
+And with `sqlls` I tried:
+```vim
+:redir >pls.txt
+:lua =vim.lsp.get_active_clients()[1].server_capabilities
+:redir END
 ```
+And couldnt see it there....
 
-Then:
-1. open it — everything should be open (`foldlevelstart=99`)
-2. `zM` — everything collapses
-3. cursor on `local outer` line, `zO` — opens outer + all nested
-4. `zM` again, then `zr` — opens one level at a time
-5. `:set foldlevel?` — see current value
+Claude wrote me this a custom fallback function for folding myself?
+```lua
+function CustomFoldExpr()
+  local lnum = vim.v.lnum
+  local buf = vim.api.nvim_get_current_buf()
+  local ts_ok, ts_result = pcall(vim.treesitter.foldexpr)
+  if ts_ok and ts_result ~= '0' and ts_result ~= 0 then
+    vim.b[buf].fold_provider = 'treesitter'
+    return ts_result
+  end
+  vim.b[buf].fold_provider = 'indent'
+  local indent = vim.fn.indent(lnum)
+  local sw = vim.bo[buf].shiftwidth
+  if sw == 0 then
+    sw = vim.bo[buf].tabstop
+  end
+  return math.floor(indent / sw)
+end
 
-Docs: `:h foldlevel`, `:h foldlevelstart`
+function ShowFoldProvider()
+  local provider = vim.b.fold_provider or 'unknown'
+  vim.notify('fold provider: ' .. provider, vim.log.levels.INFO)
+  return provider
+end
+
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.CustomFoldExpr()'
+```
