@@ -1,8 +1,13 @@
 {
   "permissions": {
-    "allowedTools": [
+    "allow": [
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(grep *)",
+      "Bash(cd *)",
+      "Bash(rg *)"
     ]
   },
   "enabledPlugins": {
