@@ -68,8 +68,13 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "streamer" ];
 
+  # =======================================
+  # Secrets (agenix)
+  # =======================================
+  age.secrets.realdebrid-token.file = ../../secrets/realdebrid-token.age;
+
   # kitty terminal support for SSH
-  environment.systemPackages = [ pkgs.kitty.terminfo ];
+  environment.systemPackages = [ pkgs.kitty.terminfo pkgs.ansible ];
   services.syncthing.user = "streamer";
 
 }

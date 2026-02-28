@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors?ref=v1.4.0";
     nixarr.url = "github:rasmus-kirk/nixarr";
+    agenix.url = "github:ryantm/agenix";
 
     nur = {
       url = "github:nix-community/NUR";
@@ -35,6 +36,7 @@
       ];
       commonSpecialArgs = {
         nixarr_flake = inputs.nixarr;
+        agenix = inputs.agenix;
         inherit inputs commonGroups pkgs-unstable;
       };
     in {
@@ -100,6 +102,7 @@
           modules = [
             ./modules/nixos-base.nix
             ./hosts/streaming-server/configuration.nix
+            inputs.agenix.nixosModules.default
           ];
         };
 

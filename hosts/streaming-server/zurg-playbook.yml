@@ -1,0 +1,40 @@
+---
+- name: Setup zurg (RealDebrid)
+  hosts: localhost
+  connection: local
+  become: false
+
+  vars:
+    zurg_dir: "{{ ansible_env.HOME }}/realdebrid-server"
+    zurg_repo: https://github.com/debridmediamanager/zurg-testing
+    zurg_commit: f41746b6f6142c773ae86c6059e6e6338d864ba0
+    token_file: /run/agenix/realdebrid-token
+
+  tasks:
+    - name: Read RealDebrid token
+      ansible.builtin.slurp:
+        src: "{{ token_file }}"
+      register: token_raw
+      become: true
+
+    - name: Set token fact
+      ansible.builtin.set_fact:
+        realdebrid_token: "{{ token_raw.content | b64decode | trim }}"
+
+    - name: Clone zurg repo
+      ansible.builtin.git:
+        repo: "{{ zurg_repo }}"
+        dest: "{{ zurg_dir }}"
+        version: "{{ zurg_commit }}"
+
+    - name: Set RealDebrid token in config
+      ansible.builtin.lineinfile:
+        path: "{{ zurg_dir }}/config.yml"
+        regexp: "^token:.*$"
+        line: "token: {{ realdebrid_token }}"
+
+    - name: Start zurg via docker compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ zurg_dir }}"
+        state: present
+        recreate: always
