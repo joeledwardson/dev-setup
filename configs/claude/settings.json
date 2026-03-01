@@ -1,6 +1,14 @@
 {
   "permissions": {
-    "allowedTools": ["WebFetch", "WebSearch"]
+    "allow": [
+      "WebFetch",
+      "WebSearch",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(grep *)",
+      "Bash(cd *)",
+      "Bash(rg *)"
+    ]
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
