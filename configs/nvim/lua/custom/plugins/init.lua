@@ -31,7 +31,6 @@ vim.keymap.set('n', '<Esc>', function()
   vim.cmd 'nohlsearch' -- Clear search highlighting
   require('notify').dismiss { pending = true, silent = true }
 end, { desc = 'dismiss notify popup and clear hlsearch' })
-
 vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
@@ -45,39 +44,55 @@ vim.keymap.set('i', '<CR>', '<C-G>u<CR>', { noremap = true, silent = true })
 vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 -- remap D to delete to null buffer
 vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
+vim.api.nvim_create_user_command('PrintServerCapabilities', function()
+  local currentbuf = vim.api.nvim_get_current_buf()
+  local capabilities = vim.lsp.get_clients({ bufnr = currentbuf })[1].server_capabilities
+  local newbuf = vim.api.nvim_create_buf(false, true)
+  local formatted = vim.inspect(capabilities)
+  local lines = vim.split(formatted, '\n')
+  vim.api.nvim_buf_set_text(newbuf, 0, 0, 0, 0, lines)
+  vim.api.nvim_win_set_buf(0, newbuf)
+  vim.bo.filetype = 'lua'
+end, {})
 
---- close all child folds under cursor (inverse of zC which closes upward)
-vim.keymap.set('n', 'zx', function()
+vim.api.nvim_create_user_command('PrintFoldLevel', function()
   local line = vim.fn.line '.'
   local level = vim.fn.foldlevel(line)
-  if level == 0 then
-    vim.notify('not on a fold', vim.log.levels.WARN)
-    return
-  end
+  vim.api.nvim_echo({ { 'Fold level on line ' .. line .. ' is ' .. level } }, true, {})
+end, {})
 
-  -- find range of current fold at this level
-  local last = vim.fn.line '$'
-  local fold_end = line
-  for i = line + 1, last do
-    if vim.fn.foldlevel(i) < level then
-      break
-    end
-    fold_end = i
-  end
-  local fold_start = line
-  for i = line - 1, 1, -1 do
-    if vim.fn.foldlevel(i) < level then
-      break
-    end
-    fold_start = i
-  end
-
-  -- close all folds in range recursively, then reopen just this level
-  local pos = vim.fn.getcurpos()
-  pcall(vim.cmd, fold_start .. ',' .. fold_end .. 'foldclose!')
-  vim.fn.setpos('.', pos)
-  pcall(vim.cmd, 'normal! zo')
-end, { desc = 'close all child folds under cursor' })
+-- --- close all child folds under cursor (inverse of zC which closes upward)
+-- vim.keymap.set('n', 'zx', function()
+--   local line = vim.fn.line '.'
+--   local level = vim.fn.foldlevel(line)
+--   if level == 0 then
+--     vim.notify('not on a fold', vim.log.levels.WARN)
+--     return
+--   end
+--
+--   -- find range of current fold at this level
+--   local last = vim.fn.line '$'
+--   local fold_end = line
+--   for i = line + 1, last do
+--     if vim.fn.foldlevel(i) < level then
+--       break
+--     end
+--     fold_end = i
+--   end
+--   local fold_start = line
+--   for i = line - 1, 1, -1 do
+--     if vim.fn.foldlevel(i) < level then
+--       break
+--     end
+--     fold_start = i
+--   end
+--
+--   -- close all folds in range recursively, then reopen just this level
+--   local pos = vim.fn.getcurpos()
+--   pcall(vim.cmd, fold_start .. ',' .. fold_end .. 'foldclose!')
+--   vim.fn.setpos('.', pos)
+--   pcall(vim.cmd, 'normal! zo')
+-- end, { desc = 'close all child folds under cursor' })
 
 --- remap custom fold
 vim.keymap.set('n', 'zX', function()
@@ -90,17 +105,6 @@ vim.keymap.set('n', 'zX', function()
     return
   end
   vim.cmd 'normal! zczO'
-
-  -- -- if current line higher fold number then we ARE on a fold and need to close it before opening
-  -- local currentFoldIndex = vim.fn.foldlevel(lineNumber)
-  -- local aboveFoldIndex = vim.fn.foldlevel(lineNumber - 1)
-  -- if currentFoldIndex > aboveFoldIndex then
-  --   vim.cmd 'normal! zczO'
-  --   return
-  -- end
-  --
-  -- -- not sure whats going on here, not on a closed or open fold
-  -- vim.notify('no fold to open!', vim.log.levels.WARN)
 end, { desc = 'jollof recursive fold opener' })
 
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
