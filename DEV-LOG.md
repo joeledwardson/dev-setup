@@ -2068,3 +2068,53 @@ end
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'v:lua.CustomFoldExpr()'
 ```
+
+### Nvim glitching after zellij layout change
+#### Symptoms
+Intermittent nvim corruption after changing zellij pane layout:
+1. **Display glitch** - lines duplicating/overlapping when navigating up/down, `:redraw!` doesnt fix, only nvim restart
+2. **Cmdline completion broken** - `:Lazy` subcommands no longer complete (native `:e <Tab>` still works)
+3. **LSP completion broken** - `<C-Space>` stops triggering blink.cmp completions
+4. **Which-key popup gone** - `<Space>` (leader) moves cursor instead of showing which-key menu, but actual leader bindings like `<Space>tv` still work
+
+All symptoms appear together in the same session, always after a zellij layout change (resize/relayout sends `SIGWINCH` to nvim).
+
+#### Debugging process
+1. Initially suspected satellite.nvim (scrollbar redraws on cursor move) - disabled it, issue persisted
+2. Tried `:redraw!` - no effect, ruling out simple terminal redraw issue
+3. Tried narrowing to blink.cmp cmdline config - but native completion worked fine
+4. Noticed leader key "broken" but actual bindings still worked -> isolated to which-key popup specifically
+5. Ran `:checkhealth` on both a **working** and **broken** nvim session, diffed the outputs
+
+#### Root cause - lspsaga crashing inside which-key
+The broken session's checkhealth had stack traces not present in the working session:
+
+```
+- stack traceback:
+    /home/joelyboy/.local/share/nvim/lazy/lspsaga.nvim/lua/lspsaga/symbol/head.lua:89
+    /home/joelyboy/.local/share/nvim/lazy/lspsaga.nvim/lua/lspsaga/symbol/head.lua:57
+    [C]:-1
+    [C]:-1
+    /home/joelyboy/.local/share/nvim/lazy/which-key.nvim/lua/which-key/state.lua:262
+    /home/joelyboy/.local/share/nvim/lazy/which-key.nvim/lua/which-key/state.lua:346
+    /home/joelyboy/.local/share/nvim/lazy/which-key.nvim/lua/which-key/state.lua:115
+- stack traceback:
+    ...lspsaga/symbol/head.lua:89
+    ...lspsaga/symbol/head.lua:57
+    [C]:-1
+    [C]:-1
+    ...which-key/state.lua:262
+    ...which-key/state.lua:346
+    ...which-key/triggers.lua:44
+```
+
+The chain: zellij layout change -> `VimResized`/`WinResized` -> which-key triggers re-evaluate (`triggers.lua:44`) -> which-key processes state (`state.lua`) -> calls into lspsaga's `symbol/head.lua:89` which errors -> corrupts which-key's internal state -> popup dies, and the cascading error likely breaks blink.cmp's handlers too.
+
+The broken session also had deprecation warnings (`client.supports_method is deprecated, removed in Nvim 0.13`) that lspsaga is triggering, suggesting it hasnt been updated for nvim 0.11.5 APIs.
+
+#### Action taken
+Disabled lspsaga for now to see if the issue reoccurs:
+```lua
+{ 'nvimdev/lspsaga.nvim', enabled = false }
+```
+If the glitch stops, lspsaga is confirmed as the root cause and needs updating or replacing.

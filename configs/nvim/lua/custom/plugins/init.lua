@@ -46,6 +46,39 @@ vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 -- remap D to delete to null buffer
 vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
 
+--- close all child folds under cursor (inverse of zC which closes upward)
+vim.keymap.set('n', 'zx', function()
+  local line = vim.fn.line '.'
+  local level = vim.fn.foldlevel(line)
+  if level == 0 then
+    vim.notify('not on a fold', vim.log.levels.WARN)
+    return
+  end
+
+  -- find range of current fold at this level
+  local last = vim.fn.line '$'
+  local fold_end = line
+  for i = line + 1, last do
+    if vim.fn.foldlevel(i) < level then
+      break
+    end
+    fold_end = i
+  end
+  local fold_start = line
+  for i = line - 1, 1, -1 do
+    if vim.fn.foldlevel(i) < level then
+      break
+    end
+    fold_start = i
+  end
+
+  -- close all folds in range recursively, then reopen just this level
+  local pos = vim.fn.getcurpos()
+  pcall(vim.cmd, fold_start .. ',' .. fold_end .. 'foldclose!')
+  vim.fn.setpos('.', pos)
+  pcall(vim.cmd, 'normal! zo')
+end, { desc = 'close all child folds under cursor' })
+
 --- remap custom fold
 vim.keymap.set('n', 'zX', function()
   -- get current line number
@@ -56,17 +89,18 @@ vim.keymap.set('n', 'zX', function()
     vim.cmd 'normal! zO'
     return
   end
+  vim.cmd 'normal! zczO'
 
-  -- if current line higher fold number then we ARE on a fold and need to close it before opening
-  local currentFoldIndex = vim.fn.foldlevel(lineNumber)
-  local aboveFoldIndex = vim.fn.foldlevel(lineNumber - 1)
-  if currentFoldIndex > aboveFoldIndex then
-    vim.cmd 'normal! zczO'
-    return
-  end
-
-  -- not sure whats going on here, not on a closed or open fold
-  vim.notify('no fold to open!', vim.log.levels.WARN)
+  -- -- if current line higher fold number then we ARE on a fold and need to close it before opening
+  -- local currentFoldIndex = vim.fn.foldlevel(lineNumber)
+  -- local aboveFoldIndex = vim.fn.foldlevel(lineNumber - 1)
+  -- if currentFoldIndex > aboveFoldIndex then
+  --   vim.cmd 'normal! zczO'
+  --   return
+  -- end
+  --
+  -- -- not sure whats going on here, not on a closed or open fold
+  -- vim.notify('no fold to open!', vim.log.levels.WARN)
 end, { desc = 'jollof recursive fold opener' })
 
 -- Automatically set filetype and start LSP for specific systemd unit file patterns
@@ -194,6 +228,8 @@ return {
   },
   {
     'lewis6991/satellite.nvim',
+    -- TODO: disable for now, is it causing redraw issues?
+    enabled = false,
     config = function()
       require('satellite').setup {
         current_only = false,
@@ -340,6 +376,8 @@ return {
   },
   {
     'Bekaboo/dropbar.nvim',
+    -- TODO: re-enable this? not sure if causing rendering issues with zellij
+    enabled = false,
     lazy = false,
     -- optional, but required for fuzzy finder support
     dependencies = {
@@ -372,10 +410,10 @@ return {
       vim.api.nvim_create_autocmd('TextYankPost', { callback = copy })
     end,
   },
+  -- syntax highlighting for alloy files
   {
     'grafana/vim-alloy',
   },
-
   -- in case not using noice
   {
     'rcarriga/nvim-notify',
@@ -395,6 +433,7 @@ return {
       { '<leader>y', '<cmd>YankyRingHistory<cr>', mode = { 'n', 'x' }, desc = 'Open Yank History' },
     },
   },
+  -- TODO: needed? could be useful for sorting text file lines sometimes, added a while ago
   {
     'sQVe/sort.nvim',
     config = function()
@@ -402,5 +441,66 @@ return {
         -- Optional configuration overrides.
       }
     end,
+  },
+  {
+    'mrjones2014/smart-splits.nvim',
+    keys = {
+      {
+        '<A-h>',
+        function()
+          require('smart-splits').resize_left()
+        end,
+        desc = 'Resize left',
+      },
+      {
+        '<A-j>',
+        function()
+          require('smart-splits').resize_down()
+        end,
+        desc = 'Resize down',
+      },
+      {
+        '<A-k>',
+        function()
+          require('smart-splits').resize_up()
+        end,
+        desc = 'Resize up',
+      },
+      {
+        '<A-l>',
+        function()
+          require('smart-splits').resize_right()
+        end,
+        desc = 'Resize right',
+      },
+      {
+        '<C-h>',
+        function()
+          require('smart-splits').move_cursor_left()
+        end,
+        desc = 'Move cursor left',
+      },
+      {
+        '<C-j>',
+        function()
+          require('smart-splits').move_cursor_down()
+        end,
+        desc = 'Move cursor down',
+      },
+      {
+        '<C-k>',
+        function()
+          require('smart-splits').move_cursor_up()
+        end,
+        desc = 'Move cursor up',
+      },
+      {
+        '<C-l>',
+        function()
+          require('smart-splits').move_cursor_right()
+        end,
+        desc = 'Move cursor right',
+      },
+    },
   },
 }

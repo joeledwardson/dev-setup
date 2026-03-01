@@ -4,6 +4,8 @@ return {
     'nvim-treesitter/nvim-treesitter',
     'nvim-tree/nvim-web-devicons',
   },
+  -- TODO: is this causing nvim crashing issues?
+  enabled = false,
   config = function()
     require('lspsaga').setup {
       hover = {

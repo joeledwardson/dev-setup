@@ -1,9 +1,6 @@
 {
   "permissions": {
-    "allowedTools": [
-      "WebFetch",
-      "WebSearch"
-    ]
+    "allowedTools": ["WebFetch", "WebSearch"]
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
