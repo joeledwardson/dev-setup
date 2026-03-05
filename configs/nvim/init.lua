@@ -353,8 +353,9 @@ require('lazy').setup {
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>p', group = '[p]ossesson' },
-        { '<leader>p', group = '[l]ua console' },
+        { '<leader>l', group = '[l]ua console' },
         { '<leader>x', group = '[x] trouble' },
+        { '<leader>m', group = '[m]arks' },
       },
     },
   },
@@ -386,6 +387,7 @@ require('lazy').setup {
         end,
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
+      { 'nvim-telescope/telescope-live-grep-args.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
@@ -410,9 +412,15 @@ require('lazy').setup {
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
+      -- Enable Telescope extensions if they are installed
+      pcall(require('telescope').load_extension, 'fzf')
+      pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension 'live_grep_args')
+
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local actions = require 'telescope.actions'
+      local lga_actions = require 'telescope-live-grep-args.actions'
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
@@ -436,12 +444,25 @@ require('lazy').setup {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          live_grep_args = {
+            auto_quoting = true, -- enable/disable auto-quoting
+            -- define mappings, e.g.
+            mappings = { -- extend mappings
+              i = {
+                ['<C-k>'] = lga_actions.quote_prompt(),
+                ['<C-i>'] = lga_actions.quote_prompt { postfix = ' --iglob ' },
+                -- freeze the current list and start a fuzzy search in the frozen list
+                ['<C-space>'] = lga_actions.to_fuzzy_refine,
+              },
+            },
+            -- ... also accepts theme settings, for example:
+            -- theme = "dropdown", -- use dropdown theme
+            -- theme = { }, -- use own theme spec
+            -- layout_config = { mirror=true }, -- mirror preview pane
+          },
         },
       }
 
-      -- Enable Telescope extensions if they are installed
-      pcall(require('telescope').load_extension, 'fzf')
-      pcall(require('telescope').load_extension, 'ui-select')
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -683,7 +704,8 @@ require('lazy').setup {
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {},
+        -- pyright = {},
+        ruff = {},
 
         marksman = {},
 
@@ -1172,7 +1194,22 @@ require('lazy').setup {
       end, { desc = 'Treesitter: Enter first child node' })
 
       vim.keymap.set('n', '[t', function()
-        jump_to_node(get_current_ts_node():parent())
+        local node = get_current_ts_node()
+        if not node then
+          return
+        end
+        -- get current cursor position
+        local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
+        cursor_row = cursor_row - 1 -- convert to 0-indexed
+        local parent = node:parent()
+        while parent do
+          local row, col = parent:range()
+          if row ~= cursor_row or col ~= cursor_col then
+            jump_to_node(parent)
+            return
+          end
+          parent = parent:parent()
+        end
       end, { desc = 'Treesitter: Go to parent node' })
     end,
     -- There are additional nvim-treesitter modules that you can use to interact
