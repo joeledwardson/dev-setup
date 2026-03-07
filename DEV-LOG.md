@@ -2144,3 +2144,13 @@ Useful built-in level commands:
 - `:set foldlevel=N` = close all folds deeper than N
 
 Single-line signatures fold correctly. This is **not** a treesitter parser bug - the parser correctly nests `try_statement` inside `function_definition`. The bug is in **neovim's `vim.treesitter.foldexpr()`** which translates the tree into fold levels. It counts `parameters` as a foldable multi-line node at the same depth as `try_statement` (both direct children of `function_definition`), so it assigns them the same level instead of treating the function body as deeper than the signature. LSP folding (`vim.lsp.foldexpr()`) may handle it better but LSP fold support varies by server.
+
+## March 2026
+Quick reminder of a comment to set vim file type (but this catch 22 - vim needs to know the file type to know to parse a comment to know to apply the file type comment)
+
+> Apparently vim 'modelines' helps with the chicken and egg by scanning first few lines for vim style comments
+```vim
+# vim: set ft=yaml sw=2 ts=2 et :
+```
+
+

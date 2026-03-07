@@ -421,6 +421,7 @@ require('lazy').setup {
       -- See `:help telescope` and `:help telescope.setup()`
       local actions = require 'telescope.actions'
       local lga_actions = require 'telescope-live-grep-args.actions'
+
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
@@ -467,7 +468,7 @@ require('lazy').setup {
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [f]iles' })
+      vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
       vim.keymap.set('n', '<leader>sF', function()
         builtin.find_files {
           no_ignore = true,
@@ -476,7 +477,7 @@ require('lazy').setup {
       end, { desc = '[S]earch [F]iles (including hidden)' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [g]rep, ignore hidden' })
+      vim.keymap.set('n', '<leader>g', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [g]rep, ignore hidden' })
       vim.keymap.set('n', '<leader>sG', function()
         builtin.live_grep { additional_args = { '--no-ignore', '--hidden' } }
       end, { desc = '[S]earch by [G]rep, show hidden' })
@@ -911,7 +912,7 @@ require('lazy').setup {
     cmd = { 'ConformInfo' },
     keys = {
       {
-        '<leader>f',
+        '<leader>F',
         function()
           require('conform').format({ async = true, lsp_format = 'fallback' }, function(err, did_edit)
             if err then
@@ -1050,7 +1051,6 @@ require('lazy').setup {
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
 
-      require('mini.indentscope').setup {}
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
