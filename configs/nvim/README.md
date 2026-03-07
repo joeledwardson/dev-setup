@@ -119,11 +119,11 @@ examples of adding popularly requested plugins.
   * This includes your existing init.lua and the neovim files in `~/.local`
     which can be deleted with `rm -rf ~/.local/share/nvim/`
 * Can I keep my existing configuration in parallel to kickstart?
-  * Yes! You can use [NVIM_APPNAME](https://neovim.io/doc/user/starting.html#%24NVIM_APPNAME)`=nvim-NAME`
+  * Yes! You can use [nvim_APPNAME](https://neovim.io/doc/user/starting.html#%24nvim_APPNAME)`=nvim-NAME`
     to maintain multiple configurations. For example, you can install the kickstart
     configuration in `~/.config/nvim-kickstart` and create an alias:
     ```
-    alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
+    alias nvim-kickstart='nvim_APPNAME="nvim-kickstart" nvim'
     ```
     When you run Neovim using `nvim-kickstart` alias it will use the alternative
     config directory and the matching local directory

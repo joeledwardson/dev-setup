@@ -187,8 +187,8 @@ keybinds clear-defaults=true {
         // bind "Alt q" { Quit; }
         // bind "Alt f" { ToggleFloatingPanes; }
         bind "Alt n" { NewTab; SwitchToMode "normal"; }
-        bind "Alt i" { MoveTab "Left"; }
-        bind "Alt o" { MoveTab "Right"; }
+        bind "Alt Shift a" { MoveTab "Left"; }
+        bind "Alt Shift d" { MoveTab "Right"; }
 
         // utility to move tabs
         bind "Alt a" { GoToPreviousTab; SwitchToMode "Normal"; }

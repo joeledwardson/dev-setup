@@ -2118,3 +2118,39 @@ Disabled lspsaga for now to see if the issue reoccurs:
 { 'nvimdev/lspsaga.nvim', enabled = false }
 ```
 If the glitch stops, lspsaga is confirmed as the root cause and needs updating or replacing.
+
+### Treesitter folding quirk with multi-line signatures
+`vim.treesitter.foldexpr()` breaks fold hierarchy when a function has a multi-line signature. Example:
+```python
+    def parse_st8_bet_data(   # foldexpr: >3 (starts level 3 fold)
+        self,                  # foldexpr: 3
+        record: ArchiveRecord, # foldexpr: 3
+    ) -> ParseResult:          # foldexpr: 3
+        try:                   # foldexpr: >3 (starts NEW level 3 fold)
+```
+
+The `parameters` treesitter node spans multiple lines, inflating the fold level to 3 (class > func > parameters). When `parameters` ends, the foldexpr never drops back to level 2 before `try_statement` starts its own `>3`. Vim sees two separate level-3 folds rather than a level-2 fold containing a level-3 fold.
+
+Result: closing the function fold only collapses the signature (lines 108-111), not the body. The `try` block is a separate fold at the same level.
+
+Key foldexpr syntax (`:h fold-expr`):
+- `>N` = **start** a new fold at level N
+- `N` = continue at level N
+- `<N` = end a fold at level N
+
+Useful built-in level commands:
+- `zm`/`zr` = increment/decrement foldlevel by 1
+- `zM`/`zR` = close/open all folds
+- `:set foldlevel=N` = close all folds deeper than N
+
+Single-line signatures fold correctly. This is **not** a treesitter parser bug - the parser correctly nests `try_statement` inside `function_definition`. The bug is in **neovim's `vim.treesitter.foldexpr()`** which translates the tree into fold levels. It counts `parameters` as a foldable multi-line node at the same depth as `try_statement` (both direct children of `function_definition`), so it assigns them the same level instead of treating the function body as deeper than the signature. LSP folding (`vim.lsp.foldexpr()`) may handle it better but LSP fold support varies by server.
+
+## March 2026
+Quick reminder of a comment to set vim file type (but this catch 22 - vim needs to know the file type to know to parse a comment to know to apply the file type comment)
+
+> Apparently vim 'modelines' helps with the chicken and egg by scanning first few lines for vim style comments
+```vim
+# vim: set ft=yaml sw=2 ts=2 et :
+```
+
+

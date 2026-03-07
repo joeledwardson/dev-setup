@@ -7,10 +7,36 @@
       "Bash(pwd)",
       "Bash(grep *)",
       "Bash(cd *)",
-      "Bash(rg *)"
+      "Bash(rg *)",
+      "Bash(find *)"
     ]
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/joelyboy/dev-setup/configs/claude/notify-if-unfocused.sh 'Claude Code needs your attention'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/joelyboy/dev-setup/configs/claude/notify-if-unfocused.sh 'Task complete'"
+          }
+        ]
+      }
+    ]
   }
 }
