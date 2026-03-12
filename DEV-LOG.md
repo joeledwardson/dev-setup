@@ -2153,4 +2153,49 @@ Quick reminder of a comment to set vim file type (but this catch 22 - vim needs 
 # vim: set ft=yaml sw=2 ts=2 et :
 ```
 
+### Completion broken again (autopairs referencing nvim-cmp)
+Completion stopped working again. Previous investigation (see "Nvim glitching after zellij layout change" above) found lspsaga was the cause - disabled it, fixed it.
 
+This time: `autopairs.lua` was never updated when migrating from nvim-cmp to blink.cmp (Oct 2025). It still had `dependencies = { 'hrsh7th/nvim-cmp' }` and called `require 'cmp'` on `InsertEnter`. Since nvim-cmp is no longer installed, this errors every time you enter insert mode, potentially breaking blink.cmp completion.
+
+**Fix:** removed the nvim-cmp dependency and `require 'cmp'` integration from `autopairs.lua`. Autopairs still works standalone, just no longer auto-adds `()` after selecting a function from completion (blink.cmp handles this differently anyway).
+
+### Zellij edge detection + hyprland flash (TODO)
+**Requirement:** when moving focus hits an edge (no pane in that direction), flash the hyprland border red (like `move-focus.sh` does for hyprland windows).
+
+**Pain points:**
+- zellij `bind` only supports a single action — can't chain "get pane id → move focus → check pane id → flash"
+- `vim-zellij-nav` wasm plugin handles nvim detection internally, can't wrap it with a script
+- `smart-splits.nvim` `at_edge = 'stop'` is broken — the zellij mux hardcodes `Direction.left` regardless of direction arg
+- zellij plugin `Key` events only fire when the plugin's own pane is focused, not globally
+
+**Proposed solution:** custom zellij wasm plugin `move-focus-jol`:
+1. Receives `MessagePlugin` with direction (like vim-zellij-nav)
+2. Gets pane id → calls `move_focus` → checks pane id again
+3. If unchanged → `run_command("hyprctl", ...)` to flash border
+4. Fork `vim-zellij-nav` to call `move-focus-jol` instead of `move_focus` directly
+5. Update nvim `zellij-nav.nvim` to message `move-focus-jol` instead of `zellij action move-focus`
+6. Everything funnels through one plugin that owns edge detection
+
+### Bash parameter expansion (suffix removal)
+The single `%` is the shortest match from end of string operator, whereas `%%` is large suffix removal operator.
+```bash
+➜ joelyboy dev-setup (main) ✗ file="photo.backup.tar.gz"
+➜ joelyboy dev-setup (main) ✗ echo ${file%%.*}
+photo
+➜ joelyboy dev-setup (main) ✗ echo ${file%%g}
+photo.backup.tar.gz
+➜ joelyboy dev-setup (main) ✗ echo ${file%%g*}
+photo.backup.tar.
+➜ joelyboy dev-setup (main) ✗ echo ${file%%a*}
+photo.b
+➜ joelyboy dev-setup (main) ✗ echo ${file%a*}
+photo.backup.t
+➜ joelyboy dev-setup (main) ✗
+```
+
+> In this mode `.` is a literal dot, not a regexp dot for any char
+
+1. Notice how nothing matched on the `file%%g`: must match to end of string
+2. `file%%g*` is greedy so goes up to the `gz` ad the end
+3. `file%a*` so goes for the first `a` in `backup`

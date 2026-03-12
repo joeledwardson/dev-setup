@@ -8,7 +8,9 @@
       "Bash(grep *)",
       "Bash(cd *)",
       "Bash(rg *)",
-      "Bash(find *)"
+      "Bash(find *)",
+      "Bash(git log *)",
+      "Bash(git show *)"
     ]
   },
   "enabledPlugins": {
