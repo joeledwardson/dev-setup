@@ -69,6 +69,17 @@
   programs.virt-manager.enable = true;
 
   # =======================================
+  # Bluetooth Configuration
+  # =======================================
+  hardware.bluetooth = {
+    enable = true; # enables support for Bluetooth
+    powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  };
+
+  # bluetooth GUI service
+  services.blueman.enable = true;
+
+  # =======================================
   # NVIDIA Configuration
   # =======================================
   hardware.graphics = { enable = true; };
