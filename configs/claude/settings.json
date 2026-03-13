@@ -13,10 +13,6 @@
       "Bash(git show *)"
     ]
   },
-  "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
-  },
-  "effortLevel": "high",
   "hooks": {
     "Notification": [
       {
@@ -40,5 +36,10 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "voiceEnabled": true
 }

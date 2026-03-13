@@ -2199,3 +2199,13 @@ photo.backup.t
 1. Notice how nothing matched on the `file%%g`: must match to end of string
 2. `file%%g*` is greedy so goes up to the `gz` ad the end
 3. `file%a*` so goes for the first `a` in `backup`
+
+
+### Vim Dadbod UI
+Ok wow i found something today i cannot believe it took me this long to find?
+
+```vim
+<leader>S
+```
+
+whilst in vim dadbod mode will only execute selected text as a query - kind of like filip does in DBeaver - which is awesome!
