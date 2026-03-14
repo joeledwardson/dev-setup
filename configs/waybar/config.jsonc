@@ -8,7 +8,8 @@
     // Choose the order of the modules
     "modules-left": [
         "custom/phoenix",
-        "hyprland/workspaces"
+        "hyprland/workspaces",
+        "custom/focus"
     ],
     "modules-center": [
         "hyprland/window"
@@ -25,8 +26,7 @@
         "custom/notification"
     ],
     //Modules configuration
-
     "include": [
-		"~/.config/waybar/modules.json"
-	]
+        "~/.config/waybar/modules.json"
+    ]
 }

@@ -342,7 +342,36 @@ web_client {
 }
 
 
-theme "blade-runner"
+// override just the frame borders - rest inherits from blade-runner
+themes {
+    blade-runner-custom {
+        frame_selected {
+            base 181 232 83
+            background 30 30 30
+            emphasis_0 181 232 83
+            emphasis_1 255 255 255
+            emphasis_2 181 232 83
+            emphasis_3 181 232 83
+        }
+        frame_unselected {
+            base 140 140 140
+            background 30 30 30
+            emphasis_0 140 140 140
+            emphasis_1 140 140 140
+            emphasis_2 140 140 140
+            emphasis_3 140 140 140
+        }
+        ribbon_unselected {
+            base 160 160 160
+            background 50 50 55
+            emphasis_0 120 120 120
+            emphasis_1 160 160 160
+            emphasis_2 120 120 120
+            emphasis_3 120 120 120
+        }
+    }
+}
+theme "blade-runner-custom"
 
 // Use a simplified UI without special fonts (arrow glyphs)
 // Options:

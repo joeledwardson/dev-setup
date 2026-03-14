@@ -8,13 +8,11 @@
       "Bash(grep *)",
       "Bash(cd *)",
       "Bash(rg *)",
-      "Bash(find *)"
+      "Bash(find *)",
+      "Bash(git log *)",
+      "Bash(git show *)"
     ]
   },
-  "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
-  },
-  "effortLevel": "high",
   "hooks": {
     "Notification": [
       {
@@ -38,5 +36,10 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "voiceEnabled": true
 }

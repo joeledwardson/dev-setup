@@ -20,6 +20,7 @@ return {
       { '<leader>Du', '<cmd>DBUIToggle<cr>', desc = '[D]B [t]oggle' },
       { '<leader>Ds', '<Plug>(DBUI_SaveQuery)', desc = '[D]B [S]ave query permanently' },
       { '<leader>tD', '<cmd>DBUIToggle<cr>', desc = '[t]oggle [D]adbod UI' },
+      { '<leader>Dv', '<Plug>(DBUI_SelectLineVsplit)', desc = '[t]oggle [D]adbod UI' },
     },
     init = function()
       vim.g.db_ui_use_nerd_fonts = 1

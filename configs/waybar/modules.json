@@ -5,6 +5,14 @@
     "tooltip-format": "btw"
   },
 
+  "custom/focus": {
+    "exec": "~/.config/hypr/scripts/waybar-focus.sh",
+    "return-type": "json",
+    "exec-on-event": false,
+    "restart-interval": 1,
+    "format": "Monitor Status"
+  },
+
   "hyprland/workspaces": {
     "disable-scroll": true,
     "all-outputs": false,
