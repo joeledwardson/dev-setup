@@ -5,13 +5,13 @@ hash = "e02a788e5b8ae0fb47fd0193dda589cc"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "0742fff"
-hash = "2bd799b42b8e42b8ef100310be71f8d1"
+rev = "406ce6c"
+hash = "f5afc904d5106ee368c8aa2ded43bd74"
 
 [[plugin.deps]]
 use = "AnirudhG07/rich-preview"
-rev = "843c3fa"
-hash = "b4040931f0d2f9670ddb4923e55cd881"
+rev = "7d616ad"
+hash = "d64feec9761392cbc250d199ab4b8a3a"
 
 [[plugin.deps]]
 use = "ciarandg/cd-git-root"
@@ -20,23 +20,23 @@ hash = "b84a85f3b513bd9c0a0ab93cc7c8e4c3"
 
 [[plugin.deps]]
 use = "MasouShizuka/projects"
-rev = "a5e33db"
-hash = "3de26efded35814ba3e55e28f1c389a4"
+rev = "198c2ba"
+hash = "5eeb4f0919ce6be5d941a9290c131d7d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "d1c8baa"
-hash = "56fdabc96fc1f4d53c96eb884b02a5be"
+rev = "1962818"
+hash = "187cc58ba7ac3befd49c342129e6f1b6"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "d1c8baa"
-hash = "435a2af56ecfb3d05755fd5e24977d8b"
+rev = "1962818"
+hash = "91937a4a9b779eabc6983e258befdfe9"
 
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "2093ab7"
-hash = "16a10359fc2a3cd8cc8bcfbe00f744d3"
+rev = "26a75da"
+hash = "53011ad6844fb69e57c946af21ddd3de"
 
 [[plugin.deps]]
 use = "macydnah/office"
@@ -45,20 +45,20 @@ hash = "5805affd3ae8adcb3c72b6997d21c0a6"
 
 [[plugin.deps]]
 use = "h-hg/yamb"
-rev = "22af003"
-hash = "7cc42012a7c2099f80064d228feb8d44"
+rev = "5f2e22e"
+hash = "699fe07e0d2d1b4af8dafb84168eeb04"
 
 [[plugin.deps]]
 use = "hankertrix/augment-command"
-rev = "120406f"
-hash = "e83ccc99739cd500fb1b1014dc45824a"
+rev = "681158d"
+hash = "63ed5325016895306781d13690b246bf"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:types"
-rev = "d1c8baa"
-hash = "1e047e1b13b5e3fc6ab1f5d0d04a14e2"
+rev = "1962818"
+hash = "4161cfa043b5ba3341d82c6869007b41"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
-rev = "5f56364"
-hash = "c0bf69ad2c44005892d586e9693993c6"
+rev = "8e6296f"
+hash = "d9da921c3bd37ba32ee27a8a7a40461f"
