@@ -45,9 +45,11 @@
     ~/.npmrc: ./configs/npmrc
     ~/.claude/CLAUDE.md: ./configs/claude/claude.md
     ~/.claude/settings.json: ./configs/claude/settings.json
+    ~/.claude/scripts: ./configs/claude/scripts
     ~/.local/bin/xdg-open: ./configs/bin/xdg-open
     ~/.ssh/config: ./configs/ssh/config
     ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
+    ~/.config/helix/config.toml: ./configs/helix/config.toml
 
 # create custom and monitors conf if doesnt exist
 - if:

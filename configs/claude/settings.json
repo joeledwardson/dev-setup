@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/joelyboy/dev-setup/configs/claude/notify-if-unfocused.sh 'Claude Code needs your attention'"
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh 'Claude Code needs your attention'"
           }
         ]
       }
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/joelyboy/dev-setup/configs/claude/notify-if-unfocused.sh 'Task complete'"
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh 'Task complete'"
           }
         ]
       }
@@ -40,6 +40,5 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "effortLevel": "high",
   "voiceEnabled": true
 }

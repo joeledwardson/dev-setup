@@ -1,0 +1,6 @@
+[keys.normal]
+G = "goto_file_end"
+0 = "goto_line_start"
+
+[editor]
+default-yank-register="+" 

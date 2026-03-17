@@ -9,6 +9,10 @@ filepath="/tmp/hypr-$(date +%s)"
 echo "$(date -u) got it: $WAYBAR_OUTPUT_NAME" >"$filepath"
 
 emit() {
+  mon_count=$(hyprctl monitors -j | jq -r '. | length')
+  if [ "$mon_count" = '1' ]; then
+    return
+  fi
   active=$(hyprctl activeworkspace -j | jq -r '.monitor')
   if [ "$active" = "$WAYBAR_OUTPUT_NAME" ]; then
     echo "$(date -u) outputting active for monitor $active and output $WAYBAR_OUTPUT_NAME!" >>"$filepath"
