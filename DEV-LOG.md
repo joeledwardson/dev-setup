@@ -2209,3 +2209,45 @@ Ok wow i found something today i cannot believe it took me this long to find?
 ```
 
 whilst in vim dadbod mode will only execute selected text as a query - kind of like filip does in DBeaver - which is awesome!
+
+
+### Neovim display corruption on terminal resize
+Ghost lines, black spots, misaligned rendering when resizing (fullscreen toggle, zellij pane resize).
+
+**Only happens inside zellij** — confirmed no issue in bare kitty terminal.
+
+**Cause:** Neovim's CSI 2026 (`termsync` / synchronized output) misimplementation conflicts with zellij's terminal emulation layer. Zellij acts as terminal-within-a-terminal and must relay escape sequences — mismatch causes artifacts. Zellij creator confirmed: "99% a misimplementation of CSI 2026 by nvim." ([neovim#29427](https://github.com/neovim/neovim/issues/29427), [zellij#426](https://github.com/zellij-org/zellij/issues/426), [zellij#3415](https://github.com/zellij-org/zellij/issues/3415))
+
+**Fix** — disable termsync in nvim config:
+```lua
+vim.o.termsync = false
+```
+
+**Other things that help:**
+- Set `TERM=xterm-256color` inside zellij (avoid `xterm-kitty` etc)
+- `Ctrl-L` to manually force redraw
+- If using noice.nvim, set notify stages to `"static"` ([zellij#3208](https://github.com/zellij-org/zellij/issues/3208))
+
+### Yazi image/video previews black in zellij
+Yazi mediainfo plugin shows black screen for both image and video previews.
+
+**Only happens inside zellij** — confirmed previews work fine in bare kitty terminal.
+
+**Cause:** Likely zellij doesn't support passthrough for the kitty graphics protocol, which yazi uses to render inline images. Zellij's terminal emulation layer can't relay the graphics escape sequences properly. ([zellij#1796](https://github.com/zellij-org/zellij/issues/1796))
+
+### Helix — vim equivalent workflows
+Helix is selection-first (select then act) vs vim's verb-first (act then motion). Here's the mapping for common vim workflows:
+
+| Vim | Helix | Notes |
+|-----|-------|-------|
+| `V` (visual line) | `x` to select line, repeat `x` to extend | No true visual line mode. `X` extends selection to line bounds |
+| `G` (go to EOF) | `ge` (goto mode → end) | Remapped to `G` in config |
+| `0` (start of line) | `gh` (goto line start) | Remapped to `0` in config |
+| `yy` / `3yy` (yank lines) | `xy` (select line + yank), `xxx...y` for multi | Select first, then yank. Or `3x` doesn't work — just repeat `x` |
+| `Ctrl-o` (jump back) | `Ctrl-o` | Same — jumplist back |
+| `Ctrl-i` / `Tab` (jump forward) | `Ctrl-i` / `Tab` | Same — jumplist forward |
+| Tabs / buffers | `:buffer-next`, `:buffer-previous` | No tab bar. Use buffer picker `Space+b` to list open buffers |
+
+| `:e` (reload file) | `:reload` or `:rl` | `:e` in helix opens a file instead, use `:reload` to refresh current buffer |
+
+Key mental shift: in helix you **select first, then act**. So "delete 3 lines" is `xxd` not `3dd`. Takes getting used to but means you always see what you're about to affect before doing it.
