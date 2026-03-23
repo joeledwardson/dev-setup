@@ -2246,8 +2246,23 @@ Helix is selection-first (select then act) vs vim's verb-first (act then motion)
 | `yy` / `3yy` (yank lines) | `xy` (select line + yank), `xxx...y` for multi | Select first, then yank. Or `3x` doesn't work — just repeat `x` |
 | `Ctrl-o` (jump back) | `Ctrl-o` | Same — jumplist back |
 | `Ctrl-i` / `Tab` (jump forward) | `Ctrl-i` / `Tab` | Same — jumplist forward |
-| Tabs / buffers | `:buffer-next`, `:buffer-previous` | No tab bar. Use buffer picker `Space+b` to list open buffers |
-
+| Tabs / buffers | `Space+b` (picker), `gn`/`gp` (next/prev) | `:buffer-close` (`:bc`) to close, `:buffer-close-others` for all but current |
+| `gx` (open URL) | `gf` | Opens URLs via `xdg-open`, files in helix (24.7+) |
+| `:bd` (close buffer) | `:buffer-close` or `:bc` | `:buffer-close!` without saving, `:buffer-close-all` for all |
+| `:mksession` (sessions) | N/A | Not implemented yet — [#401](https://github.com/helix-editor/helix/issues/401), [#899](https://github.com/helix-editor/helix/discussions/899) |
 | `:e` (reload file) | `:reload` or `:rl` | `:e` in helix opens a file instead, use `:reload` to refresh current buffer |
+| `{` / `}` (paragraph jump) | `[p` / `]p` | Selects to the paragraph boundary (helix selection-first) |
+| `Ctrl-e` / `Ctrl-y` (scroll) | `Ctrl-e` / `Ctrl-y` | Requires [keybind in config](https://docs.helix-editor.com/keymap.html) — not bound by default |
+| `:help` / key lookup | `Space+?` | Search all keybindings interactively |
+| Markdown preview | `gh markdown-preview FILE` | [gh-markdown-preview](https://github.com/yusukebe/gh-markdown-preview) — browser preview with live reload |
+| Quickfix list / search results | `Space+/` (global search) | Results in picker, `n`/`N` to jump between matches in-buffer |
+| `%` (matching bracket) | `mm` (match mode → match) | Jumps to matching bracket/paren/tag |
+| `f`/`F` (find char) | `f`/`F` | Same but works **across multiple lines** (vim is single-line only) |
+| `t`/`T` (till char) | `t`/`T` | Same but works **across multiple lines** (vim is single-line only) |
+| `}` (jump to next paragraph) | `]p;` | `]p` selects to next paragraph, `;` collapses selection to cursor (`collapse_selection`) |
+| `V}}}}y` (visual line, 4 paragraphs, yank) | `xv]p]p]p]py` | `x` select line, `v` enter extend mode (motions extend instead of replace), `]p` ×4, `y` yank |
 
 Key mental shift: in helix you **select first, then act**. So "delete 3 lines" is `xxd` not `3dd`. Takes getting used to but means you always see what you're about to affect before doing it.
+
+
+

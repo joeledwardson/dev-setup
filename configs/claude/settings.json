@@ -10,7 +10,10 @@
       "Bash(rg *)",
       "Bash(find *)",
       "Bash(git log *)",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "Bash(gh issue view *)",
+      "Bash(gh search *)"
+
     ]
   },
   "hooks": {
@@ -40,5 +43,6 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "effortLevel": "high"
 }
