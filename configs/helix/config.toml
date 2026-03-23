@@ -1,6 +1,18 @@
 [keys.normal]
 G = "goto_file_end"
 0 = "goto_line_start"
+C-e = "scroll_down"
+C-y = "scroll_up"
+"{" = "goto_prev_paragraph"
+"}" = "goto_next_paragraph"
+
+[keys.normal.g]
+P = "move_parent_node_start"
 
 [editor]
+line-number = "relative"
 default-yank-register="+" 
+bufferline = "always"   # or "multiple" to only show when >1 buffer open
+
+[editor.soft-wrap]
+enable = true

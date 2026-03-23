@@ -306,7 +306,6 @@ keybinds clear-defaults=true {
 }
 
 // explicit nvim editor for srcollback
-// scrollback_editor "~/.config/zellij/nvim-bash.sh"
 scrollback_editor "nvim"
 
 // Plugin aliases - can be used to change the implementation of Zellij
