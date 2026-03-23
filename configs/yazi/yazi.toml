@@ -6,6 +6,10 @@ sort_by = "mtime"
 sort_reverse = true
 
 
+[preview]
+max_width = 600
+max_height = 400
+
 [plugin]
   prepend_preloaders = [
     ## from mediainfo plugin

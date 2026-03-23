@@ -300,6 +300,7 @@ keybinds clear-defaults=true {
         bind "Alt y" {
             LaunchOrFocusPlugin "zellij-forgot" {
                 floating true
+                "Tab (in tab mode)" "Go to last used tab toggle"
             }
         }
     }
