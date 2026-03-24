@@ -10,7 +10,8 @@
       "Bash(rg *)",
       "Bash(find *)",
       "Bash(git log *)",
-      "Bash(git show *)"
+      "Bash(git show *)",
+      "Bash(which *)"
     ]
   },
   "hooks": {

@@ -18,6 +18,8 @@ in {
     alacritty
     kitty
     wezterm
+    foot
+    ghostty
 
     ### graphical applications
     networkmanagerapplet # includes nm-applet (used in polybar)
@@ -73,7 +75,6 @@ in {
     zenity
     # hyprdynamicmonitors from custom github url
     inputs.hyprdynamicmonitors.packages.${pkgs.system}.default
-
 
     # video editing
     shotcut

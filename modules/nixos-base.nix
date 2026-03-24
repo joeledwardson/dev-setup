@@ -185,15 +185,14 @@
     lazydocker
     graphviz # required for madge npm package
     tomato-c # pomodoro
-    ncdu
-    # TODO
-    gdu # replacement for ncdu? give it a go
-    tmuxai
+    duf
+    gdu # replacement for ncdu
 
     ### CLI tools
     tldr
     bat
     gh
+    gh-markdown-preview
     glab
     tmux
     fzf
@@ -243,6 +242,7 @@
     shfmt
     sqlfluff
     systemd-lsp
+    ueberzug
 
     # other editors
     helix # lets try this out!
@@ -274,11 +274,12 @@
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.claude-code # always want latest claude code
 
-    # UPDATE 2026-02: remove as it breaks in lastest version - not really using it atm
-    # (pkgs-unstable.llm.withPlugins {
-    #   llm-anthropic = true;
-    #   llm-openai-plugin = true;
-    # })
+    # try llm again for quick access to gemini
+    (pkgs-unstable.llm.withPlugins {
+      llm-gemini = true;
+      #   llm-anthropic = true;
+      #   llm-openai-plugin = true;
+    })
 
     ### user packages
     pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server

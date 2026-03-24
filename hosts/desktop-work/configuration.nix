@@ -40,6 +40,16 @@
 
   };
 
+  # mount spare disk
+  fileSystems."/mnt/joelyboy/spare" = {
+    device = "/dev/disk/by-label/SPARE-DISK";
+    fsType = "ext4";
+    options = [
+      "nofail" # prevent system failure if disk is missing/broken
+      "rw"
+    ];
+  };
+
   networking.hostName = "desktop-work"; # Define your hostname.
   services.tailscale.enable = true;
   programs.obs-studio = {

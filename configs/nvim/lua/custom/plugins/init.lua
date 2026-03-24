@@ -27,10 +27,10 @@ end, { silent = true, noremap = true, desc = 'toggle signature' })
 vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
 vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
 
-vim.keymap.set('n', '<Esc>', function()
-  vim.cmd 'nohlsearch' -- Clear search highlighting
-  require('notify').dismiss { pending = true, silent = true }
-end, { desc = 'dismiss notify popup and clear hlsearch' })
+-- vim.keymap.set('n', '<Esc>', function()
+--   vim.cmd 'nohlsearch' -- Clear search highlighting
+--   require('notify').dismiss { pending = true, silent = true }
+-- end, { desc = 'dismiss notify popup and clear hlsearch' })
 vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
@@ -230,170 +230,12 @@ return {
     },
     opts_extend = { 'sources.default' },
   },
-  {
-    'lewis6991/satellite.nvim',
-    -- TODO: disable for now, is it causing redraw issues?
-    enabled = false,
-    config = function()
-      require('satellite').setup {
-        current_only = false,
-        winblend = 50,
-        zindex = 40,
-        excluded_filetypes = {},
-        width = 2,
-        handlers = {
-          cursor = {
-            enable = true,
-            -- Supports any number of symbols
-            symbols = { '⎺', '⎻', '⎼', '⎽' },
-            -- symbols = { '⎻', '⎼' }
-            -- Highlights:
-            -- - SatelliteCursor (default links to NonText
-          },
-          search = {
-            enable = true,
-            -- Highlights:
-            -- - SatelliteSearch (default links to Search)
-            -- - SatelliteSearchCurrent (default links to SearchCurrent)
-          },
-          diagnostic = {
-            enable = true,
-            signs = { '-', '=', '≡' },
-            min_severity = vim.diagnostic.severity.HINT,
-            -- Highlights:
-            -- - SatelliteDiagnosticError (default links to DiagnosticError)
-            -- - SatelliteDiagnosticWarn (default links to DiagnosticWarn)
-            -- - SatelliteDiagnosticInfo (default links to DiagnosticInfo)
-            -- - SatelliteDiagnosticHint (default links to DiagnosticHint)
-          },
-          gitsigns = {
-            enable = true,
-            signs = { -- can only be a single character (multibyte is okay)
-              add = '│',
-              change = '│',
-              delete = '-',
-            },
-            -- Highlights:
-            -- SatelliteGitSignsAdd (default links to GitSignsAdd)
-            -- SatelliteGitSignsChange (default links to GitSignsChange)
-            -- SatelliteGitSignsDelete (default links to GitSignsDelete)
-          },
-          marks = {
-            enable = true,
-            show_builtins = false, -- shows the builtin marks like [ ] < >
-            key = 'm',
-            -- Highlights:
-            -- SatelliteMark (default links to Normal)
-          },
-          quickfix = {
-            signs = { '-', '=', '≡' },
-            -- Highlights:
-            -- SatelliteQuickfix (default links to WarningMsg)
-          },
-        },
-      }
-    end,
-  },
-  {
-    'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
-    opts = {},
-    ft = 'markdown',
-    config = function()
-      require('render-markdown').setup { enabled = false }
-    end,
-    keys = { {
-      '<leader>tm',
-      function()
-        require('render-markdown').toggle()
-      end,
-      desc = 'toggle markdown render',
-    } },
-  },
+
   {
     'folke/todo-comments.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' },
     event = 'VimEnter',
     opts = {},
-  },
-  -- install without yarn or npm
-  {
-    'iamcco/markdown-preview.nvim',
-    lazy = false,
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    ft = { 'markdown' },
-    build = function()
-      vim.fn['mkdp#util#install']()
-    end,
-    init = function()
-      vim.cmd [[
-        function! OpenMarkdownPreview(url)
-          " Default to the original URL (fallback)
-          let l:final_url = a:url
-          
-          try
-            " 1. Try to fetch the preferred source IP
-            let l:cmd = "ip -j route get 1.1.1.1 | jq -r '.[0].prefsrc'"
-            let l:ip = trim(system(l:cmd))
-
-            " 2. Validate: If command failed (exit code != 0) or IP is empty, abort
-            if v:shell_error != 0 || empty(l:ip)
-              throw "IP detection command returned error or empty"
-            endif
-
-            " 3. Success: Swap localhost for the real IP
-            let l:final_url = substitute(a:url, 'localhost\|127.0.0.1', l:ip, 'g')
-
-          catch
-            " 4. Failure: Log the error but keep l:final_url as localhost
-            echomsg "Warning: IP detection failed (" . v:exception . "). Using localhost."
-          endtry
-
-          " 5. Set Register + Manual OSC52 Trigger
-          let @+ = l:final_url
-          lua require('osc52').copy_register('+')
-
-          " then open
-          let l:open_cmd = printf("xdg-open %s", l:final_url)
-          let l:result = system(l:open_cmd)
-          if v:shell_error != 0
-            echohl ErrorMsg | echomsg "xdg-open failed: " . l:result | echohl None
-          endif
-
-          " 6. Feedback
-          redraw!
-          echomsg "Preview URL Copied: " . l:final_url
-        endfunction
-
-
-        " open to all ips
-        let g:mkdp_open_to_the_world = 1
-        " Tell the plugin to use this function
-        let g:mkdp_browserfunc = 'OpenMarkdownPreview'
-      ]]
-    end,
-    keys = { { '<leader>tp', ':MarkdownPreviewToggle<CR>', desc = 'toggle markdown preview' } },
-  },
-  {
-    'Bekaboo/dropbar.nvim',
-    -- TODO: re-enable this? not sure if causing rendering issues with zellij
-    enabled = false,
-    lazy = false,
-    -- optional, but required for fuzzy finder support
-    dependencies = {
-      'nvim-telescope/telescope-fzf-native.nvim',
-      build = 'make',
-    },
-    config = function()
-      local dropbar_api = require 'dropbar.api'
-      vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
-      vim.keymap.set('n', '[;', dropbar_api.goto_context_start, { desc = 'Go to start of current context' })
-      vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
-    end,
   },
   {
     'ojroques/nvim-osc52',
@@ -417,14 +259,22 @@ return {
   -- syntax highlighting for alloy files
   {
     'grafana/vim-alloy',
+    ft = 'alloy',
   },
-  -- in case not using noice
-  {
-    'rcarriga/nvim-notify',
-  },
-  -- ansiblels requires file type 'yaml.ansible' (see config here: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ansiblels), this plugin sets that up (plus other things i dont use)
   {
     'mfussenegger/nvim-ansible',
+    ft = { 'yaml', 'yaml.ansible' },
+  },
+  {
+    '3rd/image.nvim',
+    event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg',
+    build = false,
+    opts = {
+      backend = 'ueberzug',
+      processor = 'magick_cli',
+      max_width_window_percentage = 80,
+      max_height_window_percentage = 60,
+    },
   },
   {
     'gbprod/yanky.nvim',
@@ -437,14 +287,10 @@ return {
       { '<leader>y', '<cmd>YankyRingHistory<cr>', mode = { 'n', 'x' }, desc = 'Open Yank History' },
     },
   },
-  -- TODO: needed? could be useful for sorting text file lines sometimes, added a while ago
   {
     'sQVe/sort.nvim',
-    config = function()
-      require('sort').setup {
-        -- Optional configuration overrides.
-      }
-    end,
+    cmd = 'Sort',
+    opts = {},
   },
   {
     'swaits/zellij-nav.nvim',
@@ -457,6 +303,16 @@ return {
       { '<c-l>', '<cmd>ZellijNavigateRight<cr>', { silent = true, desc = 'navigate right' } },
     },
     opts = {},
+  },
+  {
+    'aaronik/treewalker.nvim',
+    opts = {},
+    keys = {
+      { '<C-S-k>', '<cmd>Treewalker Up<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Up' },
+      { '<C-S-j>', '<cmd>Treewalker Down<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Down' },
+      { '<C-S-h>', '<cmd>Treewalker Left<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Left' },
+      { '<C-S-l>', '<cmd>Treewalker Right<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Right' },
+    },
   },
   {
     'chentoast/marks.nvim',
@@ -763,5 +619,12 @@ return {
         desc = 'Toggle Flash Search',
       },
     },
+  },
+  -- really useful to see lsp loading for big projects and a percentage
+  {
+    'linrongbin16/lsp-progress.nvim',
+    config = function()
+      require('lsp-progress').setup()
+    end,
   },
 }

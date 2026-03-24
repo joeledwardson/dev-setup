@@ -424,11 +424,16 @@ require('lazy').setup {
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         defaults = {
+          sorting_strategy = 'ascending',
+          layout_config = {
+            prompt_position = 'top',
+          },
           mappings = {
             i = {
               ['<c-enter>'] = 'to_fuzzy_refine',
               ['<C-l>'] = actions.cycle_history_next,
               ['<C-h>'] = actions.cycle_history_prev,
+              ['<Esc>'] = actions.close,
             },
           },
         },
@@ -510,27 +515,6 @@ require('lazy').setup {
   },
 
   -- LSP Plugins
-  {
-    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-    -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
-    ft = 'lua',
-    dependencies = {
-      { 'justinsgithub/wezterm-types', lazy = true },
-      { 'MeanderingProgrammer/render-markdown.nvim', lazy = true },
-    },
-    -- TODO
-    opts = {
-      library = {
-        -- Load luvit types when the `vim.uv` word is found
-        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
-        -- Other library configs...
-        { path = 'wezterm-types', mods = { 'wezterm' } },
-        -- Yazi types from yazi config plugins
-        { path = vim.fn.expand '~/.config/yazi/plugins/types.yazi' },
-      },
-    },
-  },
   { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
@@ -543,7 +527,7 @@ require('lazy').setup {
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim', opts = { notification = { override_vim_notify = true } } },
       { 'b0o/schemastore.nvim' },
     },
     config = function()
@@ -1233,17 +1217,6 @@ require('lazy').setup {
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
-  -- Add this entry:
-  {
-    'ethanholz/nvim-lastplace',
-    config = function()
-      require('nvim-lastplace').setup {
-        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
-        lastplace_ignore_filetype = { 'gitcommit', 'gitrebase', 'svn', 'hgcommit' },
-        lastplace_open_folds = true,
-      }
-    end,
-  },
   {
     'nvim-telescope/telescope-file-browser.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
@@ -1269,15 +1242,6 @@ require('lazy').setup {
     end,
   },
 
-  { 'nvim-focus/focus.nvim', version = false }, -- Lua
-  {
-    'folke/twilight.nvim',
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-  },
   {
     'debugloop/telescope-undo.nvim',
     dependencies = { -- note how they're inverted to above example
@@ -1318,10 +1282,6 @@ require('lazy').setup {
       -- telescope.load_extension 'live-grep-args'
     end,
   },
-  {
-    'rafcamlet/nvim-luapad',
-  },
-  { 'mbbill/undotree' },
 
   { import = 'custom.plugins' },
 

@@ -5,6 +5,11 @@ on = [ "c", "b" ]
 run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]
 
 [[mgr.prepend_keymap]]
+on = [ "g", "f" ]
+run = "plugin first-file"
+desc = "Jump to first file (skip dirs)"
+
+[[mgr.prepend_keymap]]
 on = [ "g", "?" ]
 run = "help"
 desc = "Open help"

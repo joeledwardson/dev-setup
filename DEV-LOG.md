@@ -2153,6 +2153,9 @@ Quick reminder of a comment to set vim file type (but this catch 22 - vim needs 
 # vim: set ft=yaml sw=2 ts=2 et :
 ```
 
+### Command-line window (`q:`)
+`q:` opens an editable buffer of command history — not just for searching, you can actually edit commands in it like a normal buffer (yank, paste, modify), then hit `Enter` on a line to execute. Also accessible via `<C-f>` from the `:` prompt.
+
 ### Completion broken again (autopairs referencing nvim-cmp)
 Completion stopped working again. Previous investigation (see "Nvim glitching after zellij layout change" above) found lspsaga was the cause - disabled it, fixed it.
 
@@ -2209,3 +2212,137 @@ Ok wow i found something today i cannot believe it took me this long to find?
 ```
 
 whilst in vim dadbod mode will only execute selected text as a query - kind of like filip does in DBeaver - which is awesome!
+
+
+### Opening a blank buffer
+- `:enew` — opens a new blank buffer in the current window (mnemonic: **e**dit **new**)
+- `:new` — opens a new blank buffer in a horizontal split
+- `:vnew` — opens a new blank buffer in a vertical split
+
+### Vim: Redirect command output to register
+`:new | put =execute('SomeCommand')` — this opens a new scratch buffer and pastes the output of any ex command into it. Breakdown:
+- `:new` — opens a new empty split
+- `put =` — puts the result of an expression into the buffer
+- `execute('...')` — runs an ex command and captures its output as a string
+
+So `execute('Fidget history')` runs `:Fidget history` and returns the output text, then `put =` pastes it into the buffer where you can search with `/`.
+
+Works with any command, e.g. `:new | put =execute('messages')`, `:new | put =execute('map')`
+
+Ok so (ME not claude as of now...)
+
+`|` is not actually what i thought like a pipe in bash, it is actually just like `;` in bash (see `:h :bar` in vim)
+
+So in this case we are just saying `:new` to open a new buffer and THEN `:put` to dump the output of the register
+
+**Gotcha: `|` doesn't work with all commands.** Some commands treat `|` as part of their own arguments instead of as a command separator. User-defined commands (from plugins) do this by default unless the plugin author explicitly opted in to `|` separation with `-bar` (see `:h command-bar`). So:
+```vim
+:OutlineFocus | OutlineClose   " BROKEN — OutlineClose is passed as an arg to OutlineFocus
+```
+Fix: use `<cmd>...<cr>` chaining in a keymap, or just use separate commands. In ex mode, there's no clean workaround — run them separately:
+```vim
+:OutlineFocus
+:OutlineClose
+```
+Or in a keymap:
+```lua
+vim.keymap.set("n", "<leader>X", function()
+  vim.cmd("OutlineFocus")
+  vim.cmd("OutlineClose")
+end)
+```
+
+e.g.
+```vim
+let @b='pls'
+:put b
+```
+dumps 'pls' into current buffer
+
+i did try this
+```vim
+:put = execute('echo "hi there"')
+```
+BUT echo doesn't return to a buffer so it wouldn't work. WAIT IGNORE. just needed to escape the " with
+```vim
+:put = execute('echo \"hi there\"')
+```
+
+....or...
+```vim
+:put = 'hi there'
+```
+
+
+
+### Vim registers and the `"` prefix
+Registers in vim are accessed with `"` (double quote) in normal mode.
+
+**Special registers:**
+
+| Register | Description | Example |
+| :--- | :--- | :--- |
+| `"+` | System clipboard | `"+y` yank to clipboard, `let @+=expand('%:p')` copy file path to clipboard |
+| `"=` | Expression register — evaluates vimscript | `put =execute('Fidget history')` dumps command output into buffer |
+| `"0` | Last yank | `"0p` paste what you last yanked (not deleted) |
+| `""` | Default (unnamed) | `p` pastes from here by default |
+
+> to see help can use vims special 'quote' like `:h quote=` is equivalent to `:h "=`
+
+**Accessing registers — `"` vs `@`:**
+
+| Syntax | Context | Example |
+| :--- | :--- | :--- |
+| `"` | Normal mode — select register before an operator | `"ay` yank into `a`, `"+p` paste from clipboard |
+| `@` | Ex commands / vimscript — read/write registers | `let @+ = expand('%:p')`, `@a` execute macro |
+
+**Why `quote=` in vim help?**
+Vim help spells `"` as `quote` in its help tags, so `:h quote=` means "help for the `"=` register", `:h quotea` for `"a`, etc.
+
+### GH issues
+I should really learn this.... so search for issues
+
+have to specify `--repo` then just gh search issues...
+```bash
+➜ joelyboy dev-setup (main) ✗ gh search issues "fuzzy search" --repo 'folke/which-key.nvim'
+
+Showing 1 of 1 issues
+
+REPO                  ID    TITLE                                  LABELS  UPDATED
+folke/which-key.nvim  #648  bug: Which Key seems to affect keymap  bug     about 1 year ago
+➜ joelyboy dev-setup (main) ✗
+```
+
+Ok so it turned out the relevant issue i was looking for is a discussion ([here](https://github.com/folke/which-key.nvim/discussions/527)) and gh api doesnt support discussions....
+
+### Disk space cheat sheet
+
+| Command | What it shows | Notes |
+| :--- | :--- | :--- |
+| `df -H` | All mounted filesystems with size/used/avail | Overview of disk usage per mount |
+| `lsblk -f` | Tree of disks, partitions, fstype, label, mountpoint | Good quick overview of block devices |
+| `du -sh <folder>` | Total size of a specific folder | e.g. `du -sh /home` or `du -sh /nix/store` |
+| `sudo parted -l` | All disks and partitions | Does NOT show free space |
+| `sudo parted /dev/xxx print free` | Partitions + free gaps on a specific disk | Only way to see unallocated space in parted |
+| `sudo cfdisk /dev/xxx` | TUI partition viewer with visual blocks + free space | Nice for a quick visual, quit without saving to just view |
+| `gdu` / `ncdu` | Interactive TUI drill-down into disk usage | Like a fancy `du` |
+| `duf` | Pretty colorized `df` replacement with bars |  |
+
+To list all block devices (the `/dev/xxx` names for cfdisk/parted):
+```bash
+lsblk
+```
+
+**Why `nix-tree` shows 30GB but `/nix/store` is 122GB:**
+`nix-tree` only shows the **closure** of the current system profile — the set of packages reachable from this generation. `/nix/store` also contains old generations, cached build deps, devenv shells, and anything not yet garbage collected. Run `sudo nix-collect-garbage -d` to prune old generations (careful: removes rollback ability).
+
+**Does the math add up? (March 2026)**
+```
+/home          =  94 GB
+/nix/store     = 122 GB
+swap file      =  32 GB  (configured in nixos-base.nix)
+/var + other   = ~49 GB  (postgres data, logs, docker leftovers, tmp, etc.)
+               --------
+total          ≈ 297 GB  ✓ (matches df -H)
+```
+
