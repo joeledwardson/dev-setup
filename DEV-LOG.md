@@ -2346,3 +2346,100 @@ swap file      =  32 GB  (configured in nixos-base.nix)
 total          ≈ 297 GB  ✓ (matches df -H)
 ```
 
+
+
+### Neovim display corruption on terminal resize
+Ghost lines, black spots, misaligned rendering when resizing (fullscreen toggle, zellij pane resize).
+
+**Only happens inside zellij** — confirmed no issue in bare kitty terminal.
+
+**Cause:** Neovim's CSI 2026 (`termsync` / synchronized output) misimplementation conflicts with zellij's terminal emulation layer. Zellij acts as terminal-within-a-terminal and must relay escape sequences — mismatch causes artifacts. Zellij creator confirmed: "99% a misimplementation of CSI 2026 by nvim." ([neovim#29427](https://github.com/neovim/neovim/issues/29427), [zellij#426](https://github.com/zellij-org/zellij/issues/426), [zellij#3415](https://github.com/zellij-org/zellij/issues/3415))
+
+**Fix** — disable termsync in nvim config:
+```lua
+vim.o.termsync = false
+```
+
+**Other things that help:**
+- Set `TERM=xterm-256color` inside zellij (avoid `xterm-kitty` etc)
+- `Ctrl-L` to manually force redraw
+- If using noice.nvim, set notify stages to `"static"` ([zellij#3208](https://github.com/zellij-org/zellij/issues/3208))
+
+### Yazi image/video previews black in zellij
+Yazi mediainfo plugin shows black screen for both image and video previews.
+
+**Only happens inside zellij** — confirmed previews work fine in bare kitty terminal.
+
+**Cause:** Likely zellij doesn't support passthrough for the kitty graphics protocol, which yazi uses to render inline images. Zellij's terminal emulation layer can't relay the graphics escape sequences properly. ([zellij#1796](https://github.com/zellij-org/zellij/issues/1796))
+
+### Helix — vim equivalent workflows
+Helix is selection-first (select then act) vs vim's verb-first (act then motion). Here's the mapping for common vim workflows:
+
+| Vim | Helix | Notes |
+|-----|-------|-------|
+| `V` (visual line) | `x` to select line, repeat `x` to extend | No true visual line mode. `X` extends selection to line bounds |
+| `G` (go to EOF) | `ge` (goto mode → end) | Remapped to `G` in config |
+| `0` (start of line) | `gh` (goto line start) | Remapped to `0` in config |
+| `yy` / `3yy` (yank lines) | `xy` (select line + yank), `xxx...y` for multi | Select first, then yank. Or `3x` doesn't work — just repeat `x` |
+| `Ctrl-o` (jump back) | `Ctrl-o` | Same — jumplist back |
+| `Ctrl-i` / `Tab` (jump forward) | `Ctrl-i` / `Tab` | Same — jumplist forward |
+| Tabs / buffers | `Space+b` (picker), `gn`/`gp` (next/prev) | `:buffer-close` (`:bc`) to close, `:buffer-close-others` for all but current |
+| `gx` (open URL) | `gf` | Opens URLs via `xdg-open`, files in helix (24.7+) |
+| `:bd` (close buffer) | `:buffer-close` or `:bc` | `:buffer-close!` without saving, `:buffer-close-all` for all |
+| `:mksession` (sessions) | N/A | Not implemented yet — [#401](https://github.com/helix-editor/helix/issues/401), [#899](https://github.com/helix-editor/helix/discussions/899) |
+| `:e` (reload file) | `:reload` or `:rl` | `:e` in helix opens a file instead, use `:reload` to refresh current buffer |
+| `{` / `}` (paragraph jump) | `[p` / `]p` | Selects to the paragraph boundary (helix selection-first) |
+| `Ctrl-e` / `Ctrl-y` (scroll) | `Ctrl-e` / `Ctrl-y` | Requires [keybind in config](https://docs.helix-editor.com/keymap.html) — not bound by default |
+| `:help` / key lookup | `Space+?` | Search all keybindings interactively |
+| Markdown preview | `gh markdown-preview FILE` | [gh-markdown-preview](https://github.com/yusukebe/gh-markdown-preview) — browser preview with live reload |
+| Quickfix list / search results | `Space+/` (global search) | Results in picker, `n`/`N` to jump between matches in-buffer |
+| `%` (matching bracket) | `mm` (match mode → match) | Jumps to matching bracket/paren/tag |
+| `f`/`F` (find char) | `f`/`F` | Same but works **across multiple lines** (vim is single-line only) |
+| `t`/`T` (till char) | `t`/`T` | Same but works **across multiple lines** (vim is single-line only) |
+| `}` (jump to next paragraph) | `]p;` | `]p` selects to next paragraph, `;` collapses selection to cursor (`collapse_selection`) |
+| `V}}}}y` (visual line, 4 paragraphs, yank) | `xv]p]p]p]py` | `x` select line, `v` enter extend mode (motions extend instead of replace), `]p` ×4, `y` yank |
+
+Key mental shift: in helix you **select first, then act**. So "delete 3 lines" is `xxd` not `3dd`. Takes getting used to but means you always see what you're about to affect before doing it.
+
+
+## March 2026
+
+#### Zellij + Image Preview (Yazi) — Why It's Broken
+
+**The problem:** yazi image preview works in zellij but **large or wide images corrupt the entire zellij render** — the screen becomes garbled and unusable.
+
+**Root cause:** Zellij acts as a middleman for terminal graphics. When an image's pixel dimensions exceed the pane boundaries, the sixel/kitty image data bleeds past what zellij expects, corrupting its internal screen buffer. Zellij redraws fail to recover because the image escape sequences have already overwritten cell state. This is a known zellij limitation — multiplexers have to parse and clip image output, and zellij's clipping is incomplete for oversized images.
+
+| Component | What it does | Status / Notes |
+|---|---|---|
+| **Foot** | Terminal emulator, supports **sixel** natively. Does NOT support Kitty graphics protocol. | Works. Chosen over Kitty because Kitty causes random nvim rendering glitches (likely Kitty's own escape sequence handling conflicting with nvim's TUI redraw) |
+| **Kitty (terminal)** | Terminal emulator with its own **Kitty graphics protocol** for images. | Dropped — causes random nvim rendering artifacts. Kitty graphics protocol also doesn't help inside zellij since zellij must intercept and re-emit it |
+| **Zellij** | Terminal multiplexer. v0.40+ added passthrough support for both sixel and Kitty graphics protocol. | Passthrough works for normal-sized images. **Breaks on oversized images** — the image data exceeds pane bounds and corrupts zellij's screen state |
+| **Sixel** | Image protocol — encodes images as escape sequences inline in terminal output. Foot supports it, zellij 0.40+ passes it through. | The protocol yazi should use with Foot. Auto-detection inside zellij can pick wrong protocol — force with `YAZI_IMAGE_PROTOCOL=sixel` if needed |
+| **Kitty graphics protocol** | Alternative image protocol. Requires Kitty terminal (or compatible). | Irrelevant with Foot — Foot doesn't support it. Setting `TERM=xterm-kitty` in Foot is wrong and causes breakage |
+| **Überzugpp** | External process that renders images by drawing over the terminal window using X11/Wayland compositing (not terminal escape sequences). | A workaround for terminals/multiplexers that don't support inline image protocols. Unnecessary with Foot+Zellij since both support sixel natively. Can cause its own positioning issues in multiplexers |
+| **Yazi** | File manager with image preview. Auto-detects image protocol but can get confused inside zellij. | Works mostly. The oversized image → zellij corruption is the remaining issue. Not a yazi bug per se — yazi sends valid image data, zellij fails to clip it |
+| **`TERM=xterm-kitty`** | Env var hack to trick apps into using Kitty protocol. | **Don't do this.** Foot doesn't speak Kitty protocol. Let Foot set its own `TERM=foot` |
+
+**Current status:** images preview fine until a large image is selected, then zellij's rendering breaks. This is a zellij-side bug with oversized image clipping. No clean workaround yet — can mitigate by setting max preview dimensions in yazi or waiting for a zellij fix.
+
+**Possible mitigation** — cap yazi preview size in `yazi.toml`:
+```toml
+[preview]
+max_width = 600
+max_height = 400
+```
+
+**Related GitHub issues:**
+
+| Issue | Repo | Summary |
+|---|---|---|
+| [#2048](https://github.com/zellij-org/zellij/issues/2048) | zellij | Sixel images distorted, excessive bottom padding, scrolling breaks image and overwrites screen buffer, can crash zellij |
+| [#3981](https://github.com/zellij-org/zellij/issues/3981) | zellij | Sixel artifacts remain on status bar and other areas after clearing, not reliably cleaned up |
+| [#4124](https://github.com/zellij-org/zellij/issues/4124) | zellij | Many sixel images cause zellij to slow down, hang, and become unresponsive |
+| [#4336](https://github.com/zellij-org/zellij/issues/4336) | zellij | Yazi image preview support — notes zellij's sixel is "quite buggy with serious performance issues", lagginess, tearing |
+| [#334](https://github.com/sxyazi/yazi/issues/334) | yazi | Tracking issue for previews in zellij — sixel corruption when running yazi through zellij |
+| [#1936](https://github.com/sxyazi/yazi/issues/1936) | yazi | Image preview overflow on large images — image bleeds outside preview area |
+| [#3308](https://github.com/sxyazi/yazi/issues/3308) | yazi | Images exceeding 10,000px in any dimension won't display even with config allowing it |
+
+

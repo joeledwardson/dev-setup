@@ -94,6 +94,14 @@
   services.syncthing.user = "jollof";
 
   # =======================================
+  # Ollama (local LLMs)
+  # =======================================
+  services.ollama = {
+    enable = true;
+    loadModels = [ "qwen3:4b" ];
+  };
+
+  # =======================================
   # Graphics
   # =======================================
   hardware.graphics = {

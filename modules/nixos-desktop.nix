@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, inputs, ... }:
+{ pkgs, pkgs-unstable, inputs, ... }:
 let
 in {
   # import hyprdynamicmonitors module - this provides the systemd option (i think?)
@@ -78,6 +78,8 @@ in {
 
     # video editing
     shotcut
+
+    pkgs-unstable.hyprwhspr-rs
   ];
 
   # keyboard settings

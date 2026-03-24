@@ -300,13 +300,13 @@ keybinds clear-defaults=true {
         bind "Alt y" {
             LaunchOrFocusPlugin "zellij-forgot" {
                 floating true
+                "Tab (in tab mode)" "Go to last used tab toggle"
             }
         }
     }
 }
 
 // explicit nvim editor for srcollback
-// scrollback_editor "~/.config/zellij/nvim-bash.sh"
 scrollback_editor "nvim"
 
 // Plugin aliases - can be used to change the implementation of Zellij

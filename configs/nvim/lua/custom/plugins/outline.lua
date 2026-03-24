@@ -4,6 +4,8 @@ return {
     -- Example mapping to toggle outline
     vim.keymap.set('n', '<leader>tl', '<cmd>Outline<CR>', { desc = 'Toggle Outline' })
     require('outline').setup {
+      auto_jump = true,
+
       providers = {
         priority = { 'lsp', 'coc', 'markdown', 'norg', 'treesitter', 'man' },
       }, -- Configuration for each provider (3rd party providers are supported)

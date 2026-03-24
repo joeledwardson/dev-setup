@@ -6,6 +6,7 @@ vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.number = true
+vim.o.termsync = false
 
 -- use treesitter for folding: see https://neovim.io/doc/user/treesitter.html
 -- vim.o.foldmethod = 'expr'
