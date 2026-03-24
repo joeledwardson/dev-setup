@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, commonGroups, ... }:
+{ config, pkgs, inputs, commonGroups, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -50,6 +50,12 @@
     ];
   };
 
+  # agenix secrets
+  age.secrets.llm-gemini-key = {
+    file = ../../secrets/llm-gemini-key.age;
+    owner = "joelyboy";
+  };
+
   networking.hostName = "desktop-work"; # Define your hostname.
   services.tailscale.enable = true;
   programs.obs-studio = {
@@ -67,7 +73,10 @@
   ];
 
   # add VM support
-  environment.systemPackages = with pkgs; [ vagrant ];
+  environment.systemPackages = with pkgs; [
+    vagrant
+    inputs.agenix.packages.${pkgs.system}.default # agenix CLI
+  ];
   virtualisation = {
     libvirtd = {
       enable = true;

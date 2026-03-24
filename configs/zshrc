@@ -87,15 +87,17 @@ function setup-aws () {
     complete -C "$aws_completer" aws
 }
 
-# custom completions
-if command -v glab >/dev/null; then source <(glab completion -s zsh); fi
-if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then source <(docker completion zsh); fi
-if command -v gh >/dev/null; then source <(gh completion -s zsh); fi
-if command -v fzf >/dev/null; then source <(fzf --zsh); fi
-if command -v terraform >/dev/null; then complete -o nospace -C terraform terraform; fi
-if command -v aws >/dev/null; then setup-aws; fi
+# custom completions (deferred for faster shell startup)
+if command -v glab >/dev/null; then zsh-defer -c 'source <(glab completion -s zsh)'; fi
+if command -v docker >/dev/null && ! uname -r | grep -iq microsoft; then zsh-defer -c 'source <(docker completion zsh)'; fi
+if command -v gh >/dev/null; then zsh-defer -c 'source <(gh completion -s zsh)'; fi
+if command -v fzf >/dev/null; then zsh-defer -c 'source <(fzf --zsh)'; fi
+if command -v terraform >/dev/null; then zsh-defer -c 'complete -o nospace -C terraform terraform'; fi
+if command -v aws >/dev/null; then zsh-defer -c 'setup-aws'; fi
+if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; fi
+# direnv and zellij hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
-if command -v zoxide >/dev/null; then eval "$(zoxide init zsh)"; fi
+if command -v zellij >/dev/null; then eval "$(zellij setup --generate-auto-start zsh)"; fi
 
 # kitty ssh
 alias s="kitten ssh"

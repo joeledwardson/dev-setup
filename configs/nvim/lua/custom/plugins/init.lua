@@ -161,6 +161,15 @@ return {
   --   },
 
   {
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {
+      library = {
+        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+      },
+    },
+  },
+  {
     'saghen/blink.cmp',
     -- optional: provides snippets for the snippet source
     dependencies = { 'rafamadriz/friendly-snippets' },
@@ -205,14 +214,14 @@ return {
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' },
         -- FROM DADBOD COMPLETION: see https://github.com/kristijanhusak/vim-dadbod-completion
         per_filetype = {
           sql = { 'snippets', 'dadbod', 'buffer' },
         },
-        -- add vim-dadbod-completion to your completion providers
         providers = {
           dadbod = { name = 'Dadbod', module = 'vim_dadbod_completion.blink' },
+          lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', score_offset = 100 },
         },
         -- END DADBOD COMPLETION
       },

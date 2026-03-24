@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors?ref=v1.4.0";
     nixarr.url = "github:rasmus-kirk/nixarr";
+    agenix.url = "github:ryantm/agenix";
 
     nur = {
       url = "github:nix-community/NUR";
@@ -88,6 +89,7 @@
           specialArgs = commonSpecialArgs;
 
           modules = [
+            inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-desktop.nix
             ./hosts/desktop-work/configuration.nix

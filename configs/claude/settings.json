@@ -11,12 +11,11 @@
       "Bash(find *)",
       "Bash(git log *)",
       "Bash(git show *)",
-      "Bash(which *)"
-      "Bash(git show *)"
-      "Bash(git show *)",
+      "Bash(which *)",
       "Bash(gh issue view *)",
       "Bash(gh search *)",
-      "Bash(echo *)"
+      "Bash(echo *)",
+      "Bash(curl *)"
     ]
   },
   "hooks": {

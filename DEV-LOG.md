@@ -2401,6 +2401,13 @@ Helix is selection-first (select then act) vs vim's verb-first (act then motion)
 
 Key mental shift: in helix you **select first, then act**. So "delete 3 lines" is `xxd` not `3dd`. Takes getting used to but means you always see what you're about to affect before doing it.
 
+### lazydev.nvim — what it actually does
+Without lazydev, `lua_ls` only knows Lua syntax — it has no idea `vim` exists as a global, so you get `Undefined global 'vim'` warnings and zero completions for `vim.*`.
+
+**What lazydev does:** tells `lua_ls` to index Neovim's bundled type definitions (`$VIMRUNTIME/lua/vim/`) so it learns about `vim.api.*`, `vim.keymap.*`, `vim.lsp.*`, etc. Also loads types for installed plugins.
+
+**The luv/luvit thing:** Neovim's event loop is built on **libuv** (same C library that powers Node.js — async I/O, timers, filesystem). Neovim exposes it to Lua as `vim.uv`. The `{ path = '${3rd}/luv/library', words = { 'vim%.uv' } }` in the config just conditionally loads the type defs for `vim.uv.*` only when you actually use it.
+
 
 ## March 2026
 
@@ -2442,4 +2449,16 @@ max_height = 400
 | [#1936](https://github.com/sxyazi/yazi/issues/1936) | yazi | Image preview overflow on large images — image bleeds outside preview area |
 | [#3308](https://github.com/sxyazi/yazi/issues/3308) | yazi | Images exceeding 10,000px in any dimension won't display even with config allowing it |
 
+
+#### Zellij — Moving Panes into Stacks
+
+**The problem:** no obvious keybinding to move an existing pane into an existing stack in zellij.
+
+**Solution:** use [`zellij action stack-panes`](https://zellij.dev/documentation/cli-actions#stack-panes) CLI action — takes pane IDs and combines them into a stack.
+
+```sh
+zellij action stack-panes -- <id1> <id2>
+```
+
+**Getting pane IDs:** need `zellij action list-panes` (added in [v0.44.0](https://zellij.dev/news/remote-sessions-windows-cli/)), which isn't available on NixOS yet. Until then, `zellij action dump-layout` can be parsed for pane IDs as a fallback, or use multi-select (`Alt+p` on each pane) to stack interactively.
 
