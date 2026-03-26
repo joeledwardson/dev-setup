@@ -2462,3 +2462,7 @@ zellij action stack-panes -- <id1> <id2>
 
 **Getting pane IDs:** need `zellij action list-panes` (added in [v0.44.0](https://zellij.dev/news/remote-sessions-windows-cli/)), which isn't available on NixOS yet. Until then, `zellij action dump-layout` can be parsed for pane IDs as a fallback, or use multi-select (`Alt+p` on each pane) to stack interactively.
 
+#### LibreOffice Calc — Reloading a File
+
+To reload the current file in LibreOffice Calc: press `Alt+F` to open the File menu, then press `Down` arrow until you reach **Reload**, then press `Enter`.
+

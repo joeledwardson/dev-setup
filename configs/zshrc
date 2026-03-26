@@ -95,9 +95,8 @@ if command -v fzf >/dev/null; then zsh-defer -c 'source <(fzf --zsh)'; fi
 if command -v terraform >/dev/null; then zsh-defer -c 'complete -o nospace -C terraform terraform'; fi
 if command -v aws >/dev/null; then zsh-defer -c 'setup-aws'; fi
 if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; fi
-# direnv and zellij hook into precmd so run synchronously
+# direnv  hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
-if command -v zellij >/dev/null; then eval "$(zellij setup --generate-auto-start zsh)"; fi
 
 # kitty ssh
 alias s="kitten ssh"
@@ -305,6 +304,11 @@ add-zsh-hook precmd tmux_precmd
 
 
 if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# load agenix secrets as env vars
+if [ -f /run/agenix/llm-gemini-key ]; then
+  export LLM_GEMINI_KEY="$(cat /run/agenix/llm-gemini-key)"
+fi
 
 if [ -e "$HOME"/.config/zshrclocal ]; then
   source "$HOME"/.config/zshrclocal

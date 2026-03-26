@@ -35,6 +35,7 @@
       ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
       ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
       ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
+      ~/.config/io.datasette.llm/templates: ./configs/io.datasette.llm/templates
       ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
       ~/.local/share/applications/custom: ./applications
       ~/.config/mpv/input.conf: ./configs/mpv/input.conf
@@ -52,6 +53,7 @@
       ~/.config/foot/foot.ini: ./configs/foot/foot.ini
       ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
       ~/.config/helix/config.toml: ./configs/helix/config.toml
+      ~/.config/libreoffice/4/user/registrymodifications.xcu: ./configs/libreoffice/registrymodifications.xcu
 
 # create custom and monitors conf if doesnt exist
 - if:

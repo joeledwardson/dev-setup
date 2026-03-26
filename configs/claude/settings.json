@@ -46,5 +46,6 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "voiceEnabled": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "viMode": true
 }
