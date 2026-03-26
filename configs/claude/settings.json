@@ -3,6 +3,9 @@
     "allow": [
       "WebFetch",
       "WebSearch",
+      "Read",
+      "Glob",
+      "Grep",
       "Bash(ls *)",
       "Bash(pwd)",
       "Bash(grep *)",

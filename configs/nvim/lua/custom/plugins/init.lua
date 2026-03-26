@@ -25,9 +25,6 @@ vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'toggle signature' })
 
-vim.keymap.set('n', ']r', ':cnext<CR>zz', { desc = 'Next reference' })
-vim.keymap.set('n', '[r', ':cprev<CR>zz', { desc = 'Previous reference' })
-
 -- vim.keymap.set('n', '<Esc>', function()
 --   vim.cmd 'nohlsearch' -- Clear search highlighting
 --   require('notify').dismiss { pending = true, silent = true }
