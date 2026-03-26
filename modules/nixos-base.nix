@@ -187,6 +187,7 @@
     tomato-c # pomodoro
     duf
     gdu # replacement for ncdu
+    tabiew
 
     ### CLI tools
     tldr
