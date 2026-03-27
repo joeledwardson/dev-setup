@@ -145,7 +145,7 @@
     dmidecode
     fastfetch
     smartmontools
-    inxi
+    inxi # get CPU & storage stats
 
     ### nix specific tools
     nix-tree
@@ -177,7 +177,6 @@
     ruby
     lazysql
     pgcli
-    rabbitmq-server
     postgresql_17
 
     ### TUI style tools
@@ -217,7 +216,6 @@
     grafana-loki # has logcli
     ansible
     go-task # has taskfile
-    zellij # to eventually replace tmux
     zoxide
 
     ### video processing
@@ -274,6 +272,7 @@
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.claude-code # always want latest claude code
+    pkgs-unstable.zellij # v0.44.0 currently only available on unstable
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins {

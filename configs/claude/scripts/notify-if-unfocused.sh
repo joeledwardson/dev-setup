@@ -2,6 +2,10 @@
 # Send a notification only if the terminal running this process is not focused.
 # Walks up the process tree and checks against Hyprland's active window PID.
 
+if ! command -v fnm >/dev/null; then
+    exit
+fi
+
 active_pid=$(hyprctl activewindow -j | jq -r '.pid')
 pid=$$
 while [ "$pid" -gt 1 ]; do

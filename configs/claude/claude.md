@@ -6,3 +6,6 @@
 - check for existing functions before re-inventing the wheel - for example do not write a python sorting file just use array.sort
 - for reading files - prefer Read/Glob/Greb over awk/sed as you gave permissions to the former
 - do not use single letter variable names
+- i frequently use scrollback buffer in zellij to copy commands - do not output your standard ● before commands or code to copy for ergonomics
+- when asked to "read terminal output" or "pane output" (or something to that effect) - use a combination of zellij action list-panes and zellij action dump-screen --pane-id to get the terminal output
+- when reading terminal output (from above) - execute zellij action as single commands then analyze in your internal buffer (dont chain bash commands, as i will have to approve them) - you have permissions to zellija ction list-panes and dump-screen

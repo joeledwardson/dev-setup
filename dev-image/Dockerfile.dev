@@ -36,6 +36,7 @@ uv \
 yazi \
 skim \
 delta \
+go-task \
 ncurses # could be useful for terminal info
 
 # going to ignore navi for now as its annoying with its initial prompt to import
@@ -43,10 +44,14 @@ ncurses # could be useful for terminal info
 # skim # needed by navi but not bundled by apk
 
 
+# zellij - install from github release (alpine pkg is outdated)
+RUN curl -L https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C /usr/local/bin
+
 # see https://sheldon.cli.rs/Installation.html#pre-built-binaries
 RUN curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
     | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
 
+ENV SHELL=/bin/zsh
 ENV ZDOTDIR=$HOME/.config/zsh
 ENV PATH="$HOME/.local/bin:$PATH"
 ENV EDITOR=vim

@@ -18,7 +18,10 @@
       "Bash(gh issue view *)",
       "Bash(gh search *)",
       "Bash(echo *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(zellij action list-panes *)",
+      "Bash(zellij action dump-screen *)",
+      "Bash(cat *)"
     ]
   },
   "hooks": {
