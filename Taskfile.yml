@@ -98,7 +98,9 @@ tasks:
 
   dev:container:
     desc: Run a dev container
-    cmd: docker run -it -v ~/.claude:/root/.claude dev-image:latest zsh
+    cmds:
+      - mkdir -p ~/yolo-exchange
+      - docker run --rm -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json:ro dev-image:latest zsh
 
   all:
     desc: Run all setup commands
