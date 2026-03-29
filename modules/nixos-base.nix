@@ -136,7 +136,7 @@
     nmap
     httpie # nice terminal alternative to postman
 
-    # hardware tools
+    ### hardware tools
     lm_sensors # temperature monitoring
     libinput # input device management tool
     usbutils # usb utilities (like lsusb)
@@ -146,6 +146,9 @@
     fastfetch
     smartmontools
     inxi # get CPU & storage stats
+
+    ### audio
+    alsa-utils
 
     ### nix specific tools
     nix-tree
@@ -186,6 +189,7 @@
     tomato-c # pomodoro
     duf
     gdu # replacement for ncdu
+    dust # another replacement for du
     tabiew
 
     ### CLI tools

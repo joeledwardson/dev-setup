@@ -438,6 +438,10 @@ require('lazy').setup {
           },
         },
         pickers = {
+          buffers = {
+            sort_mru = true,
+            ignore_current_buffer = true,
+          },
           find_files = {
             -- This affects file finding
             -- hidden = true, -- Set to true to include hidden files
@@ -486,7 +490,7 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', function() builtin.buffers { sort_lastused = true } end, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
       vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
       -- Slightly advanced example of overriding default behavior and theme

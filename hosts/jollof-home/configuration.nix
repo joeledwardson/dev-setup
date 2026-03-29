@@ -35,7 +35,7 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   # Virtualisation Configuration
   # =======================================
   # add VM support (vagrant) and test out stremio for streaming server
-  environment.systemPackages = with pkgs; [ vagrant pkgs-unstable.stremio ];
+  environment.systemPackages = with pkgs; [ vagrant ];
   virtualisation = {
     libvirtd = {
       enable = true;
@@ -138,4 +138,13 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   nix.settings.trusted-users = [ "root" "jollof" ];
   services.syncthing.user = "jollof";
 
+  # =======================================
+  # Additional Configuration
+  # =======================================
+  programs.obs-studio = {
+    enable = true;
+
+    # optional Nvidia hardware acceleration
+    package = (pkgs.obs-studio.override { cudaSupport = true; });
+  };
 }

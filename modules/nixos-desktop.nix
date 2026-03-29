@@ -79,7 +79,9 @@ in {
     # video editing
     shotcut
 
-    pkgs-unstable.hyprwhspr-rs
+    # try out claude code dictation
+    pkgs-unstable.hyprwhspr-rs # TODO: unused?
+    sox
   ];
 
   # keyboard settings

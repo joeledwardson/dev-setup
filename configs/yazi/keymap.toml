@@ -1,8 +1,8 @@
 ### jollof custom overrides
-#custom copy to clipboard file
 [[mgr.prepend_keymap]]
 on = [ "c", "b" ]
 run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]
+desc = "Copy file to clipboard"
 
 [[mgr.prepend_keymap]]
 on = [ "g", "f" ]
@@ -166,12 +166,12 @@ run = "plugin yamb rename_by_fzf"
 desc = "Rename bookmark by fzf"
 
 [[mgr.prepend_keymap]]
-on = [ ";", "s" ]
+on = [ "'", "s" ]
 run = "search --via=fd --args='--hidden --no-ignore'"
 desc = "fd file search"
 
 [[mgr.prepend_keymap]]
-on = [ ";", "S" ]
+on = [ "'", "S" ]
 run = "search --via=rg --args='--hidden --no-ignore'"
 desc = "rg contents search"
 

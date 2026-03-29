@@ -3,6 +3,11 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zmodload zsh/zprof
 fi
 
+# capture the terminal emulator PID (e.g. foot) before Zellij or anything else runs
+# $PPID is the parent of this shell — inherit into child processes so it survives multiplexers
+# IMPORTANT: default to existing TERMINAL_WINDOW_PID so we dont use any new parent process IDs!
+export TERMINAL_WINDOW_PID="${TERMINAL_WINDOW_PID:-$PPID}"
+
 # history settings (see https://zsh.sourceforge.io/Doc/Release/Parameters.html)
 # Add these near the top of your .zshrc
 HISTFILE=~/.zsh_history

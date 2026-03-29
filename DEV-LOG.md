@@ -2466,3 +2466,68 @@ zellij action stack-panes -- <id1> <id2>
 
 To reload the current file in LibreOffice Calc: press `Alt+F` to open the File menu, then press `Down` arrow until you reach **Reload**, then press `Enter`.
 
+#### SteelSeries Arctis 7 — Mic Not Showing Up
+
+**The problem:** mic input wasn't appearing as an available source.
+
+**Solution:** open `pavucontrol` → **Configuration** tab → select **Game Output + Game Input** profile for the SteelSeries Arctis 7.
+
+**Why this works:** USB audio devices like the Arctis 7 expose multiple endpoints (output-only, output+input, chat, game, etc). PipeWire/PulseAudio represents these combos as **profiles** on the sound card. Profiles are entirely host-side — the device just advertises available USB audio endpoints, and the audio server decides which to activate. If the selected profile doesn't include a capture endpoint, no mic source gets created. Switching to a profile that includes input activates the capture endpoint and the mic appears.
+
+**Terminal equivalent:**
+```sh
+# list cards and available profiles
+pactl list cards
+
+# set the right profile
+pactl set-card-profile <card_name> output:analog-stereo+input:analog-stereo
+
+# or with wireplumber
+wpctl status
+wpctl set-profile <device_id> <profile_index>
+```
+
+Profile selection is persisted in `~/.local/state/wireplumber/` (PipeWire) or `~/.config/pulse/` (PulseAudio) so it survives reboots.
+
+#### Linux Audio Debugging — Tools & Terminology
+
+**Audio stack (top to bottom):**
+
+| Layer | What | NixOS |
+|---|---|---|
+| PipeWire | modern audio server, replaces PulseAudio | `services.pipewire.enable` |
+| WirePlumber | session manager for PipeWire, handles routing/defaults | `services.pipewire.wireplumber.enable` |
+| ALSA | kernel-level audio interface | `services.pipewire.alsa.enable` (compatibility layer) |
+
+**Key terms:**
+
+| Term | Meaning |
+|---|---|
+| Sink | output device (speakers/headphones) |
+| Source | input device (microphone) |
+| Profile | a config preset on a sound card that activates certain endpoints (e.g. "Game Output + Game Input") |
+| Node | a PipeWire object representing an audio stream or device |
+| `@DEFAULT_AUDIO_SOURCE@` | WirePlumber alias for the current default mic |
+| `*` in `wpctl status` | marks the current default sink/source |
+
+**Recording/playback tools tested:**
+
+| Tool | Package | Result | Why |
+|---|---|---|---|
+| `rec` / `play` | `sox` | worked | queries PipeWire for actual source format (rate, channels, bit depth) and adapts automatically |
+| `arecord` / `aplay` | `alsa-utils` | recorded but playback was garbled/fast | old ALSA tool, assumes defaults (often 44100Hz stereo) instead of negotiating with PipeWire — rate mismatch causes chipmunk audio |
+| `pw-record` | `pipewire` | `error: open failed: Operation not supported` | `.wav` container not supported in this PipeWire build, needs raw format or different container |
+
+**Useful commands:**
+
+| Command | What it does |
+|---|---|
+| `wpctl status` | show all audio nodes, `*` = default |
+| `wpctl set-default <id>` | set default sink/source |
+| `wpctl inspect @DEFAULT_AUDIO_SOURCE@` | detailed info on default mic |
+| `wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0` | unmute mic |
+| `wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1.0` | max mic volume |
+| `rec /tmp/test.wav trim 0 3` | record 3 seconds (sox, recommended) |
+| `play /tmp/test.wav` | play back (sox) |
+| `pavucontrol` | GUI for managing audio devices/profiles |
+

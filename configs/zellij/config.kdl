@@ -328,7 +328,8 @@ plugins {
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
     vim-zellij-nav location="https://github.com/hiasr/vim-zellij-navigator/releases/download/0.2.1/vim-zellij-navigator.wasm"
-    zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm"
+    zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
+    }
 }
 
 // Plugins to load in the background when a new session starts
@@ -609,7 +610,7 @@ show_startup_tips false
 // Whether to show release notes on first version run
 // Default: true
 // 
-// show_release_notes false
+show_release_notes false
  
 // Whether to enable mouse hover effects and pane grouping functionality
 // default is true

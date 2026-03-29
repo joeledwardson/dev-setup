@@ -6,6 +6,7 @@
       "Read",
       "Glob",
       "Grep",
+      "Find",
       "Bash(ls *)",
       "Bash(pwd)",
       "Bash(grep *)",
@@ -21,7 +22,8 @@
       "Bash(curl *)",
       "Bash(zellij action list-panes *)",
       "Bash(zellij action dump-screen *)",
-      "Bash(cat *)"
+      "Bash(cat *)",
+      "Bash(wl *)"
     ]
   },
   "hooks": {
@@ -51,7 +53,7 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "voiceEnabled": true,
   "effortLevel": "high",
+  "voiceEnabled": true,
   "viMode": true
 }
