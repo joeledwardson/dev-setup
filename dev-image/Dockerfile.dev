@@ -54,12 +54,13 @@ ENV PATH="$HOME/.local/bin:$PATH"
 ENV EDITOR=vim
 
 RUN uv tool install dotbot
-RUN git clone https://github.com/joeledwardson/dev-setup.git
+COPY . $HOME/dev-setup
 
-# setup dotbot plugins
-RUN cd $HOME/dev-setup && git submodule update --init
+# DEBUG IT
+RUN cat $HOME/dev-setup/install.conf.yaml
+
 # run dotbot
-RUN cd $HOME/dev-setup && dotbot -c install.conf.yaml
+RUN dotbot -c $HOME/dev-setup/install.conf.yaml
 
 # install lazy plugins (gcc/make needed for treesitter parsers + telescope-fzf-native)
 RUN nvim --headless "+Lazy! sync" +qa
@@ -75,9 +76,9 @@ RUN chsh root -s "$(which zsh)"
 RUN sheldon lock
 
 # dont run initial prompt for login, see here: https://tessl.io/blog/configuring-claude-code/
-COPY ./claude.json $HOME/.claude.json
+COPY ./dev-image/claude.json $HOME/.claude.json
 
 # claude yolo alias
-COPY ./zshrclocal $HOME/.config/zshrclocal
+COPY ./dev-image/zshrclocal $HOME/.config/zshrclocal
 
 

@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
+args@{ pkgs, inputs, config, commonGroups, ... }:
 
 {
   imports = [
@@ -30,12 +30,21 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
       efiSysMountPoint = "/boot";
     };
   };
+  # agenix secrets
+  age.secrets.llm-gemini-key = {
+    file = ../../secrets/llm-gemini-key.age;
+    owner = "jollof";
+  };
+
+  environment.systemPackages = with pkgs; [
+    vagrant
+    inputs.agenix.packages.${pkgs.system}.default # agenix CLI
+  ];
 
   # =======================================
   # Virtualisation Configuration
   # =======================================
   # add VM support (vagrant) and test out stremio for streaming server
-  environment.systemPackages = with pkgs; [ vagrant ];
   virtualisation = {
     libvirtd = {
       enable = true;

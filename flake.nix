@@ -77,6 +77,7 @@
         "jollof-home" = nixpkgs.lib.nixosSystem {
           specialArgs = commonSpecialArgs;
           modules = [
+            inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-desktop.nix
             ./hosts/jollof-home/configuration.nix

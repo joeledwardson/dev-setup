@@ -310,11 +310,6 @@ add-zsh-hook precmd tmux_precmd
 
 if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
-# load agenix secrets as env vars
-if [ -f /run/agenix/llm-gemini-key ]; then
-  export LLM_GEMINI_KEY="$(cat /run/agenix/llm-gemini-key)"
-fi
-
 if [ -e "$HOME"/.config/zshrclocal ]; then
   source "$HOME"/.config/zshrclocal
 fi

@@ -474,6 +474,9 @@ require('lazy').setup {
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+      vim.keymap.set('n', '<leader>sK', function()
+        require('custom.keybrowser').open()
+      end, { desc = '[S]earch built-in vim [K]eys' })
       vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
       vim.keymap.set('n', '<leader>sF', function()
         builtin.find_files {

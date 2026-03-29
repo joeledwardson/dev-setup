@@ -18,6 +18,7 @@
       "Bash(which *)",
       "Bash(gh issue view *)",
       "Bash(gh search *)",
+      "Bash(gh repo view *)",
       "Bash(echo *)",
       "Bash(curl *)",
       "Bash(zellij action list-panes *)",
@@ -33,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh 'Claude Code needs your attention'"
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh"
           }
         ]
       }
@@ -44,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh 'Task complete'"
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh"
           }
         ]
       }
@@ -53,7 +54,7 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "effortLevel": "high",
+  "effortLevel": "low",
   "voiceEnabled": true,
   "viMode": true
 }

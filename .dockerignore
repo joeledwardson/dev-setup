@@ -1,0 +1,20 @@
+.vscode
+.ansible
+scratchpads
+
+# claude code
+.claude
+
+# simpler to put all repos clonsed for inspiration in a combined sub-dir
+third-party
+
+# dont commit the git repos for yazi packages installed via `ya pkg`
+configs/yazi/plugins
+configs/yazi/bookmark
+configs/yazi/flavors
+
+# dont commit nvim injections added by tree-sitter-language-injection plugin
+configs/nvim/after/queries
+
+
+

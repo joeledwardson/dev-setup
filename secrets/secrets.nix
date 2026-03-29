@@ -3,9 +3,9 @@ let
   desktop-work =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOUujKLUo4lCJuepHQ7KGfsy1xQFjkfWNazCq6wTmxy root@desktop-work";
 
-  # add more hosts here as needed, e.g.
-  # degen-home = "ssh-ed25519 AAAA... root@degen-home";
+  jollof-home =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3UaYy3igve5yJdZ+rZpvHairlg94nrIPcDraHkTS6s root@jollof-home";
 
   # group all hosts that should access all secrets
-  allHosts = [ desktop-work ];
-in { "llm-gemini-key.age".publicKeys = [ desktop-work ]; }
+  allHosts = [ desktop-work jollof-home ];
+in { "llm-gemini-key.age".publicKeys = allHosts; }
