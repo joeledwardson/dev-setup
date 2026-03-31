@@ -24,7 +24,7 @@
       "Bash(zellij action list-panes *)",
       "Bash(zellij action dump-screen *)",
       "Bash(cat *)",
-      "Bash(wl *)"
+      "Bash(wc *)"
     ]
   },
   "hooks": {

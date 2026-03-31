@@ -100,7 +100,7 @@ tasks:
     desc: Run a dev container
     cmds:
       - mkdir -p ~/yolo-exchange
-      - docker run --rm -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json:ro dev-image:latest zsh
+      - docker run -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json {{.CLI_ARGS}} dev-image:latest zsh
 
   llmkeys:
     desc: Set LLM API keys from agenix secrets

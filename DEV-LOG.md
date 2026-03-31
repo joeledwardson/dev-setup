@@ -2531,3 +2531,21 @@ Profile selection is persisted in `~/.local/state/wireplumber/` (PipeWire) or `~
 | `play /tmp/test.wav` | play back (sox) |
 | `pavucontrol` | GUI for managing audio devices/profiles |
 
+## March 2026
+
+#### Agenix - rekeying secrets after adding a new host
+
+When you add a new host public key to `secrets/secrets.nix`, you need to rekey so the secret gets re-encrypted for the new recipient.
+
+The command that actually works:
+```bash
+cd secrets
+sudo agenix -r -i /etc/ssh/ssh_host_ed25519_key
+```
+
+Key gotchas:
+- `-i` wants the **private SSH key** of a host already in `secrets.nix`, NOT the `.age` file
+- needs `sudo` because `/etc/ssh/ssh_host_ed25519_key` is root-owned
+- `agenix -r` alone fails with "no identity matched any of the recipients" — it doesn't auto-find the host key
+- the error messages are completely unhelpful
+

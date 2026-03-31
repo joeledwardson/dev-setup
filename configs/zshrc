@@ -103,14 +103,14 @@ if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; 
 # direnv  hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
 
-# kitty ssh
-alias s="kitten ssh"
-
 # nvim alias to clear session and start
 alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_session()'"
 
 # i dont like the name status default as sometimes i want git log --patch
 alias gl='git log'
+
+# llg (llm chat with gemini)
+alias llg='llm chat -t fast'
 
 # change bitwarden data directory to work location to separate from personal
 function bw-use-work () {
