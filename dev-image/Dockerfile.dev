@@ -1,22 +1,19 @@
-FROM alpine:3.23.3
+FROM archlinux:base
 ENV HOME=/root
 WORKDIR $HOME
 
-# libstdc++ needed for claude code
-RUN apk add bash curl libstdc++
-# this takes forever to run so do it first
+# claude code
+RUN pacman -Syu --noconfirm curl
 RUN curl -sSL https://claude.ai/install.sh | bash
 
-# add alpine packages (see ./modules/nixos-base.nix for my default headless packages)
-# this is a trimmed down set to keep the container small-ish
-RUN apk add \
-openssh-keygen \
-openssh-client \
+# packages (see ./modules/nixos-base.nix for my default headless packages)
+RUN pacman -S --noconfirm \
+openssh \
 zsh \
 fzf \
 git \
 eza \
-man-pages \
+man-db \
 tmux \
 direnv \
 jq \
@@ -34,19 +31,20 @@ socat \
 bat \
 uv \
 yazi \
-skim \
-delta \
-go-task \
-ncurses \
-gcc musl-dev make \
-nodejs npm \
-python3 py3-pip \
-lua-language-server \
+git-delta \
 ruff \
-sheldon
+zellij \
+sheldon \
+go-task \
+glab \
+gcc make \
+nodejs npm \
+python python-pip \
+postgresql-libs \
+lua-language-server
 
-# zellij - install from github release (alpine pkg is outdated)
-RUN curl -L https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C /usr/local/bin
+# clean pacman cache
+RUN pacman -Scc --noconfirm
 
 ENV SHELL=/bin/zsh
 ENV ZDOTDIR=$HOME/.config/zsh
@@ -55,9 +53,6 @@ ENV EDITOR=vim
 
 RUN uv tool install dotbot
 COPY . $HOME/dev-setup
-
-# DEBUG IT
-RUN cat $HOME/dev-setup/install.conf.yaml
 
 # run dotbot
 RUN dotbot -c $HOME/dev-setup/install.conf.yaml
@@ -68,17 +63,17 @@ RUN nvim --headless "+Lazy! sync" +qa
 # install mason LSP servers/tools
 RUN nvim --headless "+MasonToolsInstallSync" +qa
 
-# change default shell (see https://wiki.alpinelinux.org/wiki/Shell_management)
-RUN apk add shadow
-RUN chsh root -s "$(which zsh)"
+# change default shell
+RUN chsh root -s /bin/zsh
 
 # load zsh plugins
 RUN sheldon lock
+
+# generate ssh key for container
+RUN ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -q
 
 # dont run initial prompt for login, see here: https://tessl.io/blog/configuring-claude-code/
 COPY ./dev-image/claude.json $HOME/.claude.json
 
 # claude yolo alias
 COPY ./dev-image/zshrclocal $HOME/.config/zshrclocal
-
-
