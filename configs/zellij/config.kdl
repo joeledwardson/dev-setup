@@ -287,6 +287,14 @@ keybinds clear-defaults=true {
     // ****************** END DEFAULT KEYBINDINGS ********************************
 
     shared_except "locked" {
+        bind "Alt Shift w" {
+            LaunchOrFocusPlugin "zellij-choose-tree" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+    }
+    shared_except "locked" {
         bind "Alt q" {
           LaunchOrFocusPlugin "zj-quit" {
             floating true
@@ -330,6 +338,7 @@ plugins {
     vim-zellij-nav location="https://github.com/hiasr/vim-zellij-navigator/releases/download/0.2.1/vim-zellij-navigator.wasm"
     zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
     }
+    zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
 }
 
 // Plugins to load in the background when a new session starts
