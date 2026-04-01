@@ -7,6 +7,21 @@ vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.number = true
 vim.o.termsync = false
+vim.opt.autoread = true
+
+-- auto-reload files changed externally (e.g. by claude code)
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  pattern = '*',
+  command = 'if mode() != "c" | checktime | endif',
+})
+
+-- notify when file changes
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  pattern = '*',
+  callback = function()
+    vim.notify('File changed on disk. Buffer reloaded.', vim.log.levels.WARN)
+  end,
+})
 
 -- retain selection when shifting
 vim.keymap.set('v', '>', '>gv', { noremap = true })
