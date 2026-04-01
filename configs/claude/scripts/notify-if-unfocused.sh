@@ -1,5 +1,8 @@
 #!/bin/bash
 # Send a notification only if the terminal running this process is not focused.
+# In Docker containers, sends via socat to host notification socket.
+
+NOTIFY_SOCKET="/tmp/notify-forward/notify.sock"
 
 INPUT=$(cat)
 EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // "unknown"')
@@ -9,6 +12,14 @@ if [ ${#FULL_MSG} -gt 20 ]; then
     MSG="${FULL_MSG:0:20}..."
 else
     MSG="$FULL_MSG"
+fi
+
+# Docker container: always notify via socat socket
+if [ -f /.dockerenv ]; then
+    if [ -S "$NOTIFY_SOCKET" ]; then
+        echo "Docker: Claude ($EVENT) $PROJECT|$MSG" | socat - UNIX-CONNECT:"$NOTIFY_SOCKET" &
+    fi
+    exit 0
 fi
 
 if ! command -v hyprctl >/dev/null; then

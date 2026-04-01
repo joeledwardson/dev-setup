@@ -30,6 +30,11 @@ tasks:
       - dotbot -c install.conf.yaml
       - task: hyprland
 
+  sheldon:
+    desc: Rebuild sheldon plugin lock
+    cmds:
+      - sheldon lock --clean
+
   yazi:
     desc: Install yazi plugins
     cmds:
@@ -100,7 +105,7 @@ tasks:
     desc: Run a dev container
     cmds:
       - mkdir -p ~/yolo-exchange
-      - docker run -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json {{.CLI_ARGS}} dev-image:latest zsh
+      - docker run -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json -v /tmp/notify-forward:/tmp/notify-forward {{.CLI_ARGS}} dev-image:latest zsh
 
   llmkeys:
     desc: Set LLM API keys from agenix secrets

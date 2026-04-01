@@ -9,3 +9,4 @@
 - i frequently use scrollback buffer in zellij to copy commands - do not output your standard ● before commands or code to copy for ergonomics
 - when asked to "read terminal output" or "pane output" (or something to that effect) - use a combination of zellij action list-panes and zellij action dump-screen --pane-id to get the terminal output
 - when reading terminal output (from above) - execute zellij action as single commands then analyze in your internal buffer (dont chain bash commands, as i will have to approve them) - you have permissions to zellija ction list-panes and dump-screen
+- prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval

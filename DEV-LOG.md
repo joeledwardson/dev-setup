@@ -2549,3 +2549,103 @@ Key gotchas:
 - `agenix -r` alone fails with "no identity matched any of the recipients" — it doesn't auto-find the host key
 - the error messages are completely unhelpful
 
+## April 2026
+
+#### Socat - unix socket notification forwarding
+
+Needed a way to get Claude Code notifications out of Docker containers to the host desktop. Used socat with unix sockets. Here's how socat works, building up piece by piece:
+
+**How socat syntax works**
+
+The man page says `socat [options] <address> <address>`. The confusing bit is that `fork`, `reuseaddr` etc are NOT command-line options (those go before the addresses, like `-d`). They are **address options** — appended to an address type with commas:
+
+```
+ADDRESS-TYPE:argument,option1,option2
+```
+
+The man page lists each address type (e.g. `UNIX-LISTEN`) with its "Useful options" — that's where you find which address options apply. `fork` and `reuseaddr` are listed under the LISTEN/CHILD option groups.
+
+**1. Basic socat — connect two things**
+
+socat connects two "addresses" bidirectionally. Simplest example — act like `cat`:
+```bash
+socat STDIN STDOUT
+# type something, it echoes back
+```
+
+**2. Unix sockets — listener side**
+
+Create a unix socket and listen on it. `-` is shorthand for STDIN/STDOUT:
+```bash
+# terminal 1: listen
+socat UNIX-LISTEN:/tmp/test.sock -
+
+# terminal 2: connect and send
+echo "hello" | socat - UNIX-CONNECT:/tmp/test.sock
+# "hello" appears in terminal 1
+```
+
+After one message the listener exits. That's because `UNIX-LISTEN` accepts one connection then closes.
+
+**3. `fork` — keep listening**
+
+`fork` spawns a child process per connection so the listener stays alive:
+```bash
+socat UNIX-LISTEN:/tmp/test.sock,fork -
+# now multiple clients can connect, listener stays up
+```
+
+**4. `reuseaddr` — restart without "address already in use"**
+
+When socat creates a UNIX-LISTEN socket, it creates a file on disk (e.g. `/tmp/test.sock`). When it exits cleanly it removes the file. But if it crashes or gets killed, the stale `.sock` file stays behind. Next time you start the listener, socat tries to `bind()` to that path and gets `Address already in use` because the file already exists.
+
+Try it yourself:
+```bash
+# terminal 1: start listener
+socat UNIX-LISTEN:/tmp/test.sock,fork -
+
+# terminal 2: kill it hard (simulating a crash)
+kill -9 $(pgrep -f "socat UNIX-LISTEN:/tmp/test.sock")
+
+# terminal 1: try to restart — fails
+socat UNIX-LISTEN:/tmp/test.sock,fork -
+# ERROR: Address already in use
+
+# check: the stale socket file is still there
+ls -la /tmp/test.sock
+
+# with reuseaddr it just works (removes stale file before binding)
+socat UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr -
+```
+
+This is why the systemd service also has `ExecStartPre = rm -f /tmp/notify-forward.sock` — belt and braces.
+
+**5. `SYSTEM:` — run a command per connection**
+
+Instead of printing to STDOUT, run a shell command. The incoming data is available on stdin of that command:
+```bash
+socat UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr SYSTEM:'read line; echo "got: $line"'
+```
+
+Send a test: `echo "hello" | socat - UNIX-CONNECT:/tmp/test.sock` — the listener shell runs `read line` and can do whatever with it.
+
+**6. The actual notification listener**
+
+Putting it all together — receive `title|body` format, split on `|`, send desktop notification:
+```bash
+socat UNIX-LISTEN:/tmp/notify-forward.sock,fork,reuseaddr SYSTEM:'
+    read line
+    title="${line%%|*}"    # everything before first |
+    body="${line#*|}"      # everything after first |
+    notify-send "$title" "$body"
+'
+```
+
+**7. `-d` flag — debug output**
+
+`-d` is a command-line option (goes before addresses). Adds connection logging. Stack for more verbosity:
+```bash
+socat -d UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr SYSTEM:'read line; echo "$line"'
+# -d = notices, -d -d = info, -d -d -d = debug
+```
+
