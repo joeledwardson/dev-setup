@@ -52,6 +52,7 @@
       ~/.ssh/config: ./configs/ssh/config
       ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
       ~/.config/foot/foot.ini: ./configs/foot/foot.ini
+      ~/.config/ghostty/config: ./configs/ghostty/config
       ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/libreoffice/4/user/registrymodifications.xcu: ./configs/libreoffice/registrymodifications.xcu
