@@ -58,7 +58,6 @@ autoload -U +X bashcompinit && bashcompinit
 eval "$(sheldon source)"
 
 # show hostname
-# shellcheck disable=SC2034
 DRACULA_DISPLAY_CONTEXT=1
 
 # fnm completion and shell
@@ -258,8 +257,6 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-# fzf tmux popup (REMOVED, breaks when not in tmux)
-# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # apply to all command
 zstyle ':fzf-tab:*' popup-min-size 80 12
@@ -289,13 +286,6 @@ alias ts='tmux new-session -s' # Start new session with name
 alias tl='tmux list-sessions' # List all sessions
 
 
-# tmux escape chars for `next-prompt` and `previous-prompt`
-function tmux_preexec() {
-  print -Pn '\e]133;A\a'
-}
-function tmux_precmd() {
-  print -Pn '\e]133;B\a'
-}
 
 zvm_vi_yank () {
 	zvm_yank
@@ -304,8 +294,6 @@ zvm_vi_yank () {
 }
 # Add hooks
 autoload -U add-zsh-hook
-add-zsh-hook preexec tmux_preexec
-add-zsh-hook precmd tmux_precmd
 
 
 if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

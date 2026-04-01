@@ -51,9 +51,6 @@ github = "dracula/zsh"
 github = "ohmyzsh/ohmyzsh"
 dir = "plugins/colored-man-pages"
 
-[plugins.wezterm-integration]
-remote = "https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh"
-
 [plugins.navi]
 github = "denisidoro/navi"
 
