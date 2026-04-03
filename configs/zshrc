@@ -60,17 +60,14 @@ eval "$(sheldon source)"
 # show hostname
 DRACULA_DISPLAY_CONTEXT=1
 
-# fnm completion and shell
-if command -v fnm >/dev/null; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
-fi
 
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
 # auto-notify settings (notify on long-running commands)
 export AUTO_NOTIFY_THRESHOLD=10
-export AUTO_NOTIFY_IGNORE=("docker" "vim" "nvim" "ssh" "tmux" "zellij" "claude")
+# llg is the alias for gemini
+export AUTO_NOTIFY_IGNORE=("docker" "vim" "nvim" "ssh" "tmux" "zellij" "claude" "hx" "llg" "llm")
 
 # add navi repos if not there already
 if command -v navi >/dev/null; then
@@ -105,6 +102,10 @@ if command -v aws >/dev/null; then zsh-defer -c 'setup-aws'; fi
 if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; fi
 # direnv  hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
+# fnm completion and shell
+if command -v fnm >/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 # nvim alias to clear session and start
 alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_session()'"
@@ -294,16 +295,39 @@ alias tl='tmux list-sessions' # List all sessions
 
 
 
-zvm_vi_yank () {
-	zvm_yank
-	printf %s "${CUTBUFFER}" | wl-copy
-	zvm_exit_visual_mode
+# copy to system clipboard on vi yank
+# zle -N docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-zle
+# bindkey docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-bindkey
+function vi-yank-to-clipboard() {
+  zle vi-yank
+  printf '%s' "$CUTBUFFER" | wl-copy
 }
+zle -N vi-yank-to-clipboard
+bindkey -M vicmd 'y' vi-yank-to-clipboard
+
+# vi mode cursor shape (bar=insert, block=normal)
+# special widgets: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#Special-Widgets
+function zle-keymap-select {
+  if [[ $KEYMAP == vicmd ]] || [[ $1 == 'block' ]]; then
+    printf '\e[2 q'
+  elif [[ $KEYMAP == main ]] || [[ $KEYMAP == viins ]] || [[ $1 == 'beam' ]]; then
+    printf '\e[5 q'
+  fi
+}
+zle -N zle-keymap-select
+
+function zle-line-init { 
+    printf '\e[5 q' 
+}
+zle -N zle-line-init
+
 # Add hooks
 autoload -U add-zsh-hook
 
 
-if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then 
+    source "$HOME"/.nix-profile/etc/profile.d/nix.sh; 
+fi 
 
 if [ -e "$HOME"/.config/zshrclocal ]; then
   source "$HOME"/.config/zshrclocal
