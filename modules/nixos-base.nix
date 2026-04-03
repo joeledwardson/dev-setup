@@ -172,6 +172,7 @@
     nodejs_22 # add nodejs global just for claude code
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
+    ruff
 
     ### keyboards
     qmk
