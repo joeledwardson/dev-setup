@@ -1,4 +1,7 @@
 -- JOLLOF SPECIFIC CONFIGURATIONS
+-- subtle heading backgrounds for render-markdown (onedark base is ~#282c34)
+vim.api.nvim_set_hl(0, 'RenderMarkdownH1Bg', { bg = '#2e3440' })
+vim.api.nvim_set_hl(0, 'RenderMarkdownH2Bg', { bg = '#2a2f38' })
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 vim.opt.ignorecase = true
@@ -8,12 +11,6 @@ vim.opt.tabstop = 2
 vim.opt.number = true
 vim.o.termsync = false
 vim.opt.autoread = true
-
--- auto-reload files changed externally (e.g. by claude code)
-vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
-  pattern = '*',
-  command = 'if mode() != "c" | checktime | endif',
-})
 
 -- notify when file changes
 vim.api.nvim_create_autocmd('FileChangedShellPost', {
@@ -29,6 +26,30 @@ vim.keymap.set('v', '<', '<gv', { noremap = true })
 
 -- alt shift H is used by tmux (and zellij) for window switching
 vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
+
+-- window resize mode: C-w r enters loop, + - < > resize by 5, any other key exits
+vim.g.resize_mode = false
+vim.keymap.set('n', '<C-w>r', function()
+  vim.g.resize_mode = true
+  while true do
+    vim.api.nvim__redraw({ flush = true, cursor = true, win = 0, statusline = true })
+    local ok, key = pcall(vim.fn.getcharstr)
+    if not ok then break end
+    if key == '+' or key == '=' then
+      vim.cmd 'resize +5'
+    elseif key == '-' then
+      vim.cmd 'resize -5'
+    elseif key == '>' then
+      vim.cmd 'vertical resize +5'
+    elseif key == '<' then
+      vim.cmd 'vertical resize -5'
+    else
+      break
+    end
+  end
+  vim.g.resize_mode = false
+  vim.api.nvim__redraw({ flush = true, cursor = true, win = 0, statusline = true })
+end, { desc = 'window resize mode' })
 vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'toggle signature' })
@@ -138,8 +159,17 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
 })
 
 -- Jump to next/previous URL
-vim.keymap.set('n', ']l', '/https:\\/\\/<CR>', { desc = 'Next URL' })
-vim.keymap.set('n', '[l', '?https:\\/\\/<CR>', { desc = 'Previous URL' })
+local url_pattern = 'https:\\S\\+'
+vim.keymap.set('n', ']l', function()
+  vim.fn.setreg('/', url_pattern)
+  vim.opt.hlsearch = true
+  vim.fn.search(url_pattern, 'W')
+end, { desc = 'Next URL' })
+vim.keymap.set('n', '[l', function()
+  vim.fn.setreg('/', url_pattern)
+  vim.opt.hlsearch = true
+  vim.fn.search(url_pattern, 'bW')
+end, { desc = 'Previous URL' })
 
 -- Treat zellij scrollback dump files as bash (they normally are)
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
@@ -438,5 +468,34 @@ return {
       vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
       vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
     end,
+  },
+  -- going to try this again but tune down the aggressive rendering defaults to something a bit saner
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' },
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    ft = 'markdown',
+    opts = {
+      heading = {
+        -- heading icons are annoying
+        icons = { '', '', '', '', '', '' },
+        -- less agressive background colours
+        backgrounds = { 'RenderMarkdownH1Bg', 'RenderMarkdownH2Bg', '', '', '', '' },
+        border = false,
+        position = 'inline',
+        sign = false,
+      },
+      bullet = {
+        icons = { ' ◉  ', '  ◦  ', '   ▪  ', '    ▫  ' },
+      },
+    },
+    keys = { {
+      '<leader>tm',
+      function()
+        require('render-markdown').toggle()
+      end,
+      desc = 'toggle markdown render',
+    } },
   },
 }

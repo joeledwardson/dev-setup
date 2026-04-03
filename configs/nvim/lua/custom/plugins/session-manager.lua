@@ -1,7 +1,18 @@
+---@type LazyPluginSpec[]
 return {
   'Shatur/neovim-session-manager',
   dependencies = { 'nvim-lua/plenary.nvim' },
   lazy = false,
+  cond = function()
+    -- skip session manager entirely for /tmp files (e.g. zellij scrollback)
+    for _, arg in ipairs(vim.fn.argv()) do
+      local matches = arg:match '^/tmp/'
+      if matches then
+        return false
+      end
+    end
+    return true
+  end,
   config = function()
     local Path = require 'plenary.path'
     require('session_manager').setup {
@@ -9,7 +20,7 @@ return {
       sessions_dir = Path:new(vim.fn.stdpath 'data', 'sessions'),
       autosave_last_session = true,
       autosave_ignore_not_normal = false,
-      autosave_ignore_dirs = {},
+      autosave_ignore_dirs = { '/tmp' },
       autosave_ignore_filetypes = {
         'gitcommit',
         'gitrebase',

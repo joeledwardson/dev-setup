@@ -14,13 +14,13 @@ This is intended to be for ramblings that are not concise as notes to keep as re
 - slow to startup (relatively)
 - akward syntax highlighting
 
-2. This led me to fish shell, which just WORKS out the box. but after a while i did notice some quirks that are pretty annoying tbh...
+1. This led me to fish shell, which just WORKS out the box. but after a while i did notice some quirks that are pretty annoying tbh...
 - completions lacking, case and point `git stash` only has `--help` as a completion. not a good start given how popular git is...
 - `fzf` extension for zsh just... works, its clean easy to read and actually has all the arguments (more of a repetition of the previous point tbh)
 - lacks POSIX compatibility. this is REALLY annoying. its not THAT much better, but writing hyprland scripts (in normal sh) i have to remember its slightly different than fish
 
 
-3. An alternative option is nushell? could be something more modern that supports data types
+1. An alternative option is nushell? could be something more modern that supports data types
 
 #### Vi mode
 the annoying alt backspace thing in zsh that enters into a strange mode where i can't insert it actually vim mode! (which is actually useful)
@@ -65,23 +65,23 @@ Or
   :Lazy reload nvim-cmp
 
 Or
-  4. Try reloading plugins
+  1. Try reloading plugins
 
   :Lazy reload nvim-cmp
   :Lazy reload noice.nvim
 
-  5. Disable noice temporarily
+  1. Disable noice temporarily
 
   :lua package.loaded['noice'] = nil
   :lua vim.cmd('messages clear')
   Then test :e <Tab>
 
-  6. Check cmp status
+  1. Check cmp status
 
   :lua vim.print(require('cmp').visible())    # Is menu showing?
   :lua vim.print(require('cmp').get_config()) # Config loaded?
 
-  7. Nuclear option - reload everything
+  1. Nuclear option - reload everything
 
   :Lazy reload nvim-cmp
   :source $MYVIMRC
@@ -1216,28 +1216,28 @@ Think of it like a file system for processes.
 *   **Services (`.service`) & Scopes (`.scope`):** The "files". These contain the actual running processes.
 
 **The Tree:**
-1.  **Root (`-.slice`)**: The top of the tree.
-2.  **`user.slice`**: Holds all user sessions.
-3.  **`user-1000.slice`**: Your specific user (UID 1000).
-4.  **`user@1000.service`**: The systemd manager instance for *you*.
+1. **Root (`-.slice`)**: The top of the tree.
+2. **`user.slice`**: Holds all user sessions.
+3. **`user-1000.slice`**: Your specific user (UID 1000).
+4. **`user@1000.service`**: The systemd manager instance for *you*.
     *   **`app.slice`**: Applications started by the GUI or systemd (like `firefox`, `my-socket`).
     *   **`session.slice`**: Core session stuff (like `dbus`, `pipewire`).
 
 **Interactive Commands:**
 
-1.  **Visualize the Tree:**
+1. **Visualize the Tree:**
     `systemd-cgls`
     *Shows the entire hierarchy recursively.*
 
-2.  **Monitor Resources (The "Top" for Cgroups):**
+2. **Monitor Resources (The "Top" for Cgroups):**
     `systemd-cgtop`
     *Shows CPU/Memory usage per Slice/Service.*
 
-3.  **Inspect Your User Tree:**
+3. **Inspect Your User Tree:**
     `systemctl --user status`
     *Shows what your specific systemd instance is managing right now.*
 
-4.  **Creating a Temporary Scope (Fun Test):**
+4. **Creating a Temporary Scope (Fun Test):**
     Run a command in a specific slice to limit its resources.
     `systemd-run --user --scope -p MemoryMax=10M --unit=my-test bash`
     *(This starts a bash shell that systemd kills if it uses >10MB RAM).*
@@ -1260,7 +1260,7 @@ cd ~/qmk_firmware
 qmk setup
 ```
 
-2. Finding my keyboard
+1. Finding my keyboard
 ```bash
 ➜ joelyboy qmk_firmware (master) ✗ qmk list-keyboards | grep -i q4
 keychron/q4/ansi/v1
@@ -1271,13 +1271,13 @@ p3d/q4z
 
 ```
 
-3. compiling: `qmk compile -kb keychron/q4/iso -km joelyboy`
+1. compiling: `qmk compile -kb keychron/q4/iso -km joelyboy`
 
-4. unplug keyboard and re-plug in pressing the flash button underneath the space bar
+1. unplug keyboard and re-plug in pressing the flash button underneath the space bar
 
 > Will need another keyboard at this stage
 
-5. then `qmk compile -kb keychron/q4/iso -km joelyboy`
+1. then `qmk compile -kb keychron/q4/iso -km joelyboy`
 
 ## January 2026
 Wow new year!
@@ -2441,13 +2441,13 @@ max_height = 400
 
 | Issue | Repo | Summary |
 |---|---|---|
-| [#2048](https://github.com/zellij-org/zellij/issues/2048) | zellij | Sixel images distorted, excessive bottom padding, scrolling breaks image and overwrites screen buffer, can crash zellij |
-| [#3981](https://github.com/zellij-org/zellij/issues/3981) | zellij | Sixel artifacts remain on status bar and other areas after clearing, not reliably cleaned up |
-| [#4124](https://github.com/zellij-org/zellij/issues/4124) | zellij | Many sixel images cause zellij to slow down, hang, and become unresponsive |
-| [#4336](https://github.com/zellij-org/zellij/issues/4336) | zellij | Yazi image preview support — notes zellij's sixel is "quite buggy with serious performance issues", lagginess, tearing |
-| [#334](https://github.com/sxyazi/yazi/issues/334) | yazi | Tracking issue for previews in zellij — sixel corruption when running yazi through zellij |
-| [#1936](https://github.com/sxyazi/yazi/issues/1936) | yazi | Image preview overflow on large images — image bleeds outside preview area |
-| [#3308](https://github.com/sxyazi/yazi/issues/3308) | yazi | Images exceeding 10,000px in any dimension won't display even with config allowing it |
+| [2048](https://github.com/zellij-org/zellij/issues/2048) | zellij | Sixel images distorted, excessive bottom padding, scrolling breaks image and overwrites screen buffer, can crash zellij |
+| [3981](https://github.com/zellij-org/zellij/issues/3981) | zellij | Sixel artifacts remain on status bar and other areas after clearing, not reliably cleaned up |
+| [4124](https://github.com/zellij-org/zellij/issues/4124) | zellij | Many sixel images cause zellij to slow down, hang, and become unresponsive |
+| [4336](https://github.com/zellij-org/zellij/issues/4336) | zellij | Yazi image preview support — notes zellij's sixel is "quite buggy with serious performance issues", lagginess, tearing |
+| [334](https://github.com/sxyazi/yazi/issues/334) | yazi | Tracking issue for previews in zellij — sixel corruption when running yazi through zellij |
+| [1936](https://github.com/sxyazi/yazi/issues/1936) | yazi | Image preview overflow on large images — image bleeds outside preview area |
+| [3308](https://github.com/sxyazi/yazi/issues/3308) | yazi | Images exceeding 10,000px in any dimension won't display even with config allowing it |
 
 
 #### Zellij — Moving Panes into Stacks
@@ -2531,7 +2531,6 @@ Profile selection is persisted in `~/.local/state/wireplumber/` (PipeWire) or `~
 | `play /tmp/test.wav` | play back (sox) |
 | `pavucontrol` | GUI for managing audio devices/profiles |
 
-## March 2026
 
 #### Agenix - rekeying secrets after adding a new host
 
@@ -2649,3 +2648,9 @@ socat -d UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr SYSTEM:'read line; echo "$lin
 # -d = notices, -d -d = info, -d -d -d = debug
 ```
 
+
+### Lazy window
+lol i NEVER new this - `C-w` then `w` is "switch window" so if focus is lost to `Lazy` window just do that to go back to it 🤣 - see [here](https://github.com/LazyVim/LazyVim/discussions/4001#discussioncomment-10031674)
+
+### Notification history
+I also forget I have `:Telescope fidget` which has a nice viewer with telescope

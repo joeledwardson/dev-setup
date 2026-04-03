@@ -1069,6 +1069,16 @@ require('lazy').setup {
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
+      -- show RESIZE in mode section when resize mode is active
+      local original_section_mode = statusline.section_mode
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_mode = function(args)
+        if vim.g.resize_mode then
+          return 'RESIZE', 'MiniStatuslineModeOther'
+        end
+        return original_section_mode(args)
+      end
+
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
@@ -1282,24 +1292,25 @@ require('lazy').setup {
     },
     opts = {
       extensions = {
-        undo = {
-          -- use_delta = true,
-          -- use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
-          -- side_by_side = false,
-          -- vim_diff_opts = {
-          --   ctxlen = vim.o.scrolloff,
-          -- },
-          -- entry_format = 'state #$ID, $STAT, $TIME',
-          -- time_format = '',
-          -- saved_only = false,
-        },
+        undo = {},
       },
     },
     config = function(_, opts)
       local telescope = require 'telescope'
-      -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
-      -- configs for us. We won't use data, as everything is in it's own namespace (telescope
-      -- defaults, as well as each extension).
+      local undo_actions = require 'telescope-undo.actions'
+      opts.extensions.undo.mappings = {
+        i = {
+          ['<CR>'] = undo_actions.yank_additions,
+          ['<S-CR>'] = undo_actions.restore,
+          ['<C-r>'] = undo_actions.restore,
+          ['<C-y>'] = undo_actions.yank_deletions,
+        },
+        n = {
+          ['y'] = undo_actions.yank_additions,
+          ['Y'] = undo_actions.yank_deletions,
+          ['u'] = undo_actions.restore,
+        },
+      }
       telescope.setup(opts)
       telescope.load_extension 'undo'
       -- telescope.load_extension 'live-grep-args'
