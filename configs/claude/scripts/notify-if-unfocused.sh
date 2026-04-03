@@ -14,6 +14,8 @@ else
     MSG="$FULL_MSG"
 fi
 
+echo "$INPUT" >>/tmp/claude-notify-log.log
+
 # Docker container: always notify via socat socket
 if [ -f /.dockerenv ]; then
     if [ -S "$NOTIFY_SOCKET" ]; then

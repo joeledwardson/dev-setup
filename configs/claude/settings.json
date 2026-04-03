@@ -28,7 +28,7 @@
     ]
   },
   "hooks": {
-    "Notification": [
+    "PermissionRequest": [
       {
         "matcher": "",
         "hooks": [
