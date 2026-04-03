@@ -51,6 +51,9 @@ github = "dracula/zsh"
 github = "ohmyzsh/ohmyzsh"
 dir = "plugins/colored-man-pages"
 
+[plugins.auto-notify]
+github = "MichaelAquilina/zsh-auto-notify"
+
 [plugins.navi]
 github = "denisidoro/navi"
 

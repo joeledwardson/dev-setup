@@ -190,7 +190,7 @@
     duf
     gdu # replacement for ncdu
     dust # another replacement for du
-    tabiew
+    tabiew # CSV terminal viewer (tw is program)
 
     ### CLI tools
     tldr
@@ -379,7 +379,8 @@
 
   # systemd user service for Docker container notification forwarding
   systemd.user.services.notify-forward = {
-    description = "Notification forwarder socket listener for Docker containers";
+    description =
+      "Notification forwarder socket listener for Docker containers";
     after = [ "graphical-session.target" ];
     wantedBy = [ "default.target" ];
     enable = true;
@@ -389,8 +390,8 @@
         "${pkgs.coreutils}/bin/mkdir -p /tmp/notify-forward"
         "${pkgs.coreutils}/bin/rm -f /tmp/notify-forward/notify.sock"
       ];
-      ExecStart = ''
-        ${pkgs.socat}/bin/socat -d UNIX-LISTEN:/tmp/notify-forward/notify.sock,fork,reuseaddr EXEC:%h/.claude/scripts/notify-handler.sh '';
+      ExecStart =
+        "${pkgs.socat}/bin/socat -d UNIX-LISTEN:/tmp/notify-forward/notify.sock,fork,reuseaddr EXEC:%h/.claude/scripts/notify-handler.sh ";
       Restart = "always";
       RestartSec = 3;
       StandardOutput = "journal";

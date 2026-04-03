@@ -68,6 +68,10 @@ fi
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 
+# auto-notify settings (notify on long-running commands)
+export AUTO_NOTIFY_THRESHOLD=10
+export AUTO_NOTIFY_IGNORE=("docker" "vim" "nvim" "ssh" "tmux" "zellij" "claude")
+
 # add navi repos if not there already
 if command -v navi >/dev/null; then
     if [[ ! -d "$HOME/.local/share/navi/cheats/denisidoro__cheats" ]]; then
@@ -110,6 +114,9 @@ alias gl='git log'
 
 # llg (llm chat with gemini)
 alias llg='llm chat -t fast'
+
+# quick access lazygit
+alias lg='lazygit'
 
 # change bitwarden data directory to work location to separate from personal
 function bw-use-work () {
