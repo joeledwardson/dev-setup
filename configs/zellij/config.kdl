@@ -125,35 +125,36 @@ keybinds clear-defaults=true {
         bind "d" { Detach; }
         bind "w" {
             LaunchOrFocusPlugin "session-manager" {
-                floating true
+                floating false
                 move_to_focused_tab true
+                close_on_exit true
             };
             SwitchToMode "Normal"
         }
         bind "c" {
             LaunchOrFocusPlugin "configuration" {
-                floating true
+                floating false
                 move_to_focused_tab true
             };
             SwitchToMode "Normal"
         }
         bind "p" {
             LaunchOrFocusPlugin "plugin-manager" {
-                floating true
+                floating false
                 move_to_focused_tab true
             };
             SwitchToMode "Normal"
         }
         bind "a" {
             LaunchOrFocusPlugin "zellij:about" {
-                floating true
+                floating false
                 move_to_focused_tab true
             };
             SwitchToMode "Normal"
         }
         bind "s" {
             LaunchOrFocusPlugin "zellij:share" {
-                floating true
+                floating false
                 move_to_focused_tab true
             };
             SwitchToMode "Normal"
@@ -289,7 +290,7 @@ keybinds clear-defaults=true {
     shared_except "locked" {
         bind "Alt Shift w" {
             LaunchOrFocusPlugin "zellij-choose-tree" {
-                floating true
+                floating false
                 move_to_focused_tab true
             }
         }
@@ -297,7 +298,7 @@ keybinds clear-defaults=true {
     shared_except "locked" {
         bind "Alt q" {
           LaunchOrFocusPlugin "zj-quit" {
-            floating true
+            floating false
           }
         }
     }
@@ -307,7 +308,7 @@ keybinds clear-defaults=true {
     shared_except "locked" {
         bind "Alt y" {
             LaunchOrFocusPlugin "zellij-forgot" {
-                floating true
+                floating false
                 "Tab (in tab mode)" "Go to last used tab toggle"
             }
         }
@@ -634,7 +635,7 @@ show_release_notes false
 // Default: 8082
 // (Requires restart)
 // web_server_port 8082
- 
+ //
 // A command to run (will be wrapped with sh -c and provided the RESURRECT_COMMAND env variable) 
 // after Zellij attempts to discover a command inside a pane when resurrecting sessions, the STDOUT
 // of this command will be used instead of the discovered RESURRECT_COMMAND
