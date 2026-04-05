@@ -7,7 +7,7 @@ NOTIFY_SOCKET="/tmp/notify-forward/notify.sock"
 INPUT=$(cat)
 EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // "unknown"')
 PROJECT=$(echo "$INPUT" | jq -r '.cwd // ""' | xargs basename 2>/dev/null)
-FULL_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // "no message"')
+FULL_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message')
 if [ ${#FULL_MSG} -gt 20 ]; then
     MSG="${FULL_MSG:0:20}..."
 else
@@ -32,7 +32,7 @@ fi
 # WINDOW_PID is set in zshrc to the foot PID (works regardless of Zellij)
 active_pid=$(hyprctl activewindow -j | jq -r '.pid')
 if [ "$active_pid" != "$TERMINAL_WINDOW_PID" ]; then
-    notify-send "Claude ($EVENT) $PROJECT" "$MSG"
+    notify-send "Claude $PROJECT" "$EVENT\n$MSG"
     exit 0
 fi
 

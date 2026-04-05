@@ -2654,3 +2654,8 @@ lol i NEVER new this - `C-w` then `w` is "switch window" so if focus is lost to 
 
 ### Notification history
 I also forget I have `:Telescope fidget` which has a nice viewer with telescope
+
+### Intuitive Zellij Stacking
+Didnt realise this was a feature...  `ToggleGroupMarking` (for me `Alt Shift p`) opens group mode where we can select multiple panes and then `s` to stack!
+
+And then can use the `alt [` to change layout (which will unstack) .. and `alt t [` to move a pane to another tab!

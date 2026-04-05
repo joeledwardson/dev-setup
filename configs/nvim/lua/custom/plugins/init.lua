@@ -159,7 +159,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
 })
 
 -- Jump to next/previous URL
-local url_pattern = 'https:\\S\\+'
+local url_pattern = [[https:\S\+]]
 vim.keymap.set('n', ']l', function()
   vim.fn.setreg('/', url_pattern)
   vim.opt.hlsearch = true
@@ -342,7 +342,7 @@ return {
     event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg',
     build = false,
     opts = {
-      backend = 'ueberzug',
+      backend = 'kitty',
       processor = 'magick_cli',
       max_width_window_percentage = 80,
       max_height_window_percentage = 60,

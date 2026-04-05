@@ -36,5 +36,5 @@ sleep 0.2
 
 hyprshot "${hyprshot_args[@]}"
 if [[ "$?" -ne "0" ]]; then
-    notify-send "oh dear"
+    notify-send "oh dear, return code: $?"
 fi

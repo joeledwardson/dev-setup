@@ -336,7 +336,8 @@ plugins {
         welcome_screen true
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
-    vim-zellij-nav location="https://github.com/hiasr/vim-zellij-navigator/releases/download/0.2.1/vim-zellij-navigator.wasm"
+    // vim-zellij-nav location="https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm"
+    vim-zellij-nav location="file:~/.config/zellij/vim-zellij-navigator.wasm"
     zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
     }
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
@@ -346,6 +347,7 @@ plugins {
 // eg. "file:/path/to/my-plugin.wasm"
 // eg. "https://example.com/my-plugin.wasm"
 load_plugins {
+    vim-zellij-nav
     zj-quit
 }
 web_client {
@@ -357,20 +359,20 @@ web_client {
 themes {
     blade-runner-custom {
         frame_selected {
-            base 181 232 83
+            base 250 179 135
             background 30 30 30
-            emphasis_0 181 232 83
+            emphasis_0 250 179 135
             emphasis_1 255 255 255
-            emphasis_2 181 232 83
-            emphasis_3 181 232 83
+            emphasis_2 250 179 135
+            emphasis_3 250 179 135
         }
         frame_unselected {
-            base 140 140 140
+            base 60 60 60
             background 30 30 30
-            emphasis_0 140 140 140
-            emphasis_1 140 140 140
-            emphasis_2 140 140 140
-            emphasis_3 140 140 140
+            emphasis_0 60 60 60
+            emphasis_1 60 60 60
+            emphasis_2 60 60 60
+            emphasis_3 60 60 60
         }
         ribbon_unselected {
             base 160 160 160
