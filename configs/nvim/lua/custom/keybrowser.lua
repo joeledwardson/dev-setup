@@ -156,4 +156,96 @@ function M.open_telescope()
   pick('Telescope Keybindings (e.g. "i close")', entries, { fmt = '%-4s %-15s %s' })
 end
 
+-- Zellij keybindings, parsed from config.kdl using treesitter
+-- Config: $ZELLIJ_CONFIG_FILE or ~/.config/zellij/config.kdl
+--
+-- KDL example:
+--   keybinds {              ← top-level, we find this by name
+--     resize {              ← mode block (e.g. resize, pane, session, shared_except)
+--       bind "h" "Left" {   ← bind: quoted strings are the keys
+--         Resize "Left";    ← action: name + quoted args
+--       }
+--     }
+--   }
+--
+-- In the treesitter tree, everything is a "node" with an "identifier".
+-- The helpers below navigate this uniform structure:
+--   kdl_name(node)     → the identifier text ("keybinds", "resize", "bind", "Resize")
+--   kdl_str_args(node) → the quoted string arguments ("h", "Left")
+--   kdl_body(node)     → the child nodes inside its { } block
+function M.open_zellij()
+  local config_path = vim.env.ZELLIJ_CONFIG_FILE or vim.fn.expand('~/.config/zellij/config.kdl')
+  local source = table.concat(vim.fn.readfile(config_path), '\n')
+  local tree = vim.treesitter.get_string_parser(source, 'kdl'):parse()[1]
+
+  local function txt(node) return vim.treesitter.get_node_text(node, source) end
+
+  local function kdl_name(node)
+    for child in node:iter_children() do
+      if child:type() == 'identifier' then return txt(child) end
+    end
+  end
+
+  local function kdl_str_args(node)
+    local result = {}
+    for field in node:iter_children() do
+      if field:type() == 'node_field' then
+        for val in field:iter_children() do
+          if val:type() == 'value' then
+            result[#result + 1] = txt(val):gsub('^"', ''):gsub('"$', '')
+          end
+        end
+      end
+    end
+    return result
+  end
+
+  local function kdl_body(node)
+    local result = {}
+    for child in node:iter_children() do
+      if child:type() == 'node_children' then
+        for inner in child:iter_children() do
+          if inner:type() == 'node' then result[#result + 1] = inner end
+        end
+      end
+    end
+    return result
+  end
+
+  local function describe_bind(bind_node)
+    local parts = {}
+    for _, action in ipairs(kdl_body(bind_node)) do
+      local action_name = kdl_name(action)
+      if not action_name then goto next end
+      local action_args = kdl_str_args(action)
+      if #action_args > 0 then action_name = action_name .. ' ' .. table.concat(action_args, ' ') end
+      parts[#parts + 1] = action_name
+      ::next::
+    end
+    return table.concat(parts, '; ')
+  end
+
+  -- find the keybinds block at the top level, then walk mode → bind
+  local entries = {}
+  for top in tree:root():iter_children() do
+    if top:type() ~= 'node' or kdl_name(top) ~= 'keybinds' then goto next_top end
+
+    for _, mode in ipairs(kdl_body(top)) do
+      local mode_name = kdl_name(mode)
+      for _, bind in ipairs(kdl_body(mode)) do
+        if kdl_name(bind) ~= 'bind' then goto next_bind end
+        local description = describe_bind(bind)
+        for _, key in ipairs(kdl_str_args(bind)) do
+          entries[#entries + 1] = { mode_name, key, description }
+        end
+        ::next_bind::
+      end
+    end
+
+    ::next_top::
+  end
+
+  pick('Zellij Keybindings (e.g. "session detach")', entries, { fmt = '%-16s %-20s %s' })
+end
+
 return M

@@ -484,6 +484,9 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>kt', function()
         require('custom.keybrowser').open_telescope()
       end, { desc = '[t]elescope keybindings' })
+      vim.keymap.set('n', '<leader>kj', function()
+        require('custom.keybrowser').open_zellij()
+      end, { desc = 'zelli[j] keybindings' })
       vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
       vim.keymap.set('n', '<leader>sF', function()
         builtin.find_files {
