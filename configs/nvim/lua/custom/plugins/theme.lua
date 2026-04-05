@@ -8,6 +8,11 @@ return {
       },
     }
     vim.cmd 'colorscheme onedark'
+
+    -- subtle diff highlights for fugitive/git buffers
+    vim.api.nvim_set_hl(0, 'diffAdded', { fg = '#98c379', bg = '#2a3325' })
+    vim.api.nvim_set_hl(0, 'diffRemoved', { fg = '#e06c75', bg = '#332328' })
+    vim.api.nvim_set_hl(0, 'diffLine', { fg = '#5c6370' })
   end,
 }
 

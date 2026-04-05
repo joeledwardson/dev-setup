@@ -179,29 +179,32 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
+
+
 -- debug: print all buffers/windows per tab
-function PrintBufs()
+-- use `log` param when calling from lua-console: PrintBufs(print)
+function PrintBufs(log)
+  log = log or print
   local current_buf = vim.api.nvim_get_current_buf()
   local pages = vim.api.nvim_list_tabpages()
   for pageindex, pageid in ipairs(pages) do
-    print('\n\n\npage ' .. pageindex .. ' with ID ' .. pageid)
+    log('--- page ' .. pageindex .. ' (ID ' .. pageid .. ') ---')
     local pagewins = vim.api.nvim_tabpage_list_wins(pageid)
     for win_index, win_id in ipairs(pagewins) do
-      print('\nprocessing window #' .. win_index .. ', ID: ' .. win_id)
-      local win_config = vim.api.nvim_win_get_config(win_id)
-      print('window config is: ', vim.inspect(win_config))
-      print('window type is: ', vim.fn.win_gettype(win_id))
+      log('  window #' .. win_index .. ', ID: ' .. win_id)
+      log(vim.api.nvim_win_get_config(win_id))
+      log('  win_type: ' .. vim.fn.win_gettype(win_id))
       local buf_id = vim.api.nvim_win_get_buf(win_id)
-      print('window buffer id is ' .. buf_id)
       local bo = vim.bo[buf_id]
-      print('buffer is ', vim.api.nvim_buf_is_valid(buf_id) and 'valid' or 'NOT VALID')
-      print('buffer file type is ' .. bo.filetype)
-      print('buffer  BUF type is ' .. bo.buftype)
-      print('buffer name is ' .. vim.api.nvim_buf_get_name(buf_id))
-      print('buffer is' .. (not bo.buflisted and ' NOT ' or ' ') .. 'listed')
-      if current_buf == buf_id then
-        print 'is active buffer!'
-      end
+      log({
+        buf_id = buf_id,
+        valid = vim.api.nvim_buf_is_valid(buf_id),
+        ft = bo.filetype,
+        bt = bo.buftype,
+        name = vim.api.nvim_buf_get_name(buf_id),
+        listed = bo.buflisted,
+        active = current_buf == buf_id,
+      })
     end
   end
 end
@@ -212,16 +215,6 @@ end
 -- See the kickstart.nvim README for more information
 ---@type LazyPluginSpec[]
 return {
-  -- {
-  --   'y3owk1n/undo-glow.nvim',
-  --   version = '*', -- remove this if you want to use the `main` branch
-  --   opts = {
-  --     -- your configuration comes here
-  --     -- or leave it empty to use the default settings
-  --     -- refer to the configuration section below
-  --   },
-  --   },
-
   {
     'folke/lazydev.nvim',
     ft = 'lua',
@@ -314,9 +307,9 @@ return {
     lazy = false,
     config = function()
       require('osc52').setup {
-        max_length = 0, -- Maximum length of selection (0 for no limit)
-        silent = false, -- Disable message on successful copy
-        trim = false, -- Trim surrounding whitespaces before copy
+        max_length = 0,           -- Maximum length of selection (0 for no limit)
+        silent = false,           -- Disable message on successful copy
+        trim = false,             -- Trim surrounding whitespaces before copy
         tmux_passthrough = false, -- Use tmux passthrough (requires tmux: set -g allow-passthrough on)
       }
       local function copy()
@@ -369,9 +362,9 @@ return {
     lazy = true,
     event = 'VeryLazy',
     keys = {
-      { '<c-h>', '<cmd>ZellijNavigateLeft<cr>', { silent = true, desc = 'navigate left' } },
-      { '<c-j>', '<cmd>ZellijNavigateDown<cr>', { silent = true, desc = 'navigate down' } },
-      { '<c-k>', '<cmd>ZellijNavigateUp<cr>', { silent = true, desc = 'navigate up' } },
+      { '<c-h>', '<cmd>ZellijNavigateLeft<cr>',  { silent = true, desc = 'navigate left' } },
+      { '<c-j>', '<cmd>ZellijNavigateDown<cr>',  { silent = true, desc = 'navigate down' } },
+      { '<c-k>', '<cmd>ZellijNavigateUp<cr>',    { silent = true, desc = 'navigate up' } },
       { '<c-l>', '<cmd>ZellijNavigateRight<cr>', { silent = true, desc = 'navigate right' } },
     },
     opts = {},
@@ -380,9 +373,9 @@ return {
     'aaronik/treewalker.nvim',
     opts = {},
     keys = {
-      { '<C-S-k>', '<cmd>Treewalker Up<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Up' },
-      { '<C-S-j>', '<cmd>Treewalker Down<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Down' },
-      { '<C-S-h>', '<cmd>Treewalker Left<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Left' },
+      { '<C-S-k>', '<cmd>Treewalker Up<cr>',    mode = { 'n', 'v' }, desc = 'Treewalker Up' },
+      { '<C-S-j>', '<cmd>Treewalker Down<cr>',  mode = { 'n', 'v' }, desc = 'Treewalker Down' },
+      { '<C-S-h>', '<cmd>Treewalker Left<cr>',  mode = { 'n', 'v' }, desc = 'Treewalker Left' },
       { '<C-S-l>', '<cmd>Treewalker Right<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Right' },
     },
   },
@@ -460,7 +453,7 @@ return {
         end,
       }
       vim.o.foldcolumn = '1' -- '0' is not bad
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 

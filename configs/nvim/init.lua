@@ -350,6 +350,7 @@ require('lazy').setup {
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>p', group = '[p]ossesson' },
+        { '<leader>k', group = '[k]eys' },
         { '<leader>l', group = '[l]ua console' },
         { '<leader>x', group = '[x] trouble' },
         { '<leader>m', group = '[m]arks' },
@@ -409,11 +410,6 @@ require('lazy').setup {
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
-      -- Enable Telescope extensions if they are installed
-      pcall(require('telescope').load_extension, 'fzf')
-      pcall(require('telescope').load_extension, 'ui-select')
-      pcall(require('telescope').load_extension 'live_grep_args')
-
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local actions = require 'telescope.actions'
@@ -457,7 +453,7 @@ require('lazy').setup {
             mappings = { -- extend mappings
               i = {
                 ['<C-k>'] = lga_actions.quote_prompt(),
-                ['<C-i>'] = lga_actions.quote_prompt { postfix = ' --iglob ' },
+                ['<C-f>'] = lga_actions.quote_prompt { postfix = ' --iglob ' },
                 -- freeze the current list and start a fuzzy search in the frozen list
                 ['<C-space>'] = lga_actions.to_fuzzy_refine,
               },
@@ -470,13 +466,24 @@ require('lazy').setup {
         },
       }
 
+      -- Enable Telescope extensions AFTER setup so config (mappings etc) is applied
+      pcall(require('telescope').load_extension, 'fzf')
+      pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'live_grep_args')
+
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-      vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sK', function()
+      vim.keymap.set('n', '<leader>kk', builtin.keymaps, { desc = 'nvim [k]eymaps' })
+      vim.keymap.set('n', '<leader>kv', function()
         require('custom.keybrowser').open()
-      end, { desc = '[S]earch built-in vim [K]eys' })
+      end, { desc = 'built-in [v]im keys' })
+      vim.keymap.set('n', '<leader>kz', function()
+        require('custom.keybrowser').open_zsh()
+      end, { desc = '[z]sh keybindings' })
+      vim.keymap.set('n', '<leader>kt', function()
+        require('custom.keybrowser').open_telescope()
+      end, { desc = '[t]elescope keybindings' })
       vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
       vim.keymap.set('n', '<leader>sF', function()
         builtin.find_files {

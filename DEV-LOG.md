@@ -2650,7 +2650,49 @@ socat -d UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr SYSTEM:'read line; echo "$lin
 
 
 ### Lazy window
-lol i NEVER new this - `C-w` then `w` is "switch window" so if focus is lost to `Lazy` window just do that to go back to it 🤣 - see [here](https://github.com/LazyVim/LazyVim/discussions/4001#discussioncomment-10031674)
+lol i NEVER new this - `C-w` then `w` is "switch window" so if focus is lost to `:Lazy` window just do that to go back to it 🤣 - see [here](https://github.com/LazyVim/LazyVim/discussions/4001#discussioncomment-10031674)
 
 ### Notification history
 I also forget I have `:Telescope fidget` which has a nice viewer with telescope
+
+### Git history search — diffview, fugitive & terminal
+
+| Command | Description | Args |
+|---|---|---|
+| `:DiffviewFileHistory %` | browse all commits touching current file in diffview | `%` = vim's current buffer filename |
+| `:DiffviewFileHistory % -G"FileChangedShellPost"` | diffview filtered to commits where diff matches regex in current file | `-G"pattern"` = git log regex diff search, `%` = current file |
+| `:DiffviewFileHistory -G"FileChangedShellPost"` | same but across entire repo (no `%`) | `-G"pattern"` = regex search across all files |
+| `git log -p -G"FileChangedShellPost" -- path/to/file` | terminal equivalent — log with patches filtered by regex for a file | `-p` = show patch, `-G` = regex diff search, `--` = path delimiter |
+| `:Git log -p -- %` | fugitive scrollable log with full diffs for current file | `-p` = show patch, `%` = current file |
+| `:Git log -p -G"FileChangedShellPost" -- %` | fugitive log filtered by regex search for current file | `-p` = patch, `-G` = regex search, `%` = current file |
+
+> `-S"string"` is an alternative to `-G` — finds commits where the **count** of that string changed (added/removed) rather than matching the diff line
+
+### Telescope live grep with directory/filetype filtering
+
+Uses `live_grep_args` extension. The key shortcut `<C-f>` auto-quotes the search term and appends `--iglob` so you can type a path/glob filter.
+
+**Search in a directory:** `<leader>g` → type `vertical` → `<C-f>` → type `configs/nvim/**`
+- result: `"vertical" --iglob configs/nvim/**` — searches for "vertical" only in files under `configs/nvim/`
+
+**Search by filetype:** `<leader>g` → type `zc` → `<C-f>` → type `**/*.lua`
+- result: `"zc" --iglob **/*.lua` — searches for "zc" only in `.lua` files across the whole repo
+
+> `--iglob` is case-insensitive glob. You can chain multiple: `"term" --iglob configs/** --iglob !*.json` (exclude json files)
+
+> note: `<C-i>` does NOT work for this because terminals send `<C-i>` as `<Tab>` — that's why we use `<C-f>` instead
+
+### Keybrowser — browsable keybinding pickers
+
+Built a custom telescope-based keybinding browser in `lua/custom/keybrowser.lua`. All under `<space>k`:
+
+- `<space>kk` — nvim keymaps (your configured mappings, via telescope builtin)
+- `<space>kv` — vim built-in keys (parsed from `$VIMRUNTIME/doc/index.txt`, enter opens `:help`)
+- `<space>kz` — zsh keybindings (live-queried from `bindkey -M` across all keymaps: vicmd, viins, etc)
+- `<space>kt` — telescope keybindings (queried from `require("telescope.config").values.mappings` at runtime)
+
+All pickers support a "mode filter" search: type two words and the first word filters the first column exactly, the second is a lua pattern on the rest. e.g. `n p` in the vim picker shows all normal-mode keys containing `p`, `vicmd kill` in zsh shows vicmd bindings matching "kill".
+
+The zsh picker also translates raw terminal codes to friendly names — `^[OA` → `Up (SS3)`, `^M` → `Enter (CR)`, `^[x` → `Alt-x`, etc.
+
+Discovery that prompted this: `C-t` in telescope opens the selected entry in a new tab. I kept forgetting this existed. Now `<space>kt` → search "tab" and there it is.
