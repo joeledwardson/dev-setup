@@ -51,6 +51,7 @@ tasks:
   clean:
     desc: Clean nix garbage
     cmds:
+      - sudo nix-collect-garbage -d
       - nix-collect-garbage -d
 
   toc:

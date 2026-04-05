@@ -2696,3 +2696,8 @@ All pickers support a "mode filter" search: type two words and the first word fi
 The zsh picker also translates raw terminal codes to friendly names — `^[OA` → `Up (SS3)`, `^M` → `Enter (CR)`, `^[x` → `Alt-x`, etc.
 
 Discovery that prompted this: `C-t` in telescope opens the selected entry in a new tab. I kept forgetting this existed. Now `<space>kt` → search "tab" and there it is.
+
+### Intuitive Zellij Stacking
+Didnt realise this was a feature...  `ToggleGroupMarking` (for me `Alt Shift p`) opens group mode where we can select multiple panes and then `s` to stack!
+
+And then can use the `alt [` to change layout (which will unstack) .. and `alt t [` to move a pane to another tab!

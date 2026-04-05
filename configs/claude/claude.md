@@ -10,3 +10,4 @@
 - when asked to "read terminal output" or "pane output" (or something to that effect) - use a combination of zellij action list-panes and zellij action dump-screen --pane-id to get the terminal output
 - when reading terminal output (from above) - execute zellij action as single commands then analyze in your internal buffer (dont chain bash commands, as i will have to approve them) - you have permissions to zellija ction list-panes and dump-screen
 - prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
+- when writing code ALWAYS ask yourself this: a) is this required? b) can a human read this, is it ergonomic? c) is there a clearer way to do this?
