@@ -54,7 +54,7 @@
   "enabledPlugins": {
     "lua-lsp@claude-plugins-official": true
   },
-  "effortLevel": "low",
+  "effortLevel": "high",
   "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
   "viMode": true
