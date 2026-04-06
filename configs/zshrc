@@ -54,10 +54,10 @@ compinit
 # Load bash completions compatibility for tools like Terraform
 autoload -U +X bashcompinit && bashcompinit
 
-# notify-send wrapper - uses OSC 9 over SSH, native otherwise
+# notify-send wrapper - uses OSC 9 over SSH/Docker, native otherwise
 # must be done before sheldon or zsh-auto-notify will complain about lack of `notify-send`
 notify-send() {
-  if [[ -n "$SSH_TTY" ]]; then
+  if [[ -n "$SSH_TTY" ]] || [[ -f /.dockerenv ]]; then
     printf '\e]9;%s\e\\' "$*"
   else
     command notify-send "$@"
