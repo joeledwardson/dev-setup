@@ -32,9 +32,11 @@ vim.g.resize_mode = false
 vim.keymap.set('n', '<C-w>r', function()
   vim.g.resize_mode = true
   while true do
-    vim.api.nvim__redraw({ flush = true, cursor = true, win = 0, statusline = true })
+    vim.api.nvim__redraw { flush = true, cursor = true, win = 0, statusline = true }
     local ok, key = pcall(vim.fn.getcharstr)
-    if not ok then break end
+    if not ok then
+      break
+    end
     if key == '+' or key == '=' then
       vim.cmd 'resize +5'
     elseif key == '-' then
@@ -48,7 +50,7 @@ vim.keymap.set('n', '<C-w>r', function()
     end
   end
   vim.g.resize_mode = false
-  vim.api.nvim__redraw({ flush = true, cursor = true, win = 0, statusline = true })
+  vim.api.nvim__redraw { flush = true, cursor = true, win = 0, statusline = true }
 end, { desc = 'window resize mode' })
 vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
@@ -179,8 +181,6 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
-
-
 -- debug: print all buffers/windows per tab
 -- use `log` param when calling from lua-console: PrintBufs(print)
 function PrintBufs(log)
@@ -196,7 +196,7 @@ function PrintBufs(log)
       log('  win_type: ' .. vim.fn.win_gettype(win_id))
       local buf_id = vim.api.nvim_win_get_buf(win_id)
       local bo = vim.bo[buf_id]
-      log({
+      log {
         buf_id = buf_id,
         valid = vim.api.nvim_buf_is_valid(buf_id),
         ft = bo.filetype,
@@ -204,7 +204,7 @@ function PrintBufs(log)
         name = vim.api.nvim_buf_get_name(buf_id),
         listed = bo.buflisted,
         active = current_buf == buf_id,
-      })
+      }
     end
   end
 end
@@ -302,25 +302,6 @@ return {
     event = 'VimEnter',
     opts = {},
   },
-  {
-    'ojroques/nvim-osc52',
-    lazy = false,
-    config = function()
-      require('osc52').setup {
-        max_length = 0,           -- Maximum length of selection (0 for no limit)
-        silent = false,           -- Disable message on successful copy
-        trim = false,             -- Trim surrounding whitespaces before copy
-        tmux_passthrough = false, -- Use tmux passthrough (requires tmux: set -g allow-passthrough on)
-      }
-      local function copy()
-        local event = vim.v.event
-        if event.operator == 'y' and (event.regname == '+' or event.regname == '') then
-          require('osc52').copy_register '+'
-        end
-      end
-      vim.api.nvim_create_autocmd('TextYankPost', { callback = copy })
-    end,
-  },
   -- syntax highlighting for alloy files
   {
     'grafana/vim-alloy',
@@ -362,9 +343,9 @@ return {
     lazy = true,
     event = 'VeryLazy',
     keys = {
-      { '<c-h>', '<cmd>ZellijNavigateLeft<cr>',  { silent = true, desc = 'navigate left' } },
-      { '<c-j>', '<cmd>ZellijNavigateDown<cr>',  { silent = true, desc = 'navigate down' } },
-      { '<c-k>', '<cmd>ZellijNavigateUp<cr>',    { silent = true, desc = 'navigate up' } },
+      { '<c-h>', '<cmd>ZellijNavigateLeft<cr>', { silent = true, desc = 'navigate left' } },
+      { '<c-j>', '<cmd>ZellijNavigateDown<cr>', { silent = true, desc = 'navigate down' } },
+      { '<c-k>', '<cmd>ZellijNavigateUp<cr>', { silent = true, desc = 'navigate up' } },
       { '<c-l>', '<cmd>ZellijNavigateRight<cr>', { silent = true, desc = 'navigate right' } },
     },
     opts = {},
@@ -373,9 +354,9 @@ return {
     'aaronik/treewalker.nvim',
     opts = {},
     keys = {
-      { '<C-S-k>', '<cmd>Treewalker Up<cr>',    mode = { 'n', 'v' }, desc = 'Treewalker Up' },
-      { '<C-S-j>', '<cmd>Treewalker Down<cr>',  mode = { 'n', 'v' }, desc = 'Treewalker Down' },
-      { '<C-S-h>', '<cmd>Treewalker Left<cr>',  mode = { 'n', 'v' }, desc = 'Treewalker Left' },
+      { '<C-S-k>', '<cmd>Treewalker Up<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Up' },
+      { '<C-S-j>', '<cmd>Treewalker Down<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Down' },
+      { '<C-S-h>', '<cmd>Treewalker Left<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Left' },
       { '<C-S-l>', '<cmd>Treewalker Right<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Right' },
     },
   },
@@ -453,7 +434,7 @@ return {
         end,
       }
       vim.o.foldcolumn = '1' -- '0' is not bad
-      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 

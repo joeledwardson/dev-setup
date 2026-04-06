@@ -7,24 +7,26 @@
       "Glob",
       "Grep",
       "Find",
-      "Bash(ls *)",
+      "Bash(ls:*)",
       "Bash(pwd)",
-      "Bash(grep *)",
-      "Bash(cd *)",
-      "Bash(rg *)",
-      "Bash(find *)",
-      "Bash(git log *)",
-      "Bash(git show *)",
-      "Bash(which *)",
-      "Bash(gh issue view *)",
-      "Bash(gh search *)",
-      "Bash(gh repo view *)",
-      "Bash(echo *)",
-      "Bash(curl *)",
-      "Bash(zellij action list-panes *)",
-      "Bash(zellij action dump-screen *)",
-      "Bash(cat *)",
-      "Bash(wc *)"
+      "Bash(grep:*)",
+      "Bash(cp:*)",
+      "Bash(cd:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(which:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh search:*)",
+      "Bash(gh repo view:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(zellij action list-panes:*)",
+      "Bash(zellij action dump-screen:*)",
+      "Bash(nix search:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)"
     ]
   },
   "hooks": {
@@ -50,9 +52,6 @@
         ]
       }
     ]
-  },
-  "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": true
   },
   "effortLevel": "high",
   "voiceEnabled": true,

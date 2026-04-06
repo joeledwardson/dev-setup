@@ -2701,3 +2701,88 @@ Discovery that prompted this: `C-t` in telescope opens the selected entry in a n
 Didnt realise this was a feature...  `ToggleGroupMarking` (for me `Alt Shift p`) opens group mode where we can select multiple panes and then `s` to stack!
 
 And then can use the `alt [` to change layout (which will unstack) .. and `alt t [` to move a pane to another tab!
+
+### Vim variable scopes cheat sheet
+
+| Scope | What | Vim get | Vim set | Lua get | Lua set |
+|-------|------|---------|---------|---------|---------|
+| `g:` | global variables | `:echo g:foo` | `:let g:foo = 1` | `vim.g.foo` | `vim.g.foo = 1` |
+| `b:` | buffer-local variables | `:echo b:foo` | `:let b:foo = 1` | `vim.b.foo` or `vim.b[bufnr].foo` | `vim.b.foo = 1` |
+| `w:` | window-local variables | `:echo w:foo` | `:let w:foo = 1` | `vim.w.foo` or `vim.w[winid].foo` | `vim.w.foo = 1` |
+| `t:` | tab-local variables | `:echo t:foo` | `:let t:foo = 1` | `vim.t.foo` or `vim.t[tabnr].foo` | `vim.t.foo = 1` |
+| `v:` | vim predefined variables | `:echo v:count` | (read-only mostly) | `vim.v.count` | (read-only mostly) |
+
+**Options** (settings like `number`, `expandtab`) use `vim.opt` / `vim.o` / `vim.bo` / `vim.wo`:
+
+| Scope | What | Vim get | Vim set | Lua get | Lua set |
+|-------|------|---------|---------|---------|---------|
+| global option | `:set foo` | `:echo &foo` | `:set foo=1` | `vim.o.foo` or `vim.opt.foo:get()` | `vim.o.foo = 1` or `vim.opt.foo = 1` |
+| buffer option | `:setlocal foo` (buffer) | `:echo &l:foo` | `:setlocal foo=1` | `vim.bo.foo` or `vim.bo[bufnr].foo` | `vim.bo.foo = 1` |
+| window option | `:setlocal foo` (window) | `:echo &l:foo` | `:setlocal foo=1` | `vim.wo.foo` or `vim.wo[winid].foo` | `vim.wo.foo = 1` |
+
+**Examples:**
+
+| Type | Example | Purpose |
+|------|---------|---------|
+| `vim.g.mapleader` | `vim.g.mapleader = ' '` | global var, set leader key |
+| `vim.g.clipboard` | `vim.g.clipboard = {...}` | global var, clipboard provider config |
+| `vim.b.disable_autoformat` | `vim.b.disable_autoformat = true` | buffer var, custom flag for conform.nvim |
+| `vim.opt.number` | `vim.opt.number = true` | option, show line numbers |
+| `vim.bo.filetype` | `vim.bo.filetype` | buffer option, get current filetype |
+| `vim.wo.wrap` | `vim.wo.wrap = false` | window option, disable line wrap |
+| `vim.v.event` | `vim.v.event.regcontents` | vim predefined, yank event data |
+
+> `vim.opt` vs `vim.o`: `vim.opt` returns a special object with `:get()`, `:append()`, `:prepend()`, `:remove()`. `vim.o` is simpler direct access. For setting simple values they're interchangeable.
+
+### Terminal escape sequences cheat sheet
+
+Escape sequences control terminal behavior. Two main types: **CSI** (Control Sequence Introducer) for cursor/display and **OSC** (Operating System Command) for terminal features.
+
+| Type | Command | Breakdown | What it does |
+|------|---------|-----------|--------------|
+| CSI | `printf '\e[2J'` | `\e[` + `2` + `J` | clear entire screen (`J`=erase, `2`=all) |
+| CSI | `printf '\e[10;5H'` | `\e[` + `10;5` + `H` | move cursor to row 10, col 5 (`H`=position) |
+| CSI | `printf '\e[31mRed\e[0m'` | `\e[` + `31` + `m` | set text red (`m`=SGR, `31`=red fg) |
+| CSI | `printf '\e[0m'` | `\e[` + `0` + `m` | reset all attributes (`0`=reset) |
+| CSI | `printf '\e[2 q'` | `\e[` + `2` + ` q` | set cursor to block (`q`=cursor shape) |
+| CSI | `printf '\e[5 q'` | `\e[` + `5` + ` q` | set cursor to bar/beam |
+| CSI | `printf '\e[?25l'` | `\e[` + `?25` + `l` | hide cursor (`l`=low/off) |
+| CSI | `printf '\e[?25h'` | `\e[` + `?25` + `h` | show cursor (`h`=high/on) |
+| OSC | `printf '\e]0;My Title\a'` | `\e]` + `0;` + `title` + `\a` | set window title |
+| OSC | `printf '\e]52;c;%s\a' "$(echo -n 'hello' \| base64)"` | `\e]` + `52;c;` + `BASE64` + `\a` | copy to clipboard |
+
+**Key:**
+- `\e` or `\033` = ESC (0x1B)
+- `\a` or `\007` = BEL (terminates OSC)
+- CSI ends with a letter (`J`, `H`, `m`, `q`, `l`, `h`)
+- OSC ends with BEL (`\a`) or ST (`\e\\`)
+
+**SGR (Select Graphic Rendition) codes for `\e[...m`:**
+
+| Code | Effect | Code | Effect |
+|------|--------|------|--------|
+| `0` | reset all | `1` | bold |
+| `30-37` | fg colors | `40-47` | bg colors |
+| `38;5;N` | 256-color fg | `48;5;N` | 256-color bg |
+| `38;2;R;G;B` | truecolor fg | `48;2;R;G;B` | truecolor bg |
+
+**Example combining:** `\e[1;31m` = bold + red, `\e[38;2;255;100;0mOrange\e[0m` = truecolor orange then reset
+
+**OSC 52 clipboard breakdown:**
+
+```
+printf '\e]52;c;%s\a' "$(echo -n 'hello' | base64)"
+        │ │  │ │       │                   │
+        │ │  │ │       │                   └─ base64 encode (required by spec)
+        │ │  │ │       └─ substituted into %s
+        │ │  │ └───────── \a = BEL, "end of message"
+        │ │  └─────────── c = clipboard target (c=clipboard, p=primary, s=select)
+        │ └────────────── 52 = clipboard operation (xterm assigned number)
+        └──────────────── \e] = OSC introducer ("hey terminal, incoming command")
+```
+
+Why base64? The clipboard content might contain special characters that would break the escape sequence. Base64 ensures it's safe ASCII.
+
+Works over SSH because the escape sequence travels through the terminal stream back to your *local* terminal (kitty/wezterm/etc) which handles the actual clipboard.
+
+Ref: https://terminalguide.namepad.de/seq/osc-52/

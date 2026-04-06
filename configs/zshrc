@@ -295,12 +295,18 @@ alias tl='tmux list-sessions' # List all sessions
 
 
 
+# OSC52 copy - works over SSH/containers where wl-copy doesn't
+# see https://terminalguide.namepad.de/seq/osc-52/
+osc52copy() {
+  printf '\033]52;c;%s\a' "$(base64)"
+}
+
 # copy to system clipboard on vi yank
 # zle -N docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-zle
 # bindkey docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-bindkey
 function vi-yank-to-clipboard() {
   zle vi-yank
-  printf '%s' "$CUTBUFFER" | wl-copy
+  printf '%s' "$CUTBUFFER" | osc52copy
 }
 zle -N vi-yank-to-clipboard
 bindkey -M vicmd 'y' vi-yank-to-clipboard
