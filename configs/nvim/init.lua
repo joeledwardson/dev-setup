@@ -110,13 +110,15 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
--- Sync clipboard between OS and Neovim.
--- Use OSC52 for clipboard (works over SSH/headless)
-vim.g.clipboard = 'osc52'
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
-
+-- Sync yanks to system clipboard via OSC52 (works over SSH/Zellij)
+-- No clipboard provider — p uses normal registers, no OSC52 read hang
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    local text = table.concat(vim.v.event.regcontents, '\n')
+    require('vim.ui.clipboard.osc52').copy('+')(vim.v.event.regcontents)
+  end,
+})
+--
 -- Enable break indent
 vim.opt.breakindent = true
 
@@ -502,7 +504,9 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', function() builtin.buffers { sort_lastused = true } end, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', function()
+        builtin.buffers { sort_lastused = true }
+      end, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
       vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
       -- Slightly advanced example of overriding default behavior and theme
@@ -719,7 +723,6 @@ require('lazy').setup {
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
-        ruff = {},
 
         marksman = {},
 
@@ -877,6 +880,7 @@ require('lazy').setup {
       -- TODO: fix hard coded pg schema for atlas
       vim.lsp.config['atlas'] = { filetypes = { 'atlas-schema-postgresql' }, capabilities = capabilities, root_markers = { 'schema.pg.hcl' } }
 
+      vim.lsp.enable 'ruff'
       vim.lsp.enable 'atlas'
       vim.lsp.enable 'terraformls'
       vim.lsp.enable 'systemd_ls'

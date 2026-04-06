@@ -30,10 +30,14 @@
     ]
   },
   "hooks": {
-    "PermissionRequest": [
+    "Notification": [
       {
         "matcher": "",
         "hooks": [
+          {
+            "type": "command",
+            "command": "zellij pipe --name \"zellij-attention::waiting::$ZELLIJ_PANE_ID\""
+          },
           {
             "type": "command",
             "command": "$HOME/.claude/scripts/notify-if-unfocused.sh"
@@ -45,6 +49,10 @@
       {
         "matcher": "",
         "hooks": [
+          {
+            "type": "command",
+            "command": "zellij pipe --name \"zellij-attention::completed::$ZELLIJ_PANE_ID\""
+          },
           {
             "type": "command",
             "command": "$HOME/.claude/scripts/notify-if-unfocused.sh"

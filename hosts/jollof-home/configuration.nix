@@ -55,31 +55,6 @@ args@{ pkgs, inputs, config, commonGroups, ... }:
   };
   programs.virt-manager.enable = true;
 
-  # # =======================================
-  # # Media server (for testing)
-  # # =======================================
-  # services.sabnzbd = { enable = true; };
-  # services.nzbget = { enable = true; };
-  # services.sonarr = { enable = true; };
-  # services.radarr = { enable = true; };
-  # services.prowlarr = { enable = true; };
-
-  nixarr = {
-    enable = true;
-    mediaDir = "/data/media";
-    stateDir = "/data/media/.state/nixarr";
-
-    sabnzbd.enable = true;
-    prowlarr.enable = true;
-    sonarr.enable = true;
-    radarr.enable = true;
-    plex.enable = true;
-
-    # Optional: VPN for downloads
-    # vpn.enable = true;
-    # sabnzbd.vpn.enable = true;
-  };
-
   # =======================================
   # Mount Configuration
   # =======================================

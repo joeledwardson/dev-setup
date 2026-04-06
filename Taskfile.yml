@@ -48,6 +48,13 @@ tasks:
     status:
       - test -e "$HOME/.tmux/plugins/tpm"
 
+  initclaude:
+    desc: Initialize Claude Code config (skip onboarding prompt)
+    cmds:
+      - cp dev-image/claude.json ~/.claude.json
+    status:
+      - test -e ~/.claude.json
+
   clean:
     desc: Clean nix garbage
     cmds:

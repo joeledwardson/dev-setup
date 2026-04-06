@@ -336,11 +336,12 @@ plugins {
         welcome_screen true
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
-    // vim-zellij-nav location="https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm"
-    vim-zellij-nav location="file:~/.config/zellij/vim-zellij-navigator.wasm"
     zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
     }
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
+    // wasm based plugins
+    vim-zellij-nav location="file:~/.config/zellij/plugins/vim-zellij-navigator.wasm"
+    zellij-attention location="file:~/.config/zellij/plugins/zellij-attention.wasm"
 }
 
 // Plugins to load in the background when a new session starts
@@ -349,6 +350,11 @@ plugins {
 load_plugins {
     vim-zellij-nav
     zj-quit
+    "file:~/.config/zellij/plugins/zellij-attention.wasm" {
+        enabled "true"
+        waiting_icon "⏳⌚"
+        completed_icon "✅🏁"
+    }
 }
 web_client {
     font "monospace"
@@ -381,6 +387,14 @@ themes {
             emphasis_1 160 160 160
             emphasis_2 120 120 120
             emphasis_3 120 120 120
+        }
+        ribbon_selected {
+            base 30 30 30
+            background 180 140 110
+            emphasis_0 30 30 30
+            emphasis_1 40 40 40
+            emphasis_2 30 30 30
+            emphasis_3 30 30 30
         }
     }
 }
