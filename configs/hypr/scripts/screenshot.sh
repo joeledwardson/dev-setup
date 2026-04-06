@@ -35,6 +35,7 @@ echo "${hyprshot_args[@]}"
 sleep 0.2
 
 hyprshot "${hyprshot_args[@]}"
-if [[ "$?" -ne "0" ]]; then
-    notify-send "oh dear, return code: $?"
+# TODO: hyprshot package is broken and always returns non-zero: https://github.com/Gustash/Hyprshot/issues/129
+if [[ "$to_file" == "yes" && ! -f "$HOME/Downloads/$filename" ]]; then
+    notify-send "hyprshot failed: file not created"
 fi

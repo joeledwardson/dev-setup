@@ -58,15 +58,22 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   networking.hostName = "streaming-server";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.streamer = {
-    isNormalUser = true;
-    description = "jollof";
-    initialPassword = "password";
-    extraGroups = commonGroups;
-    packages = with pkgs; [ recyclarr pkgs-unstable.stremio ];
+  users.users = {
+    claude = {
+      isNormalUser = true;
+      description = "claude-code";
+      initialPassword = "password";
+      extraGroups = commonGroups;
+    };
+    streamer = {
+      isNormalUser = true;
+      description = "jollof";
+      initialPassword = "password";
+      extraGroups = commonGroups;
+    };
   };
   # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "streamer" ];
+  nix.settings.trusted-users = [ "root" "streamer" "claude" ];
 
   # kitty terminal support for SSH
   environment.systemPackages = [ pkgs.kitty.terminfo ];
