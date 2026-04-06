@@ -2749,6 +2749,7 @@ Escape sequences control terminal behavior. Two main types: **CSI** (Control Seq
 | CSI | `printf '\e[?25l'` | `\e[` + `?25` + `l` | hide cursor (`l`=low/off) |
 | CSI | `printf '\e[?25h'` | `\e[` + `?25` + `h` | show cursor (`h`=high/on) |
 | OSC | `printf '\e]0;My Title\a'` | `\e]` + `0;` + `title` + `\a` | set window title |
+| OSC | `printf '\e]9;%s\e\\' "msg"` | `\e]` + `9;` + `msg` + `\e\\` | desktop notification (works over SSH) |
 | OSC | `printf '\e]52;c;%s\a' "$(echo -n 'hello' \| base64)"` | `\e]` + `52;c;` + `BASE64` + `\a` | copy to clipboard |
 
 **Key:**

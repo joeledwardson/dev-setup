@@ -54,6 +54,16 @@ compinit
 # Load bash completions compatibility for tools like Terraform
 autoload -U +X bashcompinit && bashcompinit
 
+# notify-send wrapper - uses OSC 9 over SSH, native otherwise
+# must be done before sheldon or zsh-auto-notify will complain about lack of `notify-send`
+notify-send() {
+  if [[ -n "$SSH_TTY" ]]; then
+    printf '\e]9;%s\e\\' "$*"
+  else
+    command notify-send "$@"
+  fi
+}
+
 # load sheldon plugins
 eval "$(sheldon source)"
 
@@ -300,6 +310,7 @@ alias tl='tmux list-sessions' # List all sessions
 osc52copy() {
   printf '\033]52;c;%s\a' "$(base64)"
 }
+
 
 # copy to system clipboard on vi yank
 # zle -N docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-zle
