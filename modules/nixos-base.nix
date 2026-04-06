@@ -192,6 +192,7 @@
     gdu # replacement for ncdu
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
+    claude-code # latest claude code (unstable is broken) so revert back to pkgs version
 
     ### CLI tools
     tldr
@@ -276,7 +277,6 @@
     ### unstable packages
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
-    pkgs-unstable.claude-code # always want latest claude code
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
 
     # try llm again for quick access to gemini
