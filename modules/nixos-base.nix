@@ -378,28 +378,6 @@
   # Add ~/.local/bin to PATH for xdg-open wrapper
   environment.localBinInPath = true;
 
-  # systemd user service for Docker container notification forwarding
-  systemd.user.services.notify-forward = {
-    description =
-      "Notification forwarder socket listener for Docker containers";
-    after = [ "graphical-session.target" ];
-    wantedBy = [ "default.target" ];
-    enable = true;
-    serviceConfig = {
-      Type = "simple";
-      ExecStartPre = [
-        "${pkgs.coreutils}/bin/mkdir -p /tmp/notify-forward"
-        "${pkgs.coreutils}/bin/rm -f /tmp/notify-forward/notify.sock"
-      ];
-      ExecStart =
-        "${pkgs.socat}/bin/socat -d UNIX-LISTEN:/tmp/notify-forward/notify.sock,fork,reuseaddr EXEC:%h/.claude/scripts/notify-handler.sh ";
-      Restart = "always";
-      RestartSec = 3;
-      StandardOutput = "journal";
-      StandardError = "journal";
-    };
-  };
-
   # systemd user service for xdg-open SSH forwarding
   systemd.user.services.open-forward = {
     description = "xdg-open SSH forwarder socket listener";

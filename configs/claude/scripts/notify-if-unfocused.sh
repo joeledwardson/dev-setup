@@ -1,8 +1,6 @@
 #!/bin/bash
 # Send a notification only if the terminal running this process is not focused.
-# In Docker containers, sends via socat to host notification socket.
-
-NOTIFY_SOCKET="/tmp/notify-forward/notify.sock"
+# In Docker/SSH, uses OSC 9 escape sequence which travels through the terminal stream.
 
 INPUT=$(cat)
 EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // "unknown"')
@@ -16,11 +14,9 @@ fi
 
 echo "$INPUT" >>/tmp/claude-notify-log.log
 
-# Docker container: always notify via socat socket
-if [ -f /.dockerenv ]; then
-    if [ -S "$NOTIFY_SOCKET" ]; then
-        echo "Docker: Claude ($EVENT) $PROJECT|$MSG" | socat - UNIX-CONNECT:"$NOTIFY_SOCKET" &
-    fi
+# Docker/SSH: use OSC 9 - escape sequence travels through terminal stream to host
+if [ -f /.dockerenv ] || [ -n "$SSH_TTY" ]; then
+    printf '\e]9;Claude (%s) %s: %s\e\\' "$EVENT" "$PROJECT" "$MSG"
     exit 0
 fi
 
