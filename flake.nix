@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hyprdynamicmonitors.url = "github:fiffeek/hyprdynamicmonitors?ref=v1.4.0";
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
 
@@ -14,7 +13,7 @@
     };
   };
 
-  # inputs are resolved to flakes. i.e. hyprdynamicmonitors is now an accessible flake
+  # inputs are resolved to flakes. 
   outputs = inputs@{ nixpkgs, nixpkgs-unstable, nur, ... }:
     let
       mySystem = "x86_64-linux";
@@ -45,7 +44,8 @@
           specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
-            ./modules/nixos-desktop.nix
+            ./modules/nixos-core-desktop.nix
+            ./modules/nixos-extended-desktop.nix
             ./hosts/degen-work/configuration.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
@@ -59,7 +59,8 @@
           specialArgs = commonSpecialArgs;
           modules = [
             ./modules/nixos-base.nix
-            ./modules/nixos-desktop.nix
+            ./modules/nixos-core-desktop.nix
+            ./modules/nixos-extended-desktop.nix
             ./hosts/degen-home/configuration.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
@@ -79,7 +80,8 @@
           modules = [
             inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
-            ./modules/nixos-desktop.nix
+            ./modules/nixos-core-desktop.nix
+            ./modules/nixos-extended-desktop.nix
             ./hosts/jollof-home/configuration.nix
           ];
         };
@@ -92,8 +94,19 @@
           modules = [
             inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
-            ./modules/nixos-desktop.nix
+            ./modules/nixos-core-desktop.nix
+            ./modules/nixos-extended-desktop.nix
             ./hosts/desktop-work/configuration.nix
+          ];
+        };
+
+        # pi box
+        "pi-box" = nixpkgs.lib.nixosSystem {
+          specialArgs = commonSpecialArgs;
+          modules = [
+            ./modules/nixos-base.nix
+            ./modules/nixos-core-desktop.nix
+            ./hosts/pi-box/configuration.nix
           ];
         };
 

@@ -27,6 +27,32 @@ vim.keymap.set('v', '<', '<gv', { noremap = true })
 -- alt shift H is used by tmux (and zellij) for window switching
 vim.keymap.set('n', '<M-H>', '<Nop>', { noremap = true })
 
+-- treewalker mode: <leader>w enters loop, hjkl navigate tree, any other key exits
+vim.g.treewalker_mode = false
+vim.keymap.set('n', '<Leader>w', function()
+  vim.g.treewalker_mode = true
+  while true do
+    vim.api.nvim__redraw { flush = true, cursor = true, win = 0, statusline = true }
+    local ok, key = pcall(vim.fn.getcharstr)
+    if not ok then
+      break
+    end
+    if key == 'k' then
+      vim.cmd 'Treewalker Up'
+    elseif key == 'j' then
+      vim.cmd 'Treewalker Down'
+    elseif key == 'h' then
+      vim.cmd 'Treewalker Left'
+    elseif key == 'l' then
+      vim.cmd 'Treewalker Right'
+    else
+      break
+    end
+  end
+  vim.g.treewalker_mode = false
+  vim.api.nvim__redraw { flush = true, cursor = true, win = 0, statusline = true }
+end, { desc = 'treewalker mode' })
+
 -- window resize mode: C-w r enters loop, + - < > resize by 5, any other key exits
 vim.g.resize_mode = false
 vim.keymap.set('n', '<C-w>r', function()
@@ -353,12 +379,7 @@ return {
   {
     'aaronik/treewalker.nvim',
     opts = {},
-    keys = {
-      { '<C-S-k>', '<cmd>Treewalker Up<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Up' },
-      { '<C-S-j>', '<cmd>Treewalker Down<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Down' },
-      { '<C-S-h>', '<cmd>Treewalker Left<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Left' },
-      { '<C-S-l>', '<cmd>Treewalker Right<cr>', mode = { 'n', 'v' }, desc = 'Treewalker Right' },
-    },
+    cmd = { 'Treewalker' },
   },
   {
     'chentoast/marks.nvim',

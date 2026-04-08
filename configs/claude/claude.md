@@ -11,3 +11,4 @@
 - when reading terminal output (from above) - execute zellij action as single commands then analyze in your internal buffer (dont chain bash commands, as i will have to approve them) - you have permissions to zellija ction list-panes and dump-screen
 - prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
 - when writing code ALWAYS ask yourself this: a) is this required? b) can a human read this, is it ergonomic? c) is there a clearer way to do this? d) prioritise clear and easy to follow structure (e.g. early return syntax)
+- where possible - do NOT pipe bash commands - then it ignores any pre-set permissions i have given for Find:* Grep:* etc

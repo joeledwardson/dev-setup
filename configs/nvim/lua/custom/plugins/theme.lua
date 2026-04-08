@@ -9,6 +9,10 @@ return {
     }
     vim.cmd 'colorscheme onedark'
 
+    -- statusline background for non-highlighted sections
+    vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { bg = '#2c323c' })
+    vim.api.nvim_set_hl(0, 'MiniStatuslineDevinfo', { bg = '#2c323c' })
+
     -- subtle diff highlights for fugitive/git buffers
     vim.api.nvim_set_hl(0, 'diffAdded', { fg = '#98c379', bg = '#2a3325' })
     vim.api.nvim_set_hl(0, 'diffRemoved', { fg = '#e06c75', bg = '#332328' })

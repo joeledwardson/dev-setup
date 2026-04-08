@@ -77,7 +77,7 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
 # auto-notify settings (notify on long-running commands)
 export AUTO_NOTIFY_THRESHOLD=10
 # llg is the alias for gemini
-export AUTO_NOTIFY_IGNORE=("docker" "vim" "nvim" "ssh" "tmux" "zellij" "claude" "hx" "llg" "llm" "man" "yazi" "lazygit" "lg" "gd")
+export AUTO_NOTIFY_IGNORE=("docker" "vim" "nvim" "ssh" "tmux" "zellij" "claude" "hx" "llg" "llm" "man" "yazi" "lazygit" "lg" "gd" "ping")
 
 # add navi repos if not there already
 if command -v navi >/dev/null; then

@@ -1089,6 +1089,9 @@ require('lazy').setup {
         if vim.g.resize_mode then
           return 'RESIZE', 'MiniStatuslineModeOther'
         end
+        if vim.g.treewalker_mode then
+          return 'TREEWALKER', 'MiniStatuslineModeOther'
+        end
         return original_section_mode(args)
       end
 

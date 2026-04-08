@@ -135,6 +135,7 @@
     tcpdump
     nmap
     httpie # nice terminal alternative to postman
+    fastfetch # fancy temrinal output
 
     ### hardware tools
     lm_sensors # temperature monitoring
@@ -143,8 +144,6 @@
     lshw
     hwinfo
     dmidecode
-    fastfetch
-    smartmontools
     inxi # get CPU & storage stats
 
     ### audio
@@ -280,11 +279,7 @@
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
 
     # try llm again for quick access to gemini
-    (pkgs-unstable.llm.withPlugins {
-      llm-gemini = true;
-      #   llm-anthropic = true;
-      #   llm-openai-plugin = true;
-    })
+    (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
 
     ### user packages
     pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server
@@ -308,7 +303,6 @@
   services.gvfs.enable = true; # Mount, trash, and other functionalities
   services.tumbler.enable = true; # Thumbnail support for images
 
-  # Example for /etc/nixos/configuration.nix
   services.syncthing = {
     enable = true;
     openDefaultPorts = true; # Open ports in the firewall for Syncthing
@@ -358,16 +352,6 @@
     # disable some weird setting from .net, otherwise marksman fails complaining about icu?
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
   };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   services.openssh = {
