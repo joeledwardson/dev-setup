@@ -77,6 +77,11 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
 
   # kitty terminal support for SSH
   environment.systemPackages = [ pkgs.kitty.terminfo ];
-  services.syncthing.user = "streamer";
+  services.syncthing = {
+    user = "streamer";
+    group = "users";
+    dataDir = "/home/streamer/syncthing";
+    configDir = "/home/streamer/.config/syncthing";
+  };
 
 }
