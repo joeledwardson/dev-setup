@@ -13,12 +13,13 @@ fi
 
 hyprshot_args=()
 
-if [[ "$to_file" == 'yes' ]]; then
+if [[ "$to_file" != 'yes' ]]; then
+    hyprshot_args+=("--wclipboard-only")
+else
     filename="$(date -Ins).png"
+    filepath="$HOME/Downloads/$filename"
     hyprshot_args+=("-o" "$HOME/Downloads" "-f" "$filename")
     notify-send "writing to downloads: $filename"
-else
-    hyprshot_args+=("--wclipboard-only")
 fi
 
 if [[ "$choice" == "area" ]]; then
@@ -36,6 +37,14 @@ sleep 0.2
 
 hyprshot "${hyprshot_args[@]}"
 # TODO: hyprshot package is broken and always returns non-zero:
-if [[ "$to_file" == "yes" && ! -f "$HOME/Downloads/$filename" ]]; then
-    notify-send "hyprshot failed: file not created"
+if [[ "$to_file" != "yes" ]]; then
+    exit
 fi
+
+if [[ ! -f "$filepath" ]]; then
+    notify-send "hyprshot failed: file not created"
+    exit
+fi
+
+echo -n "$filepath" | wl-copy
+notify-send "path copied to clipboard"
