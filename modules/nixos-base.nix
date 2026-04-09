@@ -102,6 +102,9 @@
   # udisks service is required for udiskie to run properly in hyprland tray
   services.udisks2.enable = true;
 
+  # Enable tailscale at startup
+  services.tailscale = { enable = true; };
+
   # Enable swap (8GB universal size for all systems)
   swapDevices = [{
     device = "/var/lib/swapfile";
