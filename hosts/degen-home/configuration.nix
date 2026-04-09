@@ -9,6 +9,8 @@
     ./hardware-configuration.nix
   ];
 
+  services.tailscale.extraUpFlags = [ "--advertise-tags=tag:trusted" ];
+
   # boot configuration
   boot.loader = {
     grub = {

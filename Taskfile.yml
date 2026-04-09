@@ -115,6 +115,17 @@ tasks:
       - mkdir -p ~/yolo-exchange
       - docker run -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json -v /tmp/notify-forward:/tmp/notify-forward {{.CLI_ARGS}} dev-image:latest zsh
 
+  tailscale:acl:
+    desc: Apply Tailscale ACL policy
+    requires:
+      vars: [TAILSCALE_API_KEY, TAILSCALE_TAILNET]
+    cmd: >-
+      curl -s -X PUT
+      "https://api.tailscale.com/api/v2/tailnet/{{.TAILSCALE_TAILNET}}/acl"
+      -u "{{.TAILSCALE_API_KEY}}:"
+      -H "Content-Type: application/hujson"
+      --data-binary @tailscale/acl.hujson
+
   llmkeys:
     desc: Set LLM API keys from agenix secrets
     cmds:
