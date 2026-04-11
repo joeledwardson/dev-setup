@@ -43,6 +43,7 @@
       ~/.config/yazi: ./configs/yazi
       ~/.config/mimeapps.list: ./configs/mimeapps.list
       ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
+      ~/.local/share/sheldon/plugins.lock: ./configs/sheldon/plugins.lock
       ~/.npmrc: ./configs/npmrc
       ~/.claude/CLAUDE.md: ./configs/claude/claude.md
       ~/.claude/settings.json: ./configs/claude/settings.json

@@ -36,10 +36,15 @@ tasks:
       - dotbot -c install.conf.yaml
       - task: hyprland
 
-  sheldon:
+  sheldon:lock:
     desc: Rebuild sheldon plugin lock
     cmds:
       - sheldon lock
+
+  sheldon:update:
+    desc: Update sheldon packages
+    cmds:
+      - sheldon lock --update
 
   yazi:
     desc: Install yazi plugins
@@ -54,7 +59,7 @@ tasks:
     status:
       - test -e "$HOME/.tmux/plugins/tpm"
 
-  initclaude:
+  claude:init:
     desc: Initialize Claude Code config (skip onboarding prompt)
     cmds:
       - cp dev-image/claude.json ~/.claude.json

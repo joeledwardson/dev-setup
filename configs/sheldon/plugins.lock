@@ -1,0 +1,126 @@
+version = "0.8.5"
+home = "/home/jollof"
+config_dir = "/home/jollof/.config/sheldon"
+data_dir = "/home/jollof/.local/share/sheldon"
+config_file = "/home/jollof/.config/sheldon/plugins.toml"
+
+[[plugins]]
+name = "zsh-defer"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/romkatv/zsh-defer"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/romkatv/zsh-defer/zsh-defer.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "z-shell-navigation-tools"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/z-shell/zsh-navigation-tools"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/z-shell/zsh-navigation-tools/zsh-navigation-tools.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-autosuggestions"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-autosuggestions"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-completions"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-completions"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-completions/zsh-completions.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "fzf-tab"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/Aloxaf/fzf-tab"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/Aloxaf/fzf-tab/fzf-tab.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-syntax-highlighting"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-syntax-highlighting"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/zsh-users/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-you-should-use"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/MichaelAquilina/zsh-you-should-use"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/MichaelAquilina/zsh-you-should-use/zsh-you-should-use.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "git"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/davidde/git"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/davidde/git/git.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-fzf-history-search"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/joshskidmore/zsh-fzf-history-search"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/joshskidmore/zsh-fzf-history-search/zsh-fzf-history-search.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "zsh-output-highlighting"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/l4u/zsh-output-highlighting"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/l4u/zsh-output-highlighting/zsh-output-highlighting.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "dracula"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/dracula/zsh"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/dracula/zsh/dracula.zsh-theme"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "colored-man-pages"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh"
+plugin_dir = "/home/jollof/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh/plugins/colored-man-pages"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/ohmyzsh/ohmyzsh/plugins/colored-man-pages/colored-man-pages.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "auto-notify"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/MichaelAquilina/zsh-auto-notify"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/MichaelAquilina/zsh-auto-notify/auto-notify.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[[plugins]]
+name = "navi"
+source_dir = "/home/jollof/.local/share/sheldon/repos/github.com/denisidoro/navi"
+files = ["/home/jollof/.local/share/sheldon/repos/github.com/denisidoro/navi/shell/navi.plugin.zsh"]
+apply = ["source"]
+
+[plugins.hooks]
+
+[templates]
+PATH = 'export PATH="{{ dir }}:$PATH"'
+path = 'path=( "{{ dir }}" $path )'
+fpath = 'fpath=( "{{ dir }}" $fpath )'
+source = """
+{{ hooks?.pre | nl }}{% for file in files %}source "{{ file }}"
+{% endfor %}{{ hooks?.post | nl }}"""
