@@ -17,11 +17,17 @@ tasks:
     cmds:
       - hyprctl reload
 
-  os:
+  os:build:
     desc: Rebuild NixOS configuration
     cmds:
       - sudo nixos-rebuild switch --flake .
       - task: hyprland
+
+  os:clean:
+    desc: Clean nix garbage
+    cmds:
+      - sudo nix-collect-garbage -d
+      - nix-collect-garbage -d
 
   dotfiles:
     desc: Run dotbot and setup hyprland config
@@ -33,7 +39,7 @@ tasks:
   sheldon:
     desc: Rebuild sheldon plugin lock
     cmds:
-      - sheldon lock --clean
+      - sheldon lock
 
   yazi:
     desc: Install yazi plugins
@@ -55,25 +61,19 @@ tasks:
     status:
       - test -e ~/.claude.json
 
-  clean:
-    desc: Clean nix garbage
-    cmds:
-      - sudo nix-collect-garbage -d
-      - nix-collect-garbage -d
-
   toc:
     desc: Run doctoc on README
     cmds:
       - doctoc README.md
 
-  winpush:
+  win:push:
     desc: Export Windows packages
     cmds:
       - mkdir -p {{.WIN_DIR}}
       - winget export --nowarn --output "{{.WINGET_FILE}}" --include-versions
       - scoop export > "{{.SCOOP_FILE}}"
 
-  winpull:
+  win:pull:
     desc: Import Windows packages
     preconditions:
       - test -f "{{.WINGET_FILE}}"
@@ -82,7 +82,7 @@ tasks:
       - winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "{{.WINGET_FILE}}"
       - scoop import "{{.SCOOP_FILE}}"
 
-  copybrave:
+  brave:copy:
     desc: Copy Brave preferences to scratchpads
     preconditions:
       - test -f "{{.BRAVE_FILE}}"
@@ -91,7 +91,7 @@ tasks:
       - cp "{{.BRAVE_FILE}}" ./scratchpads/brave-preferences.json
       - cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
 
-  applybrave:
+  brave:apply:
     desc: Apply custom configs to Brave
     preconditions:
       - test -f "{{.BRAVE_FILE}}"
@@ -115,27 +115,37 @@ tasks:
       - mkdir -p ~/yolo-exchange
       - docker run -it -v ~/yolo-exchange:/root/yolo-exchange -v ~/.claude/.credentials.json:/root/.claude/.credentials.json -v /tmp/notify-forward:/tmp/notify-forward {{.CLI_ARGS}} dev-image:latest zsh
 
-  tailscale:acl:
-    desc: Apply Tailscale ACL policy
+  tailscale:get_acl:
+    desc: Get current Tailscale ACL policy
     requires:
       vars: [TAILSCALE_API_KEY, TAILSCALE_TAILNET]
     cmd: >-
-      curl -s -X PUT
-      "https://api.tailscale.com/api/v2/tailnet/{{.TAILSCALE_TAILNET}}/acl"
-      -u "{{.TAILSCALE_API_KEY}}:"
-      -H "Content-Type: application/hujson"
-      --data-binary @tailscale/acl.hujson
+      http GET "https://api.tailscale.com/api/v2/tailnet/{{.TAILSCALE_TAILNET}}/acl"
+      -a "{{.TAILSCALE_API_KEY}}:"
+      Accept:application/hujson
 
-  llmkeys:
+  tailscale:api:
+    desc: |
+      Generic Tailscale API call. Auth is injected automatically.
+      Usage: task tailscale:api -- <method> <url> [httpie args...]
+      Examples:
+        task tailscale:api -- GET https://api.tailscale.com/api/v2/tailnet/-/devices
+        task tailscale:api -- GET https://api.tailscale.com/api/v2/tailnet/-/acl Accept:application/hujson
+    requires:
+      vars: [TAILSCALE_API_KEY]
+    cmd: http -a "{{.TAILSCALE_API_KEY}}:" {{.CLI_ARGS}}
+
+  tailscale:put_acl:
+    desc: Apply Tailscale ACL policy from tailscale/acl.hujson
+    requires:
+      vars: [TAILSCALE_API_KEY, TAILSCALE_TAILNET]
+    cmd: >-
+      http POST "https://api.tailscale.com/api/v2/tailnet/{{.TAILSCALE_TAILNET}}/acl"
+      -a "{{.TAILSCALE_API_KEY}}:"
+      Content-Type:application/hujson
+      < tailscale/acl.hujson
+
+  llm:keys:
     desc: Set LLM API keys from agenix secrets
     cmds:
       - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
-
-  all:
-    desc: Run all setup commands
-    cmds:
-      - task: os
-      - task: dotfiles
-      - task: yazi
-      - task: tpm
-      - task: applybrave

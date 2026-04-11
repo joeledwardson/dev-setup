@@ -1,0 +1,29 @@
+// most of this was stolen from https://tailscale.com/docs/reference/examples/acls and written by claude...
+{
+  // tagOwners: which users can *assign* a tag to a device (not what the tag can access).
+  // autogroup:admin = only tailnet admins can apply these tags.
+  "tagOwners": {
+    "tag:trusted": ["autogroup:admin"],
+    "tag:sandbox": ["autogroup:admin"],
+  },
+
+  // Grants control what each source can connect to.
+  // Tagged devices are removed from autogroup:member, so they
+  // only get access if explicitly listed as a src below.
+  "grants": [
+    // Untagged devices (personal machines) — full access
+    {"src": ["autogroup:member"], "dst": ["*"], "ip": ["*"]},
+    // Trusted tagged devices — full access
+    {"src": ["tag:trusted"],      "dst": ["*"], "ip": ["*"]},
+    // tag:sandbox is never a src — inbound reachable by all of the above, but cannot initiate outbound
+  ],
+
+  "ssh": [
+    {
+      "action": "check",
+      "src":    ["autogroup:member"],
+      "dst":    ["autogroup:self"],
+      "users":  ["autogroup:nonroot", "root"],
+    },
+  ],
+}

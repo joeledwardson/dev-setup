@@ -16,5 +16,16 @@ configs/yazi/flavors
 # dont commit nvim injections added by tree-sitter-language-injection plugin
 configs/nvim/after/queries
 
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
 
+# direnv
+.direnv
 
+# pre-commit
+.pre-commit-config.yaml
+
+# env args
+.env

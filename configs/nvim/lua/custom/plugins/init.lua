@@ -376,16 +376,19 @@ return {
     },
     opts = {},
   },
+  -- see treewalker_mode above
   {
     'aaronik/treewalker.nvim',
     opts = {},
     cmd = { 'Treewalker' },
   },
+  -- TODO: still needed?
   {
     'chentoast/marks.nvim',
     event = 'VeryLazy',
     opts = {},
   },
+  -- still getting used to this
   {
     'folke/flash.nvim',
     event = 'VeryLazy',
@@ -492,5 +495,9 @@ return {
       end,
       desc = 'toggle markdown render',
     } },
+  },
+  -- helpful for tailscale hujson LSP files
+  {
+    'fionn/nvim-hujson',
   },
 }

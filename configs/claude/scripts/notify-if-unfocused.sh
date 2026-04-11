@@ -2,7 +2,11 @@
 # Send a notification only if the terminal running this process is not focused.
 # In Docker/SSH, uses OSC 9 escape sequence which travels through the terminal stream.
 
-INPUT=$(cat)
+INPUT=$(timeout 1 cat)
+if [ $? -eq 124 ]; then
+    notify-send "Claude Hook Error" "notify-if-unfocused: stdin read timed out"
+    exit 0
+fi
 EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // "unknown"')
 PROJECT=$(echo "$INPUT" | jq -r '.cwd // ""' | xargs basename 2>/dev/null)
 FULL_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message')

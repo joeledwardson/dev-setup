@@ -109,6 +109,7 @@ if command -v gh >/dev/null; then zsh-defer -c 'source <(gh completion -s zsh)';
 if command -v fzf >/dev/null; then zsh-defer -c 'source <(fzf --zsh)'; fi
 if command -v terraform >/dev/null; then zsh-defer -c 'complete -o nospace -C terraform terraform'; fi
 if command -v aws >/dev/null; then zsh-defer -c 'setup-aws'; fi
+if command -v tailscale >/dev/null; then zsh-defer -c 'eval "$(tailscale completion zsh)"'; fi
 if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; fi
 # direnv  hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
