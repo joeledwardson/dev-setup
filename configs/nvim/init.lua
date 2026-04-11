@@ -548,7 +548,12 @@ require('lazy').setup {
         { path = 'wezterm-types', mods = { 'wezterm' } },
         -- Yazi types from yazi config plugins
         { path = vim.fn.expand '~/.config/yazi/plugins/types.yazi' },
+        -- luv library for vim.uv
+        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
       },
+      enabled = function()
+        return true
+      end,
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
@@ -886,6 +891,7 @@ require('lazy').setup {
       vim.lsp.enable 'systemd_ls'
       vim.lsp.enable 'gopls'
       vim.lsp.enable 'ansiblels'
+      vim.lsp.enable 'ruff'
 
       vim.filetype.add {
         filename = {
