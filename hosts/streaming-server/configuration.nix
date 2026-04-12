@@ -87,6 +87,15 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
 
   # ydotool daemon (required for ydotool to work)
   programs.ydotool.enable = true;
+
+  # auto-login streamer and launch Hyprland on boot (headless box)
+  services.greetd = {
+    enable = true;
+    settings.initial_session = {
+      command = "Hyprland";
+      user = "streamer";
+    };
+  };
   services.syncthing = {
     user = "streamer";
     group = "users";
