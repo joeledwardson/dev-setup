@@ -103,25 +103,25 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
     };
   };
 
-  # auto-login streamer and launch Hyprland on boot (headless box)
+  # auto-login claude and launch Hyprland on boot (headless box)
   services.greetd = {
     enable = true;
     settings = {
       initial_session = {
         command = "Hyprland";
-        user = "streamer";
+        user = "claude";
       };
       default_session = {
         command = "Hyprland";
-        user = "streamer";
+        user = "claude";
       };
     };
   };
   services.syncthing = {
-    user = "streamer";
+    user = "claude";
     group = "users";
-    dataDir = "/home/streamer/syncthing";
-    configDir = "/home/streamer/.config/syncthing";
+    dataDir = "/home/claude/syncthing";
+    configDir = "/home/claude/.config/syncthing";
   };
 
 }
