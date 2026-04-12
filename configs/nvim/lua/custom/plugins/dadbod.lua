@@ -19,7 +19,7 @@ return {
       { '<leader>Dr', '<cmd>DBUIRenameBuffer<cr>', desc = '[D]B [r]ename buffer' },
       { '<leader>Du', '<cmd>DBUIToggle<cr>', desc = '[D]B [t]oggle' },
       { '<leader>Ds', '<Plug>(DBUI_SaveQuery)', desc = '[D]B [S]ave query permanently' },
-      { '<leader>tD', '<cmd>DBUIToggle<cr>', desc = '[t]oggle [D]adbod UI' },
+      -- <leader>tD removed: conflicts with gitsigns toggle deleted; use <leader>Du instead
       { '<leader>Dv', '<Plug>(DBUI_SelectLineVsplit)', desc = '[t]oggle [D]adbod UI' },
     },
     init = function()

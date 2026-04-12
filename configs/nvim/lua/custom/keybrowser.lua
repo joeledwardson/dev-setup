@@ -25,15 +25,18 @@ local function pick(title, entries, columns)
       scoring_function = function(_, prompt, line)
         if not prompt or prompt == '' then return 1 end
 
+        -- "mode pattern" filter: first word must match first column exactly
         local filter, pattern = prompt:match('^(%S+)%s+(.+)$')
         if filter and pattern then
           local first = line:match('^(%S+)')
-          if first ~= filter then return -1 end
-          local rest = line:sub(#first + 2):lower()
-          local ok, hit = pcall(string.match, rest, pattern:lower())
-          return (ok and hit) and 0 or -1
+          if first == filter then
+            local rest = line:sub(#first + 2):lower()
+            local ok, hit = pcall(string.match, rest, pattern:lower())
+            return (ok and hit) and 0 or -1
+          end
         end
 
+        -- plain substring fallback (handles "alt shift", multi-word searches, etc.)
         return line:lower():find(prompt:lower(), 1, true) and 1 or -1
       end,
     },
@@ -246,6 +249,67 @@ function M.open_zellij()
   end
 
   pick('Zellij Keybindings (e.g. "session detach")', entries, { fmt = '%-16s %-20s %s' })
+end
+
+-- pgcli keybindings, parsed from installed key_bindings.py (found via `which pgcli`)
+local function pgcli_friendly_key(key)
+  if key:match('^c%-') then return 'Ctrl-' .. key:sub(3):upper() end
+  if key:match('^f%d+$') then return key:upper() end
+  return key:sub(1, 1):upper() .. key:sub(2)
+end
+
+function M.open_pgcli()
+  local pgcli_bin = vim.fn.exepath('pgcli')
+  if pgcli_bin == '' then
+    vim.notify('pgcli not found in PATH', vim.log.levels.WARN)
+    return
+  end
+  local base = vim.fn.resolve(pgcli_bin):match('(.+)/bin/')
+  local kb_path = base and vim.fn.glob(base .. '/lib/*/site-packages/pgcli/key_bindings.py') or ''
+  if kb_path == '' then
+    vim.notify('pgcli: key_bindings.py not found', vim.log.levels.WARN)
+    return
+  end
+
+  local lines = vim.fn.readfile(kb_path)
+  local entries = {}
+  local buf, depth, current_keys = '', 0, nil
+
+  for _, line in ipairs(lines) do
+    -- accumulate @kb.add(...) across lines, tracking paren depth
+    if line:match('@kb%.add%(') then
+      buf, depth = line, 0
+      for ch in buf:gmatch('.') do
+        if ch == '(' then depth = depth + 1 elseif ch == ')' then depth = depth - 1 end
+      end
+    elseif depth > 0 then
+      buf = buf .. ' ' .. line
+      for ch in line:gmatch('.') do
+        if ch == '(' then depth = depth + 1 elseif ch == ')' then depth = depth - 1 end
+      end
+    end
+
+    -- decorator closed: extract quoted key names
+    if buf ~= '' and depth <= 0 then
+      local keys = {}
+      for key in buf:gmatch('"([^"]+)"') do
+        keys[#keys + 1] = pgcli_friendly_key(key)
+      end
+      if #keys > 0 then current_keys = table.concat(keys, ' + ') end
+      buf, depth = '', 0
+    end
+
+    -- capture first line of docstring after the decorated function
+    if current_keys and depth == 0 then
+      local doc = line:match('^%s+"""(.-)"""') or line:match('^%s+"""(.+)$')
+      if doc and vim.trim(doc) ~= '' then
+        entries[#entries + 1] = { current_keys, vim.trim(doc) }
+        current_keys = nil
+      end
+    end
+  end
+
+  pick('pgcli Keybindings', entries, { fmt = '%-25s %s' })
 end
 
 return M
