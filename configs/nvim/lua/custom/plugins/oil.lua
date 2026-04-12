@@ -2,7 +2,11 @@ return {
   'stevearc/oil.nvim',
   ---@module 'oil'
   ---@type oil.SetupOpts
-  opts = {},
+  opts = {
+    keymaps = {
+      ['<C-l>'] = false, -- disable refresh; frees <C-l> for zellij-nav
+    },
+  },
   keys = {
     { '<leader>o', function() require('oil').open() end, desc = 'Open Oil' },
     { '<leader>O', function() require('oil').open(nil, { preview = { vertical = true } }) end, desc = 'Open Oil --preview' },
