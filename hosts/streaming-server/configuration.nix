@@ -78,7 +78,15 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
 
   # kitty terminal support for SSH
-  environment.systemPackages = [ pkgs.kitty.terminfo ];
+  environment.systemPackages = with pkgs; [
+    kitty.terminfo
+    ydotool # Wayland mouse/keyboard simulation
+    wtype # Wayland text input
+    wayvnc # Wayland VNC server for remote check-ins
+  ];
+
+  # ydotool daemon (required for ydotool to work)
+  programs.ydotool.enable = true;
   services.syncthing = {
     user = "streamer";
     group = "users";
