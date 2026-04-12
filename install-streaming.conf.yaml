@@ -1,0 +1,13 @@
+- defaults:
+      link:
+          relink: true
+          force: true
+          create: true
+
+- clean: ["~"]
+
+- link:
+      ~/.claude/CLAUDE.md: ./configs/claude/claude_streaming.md
+      ~/.claude/settings.json: ./configs/claude/settings.json
+      ~/.claude/scripts: ./configs/claude/scripts
+      ~/.claude/keybindings.json: ./configs/claude/keybindings.json
