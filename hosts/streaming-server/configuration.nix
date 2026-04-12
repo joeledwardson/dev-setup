@@ -77,6 +77,9 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
 
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
 
+  # wayvnc remote desktop
+  networking.firewall.allowedTCPPorts = [ 5900 ];
+
   # kitty terminal support for SSH
   environment.systemPackages = with pkgs; [
     kitty.terminfo
@@ -88,12 +91,30 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
   # ydotool daemon (required for ydotool to work)
   programs.ydotool.enable = true;
 
+  # auto-start wayvnc when Hyprland is running
+  systemd.user.services.wayvnc = {
+    description = "wayvnc VNC server";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+
   # auto-login streamer and launch Hyprland on boot (headless box)
   services.greetd = {
     enable = true;
-    settings.initial_session = {
-      command = "Hyprland";
-      user = "streamer";
+    settings = {
+      initial_session = {
+        command = "Hyprland";
+        user = "streamer";
+      };
+      default_session = {
+        command = "Hyprland";
+        user = "streamer";
+      };
     };
   };
   services.syncthing = {
