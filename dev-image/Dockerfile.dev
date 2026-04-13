@@ -7,6 +7,9 @@ RUN pacman -Syu --noconfirm curl
 RUN curl -sSL https://claude.ai/install.sh | bash
 
 # packages (see ./modules/nixos-base.nix for my default headless packages)
+# NOTE: neovim is NOT installed via pacman — Arch ships bleeding-edge (0.12.x)
+# which breaks nvim-treesitter (master branch). We pin to 0.11.x below to match
+# the host NixOS environment.
 RUN pacman -S --noconfirm \
 openssh \
 zsh \
@@ -22,7 +25,6 @@ fd \
 github-cli \
 ripgrep \
 vim \
-neovim \
 wget \
 unzip \
 net-tools \
@@ -42,6 +44,18 @@ nodejs npm \
 python python-pip \
 postgresql-libs \
 lua-language-server
+
+# Pin neovim to match host (NixOS nixos-25.11 ships 0.11.x). Arch's bleeding-edge
+# 0.12.x broke nvim-treesitter master branch — `node:range()` behaviour change
+# causes "attempt to call method 'range' (a nil value)" on markdown/etc.
+ARG NVIM_VERSION=v0.11.7
+RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
+    | tar -xz -C /opt && \
+    ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+
+# typescript-tools.nvim plugin needs `tsserver` (from typescript npm pkg) on PATH,
+# otherwise it errors loudly every time you open a .ts/.js file.
+RUN npm install -g typescript
 
 # clean pacman cache
 RUN pacman -Scc --noconfirm
