@@ -2787,3 +2787,46 @@ Why base64? The clipboard content might contain special characters that would br
 Works over SSH because the escape sequence travels through the terminal stream back to your *local* terminal (kitty/wezterm/etc) which handles the actual clipboard.
 
 Ref: https://terminalguide.namepad.de/seq/osc-52/
+
+## April 2026
+
+### Yazi as XDG file picker — research summary
+**Tool**: `xdg-desktop-portal-termfilechooser` (in nixpkgs as v1.2.1)
+
+**Repo**: https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser
+
+**How it works**: implements `org.freedesktop.impl.portal.FileChooser`, so it intercepts the same D-Bus calls currently routed to `xdg-desktop-portal-gtk`. Spawns `kitty` running `yazi --chooser-file=/tmp/...`; portal reads the temp file when yazi exits.
+
+**To enable** (3 small files):
+1. `modules/nixos-core-desktop.nix`:
+   ```nix
+   xdg.portal.extraPortals = [
+     pkgs.xdg-desktop-portal-gtk
+     pkgs.xdg-desktop-portal-termfilechooser
+   ];
+   ```
+2. `~/.config/xdg-desktop-portal/portals.conf`:
+   ```ini
+   [preferred]
+   default=gtk
+   org.freedesktop.impl.portal.FileChooser=termfilechooser
+   ```
+3. `~/.config/xdg-desktop-portal-termfilechooser/config`:
+   ```ini
+   [filechooser]
+   cmd=yazi-wrapper.sh
+   default_dir=$HOME
+   env=TERMCMD='kitty --title "File Chooser"'
+   env=PATH="$PATH:/run/current-system/sw/bin"
+   ```
+
+**Test**: `GDK_DEBUG=portals zenity --file-selection`
+
+**Gotchas**:
+- `smart-enter.yazi` plugin (currently in keymap) breaks directory selection — Enter navigates instead of selects. Workaround: use `YAZI_CONFIG_HOME=...` in wrapper for an alternate config without smart-enter.
+- Qt apps may bypass the portal entirely (open issue #46).
+- Two closed NixOS issues (#56, #67) document systemd integration friction — reboot recommended after install.
+- Save dialogs work but UX is unusual: yazi creates a help-file at the destination path with instructions.
+
+**Recommendation**: try it AFTER the GTK portal click-offset fix (`GDK_SCALE=1` + removing `wlr.enable`) lands. If that resolves the GTK issue you may not need this. But config is ~10 lines and trivially reversible.
+
