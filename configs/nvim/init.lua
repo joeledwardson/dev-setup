@@ -491,6 +491,12 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>kp', function()
         require('custom.keybrowser').open_pgcli()
       end, { desc = '[p]gcli keybindings' })
+      vim.keymap.set('n', '<leader>kb', function()
+        require('custom.keybrowser').open_brave()
+      end, { desc = '[b]rave keybindings' })
+      vim.keymap.set('n', '<leader>kB', function()
+        require('custom.keybrowser').open_brave_extensions()
+      end, { desc = '[B]rave extensions' })
       vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
       vim.keymap.set('n', '<leader>sF', function()
         builtin.find_files {

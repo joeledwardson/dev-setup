@@ -312,4 +312,111 @@ function M.open_pgcli()
   pick('pgcli Keybindings', entries, { fmt = '%-25s %s' })
 end
 
+-- Brave Browser keybindings & extensions
+-- Read from the Default profile's Preferences JSON.
+-- Custom overrides come from configs/brave/custom.json (merged via `task brave:apply`).
+
+local brave_prefs = vim.fn.expand('~/.config/BraveSoftware/Brave-Browser/Default/Preferences')
+local brave_custom = vim.fn.expand('~/dev-setup/configs/brave/custom.json')
+
+-- Numeric command IDs → readable names.
+-- IDs are from chromium's chrome/app/chrome_command_ids.h + brave-core overrides.
+-- Not exhaustive — unknowns render as "Cmd #ID".
+local brave_commands = {
+  [33000] = 'Back', [33001] = 'Forward', [33002] = 'Reload', [33003] = 'Home',
+  [33007] = 'Reload (bypass cache)',
+  [34000] = 'New Window', [34001] = 'New Incognito Window',
+  [34012] = 'Close Window', [34014] = 'New Tab', [34015] = 'Close Tab',
+  [34016] = 'Next Tab', [34017] = 'Previous Tab',
+  [34018] = 'Tab 1', [34019] = 'Tab 2', [34020] = 'Tab 3', [34021] = 'Tab 4',
+  [34022] = 'Tab 5', [34023] = 'Tab 6', [34024] = 'Tab 7', [34025] = 'Tab 8',
+  [34026] = 'Last Tab',
+  [34028] = 'Restore Tab', [34030] = 'Fullscreen',
+  [34032] = 'Move Tab Right', [34033] = 'Move Tab Left',
+  [34100] = 'Sidebar Toggle (?)', [34101] = 'Pin Tab (?)',
+  [34102] = 'Mute Site (?)', [34103] = 'Toggle Speedreader (?)',
+  [34104] = 'Toggle Sidebar (?)',
+  [35000] = 'Bookmark This Tab', [35001] = 'Bookmark All Tabs',
+  [35002] = 'View Source', [35003] = 'Print', [35004] = 'Save Page',
+  [35007] = 'Basic Print',
+  [35031] = 'Take Screenshot',
+  [37000] = 'Find', [37001] = 'Find Next', [37002] = 'Find Previous',
+  [37003] = 'Close Find / Stop',
+  [38001] = 'Zoom In', [38002] = 'Zoom Reset', [38003] = 'Zoom Out',
+  [39000] = 'Focus Toolbar', [39001] = 'Focus Address Bar',
+  [39002] = 'Focus Search', [39003] = 'Focus Menu Bar',
+  [39004] = 'Focus Next Pane', [39005] = 'Focus Previous Pane',
+  [39006] = 'Focus Bookmarks', [39007] = 'Focus Inactive Popup',
+  [39009] = 'Focus Web Contents',
+  [40000] = 'Open File',
+  [40004] = 'Dev Tools', [40005] = 'Dev Tools Console',
+  [40009] = 'Show Bookmark Bar', [40010] = 'Show History',
+  [40011] = 'Bookmark Manager', [40012] = 'Show Downloads',
+  [40013] = 'Clear Browsing Data',
+  [40019] = 'Help',
+  [40021] = 'Email Page Location',
+  [40023] = 'Dev Tools Inspect',
+  [40134] = 'Mute Tab',
+  [40237] = 'Dev Tools Toggle',
+  [40260] = 'Task Manager',
+  [40286] = 'Recent Tabs',
+  [52500] = 'Show All Tabs Dropdown',
+  [56003] = 'Brave Wallet',
+  [56041] = 'Brave Leo (AI Chat)',
+  [56044] = 'Toggle Bookmarks Panel',
+  [56215] = 'Tab Group / Brave-specific',
+  [56301] = 'Brave VPN',
+}
+
+local function read_json(path)
+  if vim.fn.filereadable(path) == 0 then return nil end
+  local content = table.concat(vim.fn.readfile(path), '\n')
+  local ok, data = pcall(vim.json.decode, content)
+  return ok and data or nil
+end
+
+function M.open_brave()
+  local prefs = read_json(brave_prefs)
+  if not prefs then
+    vim.notify('Brave Preferences not found at ' .. brave_prefs, vim.log.levels.WARN)
+    return
+  end
+  local accel = prefs.brave and prefs.brave.accelerators or {}
+  local custom = read_json(brave_custom) or {}
+  local custom_accel = (custom.brave and custom.brave.accelerators) or {}
+
+  local entries = {}
+  for cmd_id, keys in pairs(accel) do
+    local id_num = tonumber(cmd_id)
+    local name = brave_commands[id_num] or ('Cmd #' .. cmd_id)
+    local marker = custom_accel[cmd_id] and '*' or ' '
+    entries[#entries + 1] = { marker, name, table.concat(keys, ', ') }
+  end
+  table.sort(entries, function(a, b) return a[2] < b[2] end)
+
+  pick('Brave Shortcuts (* = custom override)', entries, { fmt = '%s %-30s %s' })
+end
+
+function M.open_brave_extensions()
+  local prefs = read_json(brave_prefs)
+  if not prefs then
+    vim.notify('Brave Preferences not found at ' .. brave_prefs, vim.log.levels.WARN)
+    return
+  end
+  local exts = (prefs.extensions and prefs.extensions.settings) or {}
+
+  local entries = {}
+  for ext_id, ext in pairs(exts) do
+    local manifest = ext.manifest or {}
+    local name = manifest.name or '(no name)'
+    local version = manifest.version or '?'
+    -- Chromium "state": 1 = enabled, 0 = disabled, blank = component
+    local state = ext.state == 1 and 'on' or (ext.state == 0 and 'off' or '-')
+    entries[#entries + 1] = { state, name, version, ext_id }
+  end
+  table.sort(entries, function(a, b) return a[2] < b[2] end)
+
+  pick('Brave Extensions', entries, { fmt = '%-3s %-30s %-10s %s' })
+end
+
 return M
