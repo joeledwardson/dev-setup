@@ -38,10 +38,14 @@ sheldon \
 go-task \
 glab \
 gcc make \
+tree-sitter-cli \
 nodejs npm \
 python python-pip \
 postgresql-libs \
 lua-language-server
+
+# typescript-tools.nvim needs `tsserver` on PATH, otherwise .ts/.js open errors loudly.
+RUN npm install -g typescript
 
 # clean pacman cache
 RUN pacman -Scc --noconfirm
