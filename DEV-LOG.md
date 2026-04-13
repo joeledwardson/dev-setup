@@ -2830,3 +2830,50 @@ Ref: https://terminalguide.namepad.de/seq/osc-52/
 
 **Recommendation**: try it AFTER the GTK portal click-offset fix (`GDK_SCALE=1` + removing `wlr.enable`) lands. If that resolves the GTK issue you may not need this. But config is ~10 lines and trivially reversible.
 
+
+### nvim-treesitter: archived, 0.12 broken, pinned for now
+
+On **April 3, 2026** the entire `nvim-treesitter/nvim-treesitter` repo went **Public archive** on GitHub. Both `master` and `main` branches are frozen — no new commits will land anywhere in the repo. No official successor was named.
+
+#### Why 0.12 breaks the current pin
+
+Neovim 0.12 changed the treesitter query match API to support quantifiers ([neovim#31293](https://github.com/neovim/neovim/pull/31293)):
+
+- 0.11: `match[capture_id]` → single `TSNode | nil`
+- 0.12: `match[capture_id]` → `TSNode[]` (list, always)
+
+The pinned `master` commit (`42fc28ba`) registers 7 custom directives in `query_predicates.lua` that do `match[capture_id]:range()`. On 0.12 that crashes with `attempt to call method 'range' (a nil value)` because the value is now a list, not a node. Markdown's injection query (`set-lang-from-info-string!`) is the most obvious trigger but it affects anything with injections.
+
+The `master` branch will never be fixed (archived). So: either stay on 0.11, or migrate off master entirely.
+
+#### Two frozen branches, two behaviours
+
+| branch | last commit | works with |
+|---|---|---|
+| `master` | `42fc28ba` (May 2025) | nvim ≤ 0.11 |
+| `main` | `4916d659` (Apr 2026) | nvim ≥ 0.12 (0.11 dropped explicitly: `feat!: drop support for Nvim 0.11`) |
+
+Both are now snapshots — no future fixes, no new parsers. `main` happens to be the 0.12-compatible snapshot.
+
+The `main` branch was a full rewrite with a different API shape:
+- setup: `require('nvim-treesitter').setup()` (no `.configs`)
+- install: explicit `.install({...})` call (no `ensure_installed`)
+- highlight/indent: not auto-enabled — you write a `FileType` autocmd calling `vim.treesitter.start()`
+- helpers (`ts_utils`, `configs`, etc.): gone — use `vim.treesitter.*` built-ins (available since 0.10)
+
+#### Current decision: stay pinned
+
+- Host nvim is 0.11.7 (NixOS `nixos-25.11`), master-branch pin works fine.
+- Dev container ([PR #6](https://github.com/joeledwardson/dev-setup/pull/6)) pins to nvim 0.11.7 via `ARG NVIM_VERSION` (Arch ships 0.12 by default — that's what caused the original container break).
+- Experiment branch that migrated config to `main` branch was tested working on 0.12.1 ([PR #7](https://github.com/joeledwardson/dev-setup/pull/7), now closed) but not worth merging yet — would commit to a frozen snapshot.
+
+#### When to revisit
+
+When NixOS bumps nvim past 0.11 (likely `nixos-26.x`), the pin stops helping. Options at that point, best to worst:
+
+1. **Neovim built-in treesitter + tiny parser installer**. 0.11+ has `vim.treesitter.start`, `get_node`, parser loading from `runtime/parser/*.so` built-in. Highlighting/indent/folding don't need the plugin. You just need parsers installed somewhere on `runtimepath`. A small helper like **[tree-sitter-manager.nvim](https://github.com/romus204/tree-sitter-manager.nvim)** (actively maintained, lightweight, 0.12+) is probably the minimum replacement.
+2. **[rocks-treesitter.nvim](https://github.com/nvim-neorocks/rocks-treesitter.nvim)** — rocks.nvim module, pre-built parsers hosted on rocks-binaries (no local compile). Relevant if/when you adopt rocks.nvim.
+3. **Resurrect the main-branch migration** from the closed PR #7 — works but targets an archived repo, so only a stopgap.
+
+Community discussion: [Lobsters](https://lobste.rs/s/jr4acs/nvim_treesitter_repository_was_archived), [HN](https://news.ycombinator.com/item?id=47644667).
+
