@@ -1,8 +1,8 @@
 ### jollof custom overrides
 [[mgr.prepend_keymap]]
 on = [ "c", "b" ]
-run = [ 'shell --block -- echo "file://$(realpath $1)" | wl-copy -t text/uri-list' ]
-desc = "Copy file to clipboard"
+run = "plugin clipboard"
+desc = "Copy file(s) to clipboard"
 
 [[mgr.prepend_keymap]]
 on = [ "g", "f" ]
