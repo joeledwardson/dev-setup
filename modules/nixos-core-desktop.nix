@@ -62,10 +62,12 @@
   programs.light.enable = true;
 
   # XDG Portal for desktop integration
+  # NOTE: programs.hyprland.enable already adds xdg-desktop-portal-hyprland
+  # Do NOT enable wlr - it conflicts with hyprland's portal (which is a fork of wlr)
+  # See: https://wiki.hypr.land/Hypr-Ecosystem/xdg-desktop-portal-hyprland/
   xdg.portal = {
     enable = true;
-    wlr.enable = true; # Wayland compositor support
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # needed for file picker (XDPH doesn't implement one)
   };
 
   # wayland variable (should) make chromium/electron apps run better, see here
