@@ -112,6 +112,10 @@ tasks:
           mv "$workfile" "{{.BRAVE_WORK}}"
         fi
 
+  brave:gen-commands:
+    desc: Regenerate the IDC command-id → name lookup used by the nvim keybrowser
+    cmd: ./configs/nvim/scripts/gen-brave-commands.sh
+
   brave:test:
     desc: E2E test that brave:apply makes Google the default search engine
     preconditions:
