@@ -106,9 +106,30 @@ tasks:
         jq -s '.[0] * .[1]' "{{.BRAVE_FILE}}" ./configs/brave/custom.json > "$myfile"
         mv "$myfile" "{{.BRAVE_FILE}}"
       - |
-        workfile=$(mktemp)
-        jq -s '.[0] * .[1]' "{{.BRAVE_WORK}}" ./configs/brave/custom.json > "$workfile"
-        mv "$workfile" "{{.BRAVE_WORK}}"
+        if [ -f "{{.BRAVE_WORK}}" ]; then
+          workfile=$(mktemp)
+          jq -s '.[0] * .[1]' "{{.BRAVE_WORK}}" ./configs/brave/custom.json > "$workfile"
+          mv "$workfile" "{{.BRAVE_WORK}}"
+        fi
+
+  brave:test:
+    desc: E2E test that brave:apply makes Google the default search engine
+    preconditions:
+      - test -f "{{.BRAVE_FILE}}"
+      - sh -c '! pgrep -x brave >/dev/null' # brave must not be running
+    cmds:
+      - task: brave:apply
+      - |
+        # Verify required template_url_data fields are present and set to Google
+        for path in '.default_search_provider_data.template_url_data' '.brave.default_private_search_provider_data'; do
+          short_name=$(jq -r "$path.short_name // empty" "{{.BRAVE_FILE}}")
+          prepop_id=$(jq -r "$path.prepopulate_id // empty" "{{.BRAVE_FILE}}")
+          if [ "$short_name" != "Google" ] || [ "$prepop_id" != "1" ]; then
+            echo "FAIL: $path expected Google/1, got $short_name/$prepop_id"
+            exit 1
+          fi
+          echo "OK:   $path → $short_name (prepopulate_id=$prepop_id)"
+        done
 
   dev:build:
     desc: Build dev container
