@@ -14,7 +14,7 @@ fi
 hyprshot_args=()
 
 if [[ "$to_file" != 'yes' ]]; then
-    hyprshot_args+=("--wclipboard-only")
+    hyprshot_args+=("--clipboard-only")
 else
     filename="$(date -Ins).png"
     filepath="$HOME/Downloads/$filename"
@@ -35,8 +35,11 @@ echo "${hyprshot_args[@]}"
 # Small delay to let the menu close and blur to clear
 sleep 0.2
 
-hyprshot "${hyprshot_args[@]}"
-# TODO: hyprshot package is broken and always returns non-zero:
+# hyprshot upstream bug: always exits 1 because checkRunning's `pkill hyprpicker`
+# fails when freeze mode isn't used, and `set -e` propagates the error.
+# See: https://github.com/Gustash/Hyprshot (last line of script + set -e)
+hyprshot "${hyprshot_args[@]}" || true
+
 if [[ "$to_file" != "yes" ]]; then
     exit
 fi
