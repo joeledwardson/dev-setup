@@ -36,7 +36,7 @@ hash = "77e20b071404f97c09d3f9afdb9482e0"
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
 rev = "49f5ab7"
-hash = "e9a32b121fac586ee0b5f62e18b89c79"
+hash = "6e3b5e58f985cc2d625e0030dc35b1b2"
 
 [[plugin.deps]]
 use = "macydnah/office"
