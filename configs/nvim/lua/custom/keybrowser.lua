@@ -360,19 +360,36 @@ function M.open_brave_extensions()
     return
   end
   local exts = (prefs.extensions and prefs.extensions.settings) or {}
+  local overrides = (prefs.extensions and prefs.extensions.commands) or {}
 
   local entries = {}
   for ext_id, ext in pairs(exts) do
     local manifest = ext.manifest or {}
     local name = manifest.name or '(no name)'
-    local version = manifest.version or '?'
-    -- Chromium "state": 1 = enabled, 0 = disabled, blank = component
-    local state = ext.state == 1 and 'on' or (ext.state == 0 and 'off' or '-')
-    entries[#entries + 1] = { state, name, version, ext_id }
-  end
-  table.sort(entries, function(a, b) return a[2] < b[2] end)
+    local cmds = manifest.commands or {}
+    local ext_overrides = overrides[ext_id] or {}
 
-  pick('Brave Extensions', entries, { fmt = '%-3s %-30s %-10s %s' })
+    for cmd_name, cmd in pairs(cmds) do
+      -- user override takes priority, then manifest suggested_key
+      local shortcut = ext_overrides[cmd_name]
+      if not shortcut then
+        local suggested = cmd.suggested_key
+        shortcut = type(suggested) == 'table' and (suggested.default or suggested.linux) or suggested
+      end
+      if shortcut and shortcut ~= '' then
+        local desc = cmd.description or cmd_name
+        entries[#entries + 1] = { name, shortcut, desc }
+      end
+    end
+  end
+
+  if #entries == 0 then
+    vim.notify('No extension keybindings found (check brave://extensions/shortcuts)', vim.log.levels.INFO)
+    return
+  end
+  table.sort(entries, function(a, b) return a[1] .. a[3] < b[1] .. b[3] end)
+
+  pick('Brave Extension Keybindings', entries, { fmt = '%-25s %-20s %s' })
 end
 
 return M
