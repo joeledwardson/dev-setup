@@ -1,7 +1,7 @@
 ### jollof custom overrides
 [[mgr.prepend_keymap]]
 on = [ "c", "b" ]
-run = "plugin clipboard"
+run = "plugin wl-clipboard"
 desc = "Copy file(s) to clipboard"
 
 [[mgr.prepend_keymap]]

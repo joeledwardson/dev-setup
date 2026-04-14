@@ -56,7 +56,6 @@
       ~/.config/foot/foot.ini: ./configs/foot/foot.ini
       ~/.config/ghostty/config: ./configs/ghostty/config
       ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
-      ~/.config/yazi/plugins/clipboard.yazi: ./configs/yazi/custom-plugins/clipboard.yazi
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/libreoffice/4/user/registrymodifications.xcu: ./configs/libreoffice/registrymodifications.xcu
 

@@ -25,18 +25,18 @@ hash = "5eeb4f0919ce6be5d941a9290c131d7d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "1962818"
+rev = "babfd0f"
 hash = "187cc58ba7ac3befd49c342129e6f1b6"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "1962818"
-hash = "91937a4a9b779eabc6983e258befdfe9"
+rev = "babfd0f"
+hash = "77e20b071404f97c09d3f9afdb9482e0"
 
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "26a75da"
-hash = "53011ad6844fb69e57c946af21ddd3de"
+rev = "49f5ab7"
+hash = "e9a32b121fac586ee0b5f62e18b89c79"
 
 [[plugin.deps]]
 use = "macydnah/office"
@@ -55,8 +55,13 @@ hash = "63ed5325016895306781d13690b246bf"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:types"
-rev = "1962818"
+rev = "babfd0f"
 hash = "4161cfa043b5ba3341d82c6869007b41"
+
+[[plugin.deps]]
+use = "joels-claude-bot/wl-clipboard"
+rev = "9dc3602"
+hash = "c635283aa43208baf1d1773af1f9b645"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
