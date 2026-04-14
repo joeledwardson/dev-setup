@@ -60,8 +60,8 @@ hash = "4161cfa043b5ba3341d82c6869007b41"
 
 [[plugin.deps]]
 use = "joels-claude-bot/wl-clipboard"
-rev = "9dc3602"
-hash = "c635283aa43208baf1d1773af1f9b645"
+rev = "01e3a26"
+hash = "b891266b0f462f4faccf71695957ac29"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
