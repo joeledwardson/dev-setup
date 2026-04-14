@@ -16,6 +16,9 @@ configs/yazi/flavors
 # dont commit nvim injections added by tree-sitter-language-injection plugin
 configs/nvim/after/queries
 
+# sheldon lock embeds absolute $HOME paths, regenerated per machine
+configs/sheldon/plugins.lock
+
 # Devenv
 .devenv*
 devenv.local.nix
