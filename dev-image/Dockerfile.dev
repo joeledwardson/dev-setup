@@ -70,8 +70,10 @@ RUN uv tool install dotbot
 COPY . $HOME/dev-setup
 
 # run dotbot
-RUN git submodule update --init
-RUN dotbot -c $HOME/dev-setup/install.conf.yaml
+WORKDIR $HOME/dev-setup
+RUN git init && git submodule add https://github.com/wonderbeyond/dotbot-if.git plugins/dotbot-if
+RUN dotbot -c $HOME/dev-setup/install.conf.yaml -p plugins/dotbot-if/if.py
+WORKDIR $HOME
 
 # install lazy plugins (gcc/make needed for treesitter parsers + telescope-fzf-native)
 RUN nvim --headless "+Lazy! sync" +qa
