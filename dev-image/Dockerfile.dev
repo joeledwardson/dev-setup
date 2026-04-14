@@ -72,7 +72,7 @@ COPY . $HOME/dev-setup
 # run dotbot
 WORKDIR $HOME/dev-setup
 RUN git init && git submodule add https://github.com/wonderbeyond/dotbot-if.git plugins/dotbot-if
-RUN dotbot -c $HOME/dev-setup/install.conf.yaml -p plugins/dotbot-if/if.py
+RUN dotbot -c $HOME/dev-setup/install.conf.yaml
 WORKDIR $HOME
 
 # install lazy plugins (gcc/make needed for treesitter parsers + telescope-fzf-native)
