@@ -70,6 +70,7 @@ RUN uv tool install dotbot
 COPY . $HOME/dev-setup
 
 # run dotbot
+RUN git submodule update --init
 RUN dotbot -c $HOME/dev-setup/install.conf.yaml
 
 # install lazy plugins (gcc/make needed for treesitter parsers + telescope-fzf-native)
