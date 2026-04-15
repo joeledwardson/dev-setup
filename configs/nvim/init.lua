@@ -425,6 +425,7 @@ require('lazy').setup {
           layout_config = {
             prompt_position = 'top',
           },
+          file_ignore_patterns = { '%.git/' }, -- never show .git/ contents
           mappings = {
             i = {
               ['<c-enter>'] = 'to_fuzzy_refine',
@@ -440,8 +441,8 @@ require('lazy').setup {
             ignore_current_buffer = true,
           },
           find_files = {
-            -- This affects file finding
-            -- hidden = true, -- Set to true to include hidden files
+            hidden = true, -- show dotfiles (.github/, .gitignore, etc.)
+            -- gitignored files are still skipped (no_ignore not set)
           },
         },
         extensions = {
