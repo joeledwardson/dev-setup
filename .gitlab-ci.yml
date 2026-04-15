@@ -1,0 +1,32 @@
+# Build and push the dev container image.
+# Pushes to :latest on default branch, and to :<tag> when a git tag is created.
+#
+# Registry is GitLab's built-in — $CI_REGISTRY_IMAGE resolves to
+# registry.gitlab.com/<namespace>/<project> for gitlab.com-hosted projects.
+
+stages:
+  - build
+
+build-dev-image:
+  stage: build
+  image: docker:28
+  services:
+    - docker:28-dind
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE/dev-image
+    DOCKER_BUILDKIT: "1"
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build --file dev-image/Dockerfile.dev --tag "$IMAGE:latest" .
+    - docker push "$IMAGE:latest"
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        docker tag "$IMAGE:latest" "$IMAGE:$CI_COMMIT_TAG"
+        docker push "$IMAGE:$CI_COMMIT_TAG"
+      fi
+  rules:
+    # build on main branch pushes (publishes :latest)
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # and on tag pushes (publishes :latest and :<tag>)
+    - if: $CI_COMMIT_TAG
