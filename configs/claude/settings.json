@@ -63,7 +63,10 @@
     ]
   },
   "effortLevel": "high",
-  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "viMode": true
+  "voiceEnabled": true,
+  "viMode": true,
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  }
 }

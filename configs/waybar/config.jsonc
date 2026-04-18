@@ -17,6 +17,7 @@
     "modules-right": [
         "tray",
         "idle_inhibitor",
+        "backlight",
         "pulseaudio",
         "cpu",
         "memory",

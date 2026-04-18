@@ -37,6 +37,13 @@
       "deactivated": ""
     }
   },
+  "backlight": {
+    "format": "{icon}  {percent}%",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "tooltip": true,
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-"
+  },
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-bluetooth": "{icon} {volume}%  {format_source}",

@@ -36,6 +36,12 @@
     pinta
     guvcview # simple video/image capture
 
+    ### virtualisation
+    spice-vdagent # frontend to spice vdagent (clipboard sharing in VMs)
+
+    ### keyboards
+    qmk
+
     ### utilities
     scrcpy # android screen copy tool
     nomachine-client
@@ -45,6 +51,15 @@
     pkgs-unstable.hyprwhspr-rs
     sox
   ];
+
+  # VM/spice support
+  services.spice-vdagentd.enable = true;
+
+  # printing
+  services.printing.enable = true;
+
+  # keyboard building config
+  hardware.keyboard.qmk.enable = true;
 
   # =======================================
   # Greeter Configuration

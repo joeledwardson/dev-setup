@@ -7,8 +7,8 @@
     brave
 
     ### desktop core (referenced by hyprland.conf)
-    networkmanagerapplet # includes nm-applet (used in polybar)
-    pavucontrol # pulse audio GTK application (used in polybar)
+    networkmanagerapplet # nm-applet tray icon
+    pavucontrol # pulse audio GTK volume control
     copyq # copy paste manager
     kdePackages.dolphin # default GUI file manager
     kdePackages.qtsvg # svg icons for dolphin
@@ -18,10 +18,12 @@
     grim # Screenshot utility
     slurp # Region selection tool
     wl-clipboard # Command-line copy/paste utilities
+    brightnessctl # backlight control (used in hyprland.conf keybinds)
+    swayosd # OSD popups for volume/brightness/caps (used in hyprland.conf keybinds)
+    hyprsunset # blue light filter
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications
     libnotify # send notifications to daemon
-    spice-vdagent # frontend to spice vdagent (clipboard)
     xdg-utils # for "open with..." integrations
     rofimoji # emoji picker
     dragon-drop # drag and drop utility
@@ -44,6 +46,11 @@
     plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
   };
 
+  # thunar dependencies
+  programs.xfconf.enable = true; # save thunar preferences
+  services.gvfs.enable = true; # mount, trash, and other functionalities
+  services.tumbler.enable = true; # thumbnail support for images
+
   # add qt styling
   qt = {
     enable = true;
@@ -54,12 +61,10 @@
   # =======================================
   # Wayland Configuration
   # =======================================
+  programs.nm-applet.enable = true;
   programs.waybar = { enable = true; };
   programs.hyprland = { enable = true; };
   programs.hyprlock.enable = true;
-
-  # Enable light for brightness control
-  programs.light.enable = true;
 
   # XDG Portal for desktop integration
   # NOTE: programs.hyprland.enable already adds xdg-desktop-portal-hyprland

@@ -36,18 +36,12 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable network manager applet
-  programs.nm-applet.enable = true;
-
   # Set your time zone.
   # time.timeZone = "Europe/London";
   services.automatic-timezoned.enable = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
-
-  # enable spice vd agent for virtualisation copy pasting
-  services.spice-vdagentd.enable = true;
 
   # creates magic symlinks in /bin so that shebangs like #!/bin/bash dont break on nixos
   services.envfs.enable = true;
@@ -66,9 +60,6 @@
 
   # Configure console keymap
   console.keyMap = "uk";
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -110,9 +101,6 @@
     device = "/var/lib/swapfile";
     size = 32 * 1024; # 32 GiB
   }];
-
-  # keyboard building config
-  hardware.keyboard.qmk.enable = true;
 
   environment.systemPackages = with pkgs; [
     ### core terminal utilities
@@ -175,9 +163,6 @@
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
     ruff
-
-    ### keyboards
-    qmk
 
     ### Database tools
     ruby
@@ -284,8 +269,6 @@
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
 
-    ### user packages
-    pkgs-unstable.nur.repos.Freed-Wu.tmux-language-server
   ];
 
   # enable docker
@@ -299,12 +282,6 @@
     enable = true;
     pinentryPackage = pkgs.pinentry-curses;
   };
-
-  # enable save preferences in thunar
-  programs.xfconf.enable = true;
-  # other thunar services
-  services.gvfs.enable = true; # Mount, trash, and other functionalities
-  services.tumbler.enable = true; # Thumbnail support for images
 
   services.syncthing = {
     enable = true;
