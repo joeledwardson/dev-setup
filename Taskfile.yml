@@ -11,9 +11,8 @@ vars:
 tasks:
   hyprland:
     internal: true
-    status:
-      - "! command -v hyprctl"
-      - test -z "$HYPRLAND_INSTANCE_SIGNATURE"
+    preconditions:
+      - test -n "$HYPRLAND_INSTANCE_SIGNATURE"
     cmds:
       - hyprctl reload
 
