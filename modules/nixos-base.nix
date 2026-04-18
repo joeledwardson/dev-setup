@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, pkgs-claude, ... }:
 
 {
 
@@ -264,7 +264,7 @@
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
-    pkgs-unstable.claude-code # latest claude code
+    pkgs-claude.claude-code # pinned to nixpkgs master for latest version
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })

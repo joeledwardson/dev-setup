@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-claude.url = "github:NixOS/nixpkgs/99b135bc06";
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
 
@@ -26,6 +27,10 @@
         };
         overlays = [ nur.overlays.default ];
       };
+      pkgs-claude = import inputs.nixpkgs-claude {
+        system = mySystem;
+        config.allowUnfree = true;
+      };
       commonGroups = [
         "networkmanager" # give user access to network manager (see https://wiki.nixos.org/wiki/NetworkManager)
         "wheel" # give access to sudo commands, not sure if required tbh (see https://unix.stackexchange.com/questions/152442/what-is-the-significance-of-the-wheel-group)
@@ -35,7 +40,7 @@
       ];
       commonSpecialArgs = {
         nixarr_flake = inputs.nixarr;
-        inherit inputs commonGroups pkgs-unstable;
+        inherit inputs commonGroups pkgs-unstable pkgs-claude;
       };
     in {
       nixosConfigurations = {
