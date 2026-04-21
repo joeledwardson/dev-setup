@@ -199,11 +199,19 @@ vim.keymap.set('n', '[l', function()
   vim.fn.search(url_pattern, 'bW')
 end, { desc = 'Previous URL' })
 
--- Treat zellij scrollback dump files as bash (they normally are)
+-- Zellij scrollback dumps: bash filetype, and buffer-local Ctrl+hjkl so
+-- navigation works here (global zellij-nav.nvim mapping can miss in the
+-- single-window edit-scrollback pane).
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '/tmp/*.dump',
-  callback = function()
-    vim.bo.filetype = 'bash'
+  callback = function(args)
+    vim.bo[args.buf].filetype = 'bash'
+    local directions = { ['<C-h>'] = 'left', ['<C-j>'] = 'down', ['<C-k>'] = 'up', ['<C-l>'] = 'right' }
+    for key, direction in pairs(directions) do
+      vim.keymap.set('n', key, function()
+        vim.fn.system({ 'zellij', 'action', 'move-focus', direction })
+      end, { buffer = args.buf, silent = true, desc = 'zellij pane ' .. direction })
+    end
   end,
 })
 
