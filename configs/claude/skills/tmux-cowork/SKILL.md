@@ -44,16 +44,46 @@ Tell the user once which session they should `tmux attach -t <session_name>`.
 
 ## Running a command
 
-Send keys into the target pane, then poll output:
+Send keys into the target pane:
 
 ```
 tmux send-keys -t <session_name>:<session_name>-cowork.<pane_id> '<cmd>' Enter
-tmux capture-pane -pt <session_name>:<session_name>-cowork.<pane_id> -S -3000
 ```
 
-Use pane indexes (`.0`, `.1`, ...) or pane titles to target the right one.
+Then **you must poll until the command actually finishes** — do not hand control back to the user assuming it worked. Handing off a still-running command is the classic failure mode of this skill.
 
-Poll the pane with `capture-pane` periodically. Don't spam — wait enough for meaningful output to accumulate.
+### Detecting completion
+
+Use one of these patterns, not a blind sleep:
+
+1. **Sentinel marker + log file** (most reliable): append a marker *and* tee output to a scratchpads log file.
+   ```
+   tmux send-keys -t <target> '<cmd> 2>&1 | tee scratchpads/<pane-title>.log; echo __CC_DONE_${PIPESTATUS[0]}__' Enter
+   ```
+   - Poll `capture-pane` until you see `__CC_DONE_<exitcode>__` in the output.
+   - `${PIPESTATUS[0]}` (bash) captures the real exit code of `<cmd>`, not `tee`. In zsh use `${pipestatus[1]}`.
+   - Ensure `scratchpads/` exists (`mkdir -p scratchpads`). It's already gitignored.
+   - **Prefer reading the log file over `capture-pane` for parsing.** `capture-pane` is lossy (scrollback cap, ANSI noise, wrapped lines); the log file has the full raw output including stderr.
+
+2. **Prompt return**: poll `capture-pane` and look for a fresh shell prompt on the last non-empty line (matches your `$ `, `➜ `, `%`, etc.). Less reliable than sentinel — prompt-matching can get confused by multi-line output or colored prompts.
+
+3. **Pane-dead check** for one-shot foreground processes: use `tmux display-message -p -t <target> '#{pane_dead}'`. Rarely applicable — our panes stay alive on the shell.
+
+Prefer **pattern 1** (sentinel) unless the command is interactive / can't be wrapped.
+
+### Polling cadence
+
+- Active build/test: capture every 10–20s
+- Long idle operation (big download, rebuild): 30–60s
+- Never loop with no backoff — wasted cycles
+- After ~5 minutes with no visible progress, surface that to the user in the log / response rather than silently polling forever
+
+### Reporting back
+
+When the sentinel fires or the pane returns:
+1. Read the tail of the log file (`tail -n 100 scratchpads/<pane-title>.log`) — use the file, not `capture-pane`, for parsing accuracy.
+2. Parse exit code from the sentinel. Non-zero → investigate, don't silently claim success.
+3. Tell the user what actually happened — including the exit code and relevant output — not just "started it".
 
 ## Multiple commands
 
