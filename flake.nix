@@ -48,6 +48,7 @@
         "degen-work" = nixpkgs.lib.nixosSystem {
           specialArgs = commonSpecialArgs;
           modules = [
+            inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
@@ -119,6 +120,7 @@
         "streaming-server" = nixpkgs.lib.nixosSystem {
           specialArgs = commonSpecialArgs;
           modules = [
+            inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./hosts/streaming-server/configuration.nix

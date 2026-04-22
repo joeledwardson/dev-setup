@@ -35,6 +35,10 @@ args@{ pkgs, inputs, config, commonGroups, ... }:
     file = ../../secrets/llm-gemini-key.age;
     owner = "jollof";
   };
+  age.secrets.ntfy-token = {
+    file = ../../secrets/ntfy-token.age;
+    owner = "jollof";
+  };
 
   environment.systemPackages = with pkgs; [
     vagrant

@@ -124,4 +124,9 @@ args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
     configDir = "/home/claude/.config/syncthing";
   };
 
+  age.secrets.ntfy-token = {
+    file = ../../secrets/ntfy-token.age;
+    owner = "claude";
+  };
+
 }

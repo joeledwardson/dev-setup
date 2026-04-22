@@ -68,4 +68,9 @@
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" ];
   services.syncthing.user = "jollof";
+
+  age.secrets.ntfy-token = {
+    file = ../../secrets/ntfy-token.age;
+    owner = "jollof";
+  };
 }
