@@ -305,14 +305,6 @@ keybinds clear-defaults=true {
     shared_except "locked" "scroll" {
         bind "Alt Shift e" { EditScrollback; }
     }
-    shared_except "locked" {
-        bind "Alt y" {
-            LaunchOrFocusPlugin "zellij-forgot" {
-                floating false
-                "Tab (in tab mode)" "Go to last used tab toggle"
-            }
-        }
-    }
 }
 
 // explicit nvim editor for srcollback
@@ -336,8 +328,6 @@ plugins {
         welcome_screen true
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
-    zellij-forgot location="https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
-    }
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
     // wasm based plugins
     vim-zellij-nav location="file:~/.config/zellij/plugins/vim-zellij-navigator.wasm"
