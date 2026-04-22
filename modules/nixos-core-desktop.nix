@@ -32,7 +32,36 @@
     tokyonight-gtk-theme
     flat-remix-icon-theme
 
+    ### ntfy subscriber CLI (systemd user unit below pipes to notify-send)
+    ntfy-sh
+
   ];
+
+  # Subscribe to the jollof-claude ntfy topic on login and bridge incoming
+  # messages into desktop notifications via notify-send → swaync. Token lives
+  # in /run/agenix/ntfy-token (provisioned per-host in configuration.nix).
+  systemd.user.services.ntfy-claude-subscribe = {
+    description = "ntfy subscriber → notify-send bridge for jollof-claude topic";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    path = [ pkgs.bash pkgs.libnotify ]; # ntfy spawns a shell; needs /bin/sh + notify-send on PATH
+    serviceConfig = {
+      Type = "simple";
+      Restart = "on-failure";
+      RestartSec = 5;
+      ExecStart = pkgs.writeShellScript "ntfy-claude-subscribe" ''
+        if [ ! -r /run/agenix/ntfy-token ]; then
+          echo "ntfy-token not readable, exiting" >&2
+          exit 0
+        fi
+        TOKEN=$(cat /run/agenix/ntfy-token)
+        exec ${pkgs.ntfy-sh}/bin/ntfy subscribe \
+          -u ":$TOKEN" \
+          jollof-claude \
+          'notify-send "$NTFY_TITLE" "$NTFY_MESSAGE"'
+      '';
+    };
+  };
 
   # keyboard settings
   services.udev.packages = [ pkgs.via ];
