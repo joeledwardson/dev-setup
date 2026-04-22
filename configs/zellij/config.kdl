@@ -340,6 +340,18 @@ plugins {
     }
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
     // wasm based plugins
+    //
+    // vim-zellij-navigator: using a locally-built wasm with two un-merged fixes
+    // rolled together. Remove overrides once both PRs land upstream and we can
+    // go back to the released binary.
+    //
+    //   1. orphan-instance double-move (multi-client attach/detach):
+    //      https://github.com/hiasr/vim-zellij-navigator/pull/35
+    //   2. navigation broken in scrollback-edit pane (zellij 0.44 list_clients
+    //      returns empty while an Alt+Shift+e pane is focused):
+    //      https://github.com/joels-claude-bot/vim-zellij-navigator/tree/fix/scrollback-pane-detection
+    //
+    // Built from: https://github.com/joels-claude-bot/vim-zellij-navigator/tree/joels-fixes
     vim-zellij-nav location="file:~/.config/zellij/plugins/vim-zellij-navigator.wasm"
     zellij-attention location="file:~/.config/zellij/plugins/zellij-attention.wasm"
 }
