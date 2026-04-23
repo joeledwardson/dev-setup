@@ -227,13 +227,17 @@
     luajitPackages.magick # lua bindings for imagemagick
     sql-formatter
     sqls
-    mermaid-cli
     marksman
     shellcheck
     shfmt
     sqlfluff
     systemd-lsp
     ueberzug
+
+    # diagrams
+    mermaid-cli
+    d2
+    librsvg # provides rsvg-convert
 
     # other editors
     helix # lets try this out!

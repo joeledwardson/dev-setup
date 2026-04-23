@@ -48,8 +48,7 @@
       ~/.claude/settings.json: ./configs/claude/settings.json
       ~/.claude/scripts: ./configs/claude/scripts
       ~/.claude/keybindings.json: ./configs/claude/keybindings.json
-      ~/.claude/skills/tmux-cowork: ./configs/claude/skills/tmux-cowork
-      ~/.claude/skills/unattended: ./configs/claude/skills/unattended
+      ~/.claude/skills: ./configs/claude/skills
       ~/.local/bin/xdg-open: ./configs/bin/xdg-open
       ~/.ssh/config: ./configs/ssh/config
       ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
