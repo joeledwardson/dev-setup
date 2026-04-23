@@ -8,14 +8,10 @@
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
 
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
   };
 
   # inputs are resolved to flakes. 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nur, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, ... }:
     let
       mySystem = "x86_64-linux";
       pkgs-unstable = import nixpkgs-unstable {
@@ -25,7 +21,6 @@
           # this is required for stremio (some nixos nonsense IDK)
           permittedInsecurePackages = [ "qtwebengine-5.15.19" ];
         };
-        overlays = [ nur.overlays.default ];
       };
       pkgs-claude = import inputs.nixpkgs-claude {
         system = mySystem;
