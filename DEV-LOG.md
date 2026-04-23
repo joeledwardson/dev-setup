@@ -2877,3 +2877,45 @@ When NixOS bumps nvim past 0.11 (likely `nixos-26.x`), the pin stops helping. Op
 
 Community discussion: [Lobsters](https://lobste.rs/s/jr4acs/nvim_treesitter_repository_was_archived), [HN](https://news.ycombinator.com/item?id=47644667).
 
+
+
+## 2026-04-23 — Nix-built dev-image base (replaces Arch Dockerfile for local builds)
+
+**Context**: `dev-image/Dockerfile.dev` was Arch-based and bodged (pacman rolling under you, had to pin `nvim` to 0.11.7 via release tarball because Arch ships 0.12 which breaks nvim-treesitter master). Goal: replace with a Nix-pinned base that matches host nixpkgs exactly, layered underneath the existing imperative bootstrap.
+
+**Shape**:
+- `modules/packages-dev.nix` — shared headless dev-tool list. Imported by both `modules/nixos-base.nix` (host NixOS systems) and the flake's `dev-image-base` output.
+- `flake.nix` — new `packages.x86_64-linux.dev-image-base` built via `pkgs.dockerTools.buildLayeredImage`. Fakerooted `/etc/passwd`/`group`/`shells`, pre-created XDG dirs (`.config/zsh`, `.ssh` 700, etc.), set `ZDOTDIR`/`LOCALE_ARCHIVE`/`SSL_CERT_FILE` in `Env`.
+- `dev-image/Dockerfile` (new) — thin layer `FROM dev-image-base:latest` doing `COPY .` → dotbot → `sheldon lock` → `Lazy! sync` → `MasonToolsInstallSync` → `ssh-keygen`.
+- `Taskfile.yml` — `task dev:base` (nix build + docker load), `task dev:build` (runs dev:base then `docker build`).
+
+**What got dropped from the old Dockerfile (no longer needed)**:
+- `curl | bash` claude-code install — `pkgs-claude.claude-code` in the shared list covers it.
+- Arch `pacman -Syu` + Neovim 0.11.7 release tarball — nixpkgs 25.11 ships 0.11.7 natively, so the pin is free.
+- `npm install -g typescript` — `pkgs.typescript` now in the shared list (provides tsserver).
+- `uv tool install dotbot` — `pkgs.dotbot` in the shared list.
+- `chsh` — `Cmd = ["/bin/zsh"]` + `/etc/passwd` setting it directly in fakeRootCommands.
+
+**Size tradeoff (as expected)**:
+- Old Arch image: ~2.7 GB
+- New Nix image: ~11 GB (each package a separate store path; google-cloud-sdk, terraform, awscli2, nodejs are chunky)
+- Acceptable price for guaranteed pinning — layered image means unchanged layers are cached between rebuilds.
+
+**Smoke test (all green)**:
+- `nvim --version` → v0.11.7 (matches host)
+- `claude --version` → 2.1.112
+- zsh login sources fastfetch + yolo-claude alias + starship prompt
+- dotbot symlinks: `/root/.config/nvim`, `/root/.config/zsh/.zshrc`, `/root/.config/git/config` → `/root/dev-setup/configs/*`
+- `/root/.ssh/id_ed25519.pub` generated (ed25519)
+- mason LSPs present (bash-language-server, marksman, yaml-language-server, json-language-server)
+- sheldon lock file at `/root/.local/share/sheldon/plugins.lock`
+- XDG dirs pre-created, `.ssh` at 700, `/tmp` at 1777
+
+**Host-only packages split out** (not in container): pciutils, parted, keyd, audit, lm_sensors, libinput, usbutils, lshw, hwinfo, dmidecode, inxi, alsa-utils, udiskie, ntfs3g, exfat, glib, gh-markdown-preview, kbd, wsdd, libmtp, mtpfs, simple-mtpfs, jmtpfs, grafana-alloy, cloud-init. Verified evaluating `streaming-server` nixosConfig still works (345 packages post-refactor).
+
+**Parked — CI workflow**: `.github/workflows/build-dev-image.yml` still builds the old `dev-image/Dockerfile.dev` (Arch) and pushes to ghcr.io. Migrating CI to the Nix flow needs `cachix/install-nix-action` in the runner plus a binary cache (Cachix or similar) — otherwise each CI run rebuilds 3.5GB from scratch. Kept `Dockerfile.dev` in tree for now so CI keeps working. Decide later whether to:
+  1. Add Cachix + nix build in CI (ideal, but new Cachix account + secret)
+  2. Push the base image once to ghcr.io and have CI `FROM ghcr.io/…/dev-image-base:latest` for the Dockerfile
+  3. Leave as-is: local builds use Nix, CI keeps Arch
+
+**Gotcha noted**: new files in a flake repo must be `git add`ed before `nix build` sees them (flakes follow git tree). First build failed with `path '.../modules/packages-dev.nix' does not exist` until I staged it.

@@ -32,3 +32,7 @@ devenv.local.yaml
 
 # env args
 .env
+
+# nix build output (the dev-image-base tarball symlink — huge)
+result
+result-*
