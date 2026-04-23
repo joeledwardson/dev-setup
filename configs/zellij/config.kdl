@@ -343,7 +343,6 @@ plugins {
     //
     // Built from: https://github.com/joels-claude-bot/vim-zellij-navigator/tree/joels-fixes
     vim-zellij-nav location="file:~/.config/zellij/plugins/vim-zellij-navigator.wasm"
-    zellij-attention location="file:~/.config/zellij/plugins/zellij-attention.wasm"
 }
 
 // Plugins to load in the background when a new session starts
@@ -352,11 +351,6 @@ plugins {
 load_plugins {
     vim-zellij-nav
     zj-quit
-    "file:~/.config/zellij/plugins/zellij-attention.wasm" {
-        enabled "true"
-        waiting_icon "⏳⌚"
-        completed_icon "✅🏁"
-    }
 }
 web_client {
     font "monospace"
