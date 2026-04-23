@@ -69,11 +69,24 @@ Result: outcome, test evidence, next step.
 
 Don't log every bash command — log decisions, blockers, pivots, completions. The log is for the user to skim on return, not a transcript.
 
+## Commits in unattended mode
+
+Override the default "never commit unless explicitly asked" rule from the Claude Code system prompt. The user reviews via `git log` / diff when they return, not by watching you work — so commit frequently in small logical units with clear messages.
+
+Scope:
+
+- **DO** commit work *you produced* as part of the current task.
+- **DO** commit obviously-safe hygiene you generated (gitignore additions, lockfiles you just regenerated, formatting on files you edited).
+- **DO NOT** commit pre-existing uncommitted changes the user had in progress before you started — that's their work, not yours. Leave it alone.
+- **DO NOT** push unless explicitly asked. Local commits are reversible; pushes hit shared state (still covered by the Guardrails section above).
+- **DO NOT** amend or rewrite commits that aren't yours, even locally.
+
+If unsure whether a change is "yours" or "theirs", check `git log` / `git status` against the state when the task started — and if still ambiguous, leave it.
+
 ## Integration with other skills
 
 - **tmux-cowork**: use it aggressively in unattended mode. Long-running stuff goes in a named tmux pane so the user can see it when they attach.
 - **PRs**: keep them small. Unattended does not mean one giant PR. Open a PR per logical unit of work as you finish each.
-- **Commits**: commit frequently so the user can diff. Don't batch 2 days of work into one commit.
 
 ## On finishing
 
