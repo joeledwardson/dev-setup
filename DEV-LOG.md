@@ -2919,3 +2919,52 @@ Community discussion: [Lobsters](https://lobste.rs/s/jr4acs/nvim_treesitter_repo
   3. Leave as-is: local builds use Nix, CI keeps Arch
 
 **Gotcha noted**: new files in a flake repo must be `git add`ed before `nix build` sees them (flakes follow git tree). First build failed with `path '.../modules/packages-dev.nix' does not exist` until I staged it.
+
+
+## 2026-04-24 — Nix dev-image + zellij-autolock (parked)
+
+Parked two threads partway. Picking them back up later.
+
+### Thread 1 — Nix-built dev-image (PR [#15](https://github.com/joeledwardson/dev-setup/pull/15))
+
+**Where it stands**: branch `feat/nix-dev-image`, rebased on latest main. Local builds + smoke tests green (`task dev:build` produces a working container — nvim 0.11.7, claude 2.1.112, dotbot symlinks, ssh key, sheldon lock, mason LSPs). Yesterday's DEV-LOG section has the full rationale + shape (`modules/packages-dev.nix` shared, `dockerTools.buildLayeredImage`, thin Dockerfile on top).
+
+**What's blocking merge**: GHA validation run on `joels-claude-bot` fork is genuinely slow — 45+ min on the "build nix base + load into docker" step and still going. Not broken, just slow.
+
+**Why slow** (diagnosed but not fixed):
+
+1. First build → cold `cache.nixos.org` download for every store path. ~8-10 GB raw store, ~3.5 GB final tarball.
+2. **`flake.nix` overlays `nur.overlays.default` onto `pkgs-unstable`**. NUR is a huge aggregator — evaluating with that overlay pulls tons of metadata the docker image doesn't need. Probably 10+ min wasted on eval alone.
+3. `docker load < result` unpacks 3.5 GB sequentially.
+
+**Speedup options (ordered by ROI — revisit when unparking)**:
+
+1. **Skip NUR for dev-image**: define a `pkgs-unstable-nonur` in flake.nix with the same inputs but no NUR overlay, use that for `packages-dev.nix`. NUR isn't used in the container anyway. Big eval-time win, also helps local builds.
+2. **Binary cache between CI runs**: `DeterminateSystems/flakehub-cache-action` is free + drop-in, shaves 5-10 min off warm runs. `cachix/cachix-action` is the alternative if we want a named cache.
+3. **Slim the image**: 3.5 GB is mostly `google-cloud-sdk` + `terraform` + `awscli2` + `nodejs_22`. Dropping even one of the big three roughly halves push time.
+
+Files live on `feat/nix-dev-image`. Don't merge until the workflow completes green — that proves the flow works end-to-end on a clean runner, which local tests can't.
+
+### Thread 2 — Zellij C-hjkl broken inside docker containers
+
+**Root cause** (confirmed via `zellij action list-clients` test): host zellij can't see into container PID namespaces. A pane running `docker run -it dev-image zsh` shows RUNNING_COMMAND as `/nix/store/.../docker run …`, never `nvim`. The `vim-zellij-navigator` plugin's `pane_is_vim` only matches `basename == "nvim" || "vim"` on that command → returns false → zellij consumes C-h as `MoveFocus Left` → keys never reach nvim. **A pure nvim-side fix is not possible** — keys die at zellij, before nvim sees them.
+
+**Options discussed** (no decision yet):
+
+1. **Widen `pane_is_vim` in your fork** (`joels-claude-bot/vim-zellij-navigator` on `joels-fixes`) to also match `docker`, `ssh`, `podman`. Rebuild the wasm. One change. Tradeoff: in a shell-only container pane, C-h/C-l become backspace/clear in the shell.
+
+2. **Drop zellij's C-hjkl interception entirely**. Move zellij pane-nav to Alt-hjkl. Keys reach nvim everywhere; `zellij-nav.nvim` falls back to `wincmd` only inside container. Biggest muscle-memory break — C-hjkl gone for shell pane nav anywhere.
+
+3. **Pane-title heuristic** (OSC 2 from nvim/shell). Depends on whether `PaneInfo.title` is exposed by the zellij plugin API and resilient to other title-setters. Fragile.
+
+4. **Auto-lock via [`fresh2dev/zellij-autolock`](https://github.com/fresh2dev/zellij-autolock)** — plugin watches pane command, switches zellij to Locked mode when it matches `nvim|vim|fzf|docker|…`. Locked = keys pass through untouched. Community-standard, actively maintained, 143★. Same container tradeoff as (1). Pairs well with a screamingly-obvious locked indicator (theme tweak, or swap to `dj95/zjstatus`).
+
+**Current ranking**: 4 > 1 > 2 > 3. Autolock has the cleanest mental model ("locked = pane owns keys") and is already built.
+
+**Pre-work when unparking**:
+
+- New branch `feat/zellij-autolock` off main.
+- Download `zellij-autolock.wasm` → `configs/zellij/plugins/`.
+- `config.kdl`: register `autolock` plugin + add to `load_plugins`; drop `MessagePlugin "vim-zellij-nav"` bindings; replace with plain `MoveFocus`/`MoveFocusOrTab` in `shared_except "locked"`; add `Enter` → immediate-assess hook.
+- Decide on lock indicator styling. Try default status-bar + theme tweak first; fall back to zjstatus if not loud enough.
+- Either drop `vim-zellij-nav` plugin load or keep it as a fallback. Leaning: drop it — the fork exists to fix bugs only relevant while that plugin's architecture was in use.
