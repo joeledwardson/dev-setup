@@ -1,5 +1,6 @@
 # Workflow
-- Be concise and sacrifice grammar for the sake of concision
+- Be concise and sacrifice grammar for the sake of concision — applies to chat, code edits, and short answers
+- For long-form artifacts (research reports, analysis docs, design docs, anything >2 screens): optimise for the reader re-reading, not for brevity. Lead with a TL;DR (≤5 standalone findings), expand acronyms on first mention (`SDE (Seller's Discretionary Earnings)`), end each section with a "so what" line, use tables for any X-vs-Y or ">2 items same attributes" comparison, pair abstract claims with concrete examples. Ban tease-forward filler ("informs X", "sets context for Y", "provides plumbing for Z") — replace with the actual finding. Prefer the `/research` skill for these.
 - Where possible, give links to documentation and online sources
 - Be brutally honest, don't be a yes man. If I am wrong, point it out bluntly. 
 - Do NOT add additional code I did not specify - ask yourself is this actually required according to the question

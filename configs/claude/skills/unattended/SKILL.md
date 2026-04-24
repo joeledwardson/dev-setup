@@ -83,6 +83,51 @@ Scope:
 
 If unsure whether a change is "yours" or "theirs", check `git log` / `git status` against the state when the task started — and if still ambiguous, leave it.
 
+## Desktop automation on NixOS + Hyprland
+
+When a task truly needs headful interaction (testing web UIs, verifying click flows, reproducing a GUI bug), drive the desktop instead of asking the user. This is a yolo box — treat the desktop like any other tool.
+
+### The toolchain
+
+- **`ydotool`** — Wayland-native input dispatcher (replaces `xdotool`). Clicks, mouse moves, typing, key chords. Needs the `ydotoold` daemon running — usually is on the box; if not, `systemctl --user start ydotoold` or run it manually. Button code `0xC0` = left click.
+- **`wtype`** — simpler alternative for typing text only.
+- **`hyprctl dispatch`** — Hyprland's IPC. Best for *window* actions: focus, move, toggle floating, switch workspace, spawn a process. Not for arbitrary pixel clicks.
+- **`hyprctl clients -j`** / **`hyprctl activewindow -j`** — JSON view of the current window tree. Locate a window by class/title *before* acting on it, rather than guessing coordinates.
+- **`hyprshot`** — screenshot tool. `-m window` for active window, `-m region` for a rect, `-m output` for full screen. Outputs PNG you can `Read` to verify state.
+
+### The loop
+
+Fire-and-forget doesn't work. Always loop:
+
+1. **Observe** — `hyprctl activewindow -j` and/or `hyprshot -m output -o /tmp/`; `Read` the PNG to see actual state.
+2. **Act** — `ydotool click 0xC0` / `ydotool type "..."` / `hyprctl dispatch ...`.
+3. **Verify** — screenshot again, diff against expectation, log the result.
+
+If step 3 doesn't show the expected change, don't just retry — something is off (wrong window focused, modal on top, element moved). Re-observe first.
+
+### Common patterns
+
+- **Launch and verify a browser for UI testing**:
+  ```
+  hyprctl dispatch exec "firefox --new-window http://localhost:3000"
+  ```
+  wait, screenshot, `Read`, confirm page loaded.
+- **Focus a specific window before input**:
+  ```
+  hyprctl dispatch focuswindow "class:^(firefox)$"
+  ```
+  then `ydotool key ...`.
+- **Click a known element**: screenshot first, find coordinates in the image, then:
+  ```
+  ydotool mousemove --absolute -x N -y M && ydotool click 0xC0
+  ```
+
+### When not to
+
+- Don't automate the user's logged-in accounts, messaging apps, or anything touching their identity.
+- Don't spam notifications or steal focus while the user is actively using the machine (if they're away, fine).
+- If three observe→act→verify cycles fail on the same step, stop and log — the UI probably changed or your model of it is wrong.
+
 ## Integration with other skills
 
 - **tmux-cowork**: use it aggressively in unattended mode. Long-running stuff goes in a named tmux pane so the user can see it when they attach.
