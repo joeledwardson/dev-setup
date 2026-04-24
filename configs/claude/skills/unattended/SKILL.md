@@ -85,39 +85,61 @@ If unsure whether a change is "yours" or "theirs", check `git log` / `git status
 
 ## Desktop automation on NixOS + Hyprland
 
-When a task truly needs headful interaction (testing web UIs, verifying click flows, reproducing a GUI bug), drive the desktop instead of asking the user. This is a yolo box — treat the desktop like any other tool.
+When a task truly needs headful interaction (testing web UIs, verifying click flows, reproducing a GUI bug, pasting an image into a running TUI), drive the desktop instead of asking the user. This is a yolo box — treat the desktop like any other tool.
+
+### Session env (the SSH caveat — set this first)
+
+If you're SSH'd in, `WAYLAND_DISPLAY` and `HYPRLAND_INSTANCE_SIGNATURE` are unset by default. `hyprctl` fails with "HYPRLAND_INSTANCE_SIGNATURE not set!", `wl-copy` / `wtype` fail silently. Export both once before anything else:
+
+```sh
+export WAYLAND_DISPLAY="$(ls /run/user/$(id -u)/ | grep -E '^wayland-[0-9]+$' | head -1)"
+export HYPRLAND_INSTANCE_SIGNATURE="$(ls /run/user/$(id -u)/hypr/ | head -1)"
+```
 
 ### The toolchain
 
-- **`ydotool`** — Wayland-native input dispatcher (replaces `xdotool`). Clicks, mouse moves, typing, key chords. Needs the `ydotoold` daemon running — usually is on the box; if not, `systemctl --user start ydotoold` or run it manually. Button code `0xC0` = left click.
-- **`wtype`** — simpler alternative for typing text only.
-- **`hyprctl dispatch`** — Hyprland's IPC. Best for *window* actions: focus, move, toggle floating, switch workspace, spawn a process. Not for arbitrary pixel clicks.
-- **`hyprctl clients -j`** / **`hyprctl activewindow -j`** — JSON view of the current window tree. Locate a window by class/title *before* acting on it, rather than guessing coordinates.
-- **`hyprshot`** — screenshot tool. `-m window` for active window, `-m region` for a rect, `-m output` for full screen. Outputs PNG you can `Read` to verify state.
+- **`wtype`** — Wayland virtual-keyboard client. Keys, chords, text. No `uinput`, no root. Sends to whatever window currently has keyboard focus. Example: `wtype -M ctrl -p v -m ctrl` = Ctrl+V. Good default for typing/chords.
+- **`hyprctl dispatch sendshortcut KEY,CHAR,class:^(foo)$`** — fires a key chord at a window selected by class/title regex, **bypasses focus entirely**. Prefer this over `wtype` when you know the target. Example: `hyprctl dispatch sendshortcut "CTRL,V,class:^(kitty)$"`.
+- **`ydotool`** — uinput-level dispatcher. Needed for mouse (clicks, moves, drags) and when a key event has to look like real hardware. Requires `ydotoold` running (usually is) **and** your user in the `ydotool` group — the socket is `0660 root:ydotool`. If you see `failed to connect socket '/run/ydotoold/socket': Permission denied`, stop: check `id` / `getent group ydotool`. For keys only, fall back to `wtype` or `sendshortcut`. For clicks, there's no non-root fallback — ask the user. Button code `0xC0` = left click.
+- **`hyprctl dispatch`** — Hyprland's IPC for window actions: `focuswindow`, `movewindow`, `workspace`, `togglefloating`, `closewindow`, `exec` (with `[float; size W H; center]` prefix for rule injection). Not for arbitrary pixel clicks.
+- **`hyprctl clients -j`** / **`hyprctl activewindow -j`** — JSON view of the window tree. Locate by class/title *before* acting, rather than guessing coordinates. Gotcha: `activewindow` returns `Invalid` when no window has keyboard focus (common right after a headless `dispatch exec`) — not a bug, just means no seat focus yet.
+- **`hyprshot`** — convenience screenshot tool. `-m window -m active` for active window, `-m region` for a rect, `-m output` for full screen. Fails with `invalid geometry` if `activewindow` is Invalid — fall back to `grim`.
+- **`grim`** — raw wlroots screenshot, no window-state dependency. `grim /tmp/out.png` for full screen, `grim -g "X,Y WxH" /tmp/out.png` for a rect (pull the geometry out of `hyprctl clients -j`). Outputs PNG you can `Read` to verify state.
+
+### Clipboard
+
+- **`wl-copy --type image/png < file.png`** — load an image onto the clipboard with a specific MIME type. Without `--type`, `wl-copy` infers text and image-aware apps won't find it.
+- **`wl-paste -l`** — list MIME types currently on the clipboard. Sanity check after `wl-copy`.
+- **`wl-copy --clear`** — empty the clipboard (teardown).
+- Requires `WAYLAND_DISPLAY` set (see above).
 
 ### The loop
 
 Fire-and-forget doesn't work. Always loop:
 
-1. **Observe** — `hyprctl activewindow -j` and/or `hyprshot -m output -o /tmp/`; `Read` the PNG to see actual state.
-2. **Act** — `ydotool click 0xC0` / `ydotool type "..."` / `hyprctl dispatch ...`.
+1. **Observe** — `hyprctl activewindow -j` and/or `grim /tmp/out.png`; `Read` the PNG to see actual state.
+2. **Act** — `hyprctl dispatch sendshortcut ...` / `wtype ...` / `hyprctl dispatch ...` / `ydotool ...`.
 3. **Verify** — screenshot again, diff against expectation, log the result.
 
-If step 3 doesn't show the expected change, don't just retry — something is off (wrong window focused, modal on top, element moved). Re-observe first.
+If step 3 doesn't show the expected change, don't just retry — something is off (wrong window focused, modal on top, element moved, no seat focus after `exec`). Re-observe first.
 
 ### Common patterns
 
 - **Launch and verify a browser for UI testing**:
   ```
-  hyprctl dispatch exec "firefox --new-window http://localhost:3000"
+  hyprctl dispatch exec "[float; size 1200 800; center 1] firefox --new-window http://localhost:3000"
   ```
-  wait, screenshot, `Read`, confirm page loaded.
-- **Focus a specific window before input**:
+  wait, `grim`, `Read`, confirm page loaded.
+- **Send a key chord to a known window without stealing focus** (preferred over `wtype` when the target class is known):
+  ```
+  hyprctl dispatch sendshortcut "CTRL,V,class:^(kitty)$"
+  ```
+- **Focus a specific window before typing free-form text**:
   ```
   hyprctl dispatch focuswindow "class:^(firefox)$"
+  wtype "hello"
   ```
-  then `ydotool key ...`.
-- **Click a known element**: screenshot first, find coordinates in the image, then:
+- **Click a known element** (requires `ydotool` socket access):
   ```
   ydotool mousemove --absolute -x N -y M && ydotool click 0xC0
   ```
