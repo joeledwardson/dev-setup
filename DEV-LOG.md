@@ -2934,14 +2934,14 @@ Parked two threads partway. Picking them back up later.
 **Why slow** (diagnosed but not fixed):
 
 1. First build → cold `cache.nixos.org` download for every store path. ~8-10 GB raw store, ~3.5 GB final tarball.
-2. **`flake.nix` overlays `nur.overlays.default` onto `pkgs-unstable`**. NUR is a huge aggregator — evaluating with that overlay pulls tons of metadata the docker image doesn't need. Probably 10+ min wasted on eval alone.
-3. `docker load < result` unpacks 3.5 GB sequentially.
+2. `docker load < result` unpacks 3.5 GB sequentially.
+
+~~NUR overlay was previously called out as a third cause — resolved: main removed the `nur` input wholesale in `31c7c56`, and this branch now carries that via rebase.~~
 
 **Speedup options (ordered by ROI — revisit when unparking)**:
 
-1. **Skip NUR for dev-image**: define a `pkgs-unstable-nonur` in flake.nix with the same inputs but no NUR overlay, use that for `packages-dev.nix`. NUR isn't used in the container anyway. Big eval-time win, also helps local builds.
-2. **Binary cache between CI runs**: `DeterminateSystems/flakehub-cache-action` is free + drop-in, shaves 5-10 min off warm runs. `cachix/cachix-action` is the alternative if we want a named cache.
-3. **Slim the image**: 3.5 GB is mostly `google-cloud-sdk` + `terraform` + `awscli2` + `nodejs_22`. Dropping even one of the big three roughly halves push time.
+1. **Binary cache between CI runs**: `DeterminateSystems/flakehub-cache-action` is free + drop-in, shaves 5-10 min off warm runs. `cachix/cachix-action` is the alternative if we want a named cache.
+2. **Slim the image**: 3.5 GB is mostly `google-cloud-sdk` + `terraform` + `awscli2` + `nodejs_22`. Dropping even one of the big three roughly halves push time.
 
 Files live on `feat/nix-dev-image`. Don't merge until the workflow completes green — that proves the flow works end-to-end on a clean runner, which local tests can't.
 
