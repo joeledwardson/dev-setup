@@ -102,178 +102,53 @@
     size = 32 * 1024; # 32 GiB
   }];
 
-  environment.systemPackages = with pkgs; [
-    ### core terminal utilities
-    git
-    vim-full # use full vim so that clipboard is supported, nano also installed by default apparently
-    wget
-    nix-search-cli # helpful nix-search command
-    pciutils # check pci utils
-    curl
-    unzip
-    parted
-    nettools # ifconfig, netstat etc
-    keyd # allows calling keyd manually (useful for keyd monitor etc..)
-    file # get file type
-    dig # has nslookup
-    busybox # has lsof, fuser, killall
-    lsof # better than busybox one (otherwise even lsof -h help isnt available!)
-    socat # socket utility
-    sheldon # shell plugins
-    openssl
-    man-pages # otherwise dont have man 5 resolv.conf etc?
-    audit # give auditctl
-    tcpdump
-    nmap
-    httpie # nice terminal alternative to postman
-    fastfetch # fancy temrinal output
+  # shared headless dev-tool list (also used by flake's dev-image-base docker output)
+  environment.systemPackages =
+    (import ./packages-dev.nix { inherit pkgs pkgs-unstable pkgs-claude; })
+    ++ (with pkgs; [
+      ### host-only extras (not in dev container — hardware/desktop/audio/disk/MTP)
 
-    ### hardware tools
-    lm_sensors # temperature monitoring
-    libinput # input device management tool
-    usbutils # usb utilities (like lsusb)
-    lshw
-    hwinfo
-    dmidecode
-    inxi # get CPU & storage stats
+      ### core terminal utilities (host-only)
+      pciutils # check pci utils
+      parted
+      keyd # allows calling keyd manually (useful for keyd monitor etc..)
+      audit # give auditctl
 
-    ### audio
-    alsa-utils
+      ### hardware tools
+      lm_sensors # temperature monitoring
+      libinput # input device management tool
+      usbutils # usb utilities (like lsusb)
+      lshw
+      hwinfo
+      dmidecode
+      inxi # get CPU & storage stats
 
-    ### nix specific tools
-    nix-tree
-    nix-du
-    devenv
-    nix-index
-    nix-inspect
+      ### audio
+      alsa-utils
 
-    ### disk management
-    udiskie # for status bar disks
-    ntfs3g # in case of running `ntfslabel` to re-label windows partition
-    exfat # in case of running `exfatlabel` to re-label SD cards etc
+      ### disk management
+      udiskie # for status bar disks
+      ntfs3g # in case of running `ntfslabel` to re-label windows partition
+      exfat # in case of running `exfatlabel` to re-label SD cards etc
 
-    ### languages
-    clojure # for metabase
-    gcc # for nvim kickstart
-    uv
-    pipx # use this for poetry so can use shell plugin
-    go
-    nixd
-    nodejs_22 # add nodejs global just for claude code
-    lua
-    glib # contains gio, useful for viewing all mounts (including SMB etc)
-    ruff
+      ### misc host-only
+      glib # contains gio, useful for viewing all mounts (including SMB etc)
+      gh-markdown-preview # browser-based preview
+      kbd # has showkey
 
-    ### Database tools
-    ruby
-    lazysql
-    pgcli
-    postgresql_17
+      # for gvfs
+      wsdd # needed for samba
 
-    ### TUI style tools
-    lazygit
-    lazydocker
-    graphviz # required for madge npm package
-    tomato-c # pomodoro
-    duf
-    gdu # replacement for ncdu
-    dust # another replacement for du
-    tabiew # CSV terminal viewer (tw is program)
+      # mtp shite
+      libmtp
+      mtpfs
+      simple-mtpfs
+      jmtpfs
 
-    ### CLI tools
-    tldr
-    bat
-    gh
-    gh-markdown-preview
-    glab
-    tmux
-    fzf
-    dotbot # required for dotfiles configuration
-    google-cloud-sdk
-    bitwarden-cli
-    eza
-    gnumake # provides `make` command
-    fd # alternative to find
-    delta # fancy syntax highlighting and pager for git
-    jq
-    yq-go
-    kbd # has showkey
-    doctoc # for updating my README toc!
-    btop # fancy version of top
-    navi
-    terraform
-    skopeo # useful for searching remote docker tags (required for video consumer)
-    awscli2
-    ssm-session-manager-plugin
-    grafana-loki # has logcli
-    ansible
-    go-task # has taskfile
-    zoxide
-
-    ### video processing
-    ffmpeg
-
-    ### neovim
-    neovim
-    ### neovim dependencies
-    ripgrep
-    prettierd
-    stylua
-    nixfmt-classic
-    tree-sitter
-    readline
-    libedit
-    imagemagick # for image.nvim
-    luajitPackages.magick # lua bindings for imagemagick
-    sql-formatter
-    sqls
-    marksman
-    shellcheck
-    shfmt
-    sqlfluff
-    systemd-lsp
-    ueberzug
-
-    # diagrams
-    mermaid-cli
-    d2
-    librsvg # provides rsvg-convert
-
-    # other editors
-    helix # lets try this out!
-
-    ### yazi deps
-    ouch
-    rich-cli
-    exiftool
-    mediainfo
-    poppler-utils # pdftoppm required
-
-    # for gvfs
-    wsdd # needed for samba
-
-    # mtp shite
-    libmtp
-    mtpfs
-    simple-mtpfs
-    jmtpfs
-
-    # work stuff
-    grafana-alloy
-    cloud-init
-    vault
-    ansible-lint
-
-    ### unstable packages
-    pkgs-unstable.postgres-language-server # connectionString argument only released recently
-    pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
-    pkgs-unstable.zellij # v0.44.0 currently only available on unstable
-    pkgs-claude.claude-code # pinned to nixpkgs master for latest version
-
-    # try llm again for quick access to gemini
-    (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
-
-  ];
+      # work stuff
+      grafana-alloy
+      cloud-init
+    ]);
 
   # enable docker
   virtualisation.docker.enable = true;

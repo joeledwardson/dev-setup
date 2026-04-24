@@ -2877,3 +2877,178 @@ When NixOS bumps nvim past 0.11 (likely `nixos-26.x`), the pin stops helping. Op
 
 Community discussion: [Lobsters](https://lobste.rs/s/jr4acs/nvim_treesitter_repository_was_archived), [HN](https://news.ycombinator.com/item?id=47644667).
 
+
+
+## 2026-04-23 — Nix-built dev-image base (replaces Arch Dockerfile for local builds)
+
+**Context**: `dev-image/Dockerfile.dev` was Arch-based and bodged (pacman rolling under you, had to pin `nvim` to 0.11.7 via release tarball because Arch ships 0.12 which breaks nvim-treesitter master). Goal: replace with a Nix-pinned base that matches host nixpkgs exactly, layered underneath the existing imperative bootstrap.
+
+**Shape**:
+- `modules/packages-dev.nix` — shared headless dev-tool list. Imported by both `modules/nixos-base.nix` (host NixOS systems) and the flake's `dev-image-base` output.
+- `flake.nix` — new `packages.x86_64-linux.dev-image-base` built via `pkgs.dockerTools.buildLayeredImage`. Fakerooted `/etc/passwd`/`group`/`shells`, pre-created XDG dirs (`.config/zsh`, `.ssh` 700, etc.), set `ZDOTDIR`/`LOCALE_ARCHIVE`/`SSL_CERT_FILE` in `Env`.
+- `dev-image/Dockerfile` (new) — thin layer `FROM dev-image-base:latest` doing `COPY .` → dotbot → `sheldon lock` → `Lazy! sync` → `MasonToolsInstallSync` → `ssh-keygen`.
+- `Taskfile.yml` — `task dev:base` (nix build + docker load), `task dev:build` (runs dev:base then `docker build`).
+
+**What got dropped from the old Dockerfile (no longer needed)**:
+- `curl | bash` claude-code install — `pkgs-claude.claude-code` in the shared list covers it.
+- Arch `pacman -Syu` + Neovim 0.11.7 release tarball — nixpkgs 25.11 ships 0.11.7 natively, so the pin is free.
+- `npm install -g typescript` — `pkgs.typescript` now in the shared list (provides tsserver).
+- `uv tool install dotbot` — `pkgs.dotbot` in the shared list.
+- `chsh` — `Cmd = ["/bin/zsh"]` + `/etc/passwd` setting it directly in fakeRootCommands.
+
+**Size tradeoff (as expected)**:
+- Old Arch image: ~2.7 GB
+- New Nix image: ~11 GB (each package a separate store path; google-cloud-sdk, terraform, awscli2, nodejs are chunky)
+- Acceptable price for guaranteed pinning — layered image means unchanged layers are cached between rebuilds.
+
+**Smoke test (all green)**:
+- `nvim --version` → v0.11.7 (matches host)
+- `claude --version` → 2.1.112
+- zsh login sources fastfetch + yolo-claude alias + starship prompt
+- dotbot symlinks: `/root/.config/nvim`, `/root/.config/zsh/.zshrc`, `/root/.config/git/config` → `/root/dev-setup/configs/*`
+- `/root/.ssh/id_ed25519.pub` generated (ed25519)
+- mason LSPs present (bash-language-server, marksman, yaml-language-server, json-language-server)
+- sheldon lock file at `/root/.local/share/sheldon/plugins.lock`
+- XDG dirs pre-created, `.ssh` at 700, `/tmp` at 1777
+
+**Host-only packages split out** (not in container): pciutils, parted, keyd, audit, lm_sensors, libinput, usbutils, lshw, hwinfo, dmidecode, inxi, alsa-utils, udiskie, ntfs3g, exfat, glib, gh-markdown-preview, kbd, wsdd, libmtp, mtpfs, simple-mtpfs, jmtpfs, grafana-alloy, cloud-init. Verified evaluating `streaming-server` nixosConfig still works (345 packages post-refactor).
+
+**Parked — CI workflow**: `.github/workflows/build-dev-image.yml` still builds the old `dev-image/Dockerfile.dev` (Arch) and pushes to ghcr.io. Migrating CI to the Nix flow needs `cachix/install-nix-action` in the runner plus a binary cache (Cachix or similar) — otherwise each CI run rebuilds 3.5GB from scratch. Kept `Dockerfile.dev` in tree for now so CI keeps working. Decide later whether to:
+  1. Add Cachix + nix build in CI (ideal, but new Cachix account + secret)
+  2. Push the base image once to ghcr.io and have CI `FROM ghcr.io/…/dev-image-base:latest` for the Dockerfile
+  3. Leave as-is: local builds use Nix, CI keeps Arch
+
+**Gotcha noted**: new files in a flake repo must be `git add`ed before `nix build` sees them (flakes follow git tree). First build failed with `path '.../modules/packages-dev.nix' does not exist` until I staged it.
+
+
+## 2026-04-24 — Nix dev-image + zellij-autolock (parked)
+
+Parked two threads partway. Picking them back up later.
+
+### Thread 1 — Nix-built dev-image (PR [#15](https://github.com/joeledwardson/dev-setup/pull/15))
+
+**Where it stands**: branch `feat/nix-dev-image`, rebased on latest main. Local builds + smoke tests green (`task dev:build` produces a working container — nvim 0.11.7, claude 2.1.112, dotbot symlinks, ssh key, sheldon lock, mason LSPs). Yesterday's DEV-LOG section has the full rationale + shape (`modules/packages-dev.nix` shared, `dockerTools.buildLayeredImage`, thin Dockerfile on top).
+
+**What's blocking merge**: GHA validation run on `joels-claude-bot` fork is genuinely slow — 45+ min on the "build nix base + load into docker" step and still going. Not broken, just slow.
+
+**Why slow** (diagnosed but not fixed):
+
+1. First build → cold `cache.nixos.org` download for every store path. ~8-10 GB raw store, ~3.5 GB final tarball.
+2. `docker load < result` unpacks 3.5 GB sequentially.
+
+~~NUR overlay was previously called out as a third cause — resolved: main removed the `nur` input wholesale in `31c7c56`, and this branch now carries that via rebase.~~
+
+**Speedup options (ordered by ROI — revisit when unparking)**:
+
+1. **Binary cache between CI runs**: `DeterminateSystems/flakehub-cache-action` is free + drop-in, shaves 5-10 min off warm runs. `cachix/cachix-action` is the alternative if we want a named cache.
+2. **Slim the image**: 3.5 GB is mostly `google-cloud-sdk` + `terraform` + `awscli2` + `nodejs_22`. Dropping even one of the big three roughly halves push time.
+
+Files live on `feat/nix-dev-image`. Don't merge until the workflow completes green — that proves the flow works end-to-end on a clean runner, which local tests can't.
+
+### Thread 2 — Zellij C-hjkl broken inside docker containers
+
+**Root cause** (confirmed via `zellij action list-clients` test): host zellij can't see into container PID namespaces. A pane running `docker run -it dev-image zsh` shows RUNNING_COMMAND as `/nix/store/.../docker run …`, never `nvim`. The `vim-zellij-navigator` plugin's `pane_is_vim` only matches `basename == "nvim" || "vim"` on that command → returns false → zellij consumes C-h as `MoveFocus Left` → keys never reach nvim. **A pure nvim-side fix is not possible** — keys die at zellij, before nvim sees them.
+
+**Options discussed** (no decision yet):
+
+1. **Widen `pane_is_vim` in your fork** (`joels-claude-bot/vim-zellij-navigator` on `joels-fixes`) to also match `docker`, `ssh`, `podman`. Rebuild the wasm. One change. Tradeoff: in a shell-only container pane, C-h/C-l become backspace/clear in the shell.
+
+2. **Drop zellij's C-hjkl interception entirely**. Move zellij pane-nav to Alt-hjkl. Keys reach nvim everywhere; `zellij-nav.nvim` falls back to `wincmd` only inside container. Biggest muscle-memory break — C-hjkl gone for shell pane nav anywhere.
+
+3. **Pane-title heuristic** (OSC 2 from nvim/shell). Depends on whether `PaneInfo.title` is exposed by the zellij plugin API and resilient to other title-setters. Fragile.
+
+4. **Auto-lock via [`fresh2dev/zellij-autolock`](https://github.com/fresh2dev/zellij-autolock)** — plugin watches pane command, switches zellij to Locked mode when it matches `nvim|vim|fzf|docker|…`. Locked = keys pass through untouched. Community-standard, actively maintained, 143★. Same container tradeoff as (1). Pairs well with a screamingly-obvious locked indicator (theme tweak, or swap to `dj95/zjstatus`).
+
+**Current ranking**: 4 > 1 > 2 > 3. Autolock has the cleanest mental model ("locked = pane owns keys") and is already built.
+
+**Pre-work when unparking**:
+
+- New branch `feat/zellij-autolock` off main.
+- Download `zellij-autolock.wasm` → `configs/zellij/plugins/`.
+- `config.kdl`: register `autolock` plugin + add to `load_plugins`; drop `MessagePlugin "vim-zellij-nav"` bindings; replace with plain `MoveFocus`/`MoveFocusOrTab` in `shared_except "locked"`; add `Enter` → immediate-assess hook.
+- Decide on lock indicator styling. Try default status-bar + theme tweak first; fall back to zjstatus if not loud enough.
+- Either drop `vim-zellij-nav` plugin load or keep it as a fallback. Leaning: drop it — the fork exists to fix bugs only relevant while that plugin's architecture was in use.
+
+
+## 2026-04-24 — Nix dev-image continuation (for future LLM picking up `feat/nix-dev-image`)
+
+Context for whoever comes back to this: user needed to switch contexts, wanted the current state pushed to the bot fork so work continues in a fresh checkout. This entry is the cold-start briefing.
+
+### What the CI was actually doing wrong
+
+Previous park notes said CI was "just slow". Not true — both runs (24840427178 and 24841218681 on `joels-claude-bot/dev-setup`) **failed** at ~33min with:
+
+```
+ERROR: failed to build: failed to solve: dev-image-base:latest: failed to resolve
+source metadata for docker.io/library/dev-image-base:latest: pull access denied
+```
+
+Cause: `docker/build-push-action@v6` uses buildx's default `docker-container` driver, which runs in an isolated builder container and cannot see images in the host daemon. So `docker load < result` loaded `dev-image-base:latest` into the *host* daemon, and then buildx (in its own container) went "I don't know that image, let me try pulling from Docker Hub" → auth denied → fail.
+
+**Fix committed** (`21de885`): `driver: docker` on `setup-buildx-action`, dropped `cache-from/to: type=gha` (docker driver doesn't support it; `COPY .` invalidates on every repo change anyway so the cache was buying nothing).
+
+### Image size investigation (closure data)
+
+Ran `nix path-info -Sh` on every store path in `packages-dev.nix`. Top closures:
+
+| Package | Closure |
+|---|---|
+| ffmpeg-8.0-bin | 1011 MiB |
+| google-cloud-sdk | 893 MiB |
+| clojure (openjdk) | 876 MiB |
+| ansible-lint + ansible-core | ~1.7 GiB combined |
+| bitwarden-cli | 708 MiB |
+| nixd | 693 MiB |
+| grafana-loki | 632 MiB |
+| fastfetch | 547 MiB |
+| llm-gemini | 500 MiB |
+| vim-full | 500 MiB |
+| tabiew | 410 MiB |
+| vault | 377 MiB |
+
+Note: closures overlap (shared python, glibc, etc.), so sum of closures ≠ tarball size.
+
+### The minimal list (committed `8a88d91`)
+
+Added `modules/packages-dev-min.nix` with only the claude-code + nvim working set. Host systems (`nixos-base.nix`) still use `packages-dev.nix` unchanged — the minimal list is imported **only** by the flake's `dev-image-base` output.
+
+Result: **tarball 3.5 GiB → 1.8 GiB (-48%)**, image 11.1 GiB → ~5.5 GiB uncompressed. Not as drastic as the closure math suggested because nvim + imagemagick + mediainfo + chromium-deps-via-mermaid-cli still pull in a lot.
+
+Things cut (kept on host): ffmpeg, google-cloud-sdk, awscli2, vault, terraform, ansible stack, clojure, grafana-loki, bitwarden-cli, fastfetch, vim-full, DB tools (pgcli/lazysql/postgresql), devenv, helix, llm-gemini, nix-tree/du/inspect, doctoc, sql-formatter/sqls/sqlfluff, tabiew, ueberzug, rich-cli, skopeo, dig/tcpdump/nmap/socat (infra debug).
+
+### Further slim options (not yet pursued — decide what matters)
+
+1. **Drop `mermaid-cli` + `d2` + `librsvg`** from the container. `mermaid-cli` uses chromium (headless), which is massive. If diagrams can be rendered host-side or via the `diagram` skill's server, the container doesn't need them. Probably 500 MiB+ savings.
+2. **Drop `imagemagick` + `luajitPackages.magick`** if `image.nvim` preview isn't actually used in container (no GPU / terminal capability).
+3. **Replace `neovim` with a leaner build**: `neovim-unwrapped` without the lua/python providers, if the plugin set doesn't need them. Saves maybe 100-200 MiB.
+4. **`mediainfo` + `exiftool` + `poppler-utils`** can probably go — they're yazi file-previewer deps, rarely used in a container workflow.
+
+### Where things stand on the branch (`feat/nix-dev-image`)
+
+Commits ahead of `main`:
+
+```
+8a88d91  dev-image: swap base to a minimal package list (3.5GB → 1.8GB)
+21de885  ci: use buildx docker driver so the loaded base image is visible
+aa66820  DEV-LOG: drop NUR speedup from park notes (now on branch via rebase)
+4018f35  DEV-LOG: park notes for nix dev-image + zellij-autolock threads
+7d1e034  ci: rewrite dev-image workflow to use the Nix base layer
+ca487d9  dev-image: nix-built base + thin imperative top layer
+```
+
+Branch has been rebased onto `main` (picks up `31c7c56 remove NUR overlay`). **Needs force-push to bot fork** — local and bot-fork/feat/nix-dev-image have diverged due to the rebase.
+
+### Local validation done
+
+- `task dev:base` green on minimal list (1.8 GiB tarball produced)
+- `docker load` green
+- Full `task dev:build` **not yet re-validated on the minimal list** — next thing to do when picking this up: run it end-to-end and exercise nvim + claude-code + git + dotbot inside the resulting container
+
+### What's still blocked
+
+- **CI green**: need to push the driver-fix + minimal commits and watch a fresh run to confirm it (a) completes, (b) is meaningfully faster than 33min. With NUR already gone via rebase + smaller closure + fixed driver, expectation is <15min. If still slow, the next knob is the binary cache (`DeterminateSystems/flakehub-cache-action`) for warm-run speedups.
+- **PR #15 merge**: blocked on the green CI run above.
+
+### Zellij-autolock thread
+
+Still parked — see entry above. Nothing new there this session.

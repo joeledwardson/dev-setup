@@ -134,9 +134,17 @@ tasks:
           echo "OK:   $path → $short_name (prepopulate_id=$prepop_id)"
         done
 
+  dev:base:
+    desc: Build the nix-pinned base layer for the dev container
+    cmds:
+      - nix build .#dev-image-base
+      - docker load < result
+
   dev:build:
-    desc: Build dev container
-    cmd: docker build --file dev-image/Dockerfile.dev -t dev-image --progress=plain .
+    desc: Build dev container (nix base layer + imperative bootstrap)
+    cmds:
+      - task: dev:base
+      - docker build --file dev-image/Dockerfile -t dev-image --progress=plain .
 
   dev:container:
     desc: Run a dev container

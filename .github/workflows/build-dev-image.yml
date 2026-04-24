@@ -1,13 +1,16 @@
 name: build dev image
 
-# Builds dev-image/Dockerfile.dev and pushes to GitHub Container Registry.
-# - push to main  → :latest
-# - push a tag    → :latest + :<tag>
+# Builds the nix-pinned base layer (flake output .#dev-image-base), then layers
+# the imperative bootstrap via dev-image/Dockerfile and pushes to ghcr.io.
+# - push to main               → :latest
+# - push a tag                 → :latest + :<tag>
+# - push to feat/nix-dev-image → :latest (validation path — remove once merged)
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/nix-dev-image]
     tags: ['*']
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,11 +19,23 @@ jobs:
       contents: read
       packages: write
     steps:
+      # runner has ~14GB free; nix build + docker layers needs more headroom
+      - name: free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          docker-images: false # keep docker usable
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      # driver: docker (vs default docker-container) so buildx reads from the host
+      # daemon — required because the nix base layer is `docker load`ed, not pushed.
       - uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
 
       - uses: docker/login-action@v3
         with:
@@ -28,7 +43,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # tags: always :latest; also :<ref> when the trigger is a git tag
       - id: meta
         uses: docker/metadata-action@v5
         with:
@@ -37,12 +51,18 @@ jobs:
             type=raw,value=latest
             type=ref,event=tag
 
-      - uses: docker/build-push-action@v6
+      - name: build nix base + load into docker
+        run: |
+          nix build .#dev-image-base --print-build-logs
+          docker load < result
+
+      # gha cache removed: docker driver doesn't support it, and the `COPY .`
+      # step invalidates on every repo change anyway so the RUN layer rebuilds.
+      - name: build + push dev image
+        uses: docker/build-push-action@v6
         with:
           context: .
-          file: dev-image/Dockerfile.dev
+          file: dev-image/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
