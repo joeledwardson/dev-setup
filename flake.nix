@@ -51,7 +51,7 @@
       packages.${mySystem}.dev-image-base = pkgs.dockerTools.buildLayeredImage {
         name = "dev-image-base";
         tag = "latest";
-        contents = (import ./modules/packages-dev.nix {
+        contents = (import ./modules/packages-dev-min.nix {
           inherit pkgs pkgs-unstable pkgs-claude;
         }) ++ (with pkgs; [
           # container essentials (not in the shared list since NixOS provides them)
