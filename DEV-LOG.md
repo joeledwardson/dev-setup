@@ -2968,3 +2968,87 @@ Files live on `feat/nix-dev-image`. Don't merge until the workflow completes gre
 - `config.kdl`: register `autolock` plugin + add to `load_plugins`; drop `MessagePlugin "vim-zellij-nav"` bindings; replace with plain `MoveFocus`/`MoveFocusOrTab` in `shared_except "locked"`; add `Enter` → immediate-assess hook.
 - Decide on lock indicator styling. Try default status-bar + theme tweak first; fall back to zjstatus if not loud enough.
 - Either drop `vim-zellij-nav` plugin load or keep it as a fallback. Leaning: drop it — the fork exists to fix bugs only relevant while that plugin's architecture was in use.
+
+
+## 2026-04-24 — Nix dev-image continuation (for future LLM picking up `feat/nix-dev-image`)
+
+Context for whoever comes back to this: user needed to switch contexts, wanted the current state pushed to the bot fork so work continues in a fresh checkout. This entry is the cold-start briefing.
+
+### What the CI was actually doing wrong
+
+Previous park notes said CI was "just slow". Not true — both runs (24840427178 and 24841218681 on `joels-claude-bot/dev-setup`) **failed** at ~33min with:
+
+```
+ERROR: failed to build: failed to solve: dev-image-base:latest: failed to resolve
+source metadata for docker.io/library/dev-image-base:latest: pull access denied
+```
+
+Cause: `docker/build-push-action@v6` uses buildx's default `docker-container` driver, which runs in an isolated builder container and cannot see images in the host daemon. So `docker load < result` loaded `dev-image-base:latest` into the *host* daemon, and then buildx (in its own container) went "I don't know that image, let me try pulling from Docker Hub" → auth denied → fail.
+
+**Fix committed** (`21de885`): `driver: docker` on `setup-buildx-action`, dropped `cache-from/to: type=gha` (docker driver doesn't support it; `COPY .` invalidates on every repo change anyway so the cache was buying nothing).
+
+### Image size investigation (closure data)
+
+Ran `nix path-info -Sh` on every store path in `packages-dev.nix`. Top closures:
+
+| Package | Closure |
+|---|---|
+| ffmpeg-8.0-bin | 1011 MiB |
+| google-cloud-sdk | 893 MiB |
+| clojure (openjdk) | 876 MiB |
+| ansible-lint + ansible-core | ~1.7 GiB combined |
+| bitwarden-cli | 708 MiB |
+| nixd | 693 MiB |
+| grafana-loki | 632 MiB |
+| fastfetch | 547 MiB |
+| llm-gemini | 500 MiB |
+| vim-full | 500 MiB |
+| tabiew | 410 MiB |
+| vault | 377 MiB |
+
+Note: closures overlap (shared python, glibc, etc.), so sum of closures ≠ tarball size.
+
+### The minimal list (committed `8a88d91`)
+
+Added `modules/packages-dev-min.nix` with only the claude-code + nvim working set. Host systems (`nixos-base.nix`) still use `packages-dev.nix` unchanged — the minimal list is imported **only** by the flake's `dev-image-base` output.
+
+Result: **tarball 3.5 GiB → 1.8 GiB (-48%)**, image 11.1 GiB → ~5.5 GiB uncompressed. Not as drastic as the closure math suggested because nvim + imagemagick + mediainfo + chromium-deps-via-mermaid-cli still pull in a lot.
+
+Things cut (kept on host): ffmpeg, google-cloud-sdk, awscli2, vault, terraform, ansible stack, clojure, grafana-loki, bitwarden-cli, fastfetch, vim-full, DB tools (pgcli/lazysql/postgresql), devenv, helix, llm-gemini, nix-tree/du/inspect, doctoc, sql-formatter/sqls/sqlfluff, tabiew, ueberzug, rich-cli, skopeo, dig/tcpdump/nmap/socat (infra debug).
+
+### Further slim options (not yet pursued — decide what matters)
+
+1. **Drop `mermaid-cli` + `d2` + `librsvg`** from the container. `mermaid-cli` uses chromium (headless), which is massive. If diagrams can be rendered host-side or via the `diagram` skill's server, the container doesn't need them. Probably 500 MiB+ savings.
+2. **Drop `imagemagick` + `luajitPackages.magick`** if `image.nvim` preview isn't actually used in container (no GPU / terminal capability).
+3. **Replace `neovim` with a leaner build**: `neovim-unwrapped` without the lua/python providers, if the plugin set doesn't need them. Saves maybe 100-200 MiB.
+4. **`mediainfo` + `exiftool` + `poppler-utils`** can probably go — they're yazi file-previewer deps, rarely used in a container workflow.
+
+### Where things stand on the branch (`feat/nix-dev-image`)
+
+Commits ahead of `main`:
+
+```
+8a88d91  dev-image: swap base to a minimal package list (3.5GB → 1.8GB)
+21de885  ci: use buildx docker driver so the loaded base image is visible
+aa66820  DEV-LOG: drop NUR speedup from park notes (now on branch via rebase)
+4018f35  DEV-LOG: park notes for nix dev-image + zellij-autolock threads
+7d1e034  ci: rewrite dev-image workflow to use the Nix base layer
+ca487d9  dev-image: nix-built base + thin imperative top layer
+```
+
+Branch has been rebased onto `main` (picks up `31c7c56 remove NUR overlay`). **Needs force-push to bot fork** — local and bot-fork/feat/nix-dev-image have diverged due to the rebase.
+
+### Local validation done
+
+- `task dev:base` green on minimal list (1.8 GiB tarball produced)
+- `docker load` green
+- Full `task dev:build` **not yet re-validated on the minimal list** — next thing to do when picking this up: run it end-to-end and exercise nvim + claude-code + git + dotbot inside the resulting container
+
+### What's still blocked
+
+- **CI green**: need to push the driver-fix + minimal commits and watch a fresh run to confirm it (a) completes, (b) is meaningfully faster than 33min. With NUR already gone via rebase + smaller closure + fixed driver, expectation is <15min. If still slow, the next knob is the binary cache (`DeterminateSystems/flakehub-cache-action`) for warm-run speedups.
+- **PR #15 merge**: blocked on the green CI run above.
+
+### Zellij-autolock thread
+
+Still parked — see entry above. Nothing new there this session.
