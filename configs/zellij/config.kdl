@@ -195,69 +195,22 @@ keybinds clear-defaults=true {
         bind "Alt a" { GoToPreviousTab; SwitchToMode "Normal"; }
         bind "Alt d" { GoToNextTab; SwitchToMode "Normal"; }
 
-        // movement and resize now managed by smart splits plugin
-        // bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
-        // bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
-        // bind "Alt j" "Alt Down" { MoveFocus "Down"; }
-        // bind "Alt k" "Alt Up" { MoveFocus "Up"; }
-        // bind "Alt =" "Alt +" { Resize "Increase"; }
-        // bind "Alt -" { Resize "Decrease"; }
-        // end original movement, resize bindings
-
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
-        // FROM NVIM SMART SPLITS PLUGIN, SEE HERE: https://github.com/mrjones2014/smart-splits.nvim?tab=readme-ov-file#zellij
-        bind "Ctrl h" {
-            MessagePlugin "vim-zellij-nav" {
-                name "move_focus";
-                payload "left";
-            };
-        }
-        bind "Ctrl j" {
-            MessagePlugin "vim-zellij-nav" {
-                name "move_focus";
-                payload "down";
-            };
-        }
-        bind "Ctrl k" {
-            MessagePlugin "vim-zellij-nav" {
-                name "move_focus";
-                payload "up";
-            };
-        }
-        bind "Ctrl l" {
-            MessagePlugin "vim-zellij-nav" {
-                name "move_focus";
-                payload "right";
-            };
-        }
-        bind "Alt h" {
-            MessagePlugin "vim-zellij-nav" {
-                name "resize";
-                payload "left";
-            };
-        }
-        bind "Alt j" {
-            MessagePlugin "vim-zellij-nav" {
-                name "resize";
-                payload "down";
-            };
-        }
-        bind "Alt k" {
-            MessagePlugin "vim-zellij-nav" {
-                name "resize";
-                payload "up";
-            };
-        }
-        bind "Alt l" {
-            MessagePlugin "vim-zellij-nav" {
-                name "resize";
-                payload "right";
-            };
-        }
-        // END NVIM SMART SPLITS PLUGIN
+
+        // pane focus movement
+        bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+        bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
+        bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+        bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+
+        // pane resize
+        bind "Alt Shift h" { Resize "Increase Left"; }
+        bind "Alt Shift l" { Resize "Increase Right"; }
+        bind "Alt Shift j" { Resize "Increase Down"; }
+        bind "Alt Shift k" { Resize "Increase Up"; }
     }
     shared_except "normal" "locked" {
         bind "Enter" "Esc" { SwitchToMode "Normal"; }
@@ -329,27 +282,12 @@ plugins {
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
-    // wasm based plugins
-    //
-    // vim-zellij-navigator: using a locally-built wasm with two un-merged fixes
-    // rolled together. Remove overrides once both PRs land upstream and we can
-    // go back to the released binary.
-    //
-    //   1. orphan-instance double-move (multi-client attach/detach):
-    //      https://github.com/hiasr/vim-zellij-navigator/pull/35
-    //   2. navigation broken in scrollback-edit pane (zellij 0.44 list_clients
-    //      returns empty while an Alt+Shift+e pane is focused):
-    //      https://github.com/joels-claude-bot/vim-zellij-navigator/tree/fix/scrollback-pane-detection
-    //
-    // Built from: https://github.com/joels-claude-bot/vim-zellij-navigator/tree/joels-fixes
-    vim-zellij-nav location="file:~/.config/zellij/plugins/vim-zellij-navigator.wasm"
 }
 
 // Plugins to load in the background when a new session starts
 // eg. "file:/path/to/my-plugin.wasm"
 // eg. "https://example.com/my-plugin.wasm"
 load_plugins {
-    vim-zellij-nav
     zj-quit
 }
 web_client {
