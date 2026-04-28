@@ -1,0 +1,18 @@
+name: validate Taskfile
+
+on:
+  push:
+    branches: [main]
+    paths: ['Taskfile.yml', '.github/workflows/validate-taskfile.yml']
+  pull_request:
+    paths: ['Taskfile.yml', '.github/workflows/validate-taskfile.yml']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: task --list
