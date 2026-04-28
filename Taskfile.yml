@@ -47,8 +47,10 @@ tasks:
       - sheldon lock --update
 
   yazi:
-    desc: Install yazi plugins
+    desc: Reset yazi plugins/flavors and reinstall (avoids stale state from partial pulls)
     cmds:
+      - rm -rf configs/yazi/plugins configs/yazi/flavors
+      - task: dotfiles
       - ya pkg install
 
   tpm:
