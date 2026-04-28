@@ -136,6 +136,17 @@ If a section's H2 is "Introduction", "Overview", "Background", "Context" — rew
 - No document >4 pages without a navigation / index section
 - If hitting length, split by theme across multiple files
 
+## Dating
+
+Always date the report. Two pieces:
+
+- **Created** at the top of the document — full ISO date (YYYY-MM-DD).
+- **Last updated** as a small subsection right under the header — same format, plus a one-line note on what changed if it's a substantive revision.
+
+Reason: research goes stale fast, and a reader returning weeks later needs to know whether the snapshot is still load-bearing. Don't make them open `git log` to find out.
+
+When updating an existing report, bump **Last updated** to today's date and add a brief change note. If the document was created today, omit the **Last updated** subsection until there's a real revision.
+
 ## Draft template
 
 ```markdown
@@ -143,7 +154,11 @@ If a section's H2 is "Introduction", "Overview", "Background", "Context" — rew
 
 **Audience:** <who>
 **Scope:** <bounds>
-**Date:** <YYYY-MM>
+**Created:** <YYYY-MM-DD>
+
+> **Last updated:** <YYYY-MM-DD> — <one-line summary of what changed>
+>
+> *(omit this block if today is the creation date)*
 
 ## TL;DR
 

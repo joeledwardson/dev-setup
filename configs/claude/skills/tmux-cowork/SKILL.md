@@ -5,6 +5,16 @@ description: Run long-running or interactive commands in a tmux session the user
 
 # tmux-cowork — share a tmux window with the user for long commands
 
+## Disambiguation: which cowork skill?
+
+Both `tmux-cowork` and `zellij-cowork` are available. Pick correctly:
+
+- User said **"tmux"** explicitly → `tmux-cowork` (this skill).
+- User said **"zellij"** explicitly → `zellij-cowork`.
+- User said just **"cowork"** with no multiplexer named:
+  - If you're on a **remote server / unattended mode** (SSH session, `/unattended` skill in use, no local Wayland display) → default to `tmux-cowork` (this skill) and proceed.
+  - Otherwise → **ask the user** which one before proceeding. Don't guess.
+
 The user runs Claude in YOLO mode and wants to watch/interact with anything slow or interactive. Instead of using the Bash tool's sandbox, you push commands into a tmux window the user is attached to. They get scrollback and can Ctrl+C, send input, or just read progress.
 
 ## When to use
@@ -25,22 +35,24 @@ The user runs Claude in YOLO mode and wants to watch/interact with anything slow
 
 **Always** name the session explicitly — never let tmux auto-name it. Pick a session name from the project or task (e.g. `dev-setup`, `ntfy-rollout`).
 
-- Session: `<session_name>` (ask user if unclear, else infer from cwd)
-- Window: `<session_name>-cowork`
+- Session: `<session_name>` (ask user if unclear, else infer from cwd). If the user spawned this Claude via `claude-master` with `--remote-control -n <name>`, reuse `<name>` as the tmux session — your cowork windows live alongside the `claude` window in the same session.
+- Cowork windows: `cowork-<task>` (e.g. `cowork-build`, `cowork-tests`), or split panes inside one
 - Pane titles: descriptive of the current command (`build`, `dev-server`, `migration`, `tests`)
 
-User attaches from zellij with `tmux attach -t <session_name>`.
+User attaches with `tmux attach -t <session_name>`.
 
 ## Bootstrap
 
-Before first use in a session, ensure the tmux session and cowork window exist. Idempotent:
+Idempotent. Create the session if missing, then add a cowork window for the task:
 
 ```
-tmux has-session -t <session_name> 2>/dev/null || tmux new-session -d -s <session_name> -n <session_name>-cowork
-tmux list-windows -t <session_name> -F '#W' | grep -qx '<session_name>-cowork' || tmux new-window -t <session_name> -n <session_name>-cowork
+tmux has-session -t <session_name> 2>/dev/null || tmux new-session -d -s <session_name> -n cowork-main -c <cwd>
+tmux list-windows -t <session_name> -F '#W' | grep -qx 'cowork-<task>' || tmux new-window -t <session_name> -n cowork-<task> -c <cwd>
 ```
 
-Tell the user once which session they should `tmux attach -t <session_name>`.
+Tell the user once: `tmux attach -t <session_name>`.
+
+> Spawning a fresh Claude session is **not** this skill's job — see `claude-master`. This skill is for the *child* Claude to run long/interactive commands in its own tmux panes.
 
 ## Running a command
 
@@ -92,15 +104,16 @@ When the sentinel fires or the pane returns:
   tmux select-pane -t <target> -T '<new-title>'
   ```
 
-- **Parallel independent commands**: split the window.
-  - 2 commands → vertical split (side-by-side):
+- **Parallel independent commands**: either spawn a new `cowork-<task>` window, or split an existing cowork window.
+  - New window (preferred when tasks are unrelated): `tmux new-window -t <session_name> -n cowork-<task>`
+  - 2 commands in one window → vertical split (side-by-side):
     ```
-    tmux split-window -h -t <session_name>:<session_name>-cowork
+    tmux split-window -h -t <session_name>:cowork-<task>
     ```
   - 3+ commands → stacked layout for readability:
     ```
-    tmux split-window -v -t <session_name>:<session_name>-cowork
-    tmux select-layout -t <session_name>:<session_name>-cowork main-horizontal
+    tmux split-window -v -t <session_name>:cowork-<task>
+    tmux select-layout -t <session_name>:cowork-<task> main-horizontal
     ```
   - Name each pane via `select-pane -T` so the user can tell them apart.
 
