@@ -200,11 +200,13 @@ keybinds clear-defaults=true {
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
 
-        // pane focus movement
-        bind "Alt h" "Alt Left" { MoveFocus "Left"; }
-        bind "Alt l" "Alt Right" { MoveFocus "Right"; }
-        bind "Alt j" "Alt Down" { MoveFocus "Down"; }
-        bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+        // pane focus movement (via edge-flash plugin so we get a red BEL flash
+        // on the focused pane when MoveFocus would do nothing — i.e. we're at
+        // the edge of the layout). Mirrors the super-hjkl flash in hyprland.
+        bind "Alt h" "Alt Left"  { MessagePlugin "edge-flash" { payload "left";  launch_new false; }; }
+        bind "Alt l" "Alt Right" { MessagePlugin "edge-flash" { payload "right"; launch_new false; }; }
+        bind "Alt j" "Alt Down"  { MessagePlugin "edge-flash" { payload "down";  launch_new false; }; }
+        bind "Alt k" "Alt Up"    { MessagePlugin "edge-flash" { payload "up";    launch_new false; }; }
 
         // pane resize
         bind "Alt Shift h" { Resize "Increase Left"; }
@@ -282,6 +284,7 @@ plugins {
     }
     zj-quit location="https://github.com/cristiand391/zj-quit/releases/latest/download/zj-quit.wasm"
     zellij-choose-tree location="https://github.com/laperlej/zellij-choose-tree/releases/latest/download/zellij-choose-tree.wasm"
+    edge-flash location="https://github.com/joels-claude-bot/zellij-edge-flash/releases/download/v0.1.0/edge-flash.wasm"
 }
 
 // Plugins to load in the background when a new session starts
@@ -289,6 +292,7 @@ plugins {
 // eg. "https://example.com/my-plugin.wasm"
 load_plugins {
     zj-quit
+    edge-flash
 }
 web_client {
     font "monospace"

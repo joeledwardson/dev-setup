@@ -96,6 +96,46 @@ export WAYLAND_DISPLAY="$(ls /run/user/$(id -u)/ | grep -E '^wayland-[0-9]+$' | 
 export HYPRLAND_INSTANCE_SIGNATURE="$(ls /run/user/$(id -u)/hypr/ | head -1)"
 ```
 
+### Viewing the desktop remotely (wayvnc)
+
+If the user wants to watch the headful automation, they connect a VNC client. `wayvnc` is the Wayland-native VNC server. **It does not autostart** — if the user asks why VNC isn't working, first check it's running.
+
+```sh
+ss -tlnp | grep 5900   # is anything listening?
+```
+
+If not, launch it in a tmux window so the user can see logs:
+
+```sh
+export WAYLAND_DISPLAY=wayland-1
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+wayvnc -L info 0.0.0.0 5900
+```
+
+Bind `0.0.0.0` to reach it over Tailscale; `127.0.0.1` if SSH-tunneling. **Don't expose 5900 to the public internet** — auth is brittle (see below).
+
+#### Auth gotchas
+
+Config lives at `~/.config/wayvnc/config`. Default in this repo is:
+
+```
+enable_auth=true
+username=claude
+password=CHANGEME
+```
+
+If the user reports auth failure, **read this file first**. The two common cases:
+
+- **Want no auth:** set `enable_auth=false` (only line needed). Restart wayvnc.
+- **wayvnc 0.9+ + Remmina = "Unknown authentication" error.** wayvnc unconditionally advertises RSA-AES-256 (RFB security type 1129) which Remmina's libvncclient backend doesn't speak. Fix: use **TigerVNC viewer** (`vncviewer 100.x.y.z::5900` — note the `::` for raw port) or switch Remmina's backend to GTK-VNC.
+- **"Invalid username or password" in logs** = auth IS enabled and creds don't match. Either set creds correctly client-side, or disable auth.
+
+#### Common pitfalls
+
+- `WAYLAND_DISPLAY is not set` from wayvnc = you forgot the env vars (or sent them via `tmux send-keys` and the first chars got eaten — `export` then run as separate commands).
+- 4K HDMI output → VNC client appears massively zoomed. In Remmina: Resolution → "Fit to client window". In TigerVNC: F8 → Options → Screen → Scale to window.
+- wayvnc is single-tenant — kill before restarting (`Ctrl+C` in its tmux pane), don't try to bind a second one to the same port.
+
 ### The toolchain
 
 - **`wtype`** — Wayland virtual-keyboard client. Keys, chords, text. No `uinput`, no root. Sends to whatever window currently has keyboard focus. Example: `wtype -M ctrl -p v -m ctrl` = Ctrl+V. Good default for typing/chords.
@@ -105,6 +145,17 @@ export HYPRLAND_INSTANCE_SIGNATURE="$(ls /run/user/$(id -u)/hypr/ | head -1)"
 - **`hyprctl clients -j`** / **`hyprctl activewindow -j`** — JSON view of the window tree. Locate by class/title *before* acting, rather than guessing coordinates. Gotcha: `activewindow` returns `Invalid` when no window has keyboard focus (common right after a headless `dispatch exec`) — not a bug, just means no seat focus yet.
 - **`hyprshot`** — convenience screenshot tool. `-m window -m active` for active window, `-m region` for a rect, `-m output` for full screen. Fails with `invalid geometry` if `activewindow` is Invalid — fall back to `grim`.
 - **`grim`** — raw wlroots screenshot, no window-state dependency. `grim /tmp/out.png` for full screen, `grim -g "X,Y WxH" /tmp/out.png` for a rect (pull the geometry out of `hyprctl clients -j`). Outputs PNG you can `Read` to verify state.
+
+#### Screenshot context budget — avoid the 2000px many-image limit
+
+Claude Code rejects requests where multiple in-context images exceed a cumulative ~2000px dimension (`An image in the conversation exceeds the dimension limit for many-image requests (2000px)`). E2E loops that take 5+ full-screen `grim` shots will hit this mid-session.
+
+Mitigations, in order:
+
+1. **Default to region grabs, not full screen.** `grim -g "X,Y WxH"` — pull the rect from `hyprctl clients -j`. A 600×300 region is plenty for "did the Find bar open", "did the toast appear", "what's in this dropdown".
+2. **One verification screenshot per step, not three.** If you took a screenshot and confirmed the state, don't take another "just to be sure" — it stays in context forever.
+3. **Throw away once verified.** If an old screenshot no longer carries information you need (e.g. the page has since changed), the image still sits in context. There's no in-session way to drop it — only `/compact` or a fresh session clears it. Plan accordingly: if you know you'll need 10+ screenshots in a single task, warn the user up front that they may need to `/compact` once during the run.
+4. **For Chromium UIs, use CDP `Page.captureScreenshot` with a clip region** rather than full-page grim — same idea, smaller payload, and you can grab DOM state via `Runtime.evaluate` instead of screenshotting at all.
 
 ### Clipboard
 
@@ -143,6 +194,74 @@ If step 3 doesn't show the expected change, don't just retry — something is of
   ```
   ydotool mousemove --absolute -x N -y M && ydotool click 0xC0
   ```
+
+### Driving Chromium browsers via CDP (preferred for web UI work)
+
+For testing a web UI in a Chromium-family browser (Brave, Chrome, Chromium), use CDP (Chrome DevTools Protocol) instead of `wtype`/`ydotool` + screenshots. You skip focus handling, pixel coordinates, and screenshot-diffing — you drive the page's JS runtime and DOM directly. Launch headfully so the user can watch over VNC if they want, or `--headless=new` if not.
+
+#### Launch
+
+```sh
+brave --remote-debugging-port=9999 --user-data-dir=/tmp/brave-debug &
+```
+
+- `--user-data-dir` **must** be a fresh path if a normal Brave/Chrome instance is already running — otherwise the flag is silently ignored on the existing instance and the port never opens.
+- Same flag for `chromium`, `google-chrome`, etc. (all Chromium-derived).
+- Headful needs `WAYLAND_DISPLAY` / `DISPLAY` exported (see Session env above).
+- Sanity check: `curl -s http://localhost:9999/json/version` → JSON with `Browser` + `webSocketDebuggerUrl`. Empty = port didn't open.
+
+#### Discover targets
+
+```sh
+curl -s http://localhost:9999/json/list
+```
+
+Each tab/page has `id`, `url`, `type` (`page` for tabs), and `webSocketDebuggerUrl` — that ws:// URL is what you actually drive.
+
+#### Drive via WebSocket (Node 22+ has it built in)
+
+```js
+const targets = await fetch('http://localhost:9999/json/list').then(r => r.json());
+const page = targets.find(t => t.type === 'page');
+const socket = new WebSocket(page.webSocketDebuggerUrl);
+const pending = new Map();
+let messageId = 1;
+
+socket.addEventListener('message', event => {
+  const msg = JSON.parse(event.data);
+  if (msg.id && pending.has(msg.id)) { pending.get(msg.id)(msg); pending.delete(msg.id); }
+});
+
+const send = (method, params) => new Promise(resolve => {
+  const cid = messageId++;
+  pending.set(cid, resolve);
+  socket.send(JSON.stringify({ id: cid, method, params }));
+});
+
+await new Promise(r => socket.addEventListener('open', r, { once: true }));
+await send('Page.enable');
+await send('Page.navigate', { url: 'https://example.com' });
+const { result } = await send('Runtime.evaluate', { expression: 'document.title' });
+console.log(result.result.value);
+socket.close();
+```
+
+For anything beyond ad-hoc, prefer `puppeteer-core` or `playwright` with `connectOverCDP` against the already-launched Brave — same protocol, much nicer API.
+
+#### Methods you'll actually use
+
+- `Page.enable` — required before page events fire.
+- `Page.navigate` `{ url }` — go to URL.
+- `Page.captureScreenshot` `{ format: 'png' }` — base64 PNG; decode to a file and `Read` to verify visual state.
+- `Runtime.evaluate` `{ expression }` — run arbitrary JS, get JSON back. Covers 90% of scraping/clicking — `document.querySelector('button').click()` is usually right answer over `Input.dispatchMouseEvent`.
+- `Input.dispatchKeyEvent` / `Input.dispatchMouseEvent` — only when you actually need real input events (e.g. testing keyboard handlers).
+
+#### Gotchas
+
+- Multiple WS connections to the same target are fine; disconnect/reconnect doesn't reset page state.
+- Re-running with the same `--user-data-dir` persists cookies/localStorage across runs. Fresh dir for isolation.
+- `navigator.webdriver` is `false` for CDP-launched browsers — but bot-detection sites still fingerprint other tells. Playwright stealth modes if you need to defeat that.
+- Don't connect CDP to the user's logged-in profile (see "When not to" below).
 
 ### When not to
 
