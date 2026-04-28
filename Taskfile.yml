@@ -5,8 +5,9 @@ vars:
   WIN_DIR: win
   WINGET_FILE: "{{.WIN_DIR}}/winget.json"
   SCOOP_FILE: "{{.WIN_DIR}}/scoop.json"
-  BRAVE_FILE: "{{.HOME}}/.config/BraveSoftware/Brave-Browser/Default/Preferences"
-  BRAVE_WORK: "{{.HOME}}/.config/BraveSoftware/Brave-Browser/Work-Profile/Preferences"
+  BRAVE_DIR: "{{.HOME}}/.config/BraveSoftware/Brave-Browser"
+  BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
+  BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
 
 tasks:
   hyprland:
@@ -46,11 +47,13 @@ tasks:
       - sheldon lock --update
 
   yazi:
-    desc: Install yazi plugins
+    desc: Reset yazi plugins/flavors and reinstall (avoids stale state from partial pulls)
     cmds:
+      - rm -rf configs/yazi/plugins configs/yazi/flavors
+      - task: dotfiles
       - ya pkg install
 
-tpm:
+  tpm:
     desc: Setup tmux plugin manager
     cmds:
       - git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
@@ -96,20 +99,26 @@ tpm:
       - cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
 
   brave:apply:
-    desc: Apply custom configs to Brave
+    desc: Apply custom configs to every Brave profile listed in Local State
     preconditions:
-      - test -f "{{.BRAVE_FILE}}"
+      - test -f "{{.BRAVE_LOCAL_STATE}}"
+      - sh -c '! pgrep -x brave >/dev/null' # brave must not be running, else it overwrites Preferences on exit
     cmds:
       - |
-        myfile=$(mktemp)
-        jq -s '.[0] * .[1]' "{{.BRAVE_FILE}}" ./configs/brave/custom.json > "$myfile"
-        mv "$myfile" "{{.BRAVE_FILE}}"
-      - |
-        if [ -f "{{.BRAVE_WORK}}" ]; then
-          workfile=$(mktemp)
-          jq -s '.[0] * .[1]' "{{.BRAVE_WORK}}" ./configs/brave/custom.json > "$workfile"
-          mv "$workfile" "{{.BRAVE_WORK}}"
-        fi
+        # Brave persists profile dir names (e.g. "Default", "Profile 1") under
+        # profile.info_cache in Local State. Iterate those rather than guessing
+        # names like "Work-Profile" — profile dir != display name.
+        jq -r '.profile.info_cache | keys[]' "{{.BRAVE_LOCAL_STATE}}" | while IFS= read -r profile_dir; do
+          prefs="{{.BRAVE_DIR}}/$profile_dir/Preferences"
+          if [ ! -f "$prefs" ]; then
+            echo "SKIP: $profile_dir (no Preferences file)"
+            continue
+          fi
+          tmpfile=$(mktemp)
+          jq -s '.[0] * .[1]' "$prefs" ./configs/brave/custom.json > "$tmpfile"
+          mv "$tmpfile" "$prefs"
+          echo "OK:   $profile_dir"
+        done
 
   brave:gen-commands:
     desc: Regenerate the IDC command-id → name lookup used by the nvim keybrowser
