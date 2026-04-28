@@ -32,3 +32,6 @@ devenv.local.yaml
 
 # env args
 .env
+
+# go-task fingerprint cache — transient build state
+.task
