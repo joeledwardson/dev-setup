@@ -342,6 +342,12 @@ zle -N zle-line-init
 # Add hooks
 autoload -U add-zsh-hook
 
+# emit OSC 2 each prompt so the terminal title reflects current state.
+# Inside tmux this updates pane title (#T → catppuccin fallback when in zsh).
+# Outside tmux this updates the outer terminal title directly.
+function _set_term_title { print -Pn '\e]2;%m:%~\a' }  # hostname:cwd
+add-zsh-hook precmd _set_term_title
+
 
 if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then 
     source "$HOME"/.nix-profile/etc/profile.d/nix.sh; 
