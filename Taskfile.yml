@@ -101,8 +101,10 @@ tasks:
   brave:apply:
     desc: Apply custom configs to every Brave profile listed in Local State
     preconditions:
-      - test -f "{{.BRAVE_LOCAL_STATE}}"
-      - sh -c '! pgrep -x brave >/dev/null' # brave must not be running, else it overwrites Preferences on exit
+      - sh: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
+        msg: "Brave Local State not found at {{.BRAVE_LOCAL_STATE}} — open Brave at least once first"
+      - sh: 'pgrep -x brave >/dev/null && exit 1 || exit 0'
+        msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
       - |
         # Brave persists profile dir names (e.g. "Default", "Profile 1") under
@@ -125,23 +127,48 @@ tasks:
     cmd: ./configs/nvim/scripts/gen-brave-commands.sh
 
   brave:test:
-    desc: E2E test that brave:apply makes Google the default search engine
+    desc: E2E test that brave:apply lands Google search + Ctrl+Shift+F on every profile
     preconditions:
-      - test -f "{{.BRAVE_FILE}}"
-      - sh -c '! pgrep -x brave >/dev/null' # brave must not be running
+      - sh: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
+        msg: "Brave Local State not found at {{.BRAVE_LOCAL_STATE}} — open Brave at least once first"
+      - sh: 'pgrep -x brave >/dev/null && exit 1 || exit 0'
+        msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
       - task: brave:apply
       - |
-        # Verify required template_url_data fields are present and set to Google
-        for path in '.default_search_provider_data.template_url_data' '.brave.default_private_search_provider_data'; do
-          short_name=$(jq -r "$path.short_name // empty" "{{.BRAVE_FILE}}")
-          prepop_id=$(jq -r "$path.prepopulate_id // empty" "{{.BRAVE_FILE}}")
-          if [ "$short_name" != "Google" ] || [ "$prepop_id" != "1" ]; then
-            echo "FAIL: $path expected Google/1, got $short_name/$prepop_id"
-            exit 1
+        # Loop every profile dir, not just Default — the Work profile bug was
+        # that we were silently skipping it, so the test has to cover every
+        # profile to catch that class of regression.
+        fail=0
+        jq -r '.profile.info_cache | keys[]' "{{.BRAVE_LOCAL_STATE}}" | while IFS= read -r profile_dir; do
+          prefs="{{.BRAVE_DIR}}/$profile_dir/Preferences"
+          [ -f "$prefs" ] || continue
+          echo "=== $profile_dir ==="
+
+          # Google as default search
+          for path in '.default_search_provider_data.template_url_data' '.brave.default_private_search_provider_data'; do
+            short_name=$(jq -r "$path.short_name // empty" "$prefs")
+            prepop_id=$(jq -r "$path.prepopulate_id // empty" "$prefs")
+            if [ "$short_name" != "Google" ] || [ "$prepop_id" != "1" ]; then
+              echo "FAIL: $path expected Google/1, got $short_name/$prepop_id"
+              fail=1
+            else
+              echo "OK:   $path → $short_name (prepopulate_id=$prepop_id)"
+            fi
+          done
+
+          # Ctrl+Shift+F bound to Find (IDC 37000) — needed because some sites
+          # override Ctrl+F (e.g. github.com search overlay). Both shortcuts
+          # must be in the array since Brave replaces the whole list.
+          accel=$(jq -c '.brave.accelerators."37000" // []' "$prefs")
+          if echo "$accel" | grep -q "Control+KeyF" && echo "$accel" | grep -q "Control+Shift+KeyF"; then
+            echo "OK:   accelerators.37000 (Find) → $accel"
+          else
+            echo "FAIL: accelerators.37000 missing Control+KeyF / Control+Shift+KeyF, got $accel"
+            fail=1
           fi
-          echo "OK:   $path → $short_name (prepopulate_id=$prepop_id)"
         done
+        exit $fail
 
   dev:build:
     desc: Build dev container
