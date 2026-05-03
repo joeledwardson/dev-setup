@@ -12,6 +12,9 @@ let
   streaming-server =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUkogBNkR3QnTAxF4zKoCjdp1G0mp1rcD6e9X1H+BtD root@streaming-server";
 
+  degen-home =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXl8q4NTmgWA0lJax2zg9HbXWFkOzGoOQx15SGA782w root@degen-home";
+
   trustedHosts = [ desktop-work jollof-home degen-work ];
   allHosts = trustedHosts ++ [ streaming-server ];
 in {
