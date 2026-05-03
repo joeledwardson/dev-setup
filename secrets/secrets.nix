@@ -15,7 +15,7 @@ let
   degen-home =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXl8q4NTmgWA0lJax2zg9HbXWFkOzGoOQx15SGA782w root@degen-home";
 
-  trustedHosts = [ desktop-work jollof-home degen-work ];
+  trustedHosts = [ desktop-work jollof-home degen-work degen-home ];
   allHosts = trustedHosts ++ [ streaming-server ];
 in {
   "llm-gemini-key.age".publicKeys = trustedHosts;
