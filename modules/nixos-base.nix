@@ -2,6 +2,8 @@
 { pkgs, pkgs-unstable, pkgs-claude, ... }:
 
 {
+  # for windows support (USBs etc)
+  boot.supportedFilesystems = [ "ntfs" ];
 
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

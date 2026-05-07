@@ -62,8 +62,6 @@ args@{ pkgs, inputs, config, commonGroups, ... }:
   # =======================================
   # Mount Configuration
   # =======================================
-  # for windows support
-  boot.supportedFilesystems = [ "ntfs" ];
 
   # # mount windows from other partition
   # fileSystems."/mnt/jollof/windows" = {

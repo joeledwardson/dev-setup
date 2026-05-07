@@ -30,9 +30,6 @@
   # Define your hostname.
   networking.hostName = "degen-home";
 
-  # for windows support
-  boot.supportedFilesystems = [ "ntfs" ];
-
   # mount windows from other partition
   fileSystems."/mnt/joelyboy/windows" = {
     device = "/dev/disk/by-label/OS";
