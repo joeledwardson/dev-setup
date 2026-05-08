@@ -1,6 +1,5 @@
 # Extended desktop: additional GUI apps, extra terminals, productivity tools
-{ pkgs, pkgs-unstable, ... }:
-{
+{ pkgs, pkgs-unstable, ... }: {
   environment.systemPackages = with pkgs; [
     ### extra terminal emulators
     alacritty
@@ -51,6 +50,9 @@
     pkgs-unstable.hyprwhspr-rs
     sox
   ];
+
+  # keyboard settings
+  services.udev.packages = [ pkgs.via ];
 
   # VM/spice support
   services.spice-vdagentd.enable = true;

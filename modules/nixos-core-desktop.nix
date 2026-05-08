@@ -41,10 +41,14 @@
   # messages into desktop notifications via notify-send → swaync. Token lives
   # in /run/agenix/ntfy-token (provisioned per-host in configuration.nix).
   systemd.user.services.ntfy-claude-subscribe = {
-    description = "ntfy subscriber → notify-send bridge for jollof-claude topic";
+    description =
+      "ntfy subscriber → notify-send bridge for jollof-claude topic";
     after = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
-    path = [ pkgs.bash pkgs.libnotify ]; # ntfy spawns a shell; needs /bin/sh + notify-send on PATH
+    path = [
+      pkgs.bash
+      pkgs.libnotify
+    ]; # ntfy spawns a shell; needs /bin/sh + notify-send on PATH
     serviceConfig = {
       Type = "simple";
       Restart = "on-failure";
@@ -62,12 +66,6 @@
       '';
     };
   };
-
-  # keyboard settings
-  services.udev.packages = [ pkgs.via ];
-
-  # TODO: upower is it needed? battery status etc
-  services.upower = { enable = true; };
 
   # enable thunar while i decide if its better than dolpin for me
   programs.thunar = {
@@ -101,7 +99,9 @@
   # See: https://wiki.hypr.land/Hypr-Ecosystem/xdg-desktop-portal-hyprland/
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ]; # needed for file picker (XDPH doesn't implement one)
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ]; # needed for file picker (XDPH doesn't implement one)
   };
 
   # wayland variable (should) make chromium/electron apps run better, see here
