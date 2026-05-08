@@ -2,15 +2,15 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-args@{ pkgs, pkgs-unstable, config, commonGroups, ... }:
+{ pkgs, pkgs-unstable, config, commonGroups, inputs, ... }:
 
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
 
-    # add the nixarr module
-    args.nixarr_flake.nixosModules.default
+    # add the nixarr module (consumed directly from flake inputs)
+    inputs.nixarr.nixosModules.default
   ];
 
   # =======================================

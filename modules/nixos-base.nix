@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, pkgs-unstable, pkgs-claude, ... }:
+{ pkgs, pkgs-unstable, ... }:
 
 {
   # for windows support (USBs etc)
@@ -270,7 +270,7 @@
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
-    pkgs-claude.claude-code # pinned to nixpkgs master for latest version
+    pkgs-unstable.claude-code # pinned to nixpkgs master for latest version
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
@@ -321,8 +321,8 @@
   users.defaultUserShell = pkgs.zsh;
 
   environment.variables = {
-    # set default editor to vim
-    EDITOR = "vim";
+    # LETS GOOOOOO - time to embrace the gigachad and use nvim
+    EDITOR = "nvim";
   };
 
   environment.sessionVariables = {

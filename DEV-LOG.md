@@ -2877,3 +2877,124 @@ When NixOS bumps nvim past 0.11 (likely `nixos-26.x`), the pin stops helping. Op
 
 Community discussion: [Lobsters](https://lobste.rs/s/jr4acs/nvim_treesitter_repository_was_archived), [HN](https://news.ycombinator.com/item?id=47644667).
 
+## May 2026
+
+### Middle-ground tools between Grafana Loki and a custom React dash
+
+Context: my dash has a custom event/log browser (AG Grid + tRPC + React) that does correlation tagging, integer IDs from UUIDs, colour-coded cells, freeze-filters etc. Loki is too plain for this; the React dash works but is heavy to maintain. Survey of what sits *between* those two extremes.
+
+#### TLDR per tool
+
+| Tool | One-line | Fit for log/event browser | Effort |
+|---|---|---|---|
+| **Grafana Table panel + transformations** | Built-in `Organize fields` / `Convert field type` / `Value mappings` / cell colour mapping over a Loki or SQL datasource | Good first stop — covers integer-from-UUID + per-value colours without writing code | None |
+| **Grafana custom panel plugin** | Write a React component (AG Grid is fine) packaged as a Grafana panel; inherits datasource + auth + dashboarding | Strong if already centralised on Grafana; weekend POC | Medium |
+| **[Datasette](https://datasette.io)** | Point at SQLite (or Postgres via plugin) → instant browsable web UI + JSON API + SQL playground. Read-only, plugin hooks for custom cell HTML | Wrong shape for *live* events — it's batch/exploration. Fine for "browse a frozen window" | Low |
+| **[Evidence.dev](https://evidence.dev)** | Markdown + SQL blocks → static dashboard site. BI flavour | Wrong shape — "publish a report", not "browse a stream". Skip for this problem | Low |
+| **Metabase** | Point-and-click BI, killer for non-technical exploration | iOS-philosophy: simple but customisability hits a wall. Not its strength | Low |
+| **[Retool](https://retool.com) / Appsmith / ToolJet** | Low-code internal tool builder; drag table component, connect to DB/tRPC, write JS for custom cell renderers (Retool uses AG Grid) | **Sweet spot for this exact problem shape.** Few hours to working tool. Retool = paid + lock-in, Appsmith/ToolJet = FOSS self-host | Low |
+| **[ClickHouse](https://clickhouse.com)** | Column-store database; stupid fast at "scan billions of rows + aggregate", useless for CRUD. Pair with Grafana table panel | Only relevant when Postgres event volume hurts. Not a UI solution | Medium (infra) |
+| **[Quickwit](https://quickwit.io) / [OpenObserve](https://openobserve.ai)** | Newer Loki-alternatives with richer querying | Worth knowing exist if Loki itself becomes the bottleneck | Medium |
+| Streamlit / Gradio / Panel | Python web apps in ~30 lines | Fight you on dense interactive grids — wrong tool here | Low |
+| Kibana | Elasticsearch's UI | ES tax for not much over Loki + Grafana transformations | High |
+
+#### Quick concept refreshers
+
+**Datasette**: take a SQLite file, run `datasette serve events.db`, get a queryable read-only web UI. Plugin hook `render_cell` lets you return custom HTML per cell (so colour-coded integer tags = ~30 lines of Python). Single Python process, zero ceremony. Made by Simon Willison. Bad fit for live streams (you'd replicate Postgres → SQLite first), great for "here's a frozen dataset, explore it".
+
+**Evidence.dev**: write `pages/foo.md` with SQL blocks fenced as ```` ```sql ```` and components like `<DataTable data={events} />` → builds a static HTML site. Sources: Postgres, BigQuery, Snowflake, DuckDB. Page-level filters yes; complex live filtering/correlation no.
+
+**ClickHouse**: column-store = stores all values of one column contiguously instead of all fields of one row. Means `SELECT avg(latency)` reads only the latency column, not the other 50 fields. Same-column values compress like crazy too. Result: count/group over 100s of millions of rows in seconds on one box. Trade-off: weak transactions, painful updates/deletes — append, query, expire only. Used by Uber logging, Cloudflare analytics, Sentry, PostHog. Run via `docker run clickhouse/clickhouse-server`, single binary, no JVM.
+
+**Grafana custom panel**: yes you can use AG Grid + React inside one (`@grafana/create-plugin` scaffold + `npm i ag-grid-react`). Pain isn't React — it's Grafana's plugin build tooling, signing for prod, mapping data frame format → AG Grid rows, panel options editor. Trade *your* infra pain for *Grafana's* plugin ergonomics.
+
+#### Text mind map
+
+```
+                         "log/event browser tools"
+                                    │
+       ┌────────────────┬───────────┴───────────┬─────────────────────┐
+       │                │                       │                     │
+   STAY IN          LOW-CODE              CODE-LIGHT             SCALE-UP
+   GRAFANA          TOOL BUILDER          PUBLISHING             (volume)
+       │                │                       │                     │
+   ┌───┴───┐       ┌────┴────┐            ┌────┴────┐           ┌────┴────┐
+   │       │       │         │            │         │           │         │
+ Table   Custom  Retool   Appsmith     Datasette  Evidence   ClickHouse  Quickwit
+ panel + panel   ($$,     /ToolJet     (SQLite,   (SQL+md →  (column-    OpenObserve
+ trans-  plugin  fast)    (FOSS)       plugins,   static     store,
+ forms   (React+                       read-only) site)      OLAP)
+ (free)  AG Grid)
+   │       │       │                                            │
+   │       │       │                                            └─ pair with
+   │       │       │                                               Grafana/
+   │       │       │                                               Superset/
+   │       │       │                                               Metabase
+   │       │       │
+   │       │       └──── ★ best fit for THIS problem shape
+   │       │              (table + custom cells + buttons + DB resource)
+   │       │
+   │       └──── good if already Grafana-centric
+   │              (weekend POC, AG Grid still works)
+   │
+   └──── try first — zero new infra
+          (value mappings, cell colours, field convert)
+
+
+   NOT A FIT for log/event browsing:
+     Metabase ───── too opinionated for custom cells
+     Streamlit ──── fights you on dense grids
+     Kibana ─────── ES tax not justified
+     Evidence ───── publishes reports, doesn't browse streams
+```
+
+#### Decision heuristic for future-me
+
+1. **Try Grafana transformations first** — zero new infra, often gets further than expected
+2. **Retool / Appsmith** if I want to *stop maintaining a frontend* — best fit for the exact problem shape (table + custom cells + buttons)
+3. **Grafana custom panel plugin** if committed to Grafana and need AG Grid back
+4. **ClickHouse** only when Postgres event queries start timing out — orthogonal concern (storage, not UI)
+5. Skip Datasette/Evidence/Metabase/Streamlit/Kibana for *this* problem shape
+
+### Bulk-wrap words with substitute, and reclaiming `s` for mini.surround
+
+Two related nvim things — wrapping every word in a list with `round(...)`, and dropping flash.nvim so mini.surround can keep its default `s` prefix.
+
+#### 1. Substitute inside a visual selection (very-magic mode)
+
+Goal: turn `SELECT bet_id, amount, payout, amount_usd` → `SELECT bet_id, round(amount), round(payout), round(amount_usd)`.
+
+Visually select the words after `bet_id,` (charwise `v`, then move to end), then:
+
+```vim
+:s/\v%V\w+/round(&)/g
+```
+
+Breaking it down:
+
+- `:s/.../.../g` — substitute, `g` = all matches on the line (not just the first)
+- `\v` — **very magic** mode. Means most regex metachars (`+`, `(`, `|`, `%V`) work *without* backslashes. Without `\v` you'd write `\%V\w\+`.
+- `%V` — "only inside the current visual selection". Needed because `:s` from visual mode auto-fills `'<,'>` which is a **line range**, not a character range — so without `%V` it would also try to wrap `bet_id`.
+- `\w+` — one or more "word" characters (letters, digits, underscore). Why still `\w` under `\v`? Because `\v` only changes which chars need escaping; `\w` is the *name* of the character class itself (same as `\d`, `\s`). Very-magic doesn't replace `\w` with `w` — bare `w` would just match the literal letter "w".
+- `round(&)` — `&` in the replacement = the whole match. So each matched word gets wrapped.
+
+#### 2. Dropping flash.nvim, keeping mini.surround's default `s` mappings
+
+flash.nvim claimed `s`/`S` in normal/visual/operator mode, which collided with mini.surround's `sa`/`sd`/`sr`. Removed flash entirely (`f`/`t`/`/` cover most jumps fine). mini.surround now works with its defaults.
+
+ELI5 mini.surround:
+
+- `sa` = surround **add**, `sd` = **delete**, `sr` = **replace**
+- After `sa` you give it: (a) *what* to wrap — a textobject like `iw` (inner word) or a visual selection — then (b) *what* to wrap with — a single char: `(` `[` `{` `"` `'`, or `f` for a function call (prompts for a name).
+- It does **one wrap per invocation**. No auto-iteration over commas/words.
+
+Examples:
+
+- `saiw)` on `amount` → `(amount)` — add, inner word, with `)`
+- `saiwf` on `amount`, type `round<CR>` → `round(amount)`
+- visual-select `a, b, c` then `safround<CR>` → `round(a, b, c)` — wraps the **whole selection as one unit**
+- `sd"` inside `"hello"` → `hello` — delete surrounding quotes
+- `sr({` on `(x)` → `{x}` — replace `(` with `{`
+
+So: for the SQL line, substitute (option 1) wins because it's bulk. mini.surround shines for one-off wraps where typing `round()` and arrowing back in feels clunky.
+
