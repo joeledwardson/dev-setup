@@ -115,7 +115,7 @@ vim.opt.showmode = false
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
     local text = table.concat(vim.v.event.regcontents, '\n')
-    require('vim.ui.clipboard.osc52').copy('+')(vim.v.event.regcontents)
+    require('vim.ui.clipboard.osc52').copy '+'(vim.v.event.regcontents)
   end,
 })
 --
@@ -1019,6 +1019,8 @@ require('lazy').setup {
           sql = { 'sql_formatter' },
           nix = { 'nixfmt' },
           lua = { 'stylua' },
+          html = { 'html_beautify', stop_after_first = true },
+          css = { 'html_beautify', stop_after_first = true },
           json = { 'prettier', stop_after_first = true },
           javascript = { 'prettier', stop_after_first = true },
           typescript = { 'prettier', stop_after_first = true },

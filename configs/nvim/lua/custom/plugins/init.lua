@@ -199,9 +199,9 @@ vim.keymap.set('n', '[l', function()
   vim.fn.search(url_pattern, 'bW')
 end, { desc = 'Previous URL' })
 
--- Treat zellij scrollback dump files as bash (they normally are)
+-- Treat zellij and tmux scrollback dump files as bash (they normally are)
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
-  pattern = '/tmp/*.dump',
+  pattern = { '/tmp/*.dump', '/tmp/tmux-scrollback*' },
   callback = function()
     vim.bo.filetype = 'bash'
   end,
@@ -376,53 +376,6 @@ return {
     'chentoast/marks.nvim',
     event = 'VeryLazy',
     opts = {},
-  },
-  -- still getting used to this
-  {
-    'folke/flash.nvim',
-    event = 'VeryLazy',
-    keys = {
-      {
-        's',
-        mode = { 'n', 'x', 'o' },
-        function()
-          require('flash').jump()
-        end,
-        desc = 'Flash',
-      },
-      {
-        'S',
-        mode = { 'n', 'x', 'o' },
-        function()
-          require('flash').treesitter {}
-        end,
-        desc = 'Flash Treesitter',
-      },
-      {
-        'r',
-        mode = 'o',
-        function()
-          require('flash').remote()
-        end,
-        desc = 'Remote Flash',
-      },
-      {
-        '<leader>NR',
-        mode = { 'o', 'x' },
-        function()
-          require('flash').treesitter_search()
-        end,
-        desc = 'Treesitter Search',
-      },
-      {
-        '<c-s>',
-        mode = { 'c' },
-        function()
-          require('flash').toggle()
-        end,
-        desc = 'Toggle Flash Search',
-      },
-    },
   },
   -- really useful to see lsp loading for big projects and a percentage
   {
