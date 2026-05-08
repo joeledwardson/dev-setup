@@ -22,6 +22,7 @@
       ~/.config/zsh/.zshrc: ./configs/zshrc
       ~/.config/nvim: ./configs/nvim
       ~/.config/tmux/tmux.conf: ./configs/tmux.conf
+      ~/.config/tmux/scripts: ./configs/tmux-scripts
       ~/.config/git/config: ./configs/gitconfig
       ~/.config/git/ignore: ./configs/gitignore
       ~/.config/copyq/copyq.conf: ./configs/copyq.conf
