@@ -9,16 +9,8 @@
   # Boot Configuration
   # =======================================
   boot.loader = {
-    grub = {
-      enable = true;
-      devices = [ "nodev" ];
-      efiSupport = true;
-      configurationLimit = 10;
-    };
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
-    };
+    grub.enable = false;
+    generic-extlinux-compatible.enable = true;
   };
 
   # =======================================
