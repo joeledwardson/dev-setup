@@ -219,6 +219,9 @@ function encode-uri {
     jq -rn --arg pwd "$1" '$pwd | @uri'
 }
 
+# some weird command prompt thing i never use (remove it)
+bindkey -M vicmd -r ':'
+
 # control left/right because im lazy and dont want to un-learn
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
