@@ -1,5 +1,10 @@
 ### jollof custom overrides
 [[mgr.prepend_keymap]]
+on = [ "O" ]
+run = "plugin open-with-cmd -- block"
+desc = "Open with command (blocking)"
+
+[[mgr.prepend_keymap]]
 on = [ "c", "b" ]
 run = "plugin wl-clipboard"
 desc = "Copy file(s) to clipboard"
