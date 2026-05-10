@@ -2998,3 +2998,55 @@ Examples:
 
 So: for the SQL line, substitute (option 1) wins because it's bulk. mini.surround shines for one-off wraps where typing `round()` and arrowing back in feels clunky.
 
+### Markdown viewer comparison
+
+Looking for a good way to preview `.md` files in a browser. Two categories: **terminal renderers** (render in-terminal) and **browser-based** (serve to localhost).
+
+#### Browser-based
+
+| Name | Type | Pros | Cons |
+|------|------|------|------|
+| [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) | nvim extension | UX clean | only from nvim, building is a pain |
+| [md-viewer-py](https://pypi.org/project/md-viewer-py/) | python package (`uv tool install`) | UX good | scrolling not great, titles use headings not filenames, new package (low maintenance) |
+| [mkdocs](https://www.mkdocs.org/) | docs gen/serve | looks great (especially with Material theme) | needs `mkdocs.yml` + `docs/` dir structure, not single-file friendly |
+| [grip](https://github.com/joeyespo/grip) | python, GitHub-style | `grip file.md` — dead simple, single command | missing styles/CSS, looks unstyled. Uses GitHub API (rate-limited without token) |
+| gh markdown-preview (GH CLI extension) | GitHub CLI extension | renders with GH styling | narrow width, must be logged into GitHub |
+
+#### Terminal-based
+
+| Name | Type | Notes |
+|------|------|-------|
+| [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | nvim plugin | already using — renders inline in neovim buffer. Tables with wide content wrap/misalign. [Open issue #616](https://github.com/MeanderingProgrammer/render-markdown.nvim/issues/616) |
+| [glow](https://github.com/charmbracelet/glow) | standalone terminal renderer | superseded by render-markdown for nvim users |
+| [mdcat](https://github.com/swsnr/mdcat) | standalone terminal renderer | lighter than glow, same category |
+
+
+### LSP issues
+pasting this here while i remember - having some nvim LSP issues getting errors spewed out into messages
+```
+
+E486: Pattern not found: m-a
+E486: Pattern not found: m-d
+"configs/tmux.conf" 250L, 8729B written
+E486: Pattern not found: resize
+1 change; before #12  1 second ago
+1 change; before #22  2 seconds ago
+1 change; before #23  1 second ago
+1 change; before #28  1 second ago
+"configs/tmux.conf" 256L, 8863B written
+"configs/tmux.conf" 252L, 8697B written
+252 changes; before #37  18 seconds ago
+252 changes; after #37  21 seconds ago
+"configs/tmux.conf" 252L, 8908B written
+"configs/tmux.conf" 252L, 8878B written
+E486: Pattern not found: md-viewier
+(outline) No response from provider when requesting symbols!
+(outline) No response from provider when requesting symbols!
+1 change; before #1  1 second ago
+(outline) No response from provider when requesting symbols!
+Already at oldest change
+E490: No fold found
+E486: Pattern not found: open 
+clipboard: error: Nothing is copied
+Error executing vim.schedule lua callback: ...cal/share/nvim/lazy/outline.nvim/lua/outline/sidebar.lua:348: attempt to index field 'view' (a nil value)
+```
