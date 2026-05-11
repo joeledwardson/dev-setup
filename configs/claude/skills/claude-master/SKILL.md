@@ -1,7 +1,6 @@
 ---
 name: claude-master
-description: Spawn and orchestrate child Claude Code sessions in tmux. Only invoked when the user explicitly tells the master Claude to start, list, message, or kill other Claude sessions. Never auto-load.
-disable-model-invocation: true
+description: Spawn and orchestrate child Claude Code sessions in tmux. Use when the user asks to start/spin up/set up a Claude session, or to set up a "tmux cowork session" / "cowork session" for one or more repos or directories (that phrasing means "tmux session with a yolo Claude running in it", not just an empty pane). Also use to list, message, or kill named children.
 ---
 
 # claude-master — orchestrate child Claude sessions
@@ -26,12 +25,13 @@ First time the skill is invoked, rename **both** the Claude display name and the
 
 Only on explicit user request:
 - "start a new claude session in `<dir>`"
-- "spin up a claude for `<task>`"
+- "spin up a claude for `<task>`" / "spin up yolo claude(s) for these repos"
+- "set up (a) tmux cowork session(s) for `<repo>`" / "make a cowork session for `<dir>`" — in this user's vocabulary, "cowork session for `<repo>`" means a tmux session with a child Claude running in it, not an empty pane. If they wanted an empty pane they'd say "tmux session" or name a specific command.
 - "kill the `<name>` claude"
 - "send `<msg>` to the `<name>` session"
 - "list my claude sessions"
 
-Never auto-trigger. If the user asks for general dev work, decline and remind them this session orchestrates only — they should attach to (or ask you to spawn) a child.
+Never auto-trigger for general dev work. If the user asks for code edits, builds, or debugging, decline and remind them this session orchestrates only — they should attach to (or ask you to spawn) a child.
 
 ## Spawning a child Claude
 

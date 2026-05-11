@@ -5,6 +5,16 @@ description: Run long-running or interactive commands in a tmux session the user
 
 # tmux-cowork — share a tmux window with the user for long commands
 
+## Disambiguation: are you spawning a Claude, or running a command?
+
+If the user wants a **fresh Claude session** running inside a tmux session — phrases like "set up (a) tmux cowork session(s) for `<repo>`", "spin up (yolo) claude(s) for these repos", "make a cowork session for `<dir>`" — **stop and invoke `claude-master` instead**. In this user's vocabulary, "cowork session for `<repo>`" means "tmux session with a yolo Claude in it", not an empty pane.
+
+This skill applies when:
+- You are already a (child) Claude session and need to run something long-running or interactive in a tmux pane the user can watch.
+- The user explicitly asks you to run a specific command in a tmux pane (e.g. "run the dev server in a tmux pane").
+
+If in doubt, ask: "do you want me to spawn a Claude in there, or just an empty pane?"
+
 ## Disambiguation: which cowork skill?
 
 Both `tmux-cowork` and `zellij-cowork` are available. Pick correctly:
