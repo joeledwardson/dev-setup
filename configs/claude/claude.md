@@ -14,3 +14,10 @@
 - prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
 - when writing code ALWAYS ask yourself this: a) is this required? b) can a human read this, is it ergonomic? c) is there a clearer way to do this? d) prioritise clear and easy to follow structure (e.g. early return syntax)
 - where possible - do NOT pipe bash commands - then it ignores any pre-set permissions i have given for Find:* Grep:* etc
+
+# Per-project ports (multi-Claude on one host)
+- Multiple Claude sessions run on this machine in parallel and used to clash on the conventional dev-server defaults (3000, 5173, 8000, 8080, 8765, 6006, 9000). Each project gets a deterministic port block instead.
+- Allocation rule: base port = `9000 + CRC32(<project-name>) % 900`. Pin contiguous offsets from there (api = base, frontend = base+1, storybook = base+2, observability = base+3..). Compute once and write the numbers into the repo's `justfile` / `docker-compose.yml` / equivalents — the hash is just how to *pick*; once written, the numbers are authoritative.
+- New project: derive base via `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"` (or the language equivalent), assign offsets, document in the repo's CLAUDE.md or README, and add a preflight step to the dev-server recipes that fails loudly when a port is held by another process (printing pid+cmdline). Don't pick a fallback port — fix the conflict.
+- Never start a server with a hardcoded conventional default. Never let Vite/uvicorn auto-pick — that breaks proxy chains and bookmarks.
+- Long-running dev servers (api, frontend, storybook, observability) run inside named cowork panes — pane name = `<project>-<service>` (e.g. `face-stream-api`, `face-stream-frontend`). Before spawning, list panes and reuse an existing one rather than starting a duplicate that will fail preflight.
