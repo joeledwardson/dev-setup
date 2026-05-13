@@ -503,6 +503,8 @@ require('lazy').setup {
           hidden = true,
         }
       end, { desc = '[S]earch [F]iles (including hidden)' })
+
+      vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>g', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [g]rep, ignore hidden' })
