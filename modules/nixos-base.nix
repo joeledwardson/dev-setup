@@ -129,6 +129,7 @@
     nmap
     httpie # nice terminal alternative to postman
     fastfetch # fancy temrinal output
+    moor # better version of less (i hate stupid less keybindings no escape etc)
 
     ### hardware tools
     lm_sensors # temperature monitoring
@@ -337,6 +338,8 @@
     PATH = [ "$HOME/.npm-global/bin" ];
     # disable some weird setting from .net, otherwise marksman fails complaining about icu?
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
+    # moor pager (less replacement with sane defaults)
+    PAGER = "moor";
   };
 
   # Enable the OpenSSH daemon.
