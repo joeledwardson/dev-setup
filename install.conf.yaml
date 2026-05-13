@@ -60,7 +60,6 @@
       ~/.config/yazi/plugins/open-with-cmd.yazi: ./configs/yazi/custom-plugins/open-with-cmd.yazi
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
-      ~/.config/libreoffice/4/user/registrymodifications.xcu: ./configs/libreoffice/registrymodifications.xcu
 
 # create custom and monitors conf if doesnt exist
 - if:
