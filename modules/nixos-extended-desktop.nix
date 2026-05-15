@@ -51,6 +51,18 @@
     sox
   ];
 
+  # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
+  services.postgresql = {
+    enable = true;
+    ensureDatabases = [ "mydatabase" ];
+    extensions = ps: [ ps.plpgsql_check ];
+    authentication = pkgs.lib.mkOverride 10 ''
+      #type  database  DBuser  origin          auth-method
+      local  all       all                     trust
+      host   all       all     127.0.0.1/32    trust
+      host   all       all     ::1/128         trust
+    '';
+  };
   # keyboard settings
   services.udev.packages = [ pkgs.via ];
 

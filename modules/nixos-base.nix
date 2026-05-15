@@ -21,19 +21,6 @@
 
   services.mullvad-vpn.enable = true;
 
-  # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
-  services.postgresql = {
-    enable = true;
-    ensureDatabases = [ "mydatabase" ];
-    extensions = ps: [ ps.plpgsql_check ];
-    authentication = pkgs.lib.mkOverride 10 ''
-      #type  database  DBuser  origin          auth-method
-      local  all       all                     trust
-      host   all       all     127.0.0.1/32    trust
-      host   all       all     ::1/128         trust
-    '';
-  };
-
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -130,6 +117,7 @@
     httpie # nice terminal alternative to postman
     fastfetch # fancy temrinal output
     moor # better version of less (i hate stupid less keybindings no escape etc)
+    gptfdisk # GPT disk management
 
     ### hardware tools
     lm_sensors # temperature monitoring
@@ -182,6 +170,7 @@
     gdu # replacement for ncdu
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
+    caligula # TUI for disk imaging
 
     ### CLI tools
     tldr

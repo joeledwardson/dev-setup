@@ -3050,3 +3050,112 @@ E486: Pattern not found: open
 clipboard: error: Nothing is copied
 Error executing vim.schedule lua callback: ...cal/share/nvim/lazy/outline.nvim/lua/outline/sidebar.lua:348: attempt to index field 'view' (a nil value)
 ```
+
+### attempting nixos on raspberry pi
+
+
+trying to follow this guys guide...
+so i made 0 notes last time...
+https://mtlynch.io/nixos-pi4/
+
+so going to hydra and latest builds
+actually fuck it just used nixos minimal ISO (64 bit arm) from their downloads page... https://nixos.org/download/#nix-install-linux
+
+back to hydra again (sigh) - think it needs a full image with booting capabilities or soetmhing
+
+so
+
+1. download image (go to hydra click job => latest builds)
+2. just use the link claude gave me...  https://hydra.nixos.org/job/nixos/release-25.05/nixos.sd_image.aarch64-linux/latest
+3. download the zst
+4. run the zst unpack zstd -d ~/Downloads/nixos-image-sd-card-25.05.813814.ac62194c3917-aarch64-linux\ \(2\).img.zst
+5. burn with caligula to SD (`sudo caligula burn <path>.img`)
+6. **important** — disconnect pikvm's virtual USB-MSD before booting. Pi boot order tried USB-MSD first and got stuck on pikvm's emulated drive, never falling back to SD. In pikvm UI: Drive → eject/disconnect.
+
+#### Why the minimal ISO didn't work, but the SD image did
+
+Was burning `nixos-minimal-*-aarch64-linux.iso` first. That ISO is built for **generic aarch64 UEFI servers** — expects something to provide UEFI so it can chainload GRUB. Pi 4's boot ROM has no UEFI; it only knows to find `start4.elf` + `config.txt` on a FAT partition. So the minimal ISO is unbootable on a Pi alone.
+
+The SD image (`nixos-image-sd-card-*.img.zst`) bundles everything Pi-native: `start4.elf`, U-Boot, kernel, rootfs. The Pi firmware boots it directly with no shim.
+
+(Alternative: keep the minimal ISO and put **pftf UEFI firmware** on a separate SD — that gives the Pi UEFI capability and the ISO boots normally. Two-stage; the mtlynch guide uses this route. SD image is simpler.)
+
+#### Boot chain comparison — Pi vs x86 vs Pi+pftf
+
+Every boot has 4 stages: **ROM → FIRMWARE → BOOTLOADER → KERNEL**. What differs is where each stage lives.
+
+```
+── A) x86 PC with UEFI ───────────────────────────────────────────
+
+   ┌─────────────────┐    ┌─────────────────────────┐
+   │ MOTHERBOARD     │    │ DISK                    │
+   │                 │    │                         │
+   │ ROM ─▶ UEFI ────┼───▶│ ESP partition:          │
+   │        firmware │    │   EFI/BOOT/BOOTX64.EFI  │
+   │ "I speak UEFI,  │    │   ▲ this is GRUB        │
+   │  I look for ESP"│    │      │                  │
+   └─────────────────┘    │      ▼                  │
+                          │   /boot/vmlinuz (Linux) │
+                          └─────────────────────────┘
+
+   ROM and FIRMWARE both live in the motherboard chip.
+   BOOTLOADER + KERNEL on disk.
+
+
+── B) Pi 4 native (NixOS SD image) ───────────────────────────────
+
+   ┌─────────────────┐    ┌──────────────────────────────────┐
+   │ SoC chip        │    │ SD CARD                          │
+   │                 │    │                                  │
+   │ ROM ────────────┼───▶│ FAT partition:                   │
+   │ "I'm tiny, I    │    │   start4.elf  ◀── THE FIRMWARE   │
+   │  only know how  │    │   config.txt  ◀── firmware cfg   │
+   │  to load        │    │   u-boot.bin  ◀── THE BOOTLOADER │
+   │  start4.elf"    │    │                                  │
+   └─────────────────┘    │ ext4 partition:                  │
+                          │   /boot/extlinux/extlinux.conf   │
+                          │   /boot/Image (Linux)            │
+                          └──────────────────────────────────┘
+
+   ONLY the ROM is in the chip. FIRMWARE itself lives on the SD.
+   No UEFI involved. No "EFI file". Just Pi's own files.
+
+
+── C) Pi 4 + pftf UEFI shim (the minimal-ISO route) ──────────────
+
+   ┌─────────────────┐    ┌──────────────────────────────────┐
+   │ Same Pi SoC ROM │    │ FAT partition (your pftf SD):    │
+   │                 │    │   start4.elf                     │
+   │ ROM ────────────┼───▶│   config.txt ─▶ "load RPI_EFI.fd │
+   │                 │    │                  as kernel"      │
+   └─────────────────┘    │   RPI_EFI.fd  ◀── A UEFI         │
+                          │                   implementation │
+                          │                   in a file      │
+                          └─────────────────┬────────────────┘
+                                            │ now Pi acts like
+                                            │ a UEFI machine
+                                            ▼
+                          ┌──────────────────────────────────┐
+                          │ USB drive with minimal ISO:      │
+                          │   ESP: EFI/BOOT/BOOTAA64.EFI ──▶ │
+                          │        ▲ this is GRUB            │
+                          │   /boot/Image (Linux)            │
+                          └──────────────────────────────────┘
+
+   pftf is a translator: tricks the Pi into being UEFI-capable.
+```
+
+**Key takeaways:**
+- On x86 UEFI, firmware lives in the **motherboard chip** and natively understands the EFI System Partition convention (`EFI/BOOT/BOOTxxx.EFI`).
+- On Pi 4, the chip-ROM is **deliberately tiny** — only knows to find `start4.elf` on a FAT partition and run it. The real firmware (`start4.elf`) lives on the SD card.
+- `config.txt` = Pi firmware config file (analogous to UEFI variables).
+- `u-boot` = the Pi-side equivalent of GRUB (reads `extlinux.conf`, picks a kernel).
+- pftf packages a full UEFI implementation as a "kernel" that `start4.elf` loads — once running, anything downstream sees a UEFI machine.
+- The same conceptual chain (ROM → firmware → bootloader → kernel) exists everywhere; only filenames and conventions differ.
+
+A "Pi-bootable image" = one containing `start4.elf` + `config.txt` + `u-boot.bin`. NixOS SD image, Ubuntu Pi image, Raspberry Pi OS — all siblings. NixOS minimal ISO, Ubuntu server ISO, Debian aarch64 netinst — all siblings on the **other** side, designed for UEFI machines.
+
+ 
+
+
+

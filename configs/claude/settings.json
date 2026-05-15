@@ -78,7 +78,8 @@
     }
   },
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true,
-  "viMode": true
+  "skipDangerousModePermissionPrompt": false,
+  "viMode": true,
+  "model": "sonnet[1m]"
 }
