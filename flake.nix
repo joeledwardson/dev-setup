@@ -100,13 +100,12 @@
           ];
         };
 
-        # pi box (aarch64)
+        # pi box (aarch64) — headless, no desktop
         "pi-box" = nixpkgs.lib.nixosSystem {
           system = archSystem;
           specialArgs = mkArgs archSystem;
           modules = [
             ./modules/nixos-base.nix
-            ./modules/nixos-core-desktop.nix
             ./hosts/pi-box/configuration.nix
           ];
         };

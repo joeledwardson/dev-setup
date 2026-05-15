@@ -11,20 +11,6 @@
     generic-extlinux-compatible.enable = true;
   };
 
-  # auto-login claude and launch Hyprland on boot (same as streaming-server)
-  services.greetd = {
-    enable = true;
-    settings = {
-      initial_session = {
-        command = "Hyprland";
-        user = "claude";
-      };
-      default_session = {
-        command = "Hyprland";
-        user = "claude";
-      };
-    };
-  };
   # =======================================
   # Networking Configuration
   # =======================================
