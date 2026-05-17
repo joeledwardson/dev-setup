@@ -16,12 +16,12 @@ DEBUG_LOG=/tmp/claude-notify-debug.log
 EVENT_LOG=/tmp/claude-notify-log.log
 
 # ===== watchdog: kill self after HOOK_TIMEOUT no matter what =====
-( sleep "$HOOK_TIMEOUT" && kill -9 $$ 2>/dev/null ) &
+(sleep "$HOOK_TIMEOUT" && kill -9 $$ 2>/dev/null) &
 WATCHDOG_PID=$!
 trap 'kill "$WATCHDOG_PID" 2>/dev/null || true' EXIT
 
 # ===== helpers =====
-log_debug() { echo "[$(date -Iseconds)] $*" >> "$DEBUG_LOG"; }
+log_debug() { echo "[$(date -Iseconds)] $*" >>"$DEBUG_LOG"; }
 
 notify_error() {
     log_debug "ERROR: $*"
@@ -31,7 +31,8 @@ notify_error() {
 # Run a command with a per-call timeout. Logs failures, returns non-zero on failure.
 # Usage: out=$(safe_run 1 hyprctl activewindow -j) || handle
 safe_run() {
-    local secs=$1; shift
+    local secs=$1
+    shift
     local output rc
     output=$(timeout "$secs" "$@" 2>/dev/null)
     rc=$?
@@ -57,10 +58,10 @@ else
     MSG="$FULL_MSG"
 fi
 
-echo "$INPUT" >> "$EVENT_LOG"
+echo "$INPUT" >>"$EVENT_LOG"
 
 # ===== decide whether to fire (suppress when user is on the claude pane) =====
-# On a local Hyprland host: suppress when terminal AND zellij pane both focused.
+# On a local Hyprland host: suppress when terminal AND tmux pane both focused.
 # On remote/Docker/SSH (no hyprctl): always notify.
 should_notify() {
     command -v hyprctl >/dev/null || return 0
@@ -70,12 +71,13 @@ should_notify() {
     [ -z "$active_pid" ] && return 0
     [ "$active_pid" = "${TERMINAL_WINDOW_PID:-}" ] || return 0
 
-    [ -n "${ZELLIJ:-}" ] && [ -n "${ZELLIJ_PANE_ID:-}" ] || return 1
+    [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] || return 1
 
-    local focused_pane
-    focused_pane=$(safe_run 1 zellij action list-panes --state --json |
-        jq -r '.[] | select(.is_plugin == false and .is_focused == true) | .id' 2>/dev/null)
-    [ "$focused_pane" != "$ZELLIJ_PANE_ID" ]
+    local pane_active window_active
+    pane_active=$(safe_run 1 tmux display-message -t "$TMUX_PANE" -p '#{pane_active}')
+    window_active=$(safe_run 1 tmux display-message -t "$TMUX_PANE" -p '#{window_active}')
+    [ "$pane_active" = "1" ] && [ "$window_active" = "1" ] && return 1
+    return 0
 }
 
 should_notify || exit 0
@@ -83,18 +85,21 @@ should_notify || exit 0
 # ===== fire ntfy (curl is backgrounded so it never blocks the hook) =====
 TOKEN="${NTFY_TOKEN:-$(cat /run/agenix/ntfy-token 2>/dev/null)}"
 TOPIC="${NTFY_TOPIC:-jollof-claude}"
-if [ -n "$TOKEN" ] && [ -n "$TOPIC" ]; then
-    if [ "$EVENT" = "Notification" ]; then
-        tags="question"; priority="high"
-    else
-        tags="white_check_mark"; priority="default"
-    fi
-    timeout 3 curl -sS -u ":$TOKEN" \
-        -H "Title: Claude $EVENT / $PROJECT @ $(hostname)" \
-        -H "Tags: $tags" \
-        -H "Priority: $priority" \
-        -d "$MSG" \
-        "https://ntfy.sh/$TOPIC" >/dev/null 2>&1 &
+if [ -z "$TOKEN" ] || [ -z "$TOPIC" ]; then
+    exit 0
 fi
+if [ "$EVENT" = "Notification" ]; then
+    tags="question"
+    priority="high"
+else
+    tags="white_check_mark"
+    priority="default"
+fi
+timeout 3 curl -sS -u ":$TOKEN" \
+    -H "Title: Claude $EVENT / $PROJECT @ $(hostname)" \
+    -H "Tags: $tags" \
+    -H "Priority: $priority" \
+    -d "$MSG" \
+    "https://ntfy.sh/$TOPIC" >/dev/null 2>&1 &
 
 exit 0
