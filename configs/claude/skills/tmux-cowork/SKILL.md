@@ -150,3 +150,18 @@ tmux kill-pane -t <target>
 - If `tmux` isn't installed, fall back to the regular Bash tool with `run_in_background: true` and tell the user.
 - If the user says "I'm not attached" — remind them of `tmux attach -t <session_name>`.
 - If a command hangs forever, tell the user; let them Ctrl+C it in their attached pane rather than killing from outside.
+
+## Companion: `cc-dash` — web dashboard for switching sessions
+
+If the user wants to flip between many tmux sessions without `C-a s` + arrow keys, `cc-dash` is a tiny local HTTP server (port `9653` by default — derived from `crc32("dev-setup")`) that serves a single auto-refreshing HTML page listing all sessions and windows. Clicking a session fires `tmux switch-client -t <name>` in the user's attached terminal.
+
+When to suggest / spawn it:
+- User complains about session switching being slow / clunky
+- User has many sessions running in parallel and wants a single pane of glass
+- User asks for "tmux dashboard" / "session picker" / "web ui for tmux"
+
+Run it in a long-lived cowork pane:
+```
+tmux new-window -t <session> -n cowork-cc-dash cc-dash
+```
+Then open `http://<host>:9653` in the browser. Auto-refresh is 2s; click any session row to switch the attached terminal. No frontend dependencies — single Python file, stdlib only.

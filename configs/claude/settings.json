@@ -30,6 +30,7 @@
       "Bash(head:*)"
     ]
   },
+  "model": "sonnet[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -78,8 +79,7 @@
     }
   },
   "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": false,
-  "viMode": true,
-  "model": "sonnet[1m]"
+  "viMode": true
 }

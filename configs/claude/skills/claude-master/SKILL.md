@@ -65,6 +65,14 @@ tmux list-sessions -F '#{session_name}  #{session_windows} windows  (created #{t
 
 For Claude-specific state (which are alive vs idle vs busy), query the remote-control channel — see RemoteTrigger / remote-control docs in your tools.
 
+### Web dashboard: `cc-dash`
+
+For a click-to-switch view of all children, run `cc-dash` from a master cowork pane:
+```
+tmux new-window -t <master-session> -n cowork-cc-dash cc-dash
+```
+Listens on `http://<host>:9653/` (port from `crc32("dev-setup")`). Auto-refreshes every 2s; clicking a session fires `tmux switch-client -t <name>` for the attached terminal. Suggest it whenever the user is juggling more than a handful of children and wants to flip between them without `C-a s` + arrow-keys. Single Python file, stdlib only — no install/build.
+
 ## Messaging a child
 
 Two channels, in order of preference:

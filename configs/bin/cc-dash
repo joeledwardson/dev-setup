@@ -1,0 +1,131 @@
+#!/usr/bin/env -S uv run --no-project --quiet python
+"""cc-dash — dead-simple local dashboard for switching tmux sessions.
+
+Serves a single HTML page (auto-refreshes every 2s) listing your tmux sessions
+and the windows inside each. Click any row to fire `tmux switch-client -t <name>`
+in your currently-attached terminal.
+
+Stdlib only. No templates, no JS framework, no static assets. One file.
+
+Port: 9653 by default (derived from `crc32("dev-setup") % 900 + 9000`).
+Override via `CC_DASH_PORT`. Run from a tmux-cowork pane:
+  cc-dash
+"""
+
+import html
+import os
+import subprocess
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs
+
+PORT = int(os.environ.get("CC_DASH_PORT", 9653))
+HOST = os.environ.get("CC_DASH_HOST", "0.0.0.0")
+
+
+def tmux(*args):
+    return subprocess.run(["tmux", *args], capture_output=True, text=True).stdout
+
+
+def list_sessions():
+    out = tmux("list-sessions", "-F",
+               "#{session_name}\t#{session_windows}\t#{?session_attached,1,0}\t#{session_activity}")
+    sessions = []
+    for line in out.splitlines():
+        name, windows, attached, activity = line.split("\t")
+        sessions.append({
+            "name": name,
+            "windows": int(windows),
+            "attached": attached == "1",
+            "activity": int(activity),
+        })
+    sessions.sort(key=lambda s: -s["activity"])
+    return sessions
+
+
+def list_windows(session):
+    out = tmux("list-windows", "-t", session, "-F",
+               "#{window_index}\t#{window_name}\t#{?window_active,1,0}")
+    windows = []
+    for line in out.splitlines():
+        idx, name, active = line.split("\t")
+        windows.append({"idx": idx, "name": name, "active": active == "1"})
+    return windows
+
+
+def render():
+    sessions = list_sessions()
+    rows = []
+    for session in sessions:
+        windows = list_windows(session["name"])
+        win_html = " ".join(
+            f'<span class="{"win active" if w["active"] else "win"}">{html.escape(w["idx"])}:{html.escape(w["name"])}</span>'
+            for w in windows
+        )
+        marker = "★" if session["attached"] else "·"
+        rows.append(f"""
+          <tr>
+            <td><form method="post" action="/switch"><input type="hidden" name="target" value="{html.escape(session['name'])}"><button>{marker} {html.escape(session['name'])}</button></form></td>
+            <td>{session['windows']}</td>
+            <td>{win_html}</td>
+          </tr>""")
+    return f"""<!doctype html>
+<meta charset=utf-8>
+<meta http-equiv=refresh content=2>
+<title>cc-dash</title>
+<style>
+  body {{ font-family: 'SpaceMono Nerd Font', ui-monospace, monospace; background: #1a1b26; color: #c0caf5; margin: 1rem; }}
+  table {{ border-collapse: collapse; width: 100%; }}
+  th, td {{ text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #2a2b3c; vertical-align: top; }}
+  th {{ color: #7dcfff; font-weight: normal; text-transform: uppercase; font-size: 0.8em; letter-spacing: 0.1em; }}
+  button {{ font: inherit; color: #c0caf5; background: #2a2b3c; border: 1px solid #3b3d52; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; }}
+  button:hover {{ background: #3b3d52; border-color: #7dcfff; }}
+  .win {{ display: inline-block; padding: 0.1rem 0.4rem; margin-right: 0.3rem; background: #2a2b3c; border-radius: 3px; font-size: 0.85em; }}
+  .win.active {{ background: #7dcfff; color: #1a1b26; }}
+  h1 {{ font-size: 1.1em; color: #7dcfff; margin: 0 0 1rem; }}
+  small {{ color: #565a6e; }}
+</style>
+<h1>tmux sessions &middot; <small>auto-refresh 2s</small></h1>
+<table>
+  <tr><th>session</th><th>#</th><th>windows</th></tr>
+  {''.join(rows)}
+</table>
+"""
+
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):  # quieter
+        return
+
+    def do_GET(self):
+        if self.path != "/":
+            self.send_response(404); self.end_headers(); return
+        body = render().encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_POST(self):
+        if self.path != "/switch":
+            self.send_response(404); self.end_headers(); return
+        length = int(self.headers.get("Content-Length", 0))
+        form = parse_qs(self.rfile.read(length).decode())
+        target = (form.get("target") or [""])[0]
+        if target:
+            tmux("switch-client", "-t", target)
+        self.send_response(303)
+        self.send_header("Location", "/")
+        self.end_headers()
+
+
+def main():
+    print(f"cc-dash listening on http://{HOST}:{PORT}/")
+    HTTPServer((HOST, PORT), Handler).serve_forever()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
