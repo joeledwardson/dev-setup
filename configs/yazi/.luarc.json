@@ -3,7 +3,8 @@
   "runtime.version": "Lua 5.4",
   "workspace.library": [
     "~/.config/yazi/plugins/types.yazi/",
-    "plugins/"
+    "plugins/",
+    "types-extras.lua"
   ],
   "diagnostics.globals": [
     "ya",

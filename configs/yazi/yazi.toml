@@ -39,6 +39,9 @@ max_width = 600
 max_height = 400
 
 [plugin]
+  prepend_fetchers = [
+    { id = "folder-size", url = "*/", run = "folder-size" },
+  ]
   prepend_preloaders = [
     ## from mediainfo plugin
     { mime = "{audio,video,image}/*", run = "mediainfo" },

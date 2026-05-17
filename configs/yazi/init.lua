@@ -2,31 +2,38 @@
 -- no idea where ya.readable_size comes from? on their docs page here https://yazi-rs.github.io/docs/configuration/yazi/
 -- but cant find it in any types pages, probs in their source somewhere
 
-function Linemode:mtime()
-  local time = math.floor(self._file.cha.mtime or 0)
-  if time == 0 then
-    time = ''
-  elseif os.date('%Y', time) == os.date '%Y' then
-    time = os.date('%b %d %H:%M', time)
-  else
-    time = os.date('%b %d  %Y', time)
-  end
+-- Linemode setup:
+--   `size`     = yazi built-in, unchanged. Fast. Dirs show child count.
+--   `dirsize`  = ours. Recursive bytes via the folder-size fetcher's `du -sb`
+--                (custom-plugins/folder-size.yazi). Cache: _G.YAZI_FOLDER_SIZE_CACHE.
+--   `mtime` / `btime` = ours. Show `file:size()` for files and `-` for dirs
+--                — strict size view, no recursive fallback. Use `dirsize` for that.
 
-  local size = self._file:size()
-  return string.format('%s %s', size and ya.readable_size(size) or '-', time)
+local function format_time(time)
+  time = math.floor(time or 0)
+  if time == 0 then return '' end
+  if os.date('%Y', time) == os.date '%Y' then
+    return os.date('%b %d %H:%M', time)
+  end
+  return os.date('%b %d  %Y', time)
 end
-function Linemode:btime()
-  local time = math.floor(self._file.cha.btime or 0)
-  if time == 0 then
-    time = ''
-  elseif os.date('%Y', time) == os.date '%Y' then
-    time = os.date('%b %d %H:%M', time)
-  else
-    time = os.date('%b %d  %Y', time)
-  end
 
-  local size = self._file:size()
-  return string.format('%s %s', size and ya.readable_size(size) or '-', time)
+function Linemode:mtime()
+  local n = self._file:size()
+  return string.format('%s %s', n and ya.readable_size(n) or '-', format_time(self._file.cha.mtime))
+end
+
+function Linemode:btime()
+  local n = self._file:size()
+  return string.format('%s %s', n and ya.readable_size(n) or '-', format_time(self._file.cha.btime))
+end
+
+function Linemode:dirsize()
+  local n = self._file:size()
+  if n then return ya.readable_size(n) end
+  local cache = _G.YAZI_FOLDER_SIZE_CACHE
+  local cached = cache and cache[tostring(self._file.url)]
+  return cached and ya.readable_size(cached) or '…'
 end
 require('projects'):setup {
   save = {
