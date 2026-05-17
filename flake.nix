@@ -106,6 +106,7 @@
           specialArgs = mkArgs archSystem;
           modules = [
             ./modules/nixos-base.nix
+            ./modules/nixos-sandbox.nix
             ./hosts/pi-box/configuration.nix
           ];
         };
@@ -118,6 +119,7 @@
             inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
+            ./modules/nixos-sandbox.nix
             ./hosts/streaming-server/configuration.nix
           ];
         };
