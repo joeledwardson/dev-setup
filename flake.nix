@@ -122,6 +122,14 @@
           ];
         };
 
+        # live installer ISO — build with:
+        #   nix build .#nixosConfigurations.installer.config.system.build.isoImage
+        "installer" = nixpkgs.lib.nixosSystem {
+          system = x86System;
+          specialArgs = mkArgs x86System;
+          modules = [ ./hosts/installer ];
+        };
+
       };
 
     };
