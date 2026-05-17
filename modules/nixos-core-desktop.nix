@@ -43,8 +43,9 @@
   systemd.user.services.ntfy-claude-subscribe = {
     description =
       "ntfy subscriber → notify-send bridge for jollof-claude topic";
-    after = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
+    after = [ "default.target" ];
+    wantedBy = [ "default.target" ];
+    enable = true;
     path = [
       pkgs.bash
       pkgs.libnotify
@@ -56,7 +57,7 @@
       ExecStart = pkgs.writeShellScript "ntfy-claude-subscribe" ''
         if [ ! -r /run/agenix/ntfy-token ]; then
           echo "ntfy-token not readable, exiting" >&2
-          exit 0
+          exit 1
         fi
         TOKEN=$(cat /run/agenix/ntfy-token)
         exec ${pkgs.ntfy-sh}/bin/ntfy subscribe \
