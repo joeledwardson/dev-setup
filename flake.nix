@@ -124,8 +124,19 @@
           ];
         };
 
+        # degen laptop (sandbox/claude bot machine)
+        "degen-bot" = nixpkgs.lib.nixosSystem {
+          system = x86System;
+          specialArgs = mkArgs x86System;
+          modules = [
+            inputs.agenix.nixosModules.default
+            ./modules/nixos-base.nix
+            ./modules/nixos-sandbox.nix
+            ./hosts/degen-bot/configuration.nix
+          ];
+        };
+
         # live installer ISO — build with:
-        #   nix build .#nixosConfigurations.installer.config.system.build.isoImage
         "installer" = nixpkgs.lib.nixosSystem {
           system = x86System;
           specialArgs = mkArgs x86System;
