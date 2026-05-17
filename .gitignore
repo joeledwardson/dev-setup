@@ -35,3 +35,6 @@ devenv.local.yaml
 
 # go-task fingerprint cache — transient build state
 .task
+
+# nix result files
+result

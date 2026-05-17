@@ -4,16 +4,7 @@
 
   boot.supportedFilesystems = [ "ntfs" ];
 
-  networking.networkmanager = {
-    enable = true;
-    dns    = "systemd-resolved";
-  };
-
-  services.resolved = {
-    enable      = true;
-    domains     = [ "~." ];
-    fallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
-  };
+  networking.networkmanager.enable = true;
 
   services.automatic-timezoned.enable = true;
 
@@ -114,6 +105,9 @@
     ### monitoring
     htop
     btop
+
+    gcc      # treesitter compiles parsers at runtime
+    go-task
   ];
 
   system.stateVersion = "25.05";

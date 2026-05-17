@@ -12,16 +12,25 @@ vars:
 tasks:
   hyprland:
     internal: true
-    status:
-      - "! hyprctl activewindow &>/dev/null"
     cmds:
-      - hyprctl reload
+      - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:build:
     desc: Rebuild NixOS configuration
     cmds:
       - sudo nixos-rebuild switch --flake .
       - task: hyprland
+
+  installer:build:
+    desc: Build installer ISO
+    cmds:
+      - rm -rf result
+      - nix build .#nixosConfigurations.installer.config.system.build.isoImage
+
+  installer:burn:
+    desc: Burn installer ISO to USB
+    cmds:
+      - sudo caligula burn result/iso/*.iso
 
   os:clean:
     desc: Clean nix garbage
@@ -103,7 +112,7 @@ tasks:
     preconditions:
       - sh: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
         msg: "Brave Local State not found at {{.BRAVE_LOCAL_STATE}} — open Brave at least once first"
-      - sh: 'pgrep -x brave >/dev/null && exit 1 || exit 0'
+      - sh: "pgrep -x brave >/dev/null && exit 1 || exit 0"
         msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
       - |
@@ -131,7 +140,7 @@ tasks:
     preconditions:
       - sh: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
         msg: "Brave Local State not found at {{.BRAVE_LOCAL_STATE}} — open Brave at least once first"
-      - sh: 'pgrep -x brave >/dev/null && exit 1 || exit 0'
+      - sh: "pgrep -x brave >/dev/null && exit 1 || exit 0"
         msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
       - task: brave:apply
