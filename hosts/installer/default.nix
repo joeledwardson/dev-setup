@@ -26,6 +26,9 @@
   # Include all non-free firmware — live USB needs to work on any hardware.
   hardware.enableAllFirmware = true;
 
+  # disko-install is only needed on the live USB for initial installs.
+  environment.systemPackages = [ pkgs.disko ];
+
   # Drop straight to a shell without typing anything.
   services.getty.autologinUser = lib.mkForce "jollof";
 
