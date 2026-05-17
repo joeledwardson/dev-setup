@@ -6,8 +6,6 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
 
   };
 
@@ -132,7 +130,6 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
-            inputs.disko.nixosModules.disko
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/degen-bot/configuration.nix

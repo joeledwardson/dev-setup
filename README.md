@@ -136,14 +136,13 @@ Thus (from an existing machine with git configured):
 
 Then, on the target device:
 
-7. Use the graphical NixOS USB installer to boot into NixOS (will have to set boot order in BIOS if it has an existing OS) and clone my repo
-```bash
-git clone https://github.com/joeledwardson/dev-setup.git
-```
+7. Use my nixos live usb installer - should clone this repo `dev-setup` and setup jollof/claude users 
 
-8. Resize the windows partition (if there is one), and create a new `ext4` partition for NixOS
+Then, back to main device, SSH (should) be installed so either via firewall or the device itself - grab itts IP and SSH in
+
+8. Resize the windows partition (if there is one), and create a new `ext4` partition for NixOS. Or... define artitions declaratively using `disko`
 > I used GParted because I'm lazy and it handles resizing NTFS windows file system and creates the `ext4` FS for me
-9. Mount the partitions (in my example p7 is my new nix partition, and p1 is EFI)
+9. if not using disko (its command mounts), Mount the partitions (in my example p7 is my new nix partition, and p1 is EFI)
 ```bash
 sudo mount /dev/nvme0n1p7 /mnt
 sudo mkdir -p /mnt/boot
@@ -166,23 +165,6 @@ cp /mnt/etc/nixos/hardware-configuration.nix "$HOME/dev-setup/hosts/$NEW_HOSTNAM
 sudo nixos-install --root /mnt --flake .#$NEW_HOSTNAME
 ```
 13. Remove the USB and reboot, (GRUB should appear) and pick NixOS to boot into
-14. Use the initial `password` to login
-15. Press Ctrl-Q for terminal (I use Ctrl-Enter but bindings are not yet setup), and change password with `passwd`
-16. Clone my repo again (was cloned on the USB stick so will not persist to NixOS)
-```bash
-git clone https://github.com/joeledwardson/dev-setup.git
-cd dev-setup
-```
-17. Copy the hardware configuration across again (wont persist as previously was on the USB)
-```bash
-cp /etc/nixos/hardware-configuration.nix ./hosts/<HOSTNAME-GOES-HERE>/hardware-configuration.nix
-```
-18. Apply the dotfiles and restart hyprland
-```bash
-./util dotfiles
-hyprctl reload
-```
-19. Probably should commit the hardware configuration changes, restart hyprland (`Ctrl-Shift-Q`) and that's it! 😬
 
 
 ## NixOS setup

@@ -1,7 +1,7 @@
 { pkgs, commonGroups, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ./disk.nix ];
+  imports = [ ./hardware-configuration.nix ];
 
   # =======================================
   # Boot Configuration
