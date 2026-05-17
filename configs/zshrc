@@ -365,3 +365,6 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
 fi
 
 fastfetch
+
+# bun completions
+[ -s "/home/claude/.bun/_bun" ] && source "/home/claude/.bun/_bun"

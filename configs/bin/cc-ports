@@ -1,0 +1,173 @@
+#!/usr/bin/env -S uv run --no-project --quiet python
+"""cc-ports — show which tmux pane owns which port.
+
+Joins three sources:
+  - ~/*/CLAUDE.md          → expected ports (from `[ports]` toml block)
+  - `ss -tlnpHu`           → actually-listening ports + owning pid
+  - `tmux list-panes -a`   → pane_pid → human-readable pane name
+
+For each pid we walk up the parent chain until we hit a tmux pane_pid.
+Rows where neither side knows the port are skipped.
+
+Live view: `cc-ports --watch` (built-in loop; do NOT use `watch(1)` — it
+strips OSC 8 hyperlinks).
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+import time
+import tomllib
+from pathlib import Path
+
+HOST = os.environ.get("CC_PORTS_HOST", "streaming-server")
+PORT_FENCE_RE = re.compile(r"## Ports.*?```toml\n(.*?)\n```", re.DOTALL)
+
+GREEN, RED, DIM, RESET = "\033[32m", "\033[31m", "\033[2m", "\033[0m"
+
+
+def expected_ports():
+    """Walk ~/*/CLAUDE.md, return {port: (project, service)}."""
+    out = {}
+    for claude_md in Path.home().glob("*/CLAUDE.md"):
+        project = claude_md.parent.name
+        match = PORT_FENCE_RE.search(claude_md.read_text())
+        if not match:
+            continue
+        try:
+            data = tomllib.loads(match.group(1)).get("ports", {})
+        except tomllib.TOMLDecodeError:
+            continue
+        for service, value in data.items():
+            if isinstance(value, int):
+                out[value] = (project, service)
+            elif isinstance(value, dict) and service == "extras":
+                for name, port in value.items():
+                    if isinstance(port, int):
+                        out[port] = (project, name)
+    return out
+
+
+def listening_ports():
+    """{port: pid} for every LISTEN socket we can see."""
+    result = subprocess.run(["ss", "-tlnpHu"], capture_output=True, text=True)
+    out = {}
+    for line in result.stdout.splitlines():
+        parts = line.split()
+        if len(parts) < 5:
+            continue
+        local = parts[4] if line.startswith(("tcp", "udp")) else parts[3]
+        try:
+            port = int(local.rsplit(":", 1)[-1])
+        except ValueError:
+            continue
+        pid_match = re.search(r"pid=(\d+)", line)
+        if pid_match:
+            out[port] = int(pid_match.group(1))
+    return out
+
+
+def tmux_panes():
+    """{pane_pid: 'session:window.pane title'}."""
+    result = subprocess.run(
+        ["tmux", "list-panes", "-a", "-F",
+         "#{pane_pid}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_title}"],
+        capture_output=True, text=True,
+    )
+    out = {}
+    for line in result.stdout.splitlines():
+        try:
+            pid, location, title = line.split("\t", 2)
+        except ValueError:
+            continue
+        out[int(pid)] = f"{location} ({title})" if title else location
+    return out
+
+
+def owning_pane(pid, panes, depth=10):
+    """Walk parent pids until we hit a pane_pid (or give up)."""
+    while pid and pid > 1 and depth > 0:
+        if pid in panes:
+            return panes[pid]
+        try:
+            ppid_out = subprocess.run(
+                ["ps", "-o", "ppid=", "-p", str(pid)],
+                capture_output=True, text=True,
+            ).stdout.strip()
+            pid = int(ppid_out)
+        except (ValueError, subprocess.CalledProcessError):
+            return None
+        depth -= 1
+    return None
+
+
+def hyperlink(url, text):
+    """OSC 8 escape — terminal makes `text` clickable to `url`."""
+    return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
+
+
+def visible_len(text):
+    """Length ignoring ANSI escapes (for column padding)."""
+    return len(re.sub(r"\033(\[[0-9;]*m|\]8;;[^\033]*\033\\)", "", text))
+
+
+def pad(text, width):
+    return text + " " * max(0, width - visible_len(text))
+
+
+def render():
+    expected = expected_ports()
+    listening = listening_ports()
+    panes = tmux_panes()
+
+    rows = []
+    for port in sorted(set(expected) | set(listening)):
+        project, service = expected.get(port, ("?", "?"))
+        url = f"http://{HOST}:{port}"
+        clickable = hyperlink(url, f"{HOST}:{port}")
+        is_up = port in listening
+        status = f"{GREEN}✓{RESET}" if is_up else f"{RED}✗{RESET}"
+        pane = owning_pane(listening.get(port), panes) if is_up else ""
+        if not pane and is_up:
+            pane = f"{DIM}(pid {listening[port]}, not in tmux){RESET}"
+        rows.append((clickable, url, status, project, service, pane or ""))
+
+    if not rows:
+        print("no expected or listening ports found", file=sys.stderr)
+        return
+
+    headers = ("URL", "LINK", "UP", "PROJECT", "SERVICE", "PANE")
+    widths = [max(visible_len(row[i]) for row in rows) for i in range(5)]
+    widths = [max(w, len(h)) for w, h in zip(widths, headers[:5])]
+
+    print("  ".join(pad(h, w) for h, w in zip(headers[:5], widths)) + "  " + headers[5])
+    print("  ".join("-" * w for w in widths) + "  " + "-" * 20)
+    for row in rows:
+        print("  ".join(pad(cell, w) for cell, w in zip(row[:5], widths)) + "  " + row[5])
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Show tmux pane → port mapping.")
+    parser.add_argument("--watch", "-w", nargs="?", type=float, const=2.0,
+                        help="Refresh every N seconds (default 2).")
+    args = parser.parse_args()
+
+    if args.watch is None:
+        render()
+        return
+
+    try:
+        while True:
+            sys.stdout.write("\033[H\033[2J")  # clear screen, cursor home
+            sys.stdout.write(f"cc-ports — refresh every {args.watch}s, Ctrl-C to exit\n\n")
+            render()
+            sys.stdout.flush()
+            time.sleep(args.watch)
+    except KeyboardInterrupt:
+        pass
+
+
+if __name__ == "__main__":
+    main()

@@ -50,6 +50,8 @@
       ~/.claude/scripts: ./configs/claude/scripts
       ~/.claude/keybindings.json: ./configs/claude/keybindings.json
       ~/.claude/skills: ./configs/claude/skills
+      ~/.local/bin/xdg-open: ./configs/bin/xdg-open
+      ~/.local/bin/cc-ports: ./configs/bin/cc-ports
       ~/.ssh/config: ./configs/ssh/config
       ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
       ~/.config/zellij/plugins: ./configs/zellij/plugins
@@ -57,6 +59,7 @@
       ~/.config/ghostty/config: ./configs/ghostty/config
       ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
       ~/.config/yazi/plugins/open-with-cmd.yazi: ./configs/yazi/custom-plugins/open-with-cmd.yazi
+      ~/.config/yazi/plugins/folder-size.yazi: ./configs/yazi/custom-plugins/folder-size.yazi
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
 

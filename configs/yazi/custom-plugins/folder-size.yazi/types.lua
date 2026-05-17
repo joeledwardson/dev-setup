@@ -1,0 +1,4 @@
+-- Plugin-local type alias. Mirrors `git.yazi/types.lua` from yazi-rs/plugins,
+-- where the maintainers keep this declaration plugin-local until the fetcher
+-- API stabilizes (see `TODO: move this to types.yazi once it's get stable`).
+---@alias UnstableFetcher fun(self: unknown, job: { files: File[] }): boolean, Error?

@@ -129,6 +129,13 @@ desc = "Enter the child directory, or open the file"
 on  = "M"
 run = "plugin mount"
 
+### Switch to our `dirsize` linemode (recursive bytes via folder-size fetcher).
+### Pairs with default `,s` which uses the built-in fast `size` linemode.
+[[mgr.prepend_keymap]]
+on  = [ "m", "d" ]
+run = "linemode dirsize"
+desc = "Linemode: dirsize (recursive bytes)"
+
 ### yamb plugin
 [[mgr.prepend_keymap]]
 on = [ "u", "a" ]

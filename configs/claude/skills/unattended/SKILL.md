@@ -69,6 +69,96 @@ Result: outcome, test evidence, next step.
 
 Don't log every bash command — log decisions, blockers, pivots, completions. The log is for the user to skim on return, not a transcript.
 
+## Documentation artifacts — prefer mkdocs
+
+For anything beyond a simple top-level `README.md` (design docs, investigation writeups, multi-page notes, research outputs, architecture refs), set up **mkdocs** rather than letting markdown files sprawl across the repo. It gives the user a navigable, searchable, browser-readable site they can serve locally or share — much nicer to come back to than a pile of `.md` files.
+
+Default to `mkdocs-material`:
+
+```sh
+uv tool install mkdocs --with mkdocs-material   # or: pipx / nix shell
+mkdocs new .                                    # scaffolds docs/ + mkdocs.yml
+mkdocs serve -a 0.0.0.0:<project-port>          # use the per-project port block
+```
+
+Minimal `mkdocs.yml`:
+
+```yaml
+site_name: <project>
+theme:
+  name: material
+  features: [navigation.tabs, content.code.copy, search.suggest]
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc: { permalink: true }
+extra_css:
+  - stylesheets/extra.css
+```
+
+**Skip `navigation.instant`.** It SPA-routes between pages, which breaks any plugin that needs a fresh page load — most commonly `mkdocs-mermaid2`: diagrams render on first hit but go blank on next-page navigation until you hard-refresh. Not worth the perf gain.
+
+**Add `docs/stylesheets/extra.css` with a header-title pin.** mkdocs-material swaps the header text to the current page's H1 on scroll, which looks janky and makes the site feel un-anchored. Override:
+
+```css
+/* Keep the site title pinned — undo mkdocs-material's swap-to-page-title on scroll. */
+.md-header__title--active .md-header__topic:first-child {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+  z-index: 0 !important;
+}
+.md-header__title--active .md-header__topic + .md-header__topic {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+```
+
+When to reach for it:
+- More than 2–3 docs that link to each other → mkdocs.
+- Anything the user will want to re-read later (research, design, runbook) → mkdocs.
+- Single-page READMEs, one-off DEV-LOG entries, inline code comments → plain markdown is fine.
+
+Run `mkdocs serve` inside a named cowork pane (`<project>-docs`) so the user can hit it in a browser; bind on the project's port block, not `:8000`. The `DEV-LOG.md` itself stays at repo root in plain markdown — it's append-only and not part of the docs site.
+
+## Push notifications (be verbose)
+
+The default `Stop` hook in `~/.claude/settings.json` fires once per assistant turn-end with the last 200 chars of your message — useful baseline but easy to miss when multiple Claude sessions firehose the same ntfy topic in parallel.
+
+In unattended mode, **fire deliberate notifications at semantic milestones** on top of the implicit Stop ping. Use `ntfy.sh` directly via Bash (token at `/run/agenix/ntfy-token`, topic default `jollof-claude`) — gives you full control over title, priority, and message body, unlike the Stop-hook auto-truncation.
+
+```sh
+TOKEN=$(cat /run/agenix/ntfy-token)
+curl -sS -u ":$TOKEN" \
+  -H "Title: <project> @ <hostname>: <one-line summary>" \
+  -H "Tags: <emoji-name>" \
+  -H "Priority: <1-5>" \
+  -d "$(cat <<'EOF'
+<longer body — what happened, what's next, any blockers>
+EOF
+)" \
+  "https://ntfy.sh/jollof-claude" >/dev/null
+```
+
+**When to fire** — be verbose, prefer over-pinging:
+
+| Event | Tags | Priority | Body |
+|---|---|---|---|
+| Starting an unattended batch | `rocket` | 3 | Plan: N tasks. ETA. What I'll need to ask about. |
+| Each task complete | `white_check_mark` | 3 | What done, files changed, test/verification result, next task. |
+| Hit a blocker (still working around it) | `warning` | 3 | What blocked, what I'm trying instead. |
+| Genuinely stopped — need user input | `octagonal_sign` | **4 (high)** | Specific question, proposed default if user doesn't reply. |
+| Made a non-obvious autonomous decision | `thinking` | 3 | Choice + why + how to override. |
+| Finished the whole batch | `checkered_flag` | 3 | Summary of all tasks, anything parked, log entry pointers. |
+
+**Title hygiene**: lead with project name + hostname so multi-session firehose is scannable on a phone. Bad: "Done". Good: "company-flipping @ streaming-server: mkdocs migration complete (3 fixes, mermaid working)".
+
+**Body length**: ntfy doesn't truncate, so include the actual context — bullet list of what changed, file paths, verification evidence, next action. The user is reading this away from the keyboard; give them enough to decide whether to come back.
+
+**Priority discipline**: only `4` for "I'm stuck and need you". Everything else is `3`. Reserve `5` for true emergencies (something destructive about to happen, security incident).
+
 ## Commits in unattended mode
 
 Override the default "never commit unless explicitly asked" rule from the Claude Code system prompt. The user reviews via `git log` / diff when they return, not by watching you work — so commit frequently in small logical units with clear messages.
