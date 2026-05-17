@@ -872,6 +872,7 @@ require('lazy').setup {
         bashls = {
           filetypes = { 'sh', 'zsh' },
         },
+        svelte = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -1032,6 +1033,7 @@ require('lazy').setup {
           typescript = { 'prettier', stop_after_first = true },
           javascriptreact = { 'prettier', stop_after_first = true },
           typescriptreact = { 'prettier', stop_after_first = true },
+          svelte = { 'prettier', stop_after_first = true },
           fish = { 'fish_indent', stop_after_first = true },
           bash = { 'shfmt', 'shellcheck' },
           zsh = { 'shfmt', 'shellcheck' },
@@ -1183,6 +1185,7 @@ require('lazy').setup {
           'typescript',
           'javascript',
           'tsx',
+          'svelte',
         },
         -- Autoinstall languages that are not installed
         auto_install = true,
