@@ -19,6 +19,9 @@ configs/nvim/after/queries
 # sheldon lock embeds absolute $HOME paths, regenerated per machine
 configs/sheldon/plugins.lock
 
+# temp files
+.swn
+
 # Devenv
 .devenv*
 devenv.local.nix
