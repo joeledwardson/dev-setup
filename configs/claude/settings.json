@@ -77,8 +77,8 @@
       }
     }
   },
-  "effortLevel": "max",
   "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "viMode": true
+  "viMode": true,
+  "model": "sonnet[1m]"
 }

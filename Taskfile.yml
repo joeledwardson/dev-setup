@@ -98,15 +98,6 @@ tasks:
       - winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "{{.WINGET_FILE}}"
       - scoop import "{{.SCOOP_FILE}}"
 
-  brave:copy:
-    desc: Copy Brave preferences to scratchpads
-    preconditions:
-      - test -f "{{.BRAVE_FILE}}"
-    cmds:
-      - mkdir -p scratchpads
-      - cp "{{.BRAVE_FILE}}" ./scratchpads/brave-preferences.json
-      - cat scratchpads/brave-preferences.json | prettierd scratchpads/brave-preferences.json > scratchpads/brave-preferences-formatted.json
-
   brave:apply:
     desc: Apply custom configs to every Brave profile listed in Local State
     preconditions:
