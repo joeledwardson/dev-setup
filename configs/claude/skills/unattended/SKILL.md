@@ -55,6 +55,22 @@ Unattended doesn't mean reckless. Stop and wait for the user when:
 
 Budgets are soft. Log when you exceed them, don't pretend you didn't.
 
+## Vibe coding — preventing drift and bloat
+
+AI optimises for "looks complete and professional", not "minimum needed". Left unchecked it adds utility functions nobody calls, abstraction layers before there are 2 use cases, and error handling inside internal functions. These rules keep it honest.
+
+**Spec-first.** Before writing any new file or feature, write three lines: what it does, what goes in, what comes out. Nothing gets coded that isn't in the spec. If AI generates something not covered by the spec, delete it. For multi-module projects, add a `## Does NOT` section to each module's doc page — explicitly banning scope is more powerful than describing scope.
+
+**The 3-caller rule.** No function gets extracted to a helper unless it has 3 call sites. One call site = inline it. This kills the majority of premature abstraction.
+
+**File length as a forcing function.** If a file exceeds ~250 lines, something must be deleted or it gets split. The act of splitting forces the question "is this actually needed?" Don't be rigid — use it as a trigger for review, not a hard limit.
+
+**End-of-session deletion pass.** Before committing: `git diff --stat`. Any file that grew >50 lines needs to justify each addition against the spec. Takes 5 minutes. This is where "just in case" functions get caught.
+
+**No abstraction without 2 implementations.** No base class, interface, protocol, or generic wrapper unless 2 concrete things use it right now. Single implementation = write the thing directly.
+
+**Error handling at boundaries only.** Validate at system boundaries (user input, API responses, file reads). Don't add error handling or validation inside internal functions — trust your own code. AI loves defensive checks everywhere; resist it.
+
 ## The log
 
 The user isn't watching. Write a running log so they can catch up later. Append to `DEV-LOG.md` at the project root (create it if missing). One entry per meaningful event:
