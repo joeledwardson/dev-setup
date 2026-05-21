@@ -1,0 +1,160 @@
+#!/usr/bin/env -S uv run --no-project --quiet python
+"""port-dash — web dashboard for all registered project ports.
+
+Reads ## Ports TOML blocks from ~/*/CLAUDE.md, checks each port,
+and serves a live status page.
+
+Usage:
+  port-dash          # start on default port 9653
+  port-dash --port N # override port
+"""
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+
+import argparse
+import json
+import os
+import re
+import socket
+import tomllib
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+
+PORT_FENCE_RE = re.compile(r"## Ports.*?```toml\n(.*?)\n```", re.DOTALL)
+HOST = os.uname().nodename
+DASH_PORT = 9999
+
+
+def load_ports():
+    """Walk ~/*/CLAUDE.md, return [{project, service, port}]."""
+    entries = []
+    for claude_md in sorted(Path.home().glob("*/CLAUDE.md")):
+        project = claude_md.parent.name
+        match = PORT_FENCE_RE.search(claude_md.read_text())
+        if not match:
+            continue
+        try:
+            data = tomllib.loads(match.group(1)).get("ports", {})
+        except tomllib.TOMLDecodeError:
+            continue
+        for service, value in data.items():
+            if isinstance(value, int):
+                entries.append({"project": project, "service": service, "port": value})
+            elif isinstance(value, dict) and service == "extras":
+                for name, port in value.items():
+                    if isinstance(port, int):
+                        entries.append({"project": project, "service": name, "port": port})
+    return sorted(entries, key=lambda e: (e["project"], e["port"]))
+
+
+def port_up(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(0.3)
+    result = sock.connect_ex(("localhost", port))
+    sock.close()
+    return result == 0
+
+
+HTML = """\
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>port dash</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f0f; color: #ccc; font: 14px/1.6 "JetBrains Mono", "Fira Code", monospace; padding: 2rem; }
+  h1 { color: #eee; font-size: 1.1rem; font-weight: 500; margin-bottom: 1.5rem; letter-spacing: 0.05em; }
+  h1 span { color: #555; font-size: 0.85rem; margin-left: 1rem; }
+  table { border-collapse: collapse; width: 100%; }
+  th { color: #555; font-weight: 400; text-align: left; padding: 0.25rem 1.5rem 0.6rem 0; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid #222; }
+  td { padding: 0.45rem 1.5rem 0.45rem 0; border-bottom: 1px solid #1a1a1a; }
+  tr:hover td { background: #141414; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+  .up { background: #3fb950; }
+  .down { background: #333; }
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .project { color: #eee; }
+  .service { color: #8b949e; }
+  .port { color: #6e7681; }
+  #updated { color: #333; font-size: 0.75rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>port dash <span id="count"></span></h1>
+<table>
+  <thead><tr><th></th><th>project</th><th>service</th><th>port</th><th>link</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<div id="updated"></div>
+<script>
+async function refresh() {
+  const res = await fetch("/api");
+  const ports = await res.json();
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = ports.map(p => {
+    const url = `http://${p.host}:${p.port}`;
+    return `<tr>
+      <td><span class="dot ${p.up ? "up" : "down"}"></span></td>
+      <td class="project">${p.project}</td>
+      <td class="service">${p.service}</td>
+      <td class="port">${p.port}</td>
+      <td>${p.up ? `<a href="${url}" target="_blank">${p.host}:${p.port}</a>` : `<span class="port">${p.host}:${p.port}</span>`}</td>
+    </tr>`;
+  }).join("");
+  const up = ports.filter(p => p.up).length;
+  document.getElementById("count").textContent = `${up}/${ports.length} up`;
+  document.getElementById("updated").textContent = `updated ${new Date().toLocaleTimeString()}`;
+}
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>
+"""
+
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/api":
+            entries = load_ports()
+            payload = [
+                {**e, "up": port_up(e["port"]), "host": HOST}
+                for e in entries
+            ]
+            body = json.dumps(payload).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        else:
+            body = HTML.encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    def log_message(self, fmt, *args):
+        pass  # suppress per-request noise
+
+
+def main():
+    global HOST
+    parser = argparse.ArgumentParser(description="Port status dashboard")
+    parser.add_argument("--port", type=int, default=DASH_PORT)
+    parser.add_argument("--host", default=os.uname().nodename, help="hostname shown in links")
+    args = parser.parse_args()
+    HOST = args.host
+
+    server = HTTPServer(("0.0.0.0", args.port), Handler)
+    print(f"port-dash → http://{HOST}:{args.port}")
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
