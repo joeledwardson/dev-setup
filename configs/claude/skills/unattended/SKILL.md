@@ -89,13 +89,9 @@ Don't log every bash command — log decisions, blockers, pivots, completions. T
 
 For anything beyond a top-level README, set up mkdocs. Full setup guide and writing rules live in the **`documentation` skill** (auto-loaded when doing doc work).
 
-Quick reference:
-```sh
-uv tool install mkdocs --with mkdocs-material
-mkdocs new . && mkdocs serve -a 0.0.0.0:<project-port>
-```
-
-Run `mkdocs serve` inside a named cowork pane (`<project>-docs`), bound on the project port block. The `DEV-LOG.md` stays at repo root — append-only, not part of the docs site.
+Unattended-specific notes:
+- Run `mkdocs serve` inside a named cowork pane (`<project>-docs`), bound on the project port block, so the user can browse it when they attach.
+- `DEV-LOG.md` stays at repo root — append-only, not part of the docs site.
 
 ## Push notifications (be verbose)
 
