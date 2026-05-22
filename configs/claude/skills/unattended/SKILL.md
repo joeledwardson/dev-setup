@@ -55,6 +55,22 @@ Unattended doesn't mean reckless. Stop and wait for the user when:
 
 Budgets are soft. Log when you exceed them, don't pretend you didn't.
 
+## Vibe coding — preventing drift and bloat
+
+AI optimises for "looks complete and professional", not "minimum needed". Left unchecked it adds utility functions nobody calls, abstraction layers before there are 2 use cases, and error handling inside internal functions. These rules keep it honest.
+
+**Spec-first.** Before writing any new file or feature, write three lines: what it does, what goes in, what comes out. Nothing gets coded that isn't in the spec. If AI generates something not covered by the spec, delete it. For multi-module projects, add a `## Does NOT` section to each module's doc page — explicitly banning scope is more powerful than describing scope.
+
+**The 3-caller rule.** No function gets extracted to a helper unless it has 3 call sites. One call site = inline it. This kills the majority of premature abstraction.
+
+**File length as a forcing function.** If a file exceeds ~250 lines, something must be deleted or it gets split. The act of splitting forces the question "is this actually needed?" Don't be rigid — use it as a trigger for review, not a hard limit.
+
+**End-of-session deletion pass.** Before committing: `git diff --stat`. Any file that grew >50 lines needs to justify each addition against the spec. Takes 5 minutes. This is where "just in case" functions get caught.
+
+**No abstraction without 2 implementations.** No base class, interface, protocol, or generic wrapper unless 2 concrete things use it right now. Single implementation = write the thing directly.
+
+**Error handling at boundaries only.** Validate at system boundaries (user input, API responses, file reads). Don't add error handling or validation inside internal functions — trust your own code. AI loves defensive checks everywhere; resist it.
+
 ## The log
 
 The user isn't watching. Write a running log so they can catch up later. Append to `DEV-LOG.md` at the project root (create it if missing). One entry per meaningful event:
@@ -71,57 +87,15 @@ Don't log every bash command — log decisions, blockers, pivots, completions. T
 
 ## Documentation artifacts — prefer mkdocs
 
-For anything beyond a simple top-level `README.md` (design docs, investigation writeups, multi-page notes, research outputs, architecture refs), set up **mkdocs** rather than letting markdown files sprawl across the repo. It gives the user a navigable, searchable, browser-readable site they can serve locally or share — much nicer to come back to than a pile of `.md` files.
+For anything beyond a top-level README, set up mkdocs. Full setup guide and writing rules live in the **`documentation` skill** (auto-loaded when doing doc work).
 
-Default to `mkdocs-material`:
-
+Quick reference:
 ```sh
-uv tool install mkdocs --with mkdocs-material   # or: pipx / nix shell
-mkdocs new .                                    # scaffolds docs/ + mkdocs.yml
-mkdocs serve -a 0.0.0.0:<project-port>          # use the per-project port block
+uv tool install mkdocs --with mkdocs-material
+mkdocs new . && mkdocs serve -a 0.0.0.0:<project-port>
 ```
 
-Minimal `mkdocs.yml`:
-
-```yaml
-site_name: <project>
-theme:
-  name: material
-  features: [navigation.tabs, content.code.copy, search.suggest]
-markdown_extensions:
-  - admonition
-  - pymdownx.superfences
-  - pymdownx.details
-  - toc: { permalink: true }
-extra_css:
-  - stylesheets/extra.css
-```
-
-**Skip `navigation.instant`.** It SPA-routes between pages, which breaks any plugin that needs a fresh page load — most commonly `mkdocs-mermaid2`: diagrams render on first hit but go blank on next-page navigation until you hard-refresh. Not worth the perf gain.
-
-**Add `docs/stylesheets/extra.css` with a header-title pin.** mkdocs-material swaps the header text to the current page's H1 on scroll, which looks janky and makes the site feel un-anchored. Override:
-
-```css
-/* Keep the site title pinned — undo mkdocs-material's swap-to-page-title on scroll. */
-.md-header__title--active .md-header__topic:first-child {
-  opacity: 1 !important;
-  transform: none !important;
-  pointer-events: auto !important;
-  z-index: 0 !important;
-}
-.md-header__title--active .md-header__topic + .md-header__topic {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  z-index: -1 !important;
-}
-```
-
-When to reach for it:
-- More than 2–3 docs that link to each other → mkdocs.
-- Anything the user will want to re-read later (research, design, runbook) → mkdocs.
-- Single-page READMEs, one-off DEV-LOG entries, inline code comments → plain markdown is fine.
-
-Run `mkdocs serve` inside a named cowork pane (`<project>-docs`) so the user can hit it in a browser; bind on the project's port block, not `:8000`. The `DEV-LOG.md` itself stays at repo root in plain markdown — it's append-only and not part of the docs site.
+Run `mkdocs serve` inside a named cowork pane (`<project>-docs`), bound on the project port block. The `DEV-LOG.md` stays at repo root — append-only, not part of the docs site.
 
 ## Push notifications (be verbose)
 

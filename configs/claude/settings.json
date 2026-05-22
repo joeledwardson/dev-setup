@@ -30,6 +30,7 @@
       "Bash(head:*)"
     ]
   },
+  "model": "sonnet[1m]",
   "hooks": {
     "PreToolUse": [
       {
