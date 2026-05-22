@@ -1,9 +1,11 @@
 #!/bin/bash
 # Move focus in Hyprland and flash border if focus fails
 #
-# Usage: move-focus.sh <direction> <original_border_color>
+# Usage: move-focus.sh <direction>
 #   $1 - Focus direction (l/r/u/d)
-#   $2 - Original border color to restore after flash (e.g., "rgba(33ccffee)")
+
+# check if (currently) in fullscreen
+fullscreen=$(hyprctl activewindow -j | jq -r '.fullscreen')
 
 # get address of active window
 current_address=$(hyprctl activewindow -j | jq -r ".address")
@@ -33,12 +35,10 @@ if [ "$current_address" != "$new_address" ]; then
     exit 0
 fi
 
-# temporary change colour to red if focus didn't change, then revert back (to second argv)
-hyprctl keyword general:col.active_border "rgba(ff0000ff)"
-hyprctl keyword group:col.border_active "rgba(ff0000ff)"
-hyprctl keyword group:groupbar:col.active "rgba(ff0000ff)"
-sleep 0.4
-hyprctl keyword general:col.active_border "$2"
-hyprctl keyword group:col.border_active "$2"
-hyprctl keyword group:groupbar:col.active "$2"
+# if we are in fullscreen and focus didnt change monitor then log a warning (cant see flash red)
+if [ "$fullscreen" -ne "0" ]; then
+    notify-send "PLEB" "cannot change window in fullscreen"
+else
+    "$(dirname "$0")/flash-red.sh"
+fi
 exit 1

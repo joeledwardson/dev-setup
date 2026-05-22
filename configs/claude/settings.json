@@ -79,6 +79,5 @@
   },
   "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "viMode": true,
   "model": "sonnet[1m]"
 }
