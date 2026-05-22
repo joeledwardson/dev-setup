@@ -84,18 +84,18 @@ tmux kill-session -t <session-name>
 
 ## port-dash (always-on port dashboard)
 
-After spawning or on startup, ensure `port-dash` is running in a cowork window in the `claude-master` session. It lives at `http://<hostname>:9999` and auto-discovers all project ports from `~/*/CLAUDE.md`.
+After spawning or on startup, ensure `port-dash` is running. It lives at `http://<hostname>:9999`.
 
-Check if it's already up before starting:
+Check if already up:
 ```
 ss -tlnp | grep 9999
 ```
 If not listening, start it:
 ```
 tmux new-window -t claude-master -n cowork-port-dash -c ~
-tmux send-keys -t claude-master:cowork-port-dash 'port-dash' Enter
+tmux send-keys -t claude-master:cowork-port-dash '~/.local/bin/port-dash' Enter
 ```
-Verify it started by checking port 9999 is listening after a few seconds.
+Verify port 9999 is listening after a few seconds. Dashboard URL: `http://<hostname>:9999`
 
 ## Boundaries
 

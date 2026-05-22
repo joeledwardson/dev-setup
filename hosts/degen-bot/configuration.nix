@@ -1,4 +1,4 @@
-{ pkgs, commonGroups, ... }:
+{ pkgs, config, commonGroups, ... }:
 
 {
   imports = [ ./hardware-configuration.nix ];
@@ -43,6 +43,18 @@
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
+
+  # NVIDIA driver + CUDA
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    powerManagement.enable = true;
+    powerManagement.finegrained = false;
+  };
 
   # kitty terminal support for SSH
   environment.systemPackages = [ pkgs.kitty.terminfo ];
