@@ -23,7 +23,31 @@ The smell test: read the page out loud. If you're describing positions ("the API
 
 **Spec-first for new pages.** Before writing a new doc page, write two lines: what question it answers, who reads it. If you can't answer those, don't write the page.
 
+**Every module/package page opens with "What + Why".** The two questions a new reader always has:
+- **What is this?** — one sentence describing what the code does.
+- **Why does it exist?** — one sentence on the problem it solves, or why it's separate from adjacent things. Without the "why", a reader can't tell if this is the right module to use, if it's legacy, or if something else does the same job.
+
+Format:
+```markdown
+# `package/name`
+
+**What**: Scores AI-generated video 0–10 for humanness using Gemini.
+**Why**: Separate from the pipeline so it can be run against any video without starting the full server.
+```
+
 **"Does NOT" section per module page.** Explicitly banning scope is more powerful than describing scope. Every module/component reference page gets a `!!! warning "Does NOT"` admonition saying what it intentionally doesn't cover.
+
+**Document entry points.** Any module with a callable interface (CLI command, exported function, HTTP endpoint) must show the exact invocation — copy-pasteable, no placeholders. If there are multiple ways to call it, use tabs.
+
+**Reference tests in docs.** If a module has tests, the page shows how to run them:
+```markdown
+## Tests
+```bash
+go test ./grading/go/internal/gen/...
+go test -run Integration ./grading/go/internal/gen/... # requires API keys
+` ``
+```
+This makes tests discoverable without reading source. Never let tests be invisible.
 
 **Update docs in the same commit as the code.** The trigger table:
 
@@ -36,6 +60,8 @@ The smell test: read the page out loud. If you're describing positions ("the API
 | New pipeline stage | Update architecture data-flow sequence diagram |
 | New failure mode found | Add runbook entry |
 | Weight or criteria change | Update grading specification |
+| New Generator implementation | Update video-generation spec provider table |
+| New test added | Ensure module doc page references it |
 
 ---
 
