@@ -163,6 +163,7 @@
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
     caligula # TUI for disk imaging
+    tig # helpful git tool? #TODO: is this needed...
 
     ### CLI tools
     tldr

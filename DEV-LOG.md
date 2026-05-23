@@ -3157,5 +3157,53 @@ A "Pi-bootable image" = one containing `start4.elf` + `config.txt` + `u-boot.bin
 
  
 
+## May 2026
+
+### Git TUI: the ongoing search for something that isn't annoying
+
+Been exploring git TUI tools and finally have a clear picture of the landscape. The short version: nothing is perfect, but tig is the right direction.
+
+**The problem space**
+
+The workflow I actually want:
+- Browse commit history with vim-ish navigation
+- Copy a commit hash without a song and dance
+- See diffs in context
+- Not have a tool that makes decisions for me (staging UI, opinionated workflows)
+- Something transparent — feels like a thin layer over git, not a replacement
+
+**The options, honestly**
+
+| Tool | Mental model | Magic level | Bindings | Hash copy | Limitation |
+|---|---|---|---|---|---|
+| raw `git` | perfect | none | n/a | easy | constant ref-looking-up, slow |
+| `lazygit` | staging/workflow UI | high | ok | `ctrl+y` | hits a wall — restrictive once you want to do something it didn't plan for |
+| `tig` | navigable git viewer | low | hostile out of box | rebind needed | no visual mode, bindings need work |
+| `gitui` | same as lazygit | high | better defaults | `y` | just a faster lazygit, not a different thing |
+| nvim (`diffview`, `Fugitive`) | editor-integrated | medium | native vim | yank from buffer | better for diff review and conflict resolution than history browsing |
+
+**Why tig**
+
+Tig's mental model is the right one: it's not trying to replace git, it's just making git's output navigable. You can feel the git commands underneath it. `%(commit)`, `%(file)`, `%(branch)` variables in bindings mean you can wire up any shell command with repo context — open commit in GitHub, copy hash, whatever.
+
+The bindings out of the box are genuinely bad for a vim person. But they're fully rebindable via `~/.config/tig/config` and 10 minutes of config makes it feel right.
+
+**Current tig setup** — now tracked in dotfiles at `configs/tig/config`. Sourced the vim.tigrc contrib file which gives sane `g`/`G`, `<C-f>`/`<C-b>`, `v*` view commands, `c*` commit shortcuts, `@*` diff context navigation.
+
+Still missing: no visual/selection mode (not coming, not a vim editor). Hash copy needs `wl-copy %(commit)` wired up.
+
+**The actual answer for the workflow**
+
+- **History browsing + hash grabbing**: tig
+- **Diff review / conflict resolution**: nvim (`diffview`, `DiffviewFileHistory`)
+- **Quick staged/unstaged overview**: `git status --short` or lazygit if I can't be bothered
+
+Not going to raw-dog git day-to-day. Life is short.
+
+**Future research**
+
+- Wire up `y` in tig to `wl-copy %(commit)` for hash copying
+- Explore tig's `%(file)` bindings for opening diffs in nvim directly
+- Possibly worth a `bind main C !git commit` so tig doubles as a light commit UI without needing to drop to lazygit
 
 

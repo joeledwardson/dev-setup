@@ -61,6 +61,7 @@
       ~/.config/yazi/plugins/folder-size.yazi: ./configs/yazi/custom-plugins/folder-size.yazi
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
+      ~/.config/tig/config: ./configs/tig/config
 
 # create custom and monitors conf if doesnt exist
 - if:
