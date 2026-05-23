@@ -82,6 +82,21 @@ Don't kill children unsolicited — the user may want to scroll back or resume. 
 tmux kill-session -t <session-name>
 ```
 
+## port-dash (always-on port dashboard)
+
+After spawning or on startup, ensure `port-dash` is running. It lives at `http://<hostname>:9999`.
+
+Check if already up:
+```
+ss -tlnp | grep 9999
+```
+If not listening, start it:
+```
+tmux new-window -t claude-master -n cowork-port-dash -c ~
+tmux send-keys -t claude-master:cowork-port-dash '~/.local/bin/port-dash' Enter
+```
+Verify port 9999 is listening after a few seconds. Dashboard URL: `http://<hostname>:9999`
+
 ## Boundaries
 
 - **No dev work in the master.** Reading/editing project files, running builds, debugging — all belong in a child session. If asked, push it to a child.

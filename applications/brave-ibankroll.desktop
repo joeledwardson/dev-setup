@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Brave (WSD work)
+Name=Brave (IB work)
 Comment=Launch Brave with work profile
 Icon=brave-browser
-Exec=brave --new-window --profile-directory=Work-Profile
+Exec=brave --new-window --profile-directory=Ibankroll-Profile
 Categories=Network;WebBrowser;
 Terminal=false
 StartupNotify=true

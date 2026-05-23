@@ -50,7 +50,7 @@
       ~/.claude/scripts: ./configs/claude/scripts
       ~/.claude/keybindings.json: ./configs/claude/keybindings.json
       ~/.claude/skills: ./configs/claude/skills
-      ~/.local/bin/cc-ports: ./configs/bin/cc-ports
+      ~/.local/bin/port-dash: ./configs/bin/port-dash
       ~/.ssh/config: ./configs/ssh/config
       ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
       ~/.config/zellij/plugins: ./configs/zellij/plugins

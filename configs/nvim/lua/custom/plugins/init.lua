@@ -12,6 +12,17 @@ vim.opt.number = true
 vim.o.termsync = false
 vim.opt.autoread = true
 
+-- custom command to run python (setting the python directory) and run current file
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  callback = function()
+    vim.keymap.set('n', '<F5>', function()
+      local file_path = vim.fn.expand '%'
+      vim.cmd('split | terminal PYTHONPATH=. python ' .. file_path)
+    end)
+  end,
+})
+
 -- notify when file changes
 vim.api.nvim_create_autocmd('FileChangedShellPost', {
   pattern = '*',
@@ -82,10 +93,7 @@ vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'toggle signature' })
 
--- vim.keymap.set('n', '<Esc>', function()
---   vim.cmd 'nohlsearch' -- Clear search highlighting
---   require('notify').dismiss { pending = true, silent = true }
--- end, { desc = 'dismiss notify popup and clear hlsearch' })
+-- handy keybinding to open diagnostic
 vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
@@ -101,10 +109,20 @@ vim.keymap.set({ 'v' }, 'Y', "y']", { desc = 'Yank and move to end ' })
 vim.keymap.set({ 'n', 'v' }, 'D', '"_d', { desc = 'delete to null buffer' })
 vim.api.nvim_create_user_command('PrintServerCapabilities', function()
   local currentbuf = vim.api.nvim_get_current_buf()
-  local capabilities = vim.lsp.get_clients({ bufnr = currentbuf })[1].server_capabilities
+  local clients = vim.lsp.get_clients { bufnr = currentbuf }
+  ---@type string[]
+  local lines = {}
+  for i, client in ipairs(clients) do
+    table.insert(lines, 'client ' .. i .. ': ' .. client.name)
+    local server_caps = client.server_capabilities
+    print(server_caps)
+    local formatted = vim.inspect(server_caps)
+    for _, line in ipairs(vim.split(formatted, '\n')) do
+      table.insert(lines, line)
+    end
+    table.insert(lines, '------------------------------------')
+  end
   local newbuf = vim.api.nvim_create_buf(false, true)
-  local formatted = vim.inspect(capabilities)
-  local lines = vim.split(formatted, '\n')
   vim.api.nvim_buf_set_text(newbuf, 0, 0, 0, 0, lines)
   vim.api.nvim_win_set_buf(0, newbuf)
   vim.bo.filetype = 'lua'
@@ -115,39 +133,6 @@ vim.api.nvim_create_user_command('PrintFoldLevel', function()
   local level = vim.fn.foldlevel(line)
   vim.api.nvim_echo({ { 'Fold level on line ' .. line .. ' is ' .. level } }, true, {})
 end, {})
-
--- --- close all child folds under cursor (inverse of zC which closes upward)
--- vim.keymap.set('n', 'zx', function()
---   local line = vim.fn.line '.'
---   local level = vim.fn.foldlevel(line)
---   if level == 0 then
---     vim.notify('not on a fold', vim.log.levels.WARN)
---     return
---   end
---
---   -- find range of current fold at this level
---   local last = vim.fn.line '$'
---   local fold_end = line
---   for i = line + 1, last do
---     if vim.fn.foldlevel(i) < level then
---       break
---     end
---     fold_end = i
---   end
---   local fold_start = line
---   for i = line - 1, 1, -1 do
---     if vim.fn.foldlevel(i) < level then
---       break
---     end
---     fold_start = i
---   end
---
---   -- close all folds in range recursively, then reopen just this level
---   local pos = vim.fn.getcurpos()
---   pcall(vim.cmd, fold_start .. ',' .. fold_end .. 'foldclose!')
---   vim.fn.setpos('.', pos)
---   pcall(vim.cmd, 'normal! zo')
--- end, { desc = 'close all child folds under cursor' })
 
 --- remap custom fold
 vim.keymap.set('n', 'zX', function()
@@ -385,12 +370,24 @@ return {
       local harpoon = require 'harpoon'
       harpoon:setup()
 
-      vim.keymap.set('n', '<leader>a', function() harpoon:list():add() end, { desc = 'harpoon add' })
-      vim.keymap.set('n', '<leader>h', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = 'harpoon menu' })
-      vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end, { desc = 'harpoon 1' })
-      vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end, { desc = 'harpoon 2' })
-      vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end, { desc = 'harpoon 3' })
-      vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end, { desc = 'harpoon 4' })
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end, { desc = 'harpoon add' })
+      vim.keymap.set('n', '<leader>h', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end, { desc = 'harpoon menu' })
+      vim.keymap.set('n', '<leader>1', function()
+        harpoon:list():select(1)
+      end, { desc = 'harpoon 1' })
+      vim.keymap.set('n', '<leader>2', function()
+        harpoon:list():select(2)
+      end, { desc = 'harpoon 2' })
+      vim.keymap.set('n', '<leader>3', function()
+        harpoon:list():select(3)
+      end, { desc = 'harpoon 3' })
+      vim.keymap.set('n', '<leader>4', function()
+        harpoon:list():select(4)
+      end, { desc = 'harpoon 4' })
     end,
   },
   -- nicer quickfix list with preview (use with: gr → Telescope → Tab to select → C-q to send to quickfix)
@@ -463,5 +460,16 @@ return {
   -- helpful for tailscale hujson LSP files
   {
     'fionn/nvim-hujson',
+  },
+  -- lets give this a try
+  {
+    'kevalin/mermaid.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('mermaid').setup()
+
+      -- Install the tree-sitter parser manually if TSInstall fails
+      -- :TSInstall mermaid
+    end,
   },
 }

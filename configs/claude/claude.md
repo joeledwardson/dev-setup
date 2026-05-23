@@ -17,30 +17,19 @@
 
 # Per-project ports (multi-Claude on one host)
 - Multiple Claude sessions run on this machine in parallel and used to clash on the conventional dev-server defaults (3000, 5173, 8000, 8080, 8765, 6006, 9000). Each project gets a deterministic port block instead.
+- **Reserved port: `9999` is reserved for `port-dash` (the global port dashboard). Never allocate it to a project.**
 - Allocation rule: base port = `9000 + CRC32(<project-name>) % 900`. Pin contiguous offsets from there (api = base, frontend = base+1, storybook = base+2, observability = base+3..). Compute once and write the numbers into the repo's `justfile` / `docker-compose.yml` / equivalents — the hash is just how to *pick*; once written, the numbers are authoritative.
-- New project: derive base via `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"` (or the language equivalent), assign offsets, document in the repo's CLAUDE.md (per the schema below), and add a preflight step to the dev-server recipes that fails loudly when a port is held by another process (printing pid+cmdline). Don't pick a fallback port — fix the conflict.
+- New project: derive base via `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"` (or the language equivalent), assign offsets, write numbers into the repo's `justfile` / `docker-compose.yml` / equivalents, and add a preflight step that fails loudly when a port is held by another process (printing pid+cmdline). Don't pick a fallback port — fix the conflict.
 - Never start a server with a hardcoded conventional default. Never let Vite/uvicorn auto-pick — that breaks proxy chains and bookmarks.
 - Long-running dev servers (api, frontend, storybook, observability) run inside named cowork panes — pane name = `<project>-<service>` (e.g. `face-stream-api`, `face-stream-frontend`). Before spawning, list panes and reuse an existing one rather than starting a duplicate that will fail preflight.
-- **Every repo's CLAUDE.md MUST include a parsable port block** — lets tooling (the cross-session port dashboard, preflight checks) discover allocations without regex-scraping `justfile`/`docker-compose.yml`. Format: fenced ``` ```toml ``` block under a top-level `## Ports` heading, containing a single `[ports]` table.
-  - **Service-name keys** use the fixed set: `api`, `frontend`, `storybook`, `observability`. For anything else, use a nested `[ports.extras]` table (`name = port`).
-  - **Pane → port linking is implicit** via the `<project>-<service>` pane-name convention — no need to declare `pane = ...` per entry. If a repo deviates from the convention, add `pane = "<name>"` inline.
-  - The numbers in `[ports]` are the source of truth — must match what's in `justfile` / `docker-compose.yml` / equivalents. The CRC32 rule is only how to *pick* on first allocation.
-
-  <details><summary>Example block</summary>
-
-  ````markdown
-  ## Ports
-
-  Base port `9123` (from `crc32("face-stream") % 900 + 9000`).
+- **Every repo MUST have a `.registered-ports.toml` in its root** — this is how `port-dash` (at `:9999`) discovers all services. Flat TOML, one `service-name = port` per line. Example:
 
   ```toml
-  [ports]
-  api       = 9123
-  frontend  = 9124
-  storybook = 9125
-
-  [ports.extras]
-  vector-tile-server = 9126
+  # ~/my-project/.registered-ports.toml
+  api          = 9123
+  frontend     = 9124
+  storybook    = 9125
+  my-extra-svc = 9126
   ```
-  ````
-  </details>
+
+  The numbers here are the source of truth — must match `justfile` / `docker-compose.yml` / equivalents. The CRC32 rule is only how to *pick* on first allocation.

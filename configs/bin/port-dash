@@ -1,0 +1,39 @@
+#!/usr/bin/env -S uv run --quiet python
+"""port-dash — port status dashboard at :9999. No deps."""
+import http.server
+import os
+import socket
+import tomllib
+from pathlib import Path
+
+HOST = os.uname().nodename
+
+
+def render():
+    rows = ""
+    for f in sorted(Path.home().glob("*/.registered-ports.toml")):
+        for svc, port in tomllib.loads(f.read_text()).items():
+            if isinstance(port, int):
+                up = socket.socket().connect_ex(("localhost", port)) == 0
+                dot = "🟢" if up else "🔴"
+                url = f"http://{HOST}:{port}"
+                rows += f"<tr><td>{dot}</td><td>{f.parent.name}</td><td>{svc}</td><td><a href='{url}'>{url}</a></td></tr>"
+    return f"""<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="5">
+<style>body{{font:14px monospace;padding:2rem}}table{{border-collapse:collapse}}
+td{{padding:.3rem 1.2rem .3rem 0}}</style>
+<h3>port dash — {HOST}</h3><table>{rows}</table>"""
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = render().encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args):
+        pass
+
+
+http.server.HTTPServer(("0.0.0.0", 9999), Handler).serve_forever()

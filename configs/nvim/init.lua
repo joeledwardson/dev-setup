@@ -902,6 +902,13 @@ require('lazy').setup {
 
       vim.lsp.enable 'ruff'
       vim.lsp.enable 'atlas'
+      -- terraform-ls returns null for signatureHelp and doesn't need it —
+      -- clearing the capability stops lsp_signature from spamming requests to it
+      vim.lsp.config['terraformls'] = {
+        on_attach = function(client, _)
+          client.server_capabilities.signatureHelpProvider = nil
+        end,
+      }
       vim.lsp.enable 'terraformls'
       vim.lsp.enable 'systemd_ls'
       vim.lsp.enable 'gopls'
