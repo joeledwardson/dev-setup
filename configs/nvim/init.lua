@@ -507,7 +507,18 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>g', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [g]rep, ignore hidden' })
+      vim.keymap.set('n', '<leader>g', function()
+        require('telescope').extensions.live_grep_args.live_grep_args {
+          attach_mappings = function(_, map)
+            map('i', '<C-m>', function(prompt_bufnr)
+              local state = require 'telescope.actions.state'
+              local current = state.get_current_line()
+              state.get_current_picker(prompt_bufnr):set_prompt(current:gsub(' ', '.*'))
+            end)
+            return true
+          end,
+        }
+      end, { desc = '[S]earch by [g]rep, <C-m> replaces spaces with .*' })
       vim.keymap.set('n', '<leader>sG', function()
         builtin.live_grep { additional_args = { '--no-ignore', '--hidden' } }
       end, { desc = '[S]earch by [G]rep, show hidden' })
@@ -969,6 +980,7 @@ require('lazy').setup {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
+    dependencies = { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
     keys = {
       {
         '<leader>F',
@@ -1055,7 +1067,6 @@ require('lazy').setup {
           javascriptreact = { 'prettier', stop_after_first = true },
           typescriptreact = { 'prettier', stop_after_first = true },
           svelte = { 'prettier', stop_after_first = true },
-          fish = { 'fish_indent', stop_after_first = true },
           bash = { 'shfmt', 'shellcheck' },
           zsh = { 'shfmt', 'shellcheck' },
           sh = { 'shfmt', 'shellcheck' },
@@ -1079,6 +1090,11 @@ require('lazy').setup {
             },
           },
         },
+      }
+
+      -- Auto-install Mason-managed formatters (nixfmt, terraform_fmt, ... are OS-provided)
+      require('mason-tool-installer').setup {
+        ensure_installed = { 'stylua', 'prettier', 'shfmt', 'shellcheck', 'sql-formatter', 'ruff' },
       }
 
       vim.api.nvim_create_user_command('FormatDisable', function(args)
