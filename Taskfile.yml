@@ -58,7 +58,7 @@ tasks:
   yazi:
     desc: Reset yazi plugins/flavors and reinstall (avoids stale state from partial pulls)
     cmds:
-      - rm -rf configs/yazi/plugins configs/yazi/flavors
+      - rm -rf configs/yazi/plugins configs/yazi/flavors ~/.local/state/yazi/packages
       - task: dotfiles
       - ya pkg install
 

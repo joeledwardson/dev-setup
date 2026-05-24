@@ -25,18 +25,18 @@ hash = "5eeb4f0919ce6be5d941a9290c131d7d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "babfd0f"
+rev = "be524fb"
 hash = "187cc58ba7ac3befd49c342129e6f1b6"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "babfd0f"
-hash = "77e20b071404f97c09d3f9afdb9482e0"
+rev = "be524fb"
+hash = "e3260d0b1feded8c8e3ae3afa1169e30"
 
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "49f5ab7"
-hash = "6e3b5e58f985cc2d625e0030dc35b1b2"
+rev = "4f80288"
+hash = "daf12bd7eb26044a8a5f41eeb369c27a"
 
 [[plugin.deps]]
 use = "macydnah/office"
@@ -50,13 +50,8 @@ hash = "699fe07e0d2d1b4af8dafb84168eeb04"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:types"
-rev = "babfd0f"
-hash = "4161cfa043b5ba3341d82c6869007b41"
-
-[[plugin.deps]]
-use = "joels-claude-bot/wl-clipboard"
-rev = "01e3a26"
-hash = "b891266b0f462f4faccf71695957ac29"
+rev = "be524fb"
+hash = "9105494e98299f392aee95340066da9f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
@@ -67,6 +62,11 @@ hash = "88e56a64b7ce7c4314427452343fef17"
 use = "pirafrank/what-size"
 rev = "179ebf6"
 hash = "57056b9728006881d580ccabe8154a9c"
+
+[[plugin.deps]]
+use = "joels-claude-bot/wl-clipboard"
+rev = "5b2f3dd"
+hash = "3798fa979741cde977ee2fa7086247e7"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
