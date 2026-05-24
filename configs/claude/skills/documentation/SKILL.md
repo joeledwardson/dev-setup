@@ -69,12 +69,14 @@ This makes tests discoverable without reading source. Never let tests be invisib
 
 For anything beyond a top-level README (design docs, runbooks, architecture refs, multi-page investigation writeups), set up **mkdocs** rather than letting markdown sprawl.
 
+> no idea if the WATCHDOG_USE_POLLING_OBSERVER helps (i think --livereload is default anyway also?) but trying random stuff to make it hot reload - sometimes it forgets on new changes.... 😠
+
 ### Install
 
 ```sh
 uv tool install mkdocs --with mkdocs-material
 mkdocs new .          # scaffolds docs/ + mkdocs.yml
-mkdocs serve -a 0.0.0.0:<project-port>
+WATCHDOG_USE_POLLING_OBSERVER=true mkdocs serve --dirty --livereload -a 0.0.0.0:<project-port>
 ```
 
 ### mkdocs.yml — full working config
@@ -291,6 +293,13 @@ One sentence: what this is.
 **❌ Diagrams that go stale silently** — if a diagram describes code structure, either generate it from code or put an explicit "last verified" date on it. Static hand-drawn diagrams are fine for *intent*; don't use them for *fact*.
 
 **❌ "See the README"** — README is for "what is this and how do I run it". Anything beyond that goes in `docs/`.
+
+### Decision logging
+Typically in long projects it is good to have some record of decisions taken.
+
+This should typically include architectural decisions / patterns like which tools, programming languages and architecture are chosen. This can be a mix of unprompted assumptions of explicitly decided with the user
+
+These should be recorded in ADRs (see also research skill)
 
 ### Before merging — docs checklist
 
