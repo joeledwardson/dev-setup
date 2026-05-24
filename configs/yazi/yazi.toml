@@ -5,84 +5,84 @@ linemode = "mtime"
 sort_by = "mtime"
 sort_reverse = true
 
-
 [opener]
-  # custom openers (these add to the defaults, not replace)
-  browser = [
-    { run = 'firefox %s', orphan = true, desc = "Firefox" },
-    { run = 'brave %s', orphan = true, desc = "Brave" },
-  ]
-  pinta = [
-    { run = 'pinta %s', orphan = true, desc = "Pinta" },
-  ]
-  mpv = [
-    { run = 'mpv %s', orphan = true, desc = "mpv" },
-  ]
-  calc = [
-    { run = 'libreoffice --calc %s', orphan = true, desc = "LibreOffice Calc" },
-  ]
+# custom openers (these add to the defaults, not replace)
+browser = [
+  { run = "firefox %s", orphan = true, desc = "Firefox" },
+  { run = "brave %s", orphan = true, desc = "Brave" },
+]
+pinta = [
+  { run = "pinta %s", orphan = true, desc = "Pinta" },
+]
+mpv = [
+  { run = "mpv %s", orphan = true, desc = "mpv" },
+]
+calc = [
+  { run = "libreoffice --calc %s", orphan = true, desc = "LibreOffice Calc" },
+]
 
 [open]
-  prepend_rules = [
-    # offer multiple openers for common types so O (interactive) shows a picker
-    # name rules first (more specific), then mime rules
-    { url = "*.csv", use = ["edit", "calc", "open", "reveal"] },
-    { mime = "image/*", use = ["open", "pinta", "reveal"] },
-    { mime = "video/*", use = ["mpv", "open", "reveal"] },
-    { mime = "text/*", use = ["edit", "open", "reveal"] },
-    { url = "*.html", use = ["browser", "edit"] },
-    { url = "*.pdf", use = ["open", "reveal"] },
-  ]
+prepend_rules = [
+  # offer multiple openers for common types so O (interactive) shows a picker
+  # name rules first (more specific), then mime rules
+  { url = "*.csv", use = ["edit", "calc", "open", "reveal"] },
+  { mime = "image/*", use = ["open", "pinta", "reveal"] },
+  { mime = "video/*", use = ["mpv", "open", "reveal"] },
+  { mime = "text/*", use = ["edit", "open", "reveal"] },
+  { url = "*.html", use = ["browser", "edit"] },
+  { url = "*.pdf", use = ["open", "reveal"] },
+]
 
 [preview]
 max_width = 600
 max_height = 400
 
 [plugin]
-  prepend_fetchers = [
-    { id = "folder-size", url = "*/", run = "folder-size" },
-  ]
-  prepend_preloaders = [
-    ## from mediainfo plugin
-    { mime = "{audio,video,image}/*", run = "mediainfo" },
-    { mime = "application/subrip", run = "mediainfo" },
-    # Adobe Illustrator, Adobe Photoshop is image/adobe.photoshop, already handled above
-    { mime = "application/postscript", run = "mediainfo" },
-    ## from office plugin
-    { mime = "application/openxmlformats-officedocument.*", run = "office" },
-    { mime = "application/oasis.opendocument.*", run = "office" },
-    { mime = "application/ms-*", run = "office" },
-    { mime = "application/msword", run = "office" },
-    { url = "*.docx", run = "office" },
-  ]
-  prepend_previewers = [
-    ## from ouch plugin
-    { mime = "application/*zip",            run = "ouch" },
-    { mime = "application/x-tar",           run = "ouch" },
-    { mime = "application/x-bzip2",         run = "ouch" },
-    { mime = "application/x-7z-compressed", run = "ouch" },
-    { mime = "application/x-rar",           run = "ouch" },
-    { mime = "application/vnd.rar",         run = "ouch" },
-    { mime = "application/x-xz",            run = "ouch" },
-    { mime = "application/xz",              run = "ouch" },
-    { mime = "application/x-zstd",          run = "ouch" },
-    { mime = "application/zstd",            run = "ouch" },
-    { mime = "application/java-archive",    run = "ouch" },
-    ## from rich preview plugin
-    { url = "*.csv", run = "rich-preview"}, # for csv files
-    { url = "*.md", run = "rich-preview" }, # for markdown (.md) files
-    { url = "*.rst", run = "rich-preview"}, # for restructured text (.rst) files
-    { url = "*.ipynb", run = "rich-preview"}, # for jupyter notebooks (.ipynb)
-    { url = "*.json", run = "rich-preview"}, # for json (.json) files
-    ## from mediainfo plugin
-    { mime = "{audio,video,image}/*", run = "mediainfo"},
-    { mime = "application/subrip", run = "mediainfo" },
-    # Adobe Illustrator, Adobe Photoshop is image/adobe.photoshop, already handled above
-    { mime = "application/postscript", run = "mediainfo" },
-    ## from office plugin
-    { mime = "application/openxmlformats-officedocument.*", run = "office" },
-    { mime = "application/oasis.opendocument.*", run = "office" },
-    { mime = "application/ms-*", run = "office" },
-    { mime = "application/msword", run = "office" },
-    { url = "*.docx", run = "office" },
-  ]
+prepend_fetchers = [
+  { url = "*",  run = "git", group = "git" },
+  { url = "*/", run = "git", group = "git" },
+]
+prepend_preloaders = [
+  ## from mediainfo plugin
+  { mime = "{audio,video,image}/*", run = "mediainfo" },
+  { mime = "application/subrip", run = "mediainfo" },
+  # Adobe Illustrator, Adobe Photoshop is image/adobe.photoshop, already handled above
+  { mime = "application/postscript", run = "mediainfo" },
+  ## from office plugin
+  { mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { mime = "application/oasis.opendocument.*", run = "office" },
+  { mime = "application/ms-*", run = "office" },
+  { mime = "application/msword", run = "office" },
+  { url = "*.docx", run = "office" },
+]
+prepend_previewers = [
+  ## from ouch plugin
+  { mime = "application/*zip", run = "ouch" },
+  { mime = "application/x-tar", run = "ouch" },
+  { mime = "application/x-bzip2", run = "ouch" },
+  { mime = "application/x-7z-compressed", run = "ouch" },
+  { mime = "application/x-rar", run = "ouch" },
+  { mime = "application/vnd.rar", run = "ouch" },
+  { mime = "application/x-xz", run = "ouch" },
+  { mime = "application/xz", run = "ouch" },
+  { mime = "application/x-zstd", run = "ouch" },
+  { mime = "application/zstd", run = "ouch" },
+  { mime = "application/java-archive", run = "ouch" },
+  ## from rich preview plugin
+  { url = "*.csv", run = "rich-preview" },  # for csv files
+  { url = "*.md", run = "rich-preview" },  # for markdown (.md) files
+  { url = "*.rst", run = "rich-preview" },  # for restructured text (.rst) files
+  { url = "*.ipynb", run = "rich-preview" },  # for jupyter notebooks (.ipynb)
+  { url = "*.json", run = "rich-preview" },  # for json (.json) files
+  ## from mediainfo plugin
+  { mime = "{audio,video,image}/*", run = "mediainfo" },
+  { mime = "application/subrip", run = "mediainfo" },
+  # Adobe Illustrator, Adobe Photoshop is image/adobe.photoshop, already handled above
+  { mime = "application/postscript", run = "mediainfo" },
+  ## from office plugin
+  { mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { mime = "application/oasis.opendocument.*", run = "office" },
+  { mime = "application/ms-*", run = "office" },
+  { mime = "application/msword", run = "office" },
+  { url = "*.docx", run = "office" },
+]

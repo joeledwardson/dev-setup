@@ -3207,3 +3207,8 @@ Not going to raw-dog git day-to-day. Life is short.
 - Possibly worth a `bind main C !git commit` so tig doubles as a light commit UI without needing to drop to lazygit
 
 
+### Messages log and notification history
+Because i forgot AGAIN - im writing another note because i keep forgetting 😓 LMAO.
+```lua
+:Telescope fidget
+```

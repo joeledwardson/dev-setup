@@ -77,11 +77,6 @@ tasks:
     status:
       - test -e ~/.claude.json
 
-  toc:
-    desc: Run doctoc on README
-    cmds:
-      - doctoc README.md
-
   win:push:
     desc: Export Windows packages
     cmds:

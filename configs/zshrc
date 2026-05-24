@@ -32,7 +32,6 @@ pretty-path() {
 function reload-tmux {
   tmux source-file ~/.config/tmux/tmux.conf
 }
-
 # copy a file to clipboard
 function copyfile {
     # Resolve the full path of the file
@@ -351,6 +350,18 @@ autoload -U add-zsh-hook
 function _set_term_title { print -Pn '\e]2;%m:%~\a' }  # hostname:cwd
 add-zsh-hook precmd _set_term_title
 
+
+
+# tmux escape chars for `next-prompt` and `previous-prompt`
+function tmux_preexec() {
+  print -Pn '\e]133;A\a'
+}
+function tmux_precmd() {
+  print -Pn '\e]133;B\a'
+}
+
+add-zsh-hook preexec tmux_preexec
+add-zsh-hook precmd tmux_precmd
 
 
 # bun completions

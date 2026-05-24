@@ -56,7 +56,7 @@ User attaches with `tmux attach -t <session_name>`.
 Idempotent. Create the session if missing, then add a cowork window for the task:
 
 ```
-tmux has-session -t <session_name> 2>/dev/null || tmux new-session -d -s <session_name> -n cowork-main -c <cwd>
+tmux has-session -t <session_name> 2>/dev/null || tmux new-session -d -s <session_name> -n <session_name>-main -c <cwd>
 tmux list-windows -t <session_name> -F '#W' | grep -qx 'cowork-<task>' || tmux new-window -t <session_name> -n cowork-<task> -c <cwd>
 ```
 

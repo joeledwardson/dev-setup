@@ -58,7 +58,6 @@
       ~/.config/ghostty/config: ./configs/ghostty/config
       ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
       ~/.config/yazi/plugins/open-with-cmd.yazi: ./configs/yazi/custom-plugins/open-with-cmd.yazi
-      ~/.config/yazi/plugins/folder-size.yazi: ./configs/yazi/custom-plugins/folder-size.yazi
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/tig/config: ./configs/tig/config

@@ -1,0 +1,81 @@
+site_name: Joel's Dev Setup
+site_description: Development notes, NixOS config and tooling reference
+repo_url: https://github.com/joels-claude-bot/dev-setup
+repo_name: joels-claude-bot/dev-setup
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.instant
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - footnotes
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Dev Log:
+    - dev-log/index.md
+    - September 2025: dev-log/2025-09.md
+    - October 2025: dev-log/2025-10.md
+    - November 2025: dev-log/2025-11.md
+    - December 2025: dev-log/2025-12.md
+    - January 2026: dev-log/2026-01.md
+    - February 2026: dev-log/2026-02.md
+    - March 2026: dev-log/2026-03.md
+    - April 2026: dev-log/2026-04.md
+    - May 2026: dev-log/2026-05.md
+  - NixOS: nix/notes.md
+  - Reference:
+    - reference/index.md
+    - Vim & Neovim: reference/vim.md
+    - Linux & System: reference/linux.md
+    - Shell & Bash: reference/shell.md
+    - Networking: reference/networking.md

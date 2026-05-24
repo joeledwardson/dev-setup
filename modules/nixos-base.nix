@@ -183,7 +183,6 @@
     jq
     yq-go
     kbd # has showkey
-    doctoc # for updating my README toc!
     btop # fancy version of top
     navi
     terraform

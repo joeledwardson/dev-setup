@@ -78,7 +78,10 @@
       }
     }
   },
-  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet[1m]"
+  "voiceEnabled": true,
+  "viMode": true,
+  "theme": "dark-daltonized",
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true
 }

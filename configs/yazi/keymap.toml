@@ -1,120 +1,120 @@
 ### jollof custom overrides
 [[mgr.prepend_keymap]]
-on = [ "O" ]
+on = ["O"]
 run = "plugin open-with-cmd -- block"
 desc = "Open with command (blocking)"
 
 [[mgr.prepend_keymap]]
-on = [ "c", "b" ]
+on = ["T"]
+run = "tab_create $HOME"
+desc = "Create a new tab at home dir"
+
+[[mgr.prepend_keymap]]
+on = ["c", "b"]
 run = "plugin wl-clipboard"
 desc = "Copy file(s) to clipboard"
 
 [[mgr.prepend_keymap]]
-on = [ "g", "f" ]
-run = "plugin first-file"
-desc = "Jump to first file (skip dirs)"
-
-[[mgr.prepend_keymap]]
-on = [ "g", "?" ]
-run = "help"
-desc = "Open help"
-
-[[help.prepend_keymap]]
-on = [ "/" ]
-run = "filter"
-desc = "Find help.items"
-
-[[mgr.prepend_keymap]]
-on = [ "T" ]
-run = "tab_create $HOME"
-desc = "Create a new tab at home dir"
+on = ["'", "f"]
+run = "plugin sftp-dispatch"
+desc = "Copy file as sftp:// URL to clipboard (OSC52, works over SSH)"
 
 
 ### relative motion plugin bindings
 [[mgr.prepend_keymap]]
-on = [ "1" ]
+on = ["1"]
 run = "plugin relative-motions 1"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "2" ]
+on = ["g", "f"]
+run = "plugin first-file"
+desc = "Jump to first file (skip dirs)"
+
+[[mgr.prepend_keymap]]
+on = ["2"]
 run = "plugin relative-motions 2"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "3" ]
+on = ["g", "?"]
+run = "help"
+desc = "Open help"
+
+[[mgr.prepend_keymap]]
+on = ["3"]
 run = "plugin relative-motions 3"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "4" ]
+on = ["4"]
 run = "plugin relative-motions 4"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "5" ]
+on = ["5"]
 run = "plugin relative-motions 5"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "6" ]
+on = ["6"]
 run = "plugin relative-motions 6"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "7" ]
+on = ["7"]
 run = "plugin relative-motions 7"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "8" ]
+on = ["8"]
 run = "plugin relative-motions 8"
 desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
-on = [ "9" ]
+on = ["9"]
 run = "plugin relative-motions 9"
 desc = "Move in relative steps"
 
 ### cd git root plugin
 [[mgr.prepend_keymap]]
-on   = ["g", "r"]
-run  = "plugin cd-git-root"
+on = ["g", "r"]
+run = "plugin cd-git-root"
 desc = "Go to git repo root"
 
 ### projects plugin
 [[mgr.prepend_keymap]]
-on = [ "P", "s" ]
+on = ["P", "s"]
 run = "plugin projects save"
 desc = "Save current project"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "l" ]
+on = ["P", "l"]
 run = "plugin projects load"
 desc = "Load project"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "P" ]
+on = ["P", "P"]
 run = "plugin projects load_last"
 desc = "Load last project"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "d" ]
+on = ["P", "d"]
 run = "plugin projects delete"
 desc = "Delete project"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "D" ]
+on = ["P", "D"]
 run = "plugin projects delete_all"
 desc = "Delete all projects"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "m" ]
+on = ["P", "m"]
 run = "plugin projects 'merge current'"
 desc = "Merge current tab to other projects"
 
 [[mgr.prepend_keymap]]
-on = [ "P", "M" ]
+on = ["P", "M"]
 run = "plugin projects 'merge all'"
 desc = "Merge current project to other projects"
 
@@ -126,64 +126,67 @@ desc = "Enter the child directory, or open the file"
 
 ### mount manager plugin
 [[mgr.prepend_keymap]]
-on  = "M"
+on = "M"
 run = "plugin mount"
 
-### Switch to our `dirsize` linemode (recursive bytes via folder-size fetcher).
-### Pairs with default `,s` which uses the built-in fast `size` linemode.
+### what-size plugin — on-demand recursive size for hovered item
 [[mgr.prepend_keymap]]
-on  = [ "m", "d" ]
-run = "linemode dirsize"
-desc = "Linemode: dirsize (recursive bytes)"
+on = ["'", "w"]
+run = "plugin what-size"
+desc = "Show recursive size of hovered item"
 
 ### yamb plugin
 [[mgr.prepend_keymap]]
-on = [ "u", "a" ]
+on = ["u", "a"]
 run = "plugin yamb save"
 desc = "Add bookmark"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "g" ]
+on = ["u", "g"]
 run = "plugin yamb jump_by_key"
 desc = "Jump bookmark by key"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "G" ]
+on = ["u", "G"]
 run = "plugin yamb jump_by_fzf"
 desc = "Jump bookmark by fzf"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "d" ]
+on = ["u", "d"]
 run = "plugin yamb delete_by_key"
 desc = "Delete bookmark by key"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "D" ]
+on = ["u", "D"]
 run = "plugin yamb delete_by_fzf"
 desc = "Delete bookmark by fzf"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "A" ]
+on = ["u", "A"]
 run = "plugin yamb delete_all"
 desc = "Delete all bookmarks"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "r" ]
+on = ["u", "r"]
 run = "plugin yamb rename_by_key"
 desc = "Rename bookmark by key"
 
 [[mgr.prepend_keymap]]
-on = [ "u", "R" ]
+on = ["u", "R"]
 run = "plugin yamb rename_by_fzf"
 desc = "Rename bookmark by fzf"
 
 [[mgr.prepend_keymap]]
-on = [ "'", "s" ]
+on = ["'", "s"]
 run = "search --via=fd --args='--hidden --no-ignore'"
 desc = "fd file search"
 
 [[mgr.prepend_keymap]]
-on = [ "'", "S" ]
+on = ["'", "S"]
 run = "search --via=rg --args='--hidden --no-ignore'"
 desc = "rg contents search"
 
+[[help.prepend_keymap]]
+on = ["/"]
+run = "filter"
+desc = "Find help.items"

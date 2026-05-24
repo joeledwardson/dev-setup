@@ -3,15 +3,14 @@
 -- but cant find it in any types pages, probs in their source somewhere
 
 -- Linemode setup:
---   `size`     = yazi built-in, unchanged. Fast. Dirs show child count.
---   `dirsize`  = ours. Recursive bytes via the folder-size fetcher's `du -sb`
---                (custom-plugins/folder-size.yazi). Cache: _G.YAZI_FOLDER_SIZE_CACHE.
+--   `size`    = yazi built-in, unchanged. Fast. Dirs show child count.
 --   `mtime` / `btime` = ours. Show `file:size()` for files and `-` for dirs
---                — strict size view, no recursive fallback. Use `dirsize` for that.
 
 local function format_time(time)
   time = math.floor(time or 0)
-  if time == 0 then return '' end
+  if time == 0 then
+    return ''
+  end
   if os.date('%Y', time) == os.date '%Y' then
     return os.date('%b %d %H:%M', time)
   end
@@ -28,13 +27,6 @@ function Linemode:btime()
   return string.format('%s %s', n and ya.readable_size(n) or '-', format_time(self._file.cha.btime))
 end
 
-function Linemode:dirsize()
-  local n = self._file:size()
-  if n then return ya.readable_size(n) end
-  local cache = _G.YAZI_FOLDER_SIZE_CACHE
-  local cached = cache and cache[tostring(self._file.url)]
-  return cached and ya.readable_size(cached) or '…'
-end
 require('projects'):setup {
   save = {
     method = 'yazi', -- yazi | lua
@@ -120,5 +112,8 @@ require('yamb'):setup {
   path = (ya.target_family() == 'windows' and os.getenv 'APPDATA' .. '\\yazi\\config\\bookmark') or (os.getenv 'HOME' .. '/.config/yazi/bookmark'),
 }
 
--- ~/.config/yazi/init.lua
 require('relative-motions'):setup { show_numbers = 'relative', show_motion = true, enter_mode = 'first' }
+require('git'):setup {
+  -- Order of status signs showing in the linemode
+  order = 1500,
+}

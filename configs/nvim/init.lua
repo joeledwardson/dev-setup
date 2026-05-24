@@ -1059,6 +1059,7 @@ require('lazy').setup {
           sql = { 'sql_formatter' },
           nix = { 'nixfmt' },
           lua = { 'stylua' },
+          toml = { 'tombi' },
           html = { 'html_beautify', stop_after_first = true },
           css = { 'html_beautify', stop_after_first = true },
           json = { 'prettier', stop_after_first = true },

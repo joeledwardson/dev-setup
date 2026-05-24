@@ -21,6 +21,18 @@ return {
         end,
         desc = 'Toggle diff view',
       },
+      {
+        '<leader>tg',
+        function()
+          local lib = require 'diffview.lib'
+          if lib.get_current_view() then
+            vim.cmd 'DiffviewClose'
+          else
+            vim.cmd 'DiffviewFileHistory'
+          end
+        end,
+        desc = 'Toggle diff file history',
+      },
     },
   },
 }
