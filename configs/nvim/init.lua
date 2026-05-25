@@ -110,6 +110,16 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Use system clipboard when a provider is reachable (desktop); OSC52 autocmd below handles headless
+local function has_system_clipboard()
+  return (vim.fn.executable 'wl-copy' == 1 and vim.env.WAYLAND_DISPLAY ~= nil)
+    or ((vim.fn.executable 'xclip' == 1 or vim.fn.executable 'xsel' == 1) and vim.env.DISPLAY ~= nil)
+    or vim.fn.executable 'pbcopy' == 1
+end
+if has_system_clipboard() then
+  vim.opt.clipboard = 'unnamedplus'
+end
+
 -- Sync yanks to system clipboard via OSC52 (works over SSH/Zellij)
 -- No clipboard provider — p uses normal registers, no OSC52 read hang
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -426,7 +436,6 @@ require('lazy').setup {
           file_ignore_patterns = { '%.git/' }, -- never show .git/ contents
           mappings = {
             i = {
-              ['<c-enter>'] = 'to_fuzzy_refine',
               ['<C-l>'] = actions.cycle_history_next,
               ['<C-h>'] = actions.cycle_history_prev,
               ['<Esc>'] = actions.close,
@@ -510,7 +519,7 @@ require('lazy').setup {
       vim.keymap.set('n', '<leader>g', function()
         require('telescope').extensions.live_grep_args.live_grep_args {
           attach_mappings = function(_, map)
-            map('i', '<C-m>', function(prompt_bufnr)
+            map('i', '<C-e>', function(prompt_bufnr)
               local state = require 'telescope.actions.state'
               local current = state.get_current_line()
               state.get_current_picker(prompt_bufnr):set_prompt(current:gsub(' ', '.*'))
@@ -518,7 +527,7 @@ require('lazy').setup {
             return true
           end,
         }
-      end, { desc = '[S]earch by [g]rep, <C-m> replaces spaces with .*' })
+      end, { desc = '[S]earch by [g]rep, <C-e> replaces spaces with .*' })
       vim.keymap.set('n', '<leader>sG', function()
         builtin.live_grep { additional_args = { '--no-ignore', '--hidden' } }
       end, { desc = '[S]earch by [G]rep, show hidden' })

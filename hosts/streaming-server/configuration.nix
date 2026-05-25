@@ -103,16 +103,16 @@
     };
   };
 
-  # auto-login claude and launch Hyprland on boot (headless box)
+  # auto-login claude and launch Hyprland via UWSM (activates graphical-session.target)
   services.greetd = {
     enable = true;
     settings = {
       initial_session = {
-        command = "Hyprland";
+        command = "uwsm start hyprland-uwsm.desktop";
         user = "claude";
       };
       default_session = {
-        command = "Hyprland";
+        command = "uwsm start hyprland-uwsm.desktop";
         user = "claude";
       };
     };
