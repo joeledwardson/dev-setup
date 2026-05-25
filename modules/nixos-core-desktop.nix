@@ -91,7 +91,7 @@
   # =======================================
   programs.nm-applet.enable = true;
   programs.waybar = { enable = true; };
-  programs.hyprland = { enable = true; };
+  programs.hyprland = { enable = true; withUWSM = true; };
   programs.hyprlock.enable = true;
 
   # XDG Portal for desktop integration

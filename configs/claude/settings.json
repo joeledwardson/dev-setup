@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "WebFetch",
@@ -80,8 +81,8 @@
   },
   "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true,
-  "viMode": true,
+  "viMode": false,
   "theme": "dark-daltonized",
-  "editorMode": "vim",
+  "editorMode": "normal",
   "agentPushNotifEnabled": true
 }

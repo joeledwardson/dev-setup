@@ -64,8 +64,14 @@
   services.libinput.enable = true;
 
   fonts = {
-    packages = with pkgs; [ nerd-fonts.space-mono ];
-    fontconfig = { defaultFonts = { monospace = [ "SpaceMono Nerd Font" ]; }; };
+    packages = with pkgs; [ nerd-fonts.hack ];
+    fontconfig = {
+      defaultFonts = {
+        monospace = [ "Hack Nerd Font" ];
+        sansSerif = [ "DejaVu Sans" ];
+        serif     = [ "DejaVu Serif" ];
+      };
+    };
   };
 
   # Allow unfree packages

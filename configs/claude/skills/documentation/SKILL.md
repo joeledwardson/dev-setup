@@ -13,6 +13,21 @@ Auto-loaded when doing any documentation work. These rules apply to every doc pa
 
 **A doc page that describes structure, flow, or layout must contain a diagram. Tables and prose alone are not enough.**
 
+A corollary: **assign a visual identity to each concept and keep it consistent.** A symbol that appears syntax-highlighted inline, colour-coded in the diagram, and highlighted in the code block is a thread the reader can follow. The same symbol in plain backticks everywhere is invisible.
+
+---
+
+## The colour rule
+
+**Before writing a single line of content, name your colour sources.** If you can't answer these, stop and design the page first:
+
+- Which concepts get `#!lang` inline highlighting? (key names, symbols, values being explained)
+- Which mermaid nodes get `classDef` colours? (pick a palette, assign meaning — red = danger, blue = source, green = result)
+- Which code lines get `hl_lines`? (the line that matters, not every line)
+- Which admonition types (`warning`, `danger`, `tip`, `info`) signal what?
+
+If the answer to all four is "none" — the page has no colour and will read as a wall of monochrome text. That is a failure mode, not a style choice. Going back to add colour after the fact requires multiple revision passes (as this skill itself demonstrates). Design it in upfront.
+
 If you find yourself writing a list of routes, components, ports, services, pipelines, states, or message flows — stop. That information has shape. Draw the shape, then annotate it. Prose is the *annotation*, not the explanation.
 
 The smell test: read the page out loud. If you're describing positions ("the API sits behind…", "requests flow from…", "the cache is between…"), you're describing a diagram you haven't drawn yet.
@@ -156,7 +171,14 @@ mkdocs-material swaps the header title to the current page H1 on scroll. Looks j
 | State machine | `stateDiagram-v2` (mermaid) |
 | Big-picture "what is this whole thing" — one per project | Excalidraw (export SVG) |
 
-Default to **mermaid**. Keep diagrams under ~8 nodes. Shape nodes by kind:
+Default to **mermaid**. Keep diagrams under ~8 nodes. **Always use `classDef` to colour nodes** — colour = category membership, not decoration. Use the same colour for the same concept wherever it appears in prose and code. Suggested palette: blue = primary/source, red = danger/unexpected, green = result/output, grey = context. Max 4 colours.
+
+```markdown
+classDef source fill:#2471a3,color:#fff,stroke:#1a5276
+classDef result fill:#1e8449,color:#fff,stroke:#196f3d
+```
+
+Shape nodes by kind:
 - `([rounded])` — actors/users
 - `[rect]` — services/processes
 - `[(cylinder)]` — data stores
@@ -166,7 +188,7 @@ Default to **mermaid**. Keep diagrams under ~8 nodes. Shape nodes by kind:
 
 ## Material features cheatsheet
 
-Use these before writing flat prose:
+Each of these brings colour. That's the point — colour is how the reader's eye navigates before they read a word. Admonition type = semantic colour (orange warning, blue info, red danger). Tab label = coloured heading. `hl_lines` = blue highlight. `#!lang` inline = syntax colour. Use them instead of flat prose:
 
 ```markdown
 !!! tip "When to use this"
@@ -194,26 +216,35 @@ Use these before writing flat prose:
 </div>
 ```
 
-**Tabs** (for "same thing, multiple ways"):
+**Tabs** (for "same thing, multiple ways" OR "same operation applied to different inputs" — the tab label is itself an annotation, use it as the punchline):
 ```markdown
-=== "Go"
-    ```bash
-    go run ./cmd/grade/... video.mp4
+=== "`Ctrl+[` → `0x1B` (Escape!)"
+    ```
+    '[' = 91 → strip bit 6 → 27 = 0x1B = ESC
     ```
 
-=== "Python"
-    ```bash
-    uv run python -m src.grading.cli grade video.mp4
+=== "`Ctrl+/` → `0x1F` (same as `Ctrl+_`)"
+    ```
+    '?' = 63 → strip bit 6 → 31 = 0x1F
     ```
 ```
 
-**Code annotations** (for explaining specific lines):
+**Code annotations + line highlighting** (for explaining specific lines):
 ```markdown
-```python
+```python linenums="1" hl_lines="2"
 client = Gemini(api_key=key)  # (1)!
+response = client.generate(prompt)  # (2)!
+` ``
+1. Key resolved from `GEMINI_API_KEY` env var — not passed explicitly.
+2. Blocks until complete; wrap in `asyncio.run()` for async callers.
 ```
-1. Key is resolved from GEMINI_API_KEY env var or .env walk-up.
+`hl_lines="2"` draws the eye to the key line before the reader reads. Reserve annotations for *why*, not *what*.
+
+**Inline syntax highlighting** (ties prose mentions to code colour):
+```markdown
+The mapping `#!lua ['<C-/>'] = 'action'` registered fine but never fired.
 ```
+Use `` `#!lang symbol` `` for any inline symbol that is the *subject* of the explanation — key names, function names, specific values. Plain backticks for filenames and generic terms.
 
 ---
 
@@ -291,6 +322,8 @@ One sentence: what this is.
 **❌ Six tables on one page** — if a page has 4+ tables, it's probably six pages crammed into one.
 
 **❌ Diagrams that go stale silently** — if a diagram describes code structure, either generate it from code or put an explicit "last verified" date on it. Static hand-drawn diagrams are fine for *intent*; don't use them for *fact*.
+
+**❌ Plain backticks for everything** — when every inline code snippet looks identical, the reader can't build a visual model. Use `#!lang` for symbols that are the *subject* of explanation so they match their appearance in code blocks and diagrams.
 
 **❌ "See the README"** — README is for "what is this and how do I run it". Anything beyond that goes in `docs/`.
 

@@ -881,3 +881,121 @@ I ALWAYS get lost looking at the strange mapping syntax in vim `nnnoommapremap` 
 | `snoremap` | select | No remap |
 | `cnoremap` | command-line | No remap |
 | `tnoremap` | terminal | No remap |
+
+**Why this matters:** when a Vim mapping like `['<C-/>']` silently does nothing, or `<C-[>` behaves identically to `<Esc>`, the cause is almost always a mismatch between what *you think* the keypress sends and what the terminal *actually* sends.
+
+### The ASCII table in two halves
+
+```
+ Dec  Hex  Char          Dec  Hex  Char
+────────────────────    ────────────────────
+  0   0x00  NUL    ◄──    64  0x40  @
+  1   0x01  SOH    ◄──    65  0x41  A
+  2   0x02  STX    ◄──    66  0x42  B
+  ...                     ...
+  8   0x08  BS     ◄──    72  0x48  H     (Ctrl+H = Backspace)
+  9   0x09  TAB    ◄──    73  0x49  I     (Ctrl+I = Tab)
+  10  0x0A  LF     ◄──    74  0x4A  J     (Ctrl+J = Enter/newline)
+  13  0x0D  CR     ◄──    77  0x4D  M     (Ctrl+M = Enter)
+  ...                     ...
+  27  0x1B  ESC    ◄──    91  0x5B  [     (Ctrl+[ = Escape !)
+  28  0x1C  FS     ◄──    92  0x5C  \
+  29  0x1D  GS     ◄──    93  0x5D  ]
+  30  0x1E  RS     ◄──    94  0x5E  ^
+  31  0x1F  US     ◄──    95  0x5F  _     (Ctrl+_ = 0x1F)
+────────────────────
+ 0-31: CONTROL codes      32-126: printable text
+```
+
+The **left column (0–31)** is not printable — these are control signals (move cursor, ring bell, etc). The **right column (64–95)** is the `@A-Z[\]^_` block of printable ASCII.
+
+### The rule: Ctrl clears bits 6 and 7
+
+Pressing `Ctrl` with a character in the `@`–`_` range (ASCII 64–95) **masks off the top 2 bits**, leaving only the bottom 5:
+
+```
+  Ctrl + [   =   '[' AND 0b00011111
+                   │
+  '[' = 91 = 0b 0 1 0 1 1 0 1 1
+                   │
+  mask  =    0b 0 0 0 1 1 1 1 1   ← keep only bottom 5 bits
+                   │
+  result =   0b 0 0 0 1 1 0 1 1  =  27  =  0x1B  =  ESC  ✓
+```
+
+The pattern is symmetric: each letter in `@`…`_` is **exactly 64 higher** than its control code, and 64 = `0b01000000` — bit 6. Masking it off is the same as subtracting 64.
+
+```
+  Ctrl + _   =   '_' AND 0b00011111
+
+  '_' = 95 = 0b 0 1 0 1 1 1 1 1
+  mask  =    0b 0 0 0 1 1 1 1 1
+  result =   0b 0 0 0 1 1 1 1 1  =  31  =  0x1F  =  US  (Unit Separator)
+```
+
+### Quick reference: surprising aliases
+
+| You press | ASCII of key | AND 0x1F | Byte sent | Vim name | Common name |
+|-----------|-------------|----------|-----------|----------|-------------|
+| `Ctrl+@`  | 64 (`@`)   | 0        | `0x00`   | `<C-@>`  | NUL         |
+| `Ctrl+H`  | 72 (`H`)   | 8        | `0x08`   | `<C-H>`  | Backspace   |
+| `Ctrl+I`  | 73 (`I`)   | 9        | `0x09`   | `<C-I>`  | Tab         |
+| `Ctrl+J`  | 74 (`J`)   | 10       | `0x0A`   | `<C-J>`  | Newline     |
+| `Ctrl+M`  | 77 (`M`)   | 13       | `0x0D`   | `<C-M>`  | Enter/CR    |
+| **`Ctrl+[`**  | **91 (`[`)**   | **27**       | **`0x1B`**   | **`<C-[>`**  | **Escape ← !!**    |
+| `Ctrl+\`  | 92 (`\`)   | 28       | `0x1C`   | `<C-\>`  | FS          |
+| `Ctrl+_`  | 95 (`_`)   | 31       | `0x1F`   | `<C-_>`  | US          |
+
+!!! warning "This means `<C-[>` IS `<Esc>` — always"
+    They produce the exact same byte (`0x1B`). You cannot map `<C-[>` to do something different from `<Esc>` in a legacy terminal — they are identical. Kitty's extended keyboard protocol *can* distinguish them, but only if both the terminal and the application (Neovim, Telescope) opt in.
+
+### The `C-/` edge case
+
+`/` is ASCII 47, which is **below 64** — outside the clean `@`–`_` range. The AND rule gives `47 & 31 = 15` (`0x0F`), not `0x1F`. So why do most terminals send `0x1F` for `Ctrl+/`?
+
+On a US keyboard, `/` and `?` share the same physical key. When applying a Ctrl modifier to a key outside the normal range, many terminals use the **shifted** variant of that key instead:
+
+```
+  '?' = 63 = 0b 0 0 1 1 1 1 1 1   ← shifted '/' on US keyboard
+  mask  =    0b 0 0 0 1 1 1 1 1
+  result =   0b 0 0 0 1 1 1 1 1  =  31  =  0x1F
+```
+
+`0x1F` is the same byte as `Ctrl+_`. So `Ctrl+/` and `Ctrl+_` arrive at Neovim **as the same byte**, and Neovim represents it as `<C-_>`.
+
+!!! danger "This is why `['<C-/>'] = 'to_fuzzy_refine'` silently failed in Telescope"
+    The mapping was registered under the name `<C-/>`, but the terminal sent byte `0x1F` which Neovim labels `<C-_>`. Two different names, same physical key, no match → fell through to Telescope's default `<C-/>` handler (which_key).
+
+    Fix: map **both** names:
+    ```lua
+    ['<C-/>'] = 'to_fuzzy_refine',
+    ['<C-_>'] = 'to_fuzzy_refine',  -- what the terminal actually sends
+    ```
+
+### Verify what your terminal actually sends
+
+Press a key in insert mode and insert the raw byte with `Ctrl+V`:
+
+```vim
+" In insert mode, press Ctrl+V then your key — shows the literal char
+" e.g. Ctrl+V then Ctrl+[ inserts a literal ESC glyph (^[)
+```
+
+Or check with `cat` in a shell — it prints the raw bytes:
+
+```bash
+cat          # start cat
+^/           # press Ctrl+/, see what appears — likely shows as '^_' (0x1F)
+^[           # press Ctrl+[, shows as '^[' (0x1B = ESC)
+^C           # Ctrl+C to quit
+```
+
+Or inspect the actual hex:
+
+```bash
+# Type the key, press Enter, Ctrl+D
+xxd | head -1
+# e.g. Ctrl+[ + Enter shows:  0000000: 1b0a  ..
+#                                       ↑↑
+#                                       1b = ESC = Ctrl+[
+```

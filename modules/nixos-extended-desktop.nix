@@ -51,6 +51,11 @@
     sox
   ];
 
+  # use gnome keywring in remmina
+  services.gnome.gnome-keyring.enable = true;
+  # enable gnome keywring on login
+  security.pam.services.greetd.enableGnomeKeyring = true;
+
   # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
   services.postgresql = {
     enable = true;
@@ -83,10 +88,10 @@
     settings = {
       default_session = {
         # hyprland-uwsm.desktop is defined in the wiki (has uwsm) - see docs with nixos here https://wiki.hypr.land/Useful-Utilities/Systemd-start/#uwsm
-        # command =
-        #   "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
+        # command =
+        #   "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "greeter";
       };
     };

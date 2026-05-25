@@ -139,7 +139,23 @@ Scope:
 
 If unsure whether a change is "yours" or "theirs", check `git log` / `git status` against the state when the task started — and if still ambiguous, leave it.
 
-## Desktop automation on NixOS + Hyprland
+## E2E testing
+
+When the user says "e2e test" or "end to end test", the meaning depends on the target:
+
+**Terminal application** (nvim, yazi, lazygit, any TUI) — default path:
+1. **Spin up** — use the tmux-cowork skill to launch the app in a named pane
+2. **Drive** — send keypresses via `tmux send-keys -t <pane>`
+3. **Validate** — read back via `tmux capture-pane -p -S -3000` and assert expected state is visible in the scrollback buffer
+
+Use this path whenever you can run it in a terminal. Faster, no Wayland env needed, scrollback is the ground truth.
+
+**GUI / desktop application** — only when the user says "GUI", "graphical", "desktop", or "browser", or the app genuinely requires a display:
+Use the desktop automation toolchain (hyprctl, wtype, grim, etc.) described in the section below.
+
+---
+
+## Desktop automation
 
 When a task truly needs headful interaction (testing web UIs, verifying click flows, reproducing a GUI bug, pasting an image into a running TUI), drive the desktop instead of asking the user. This is a yolo box — treat the desktop like any other tool.
 
