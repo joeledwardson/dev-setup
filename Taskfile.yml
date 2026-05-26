@@ -15,6 +15,17 @@ tasks:
     cmds:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
+  os:all:
+    desc: Full system rebuild — os:build, dotfiles, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland
+    cmds:
+      - task: os:build
+      - task: dotfiles
+      - task: sheldon:lock
+      - task: yazi
+      - task: tmux:tpm
+      - task: tmux:reload
+      - task: hyprland
+
   os:build:
     desc: Rebuild NixOS configuration
     cmds:
@@ -62,11 +73,16 @@ tasks:
       - task: dotfiles
       - ya pkg install
 
-  tpm:
+  tmux:reload:
+    desc: Reload tmux config
+    cmds:
+      - tmux source ~/.config/tmux/tmux.conf
+
+  tmux:tpm:
     desc: Setup tmux plugin manager
     cmds:
       - git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-      - tmux source-file ~/.config/tmux/tmux.conf
+      - task: tmux:reload
     status:
       - test -e "$HOME/.tmux/plugins/tpm"
 
