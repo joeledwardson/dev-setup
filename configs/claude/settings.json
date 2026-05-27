@@ -55,6 +55,17 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/scripts/self-check-reminder.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
