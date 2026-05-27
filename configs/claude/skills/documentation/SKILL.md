@@ -58,7 +58,9 @@ classDef result fill:#1e8449,color:#fff,stroke:#196f3d
 
 ---
 
-## Rule 5 — What + Why for every page and function
+## Rule 5 — What + Why for every page and function (no exceptions)
+
+**Every Go file. Every exported function. Every test file.** Not "the main ones" — all of them. A file without a package comment or a function without a directive is incomplete, not optional.
 
 Every module page, doc page, and exported function opens with:
 
