@@ -11,6 +11,7 @@ vim.opt.tabstop = 2
 vim.opt.number = true
 vim.o.termsync = false
 vim.opt.autoread = true
+vim.opt.swapfile = false
 
 -- custom command to run python (setting the python directory) and run current file
 vim.api.nvim_create_autocmd('FileType', {
