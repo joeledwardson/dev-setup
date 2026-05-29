@@ -55,17 +55,6 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/scripts/self-check-reminder.sh"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "matcher": "",
@@ -80,7 +69,8 @@
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
-    "agent-skills@addy-agent-skills": true
+    "agent-skills@addy-agent-skills": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "addy-agent-skills": {
@@ -91,9 +81,9 @@
     }
   },
   "skipDangerousModePermissionPrompt": true,
-  "voiceEnabled": true,
-  "viMode": false,
   "theme": "dark-daltonized",
   "editorMode": "normal",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true,
+  "viMode": false
 }

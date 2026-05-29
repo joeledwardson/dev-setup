@@ -379,10 +379,12 @@ fastfetch
 if [[ "$IS_SANDBOX_MACHINE" == "1" ]]; then
   # claude code in YOLO mode: see https://github.com/anthropics/claude-code/issues/9184#issuecomment-3594539302
   alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
+  # gemini in YOLO mode
+  alias yolo-gemini='GEMINI_CLI_TRUST_WORKSPACE=true gemini --approval-mode yolo'
 
   echo ""
   echo -e "\e[1;35m  Welcome to jollof's sandbox container!\e[0m"
-  echo -e "  To give claude god tier permissions, run: \e[1;96myolo-claude\e[0m"
+  echo -e "  To give agents god tier permissions, run: \e[1;96myolo-claude\e[0m or \e[1;96myolo-gemini\e[0m"
   echo -e "  \e[2;32menjoy ✨\e[0m"
   echo ""
 fi

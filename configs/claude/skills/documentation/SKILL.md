@@ -45,22 +45,35 @@ Smell test: if you're using words like "sits behind", "flows from", "sits betwee
 ## Rule 4 — colour is designed in, not added after
 
 Before writing content, decide:
-- Which mermaid nodes get `classDef` colours? (blue = source, green = result, red = danger, grey = context)
+- Which mermaid nodes get `classDef` colours?
 - Which admonition types signal what? (`tip` = optional, `warning` = scope boundary, `danger` = breaking)
 - Which inline code gets `#!lang` syntax highlighting vs plain backticks?
 
-Use the **same colour for the same concept** everywhere it appears. A concept that's blue in the diagram should be blue in the code block and the prose annotation.
+Use the **same colour for the same concept** everywhere it appears across every diagram in a doc set.
 
-```mermaid
-classDef source fill:#2471a3,color:#fff,stroke:#1a5276
-classDef result fill:#1e8449,color:#fff,stroke:#196f3d
+**Standard palette — use these, don't invent new ones:**
+
+| Colour | Hex | Meaning |
+|--------|-----|---------|
+| Blue | `#85c1e9` | Entry points, callers, CLI |
+| Green | `#52be80` | Business logic, production code |
+| Purple | `#c39bd3` | Interfaces, seam boundaries |
+| Orange | `#f0b27a` | Fakes, mocks, test doubles |
+| Grey | `#717d7e` | External systems, network, third-party APIs |
+
+```
+classDef entry    fill:#85c1e9,color:#1a252f,stroke:#2471a3
+classDef logic    fill:#52be80,color:#145a32,stroke:#196f3d
+classDef boundary fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+classDef fake     fill:#f0b27a,color:#784212,stroke:#e67e22
+classDef external fill:#717d7e,color:#fff,stroke:#5d6d7e
 ```
 
 ---
 
 ## Rule 5 — What + Why for every page and function (no exceptions)
 
-**Every Go file. Every exported function. Every test file.** Not "the main ones" — all of them. A file without a package comment or a function without a directive is incomplete, not optional.
+**Every file. Every exported function. Every test file.** Not "the main ones" — all of them. A file without a package comment or a function without a directive is incomplete, not optional.
 
 Every module page, doc page, and exported function opens with:
 
@@ -73,7 +86,7 @@ Format for docs:
 **Why**: Separate from the pipeline so it runs against any video without starting the server.
 ```
 
-Format for Go code:
+Format for Go code (but also applies more generally - spec/in/out)):
 ```go
 // Generate submits a Kling job and writes the result to req.OutputPath.
 // In:  gen.Request — FirstFrame/LastFrame as accessible URLs, Duration in seconds
@@ -83,11 +96,6 @@ func (c *Client) Generate(ctx context.Context, req gen.Request) error {
 
 `In:` / `Out:` only when the type signature doesn't already say it clearly. Skip for trivial getters.
 
-For test functions — the name is the spec:
-```go
-func TestGenerate_WritesOutputFile(t *testing.T) {   // ✓ clear directive
-func TestGenerate_RequestShape(t *testing.T) {        // ✗ "shape" is not a behaviour
-```
 
 ---
 
@@ -99,6 +107,66 @@ Explicitly banning scope is more useful than describing scope. Every module page
 !!! warning "Does NOT"
     Upload frames, retry on failure, or manage output storage.
     Caller is responsible for all three.
+```
+
+---
+
+## Rule 7 — Visual hierarchy: guide the reader's eye
+
+`**What**:` and `**Why**:` as plain bold text are a smell. They are acceptable for **code comments and API reference** where prose is expected to be dense. For **explanation and concept pages**, they bury the most important information in a wall of equal-weight text.
+
+**The test**: if a reader skimmed only the coloured/boxed elements on the page, would they get the point? If not, the visual hierarchy is wrong.
+
+### Information tiers — treat them differently
+
+| Tier | What it is | How to render it |
+|------|-----------|-----------------|
+| **Hook** | The single thing the reader MUST know | Opening sentence in bold, or `!!! abstract "TL;DR"` |
+| **Key decision** | Non-obvious design choice or "why it works this way" | `!!! tip` or `!!! note` callout — never inline prose |
+| **Reference data** | Numbers, weights, flags, tables | Tables, not prose lists |
+| **How-to** | Step-by-step or code | Numbered steps or annotated code blocks |
+| **Edge case / gotcha** | What breaks, what not to do | `!!! warning` |
+
+### Pattern by page type
+
+**Concept/explanation page** (e.g. "why this prompt works", "how the scoring formula was chosen"):
+```markdown
+!!! abstract "Key insight"
+    One sentence. The thing that makes the rest make sense.
+
+Then expand. Key decisions in `!!! tip` blocks, not inline.
+```
+
+**Reference page** (API, code, module):
+```markdown
+**What**: one sentence.
+**Why**: one sentence.
+
+Table → code block → Does NOT box.
+```
+
+**Index / section home**:
+```markdown
+Card grid → criteria table → section map.
+No opening prose paragraph.
+```
+
+**Architecture page**:
+```markdown
+Diagram first. One-sentence annotation per component. Then tables for edge cases.
+```
+
+### The "Why deserves a callout" rule
+
+If you are writing a sentence that contains "because", "so that", "in order to", or "which means" — that explanation is non-obvious and belongs in a `!!! tip` or `!!! note`, not buried in a paragraph. Explanatory content earns visual prominence.
+
+**❌ Wrong:**
+> The baseline is set explicitly because without it, Gemini tends to comment on gross anatomy failures rather than subtle artifacts.
+
+**✓ Right:**
+```markdown
+!!! tip "Why the baseline matters"
+    Without it, Gemini comments on gross anatomy failures rather than subtle artifacts.
 ```
 
 ---
@@ -115,6 +183,8 @@ When code changes, docs change in the same commit:
 - [ ] New test → ensure module doc page references it
 - [ ] Weight or criteria change → update grading spec
 - [ ] New Generator provider → update video-generation spec provider table
+- [ ] New architectural decision → write ADR in `docs/appendix/adr/`, update index table
+- [ ] Code review completed → save to `docs/appendix/reviews/`, update log table
 
 ---
 
@@ -132,11 +202,45 @@ When code changes, docs change in the same commit:
 
 ---
 
-## ADRs — decision logging
+## Project records — three types, one place
 
-Non-trivial architectural decisions (language choice, tool choice, structural pattern) get an ADR. This can be brief — the goal is a record of *why*, not a technical reference.
+All project history lives in `docs/appendix/`. Three types:
 
-Template: status, date, context (2 sentences), decision (1 sentence), consequences (bullet list).
+### Dev Log (`docs/appendix/dev-log.md` → `DEV-LOG.md`)
+
+Append one entry per meaningful session event. Format:
+
+```
+## YYYY-MM-DD — title
+Context: what I was doing
+Action: what I did / chose
+Why: reasoning in one or two sentences
+Result: outcome, test evidence, next step
+```
+
+Log decisions, blockers, pivots, completions. Not every bash command.
+
+### ADRs (`docs/appendix/adr/`)
+
+Non-trivial architectural decisions (language choice, tool choice, structural pattern). One file per decision, named `NNN-slug.md`. Goal: record *why*, not a technical reference.
+
+Format:
+```markdown
+## ADR-NNN — Title
+**Status**: Accepted | Superseded by ADR-NNN | Proposed
+**Date**: YYYY-MM-DD
+**Context**: 1–2 sentences. What forced this decision?
+**Decision**: 1 sentence. What was chosen.
+**Consequences**:
+- ✓ what this enables
+- ✗ what this rules out or costs
+```
+
+Update the index table in `docs/appendix/adr/index.md` when adding.
+
+### Code Reviews (`docs/appendix/reviews/`)
+
+Output of function-level comprehension reviews (run by a separate model, not Claude). One file per review session, named `YYYY-MM-DD-<module>.md`. Update the log table in `docs/appendix/reviews/index.md`.
 
 ---
 
@@ -238,3 +342,44 @@ key_line = here  # (1)!
     [:octicons-arrow-right-24: Link](page.md)
 </div>
 ```
+
+## Rule 8 — Test docs: the function→seam→control triad
+
+Any page explaining HOW tests work must show three things in one diagram:
+
+1. **Code path** — the function's steps in execution order (numbered, one subgraph)
+2. **Seam** — the injection point: an interface field, a URL field, a fake server
+3. **Test control** — what the fake controls at each step (second subgraph)
+
+Connect them with **dashed arrows** (`-.->|"what it controls"|`). Each arrow is a claim: "this step's behaviour is controlled by this thing."
+
+```
+subgraph code["module.go — Function flow"]
+    direction TB
+    S1["1. step one"]:::logic
+    S2["2. step two"]:::logic
+    S1 --> S2
+end
+
+subgraph fake["FakeXxx controls"]
+    C1["field / queue controlling step 1"]:::fake
+    C2["field / queue controlling step 2"]:::fake
+end
+
+S1 -.->|"initial state"| C1
+S2 -.->|"poll sequence"| C2
+```
+
+Solid arrows = calls. Dashed arrows = controlled by. The distinction is what makes this a test spec, not just a call graph.
+
+Follow the diagram with a table: `Test | Which step | What the fake controls`
+
+---
+
+# a closing note
+**ALWAYS remember**
+- colour! 
+- engagement
+- this is a person reading the documentation (not a robot)
+- it should be engaging using colour and diagrams to emphasise the important points
+
