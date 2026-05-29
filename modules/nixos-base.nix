@@ -69,7 +69,7 @@
       defaultFonts = {
         monospace = [ "Hack Nerd Font" ];
         sansSerif = [ "DejaVu Sans" ];
-        serif     = [ "DejaVu Serif" ];
+        serif = [ "DejaVu Serif" ];
       };
     };
   };
@@ -259,6 +259,7 @@
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
     pkgs-unstable.claude-code # pinned to nixpkgs master for latest version
+    pkgs-unstable.gemini-cli # latest gemini
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })

@@ -82,6 +82,10 @@ Log when you exceed budgets. Don't pretend you didn't.
 
 **Spec-first.** Write what a file does, what goes in, what comes out — before writing the file. If AI generates something not in the spec, delete it.
 
+**Spec comments on every exported function — required, not optional.** Every exported function must have: one-line summary of what it does, `// In: param — description` for each non-obvious parameter, `// Out: what is returned and under what condition`. This is the function's contract, not decoration. If you can't write it in 3 lines, the function is doing too much.
+
+**Stdlib and ecosystem first — never reinvent.** Before writing any utility function, ask in order: (1) does the stdlib have this? (2) is there a canonical library in this ecosystem? (3) is this logic already written elsewhere in this codebase? First yes wins — use it. Re-implementing `.env` parsing, string repetition, path walking, or JSON decoding when a library exists is always a bug, not a shortcut.
+
 **The 3-caller rule.** No helper function unless it has 3 call sites. One call site = inline it.
 
 **File length trigger.** File exceeds ~250 lines → something gets deleted or split. Use it as a review prompt, not a hard limit.
@@ -153,6 +157,8 @@ Commit frequently in small logical units. The user reviews via `git log`, not by
 - **DO NOT** commit pre-existing uncommitted changes that were there when you started
 - **DO NOT** push unless explicitly asked
 - **DO NOT** amend commits that aren't yours
+
+**Exception — after `/review-functions`**: do NOT commit. Leave the review file and index update unstaged. The user reads the diff and decides what to act on first.
 
 ---
 

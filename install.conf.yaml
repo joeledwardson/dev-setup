@@ -46,6 +46,7 @@
       ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
       ~/.npmrc: ./configs/npmrc
       ~/.claude/CLAUDE.md: ./configs/claude/claude.md
+      ~/.claude/lessons.md: ./configs/claude/lessons.md
       ~/.claude/settings.json: ./configs/claude/settings.json
       ~/.claude/scripts: ./configs/claude/scripts
       ~/.claude/keybindings.json: ./configs/claude/keybindings.json

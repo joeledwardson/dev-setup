@@ -55,6 +55,80 @@ When prompting yourself to generate, **always** include a viewport budget and la
 - **Target size:** designed to render clearly at 1200×800
 - **Node label rules:** no markdown inside nodes (`**bold**`, `<b>` break Mermaid's foreignObject sizing). Use `<br/>` for wraps. Avoid em-dashes in labels (Mermaid measures them wrong; use `-` instead).
 - **Colour coding:** if priority/category differentiation matters, use class/style definitions, not ad-hoc fills.
+- **C4 mermaid (C4Context/C4Container/C4Component) is broken** — it ignores layout config and stacks everything in a tall narrow column regardless of `UpdateLayoutConfig`. Use `flowchart LR` with `classDef` instead.
+
+### Dark theme — mandatory for mkdocs-material sites
+
+Always add the dark theme init directive as the **first line** of every mermaid code block when writing for mkdocs. Without it, mermaid uses its default (light) theme which can produce dark text on dark backgrounds in some browser colour schemes:
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    ...
+```
+
+This applies to all diagram types: flowchart, sequenceDiagram, stateDiagram, quadrantChart, pie, etc.
+
+### No subgraphs for grouping — use colour instead
+
+**Subgraphs produce two unfixable problems in dark theme:**
+1. The subgraph container background and border default to a pale/yellow colour in light theme and dark grey in dark theme — inconsistent across themes
+2. Edge label pills inside or crossing subgraph boundaries render as near-invisible dark-on-dark rectangles
+
+**Fix:** replace subgraph grouping with `classDef` colour coding. Readers understand colour as grouping just as well, and it always renders correctly.
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    CLI["entry point"]:::entry
+    Gemini["gemini client"]:::grade    ← green = grading path
+    Scorer["scorer"]:::grade
+    GenIF["gen interface"]:::gen       ← purple = generation path
+    Kling["kling client"]:::gen
+    ...
+    classDef grade fill:#196f3d,color:#fff,stroke:#145a32
+    classDef gen   fill:#7d3c98,color:#fff,stroke:#6c3483
+```
+
+Subgraphs are **only acceptable** when the container boundary itself carries meaning (e.g. "these steps run in parallel", "this is a system boundary"). Even then, add explicit `style subgraphId fill:#1c2833,color:#aab7b8,stroke:#4d5d6e` to override the default yellow.
+
+### No edge labels in dark-theme diagrams
+
+Edge label pills (`-->|"text"|`) render with a near-invisible background in dark theme. Instead:
+- Convey direction in the destination node label (`"internal/scorer<br/>Weights + formula"`)
+- Or use a plain dashed arrow for interface-to-implementation relationships (`-..->`)
+- Reserve edge labels for diagrams where the label text is truly not inferable from context
+
+### Colour contrast rule
+
+Every node must satisfy: either **light fill + dark text** or **dark fill + white text**. Never put dark text (`color:#333`) on a dark fill (`fill:#1a5276`).
+
+### The `color:` property in classDef is unreliable
+
+**`color:#fff` in classDef is ignored by the browser's mermaid renderer** (tested: Chrome/Headless, mermaid v11). The node text color is controlled by the mermaid theme CSS, not the classDef `color:` attribute. Dark fills will always get dark text regardless of what `color:` says.
+
+**The only reliable approach: use medium-brightness fills where the default dark text reads clearly.**
+
+Verified palette for architecture diagrams (light/medium fills, default dark text):
+```
+classDef entry  fill:#85c1e9,color:#1a252f,stroke:#2471a3  ← light blue (entry/person)
+classDef comp   fill:#5dade2,color:#1a252f,stroke:#2471a3  ← medium blue (components/containers)
+classDef grade  fill:#52be80,color:#145a32,stroke:#196f3d  ← medium green (grading path)
+classDef tool   fill:#52be80,color:#145a32,stroke:#196f3d  ← medium green (tools)
+classDef gen    fill:#c39bd3,color:#4a235a,stroke:#7d3c98  ← light purple (generation path)
+classDef iface  fill:#d5dbdb,color:#1a252f,stroke:#7f8c8d  ← light grey (interfaces)
+classDef svc    fill:#aab7b8,color:#1a252f,stroke:#7f8c8d  ← medium grey (services)
+classDef ext    fill:#aab7b8,color:#1a252f,stroke:#7f8c8d  ← medium grey (external)
+classDef high   fill:#f1948a,color:#641e16,stroke:#c0392b  ← light red (high-weight/danger)
+classDef med    fill:#f9e79f,color:#6e5f07,stroke:#d4ac0d  ← light yellow (medium-weight)
+classDef low    fill:#a9dfbf,color:#145a32,stroke:#196f3d  ← light green (low-weight)
+```
+
+The `color:` values above are ignored by the browser but kept as documentation of intent. Only `fill:` and `stroke:` reliably render.
+
+Do NOT use very dark fills (#1a5276, #196f3d, #7d3c98) — these always produce illegible dark-on-dark text.
+
+Use the **same colour for the same concept** across all diagrams in a project.
 
 Save source to `scratchpads/diagram-<name>.{mmd,d2,svg,dot}`.
 
