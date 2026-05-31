@@ -79,3 +79,6 @@ nav:
     - Linux & System: reference/linux.md
     - Shell & Bash: reference/shell.md
     - Networking: reference/networking.md
+  - ADRs:
+    - appendix/adr/index.md
+    - ADR-001 Claude Orchestration: appendix/adr/001-claude-code-orchestration.md

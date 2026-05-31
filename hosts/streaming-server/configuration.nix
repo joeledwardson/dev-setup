@@ -124,6 +124,11 @@
     configDir = "/home/claude/.config/syncthing";
   };
 
+  age.secrets.llm-gemini-key = {
+    file = ../../secrets/llm-gemini-key.age;
+    owner = "claude";
+  };
+
   age.secrets.ntfy-token = {
     file = ../../secrets/ntfy-token.age;
     owner = "claude";

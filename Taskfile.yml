@@ -228,7 +228,16 @@ tasks:
       Content-Type:application/hujson
       < tailscale/acl.hujson
 
+  docs:serve:
+    desc: Serve mkdocs docs locally on port 9653
+    cmds:
+      - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --livereload -a 0.0.0.0:9653
+
   llm:keys:
     desc: Set LLM API keys from agenix secrets
     cmds:
       - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
+
+  dirs:
+    desc: Print all directories in the project
+    cmd: find . -type d -not -path '*/\.*' | sort

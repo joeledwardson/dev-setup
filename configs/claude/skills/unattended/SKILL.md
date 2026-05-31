@@ -2,6 +2,13 @@
 name: unattended
 description: Switch to unattended/solo mode for research and long-running tasks. Push through friction instead of pausing. Only invoked on explicit /unattended — never auto-load.
 disable-model-invocation: true
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write|MultiEdit"
+      hooks:
+        - type: command
+          command: |
+            printf '%s' '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"After writing code run /review-code, after updating documentation run /review-docs. Maximum 2 iterations where feedback is given."}}'
 ---
 
 # unattended — push through, don't wait
@@ -113,6 +120,15 @@ Result: outcome, test evidence, next step
 ```
 
 Log decisions, blockers, pivots, completions. Not every bash command.
+
+---
+
+## Review loop — after writing
+
+After completing any code changes, invoke `/review-code` and act on every flag it raises.
+After updating any documentation (`.md` files), invoke `/review-docs` on the changed pages and act on every flag it raises.
+
+**Two review cycles maximum per task.** Fix all flags, re-run the review once. If flags remain after the second cycle, log them in the dev log and move on — do not loop indefinitely.
 
 ---
 

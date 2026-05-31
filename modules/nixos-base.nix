@@ -187,6 +187,7 @@
     fd # alternative to find
     delta # fancy syntax highlighting and pager for git
     jq
+    jo # json utility
     yq-go
     kbd # has showkey
     btop # fancy version of top
