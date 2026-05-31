@@ -293,7 +293,7 @@
       } # nodejs apps
       {
         from = 8000;
-        to = 9000;
+        to = 9999;
       } # other application ports
     ];
     allowedTCPPorts = [
