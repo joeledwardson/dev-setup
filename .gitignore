@@ -44,3 +44,6 @@ result
 
 # docs
 site
+
+# port registry — machine-local
+.registered-ports.toml
