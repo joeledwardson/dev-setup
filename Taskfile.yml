@@ -231,7 +231,7 @@ tasks:
   docs:serve:
     desc: Serve mkdocs docs locally on port 9653
     cmds:
-      - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --dirty --livereload -a 0.0.0.0:9653
+      - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --livereload -a 0.0.0.0:9653
 
   llm:keys:
     desc: Set LLM API keys from agenix secrets
