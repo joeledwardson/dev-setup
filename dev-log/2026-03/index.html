@@ -1,0 +1,2366 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../2026-02/">
+      
+      
+        <link rel="next" href="../2026-04/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>March 2026 - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#march-2026" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              March 2026
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joels-claude-bot/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joels-claude-bot/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joels-claude-bot/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joels-claude-bot/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-window-q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line window (q:)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-broken-again-autopairs-referencing-nvim-cmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion broken again (autopairs referencing nvim-cmp)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zellij-edge-detection-hyprland-flash-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij edge detection + hyprland flash (TODO)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-parameter-expansion-suffix-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash parameter expansion (suffix removal)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-dadbod-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim Dadbod UI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opening-a-blank-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening a blank buffer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-redirect-command-output-to-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim: Redirect command output to register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-registers-and-the-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim registers and the " prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gh-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GH issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disk-space-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk space cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neovim-display-corruption-on-terminal-resize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neovim display corruption on terminal resize
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yazi-imagevideo-previews-black-in-zellij" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yazi image/video previews black in zellij
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helix-vim-equivalent-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helix — vim equivalent workflows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazydevnvim-what-it-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lazydev.nvim — what it actually does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#march-2026_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        March 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="March 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zellij-image-preview-yazi-why-its-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij + Image Preview (Yazi) — Why It's Broken
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zellij-moving-panes-into-stacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij — Moving Panes into Stacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libreoffice-calc-reloading-a-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibreOffice Calc — Reloading a File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#steelseries-arctis-7-mic-not-showing-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SteelSeries Arctis 7 — Mic Not Showing Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-audio-debugging-tools-terminology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux Audio Debugging — Tools &amp; Terminology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agenix-rekeying-secrets-after-adding-a-new-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agenix - rekeying secrets after adding a new host
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-window-q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line window (q:)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-broken-again-autopairs-referencing-nvim-cmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion broken again (autopairs referencing nvim-cmp)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zellij-edge-detection-hyprland-flash-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij edge detection + hyprland flash (TODO)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-parameter-expansion-suffix-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash parameter expansion (suffix removal)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-dadbod-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim Dadbod UI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opening-a-blank-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening a blank buffer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-redirect-command-output-to-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim: Redirect command output to register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-registers-and-the-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim registers and the " prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gh-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GH issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disk-space-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk space cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neovim-display-corruption-on-terminal-resize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neovim display corruption on terminal resize
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#yazi-imagevideo-previews-black-in-zellij" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yazi image/video previews black in zellij
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helix-vim-equivalent-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helix — vim equivalent workflows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazydevnvim-what-it-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lazydev.nvim — what it actually does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#march-2026_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        March 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="March 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zellij-image-preview-yazi-why-its-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij + Image Preview (Yazi) — Why It's Broken
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zellij-moving-panes-into-stacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zellij — Moving Panes into Stacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libreoffice-calc-reloading-a-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LibreOffice Calc — Reloading a File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#steelseries-arctis-7-mic-not-showing-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SteelSeries Arctis 7 — Mic Not Showing Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-audio-debugging-tools-terminology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux Audio Debugging — Tools &amp; Terminology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agenix-rekeying-secrets-after-adding-a-new-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agenix - rekeying secrets after adding a new host
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="march-2026">March 2026<a class="headerlink" href="#march-2026" title="Permanent link">&para;</a></h1>
+<p>Quick reminder of a comment to set vim file type (but this catch 22 - vim needs to know the file type to know to parse a comment to know to apply the file type comment)</p>
+<blockquote>
+<p>Apparently vim 'modelines' helps with the chicken and egg by scanning first few lines for vim style comments
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># <span class="k">vim</span>: <span class="k">set</span> <span class="nb">ft</span><span class="p">=</span>yaml <span class="k">sw</span><span class="p">=</span><span class="m">2</span> <span class="k">ts</span><span class="p">=</span><span class="m">2</span> <span class="nb">et</span> :
+</span></code></pre></div></p>
+</blockquote>
+<h3 id="command-line-window-q">Command-line window (<code>q:</code>)<a class="headerlink" href="#command-line-window-q" title="Permanent link">&para;</a></h3>
+<p><code>q:</code> opens an editable buffer of command history — not just for searching, you can actually edit commands in it like a normal buffer (yank, paste, modify), then hit <code>Enter</code> on a line to execute. Also accessible via <code>&lt;C-f&gt;</code> from the <code>:</code> prompt.</p>
+<h3 id="completion-broken-again-autopairs-referencing-nvim-cmp">Completion broken again (autopairs referencing nvim-cmp)<a class="headerlink" href="#completion-broken-again-autopairs-referencing-nvim-cmp" title="Permanent link">&para;</a></h3>
+<p>Completion stopped working again. Previous investigation (see "Nvim glitching after zellij layout change" above) found lspsaga was the cause - disabled it, fixed it.</p>
+<p>This time: <code>autopairs.lua</code> was never updated when migrating from nvim-cmp to blink.cmp (Oct 2025). It still had <code>dependencies = { 'hrsh7th/nvim-cmp' }</code> and called <code>require 'cmp'</code> on <code>InsertEnter</code>. Since nvim-cmp is no longer installed, this errors every time you enter insert mode, potentially breaking blink.cmp completion.</p>
+<p><strong>Fix:</strong> removed the nvim-cmp dependency and <code>require 'cmp'</code> integration from <code>autopairs.lua</code>. Autopairs still works standalone, just no longer auto-adds <code>()</code> after selecting a function from completion (blink.cmp handles this differently anyway).</p>
+<h3 id="zellij-edge-detection-hyprland-flash-todo">Zellij edge detection + hyprland flash (TODO)<a class="headerlink" href="#zellij-edge-detection-hyprland-flash-todo" title="Permanent link">&para;</a></h3>
+<p><strong>Requirement:</strong> when moving focus hits an edge (no pane in that direction), flash the hyprland border red (like <code>move-focus.sh</code> does for hyprland windows).</p>
+<p><strong>Pain points:</strong>
+- zellij <code>bind</code> only supports a single action — can't chain "get pane id → move focus → check pane id → flash"
+- <code>vim-zellij-nav</code> wasm plugin handles nvim detection internally, can't wrap it with a script
+- <code>smart-splits.nvim</code> <code>at_edge = 'stop'</code> is broken — the zellij mux hardcodes <code>Direction.left</code> regardless of direction arg
+- zellij plugin <code>Key</code> events only fire when the plugin's own pane is focused, not globally</p>
+<p><strong>Proposed solution:</strong> custom zellij wasm plugin <code>move-focus-jol</code>:
+1. Receives <code>MessagePlugin</code> with direction (like vim-zellij-nav)
+2. Gets pane id → calls <code>move_focus</code> → checks pane id again
+3. If unchanged → <code>run_command("hyprctl", ...)</code> to flash border
+4. Fork <code>vim-zellij-nav</code> to call <code>move-focus-jol</code> instead of <code>move_focus</code> directly
+5. Update nvim <code>zellij-nav.nvim</code> to message <code>move-focus-jol</code> instead of <code>zellij action move-focus</code>
+6. Everything funnels through one plugin that owns edge detection</p>
+<h3 id="bash-parameter-expansion-suffix-removal">Bash parameter expansion (suffix removal)<a class="headerlink" href="#bash-parameter-expansion-suffix-removal" title="Permanent link">&para;</a></h3>
+<p>The single <code>%</code> is the shortest match from end of string operator, whereas <code>%%</code> is large suffix removal operator.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nv">file</span><span class="o">=</span><span class="s2">&quot;photo.backup.tar.gz&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="si">}</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>photo
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%g</span><span class="si">}</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>photo.backup.tar.gz
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%g*</span><span class="si">}</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>photo.backup.tar.
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%a*</span><span class="si">}</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>photo.b
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%a*</span><span class="si">}</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>photo.backup.t
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗
+</span></code></pre></div></p>
+<blockquote>
+<p>In this mode <code>.</code> is a literal dot, not a regexp dot for any char</p>
+</blockquote>
+<ol>
+<li>Notice how nothing matched on the <code>file%%g</code>: must match to end of string</li>
+<li><code>file%%g*</code> is greedy so goes up to the <code>gz</code> ad the end</li>
+<li><code>file%a*</code> so goes for the first <code>a</code> in <code>backup</code></li>
+</ol>
+<h3 id="vim-dadbod-ui">Vim Dadbod UI<a class="headerlink" href="#vim-dadbod-ui" title="Permanent link">&para;</a></h3>
+<p>Ok wow i found something today i cannot believe it took me this long to find?</p>
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">&lt;</span>leader<span class="p">&gt;</span>S
+</span></code></pre></div>
+<p>whilst in vim dadbod mode will only execute selected text as a query - kind of like filip does in DBeaver - which is awesome!</p>
+<h3 id="opening-a-blank-buffer">Opening a blank buffer<a class="headerlink" href="#opening-a-blank-buffer" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>:enew</code> — opens a new blank buffer in the current window (mnemonic: <strong>e</strong>dit <strong>new</strong>)</li>
+<li><code>:new</code> — opens a new blank buffer in a horizontal split</li>
+<li><code>:vnew</code> — opens a new blank buffer in a vertical split</li>
+</ul>
+<h3 id="vim-redirect-command-output-to-register">Vim: Redirect command output to register<a class="headerlink" href="#vim-redirect-command-output-to-register" title="Permanent link">&para;</a></h3>
+<p><code>:new | put =execute('SomeCommand')</code> — this opens a new scratch buffer and pastes the output of any ex command into it. Breakdown:
+- <code>:new</code> — opens a new empty split
+- <code>put =</code> — puts the result of an expression into the buffer
+- <code>execute('...')</code> — runs an ex command and captures its output as a string</p>
+<p>So <code>execute('Fidget history')</code> runs <code>:Fidget history</code> and returns the output text, then <code>put =</code> pastes it into the buffer where you can search with <code>/</code>.</p>
+<p>Works with any command, e.g. <code>:new | put =execute('messages')</code>, <code>:new | put =execute('map')</code></p>
+<p>Ok so (ME not claude as of now...)</p>
+<p><code>|</code> is not actually what i thought like a pipe in bash, it is actually just like <code>;</code> in bash (see <code>:h :bar</code> in vim)</p>
+<p>So in this case we are just saying <code>:new</code> to open a new buffer and THEN <code>:put</code> to dump the output of the register</p>
+<p><strong>Gotcha: <code>|</code> doesn't work with all commands.</strong> Some commands treat <code>|</code> as part of their own arguments instead of as a command separator. User-defined commands (from plugins) do this by default unless the plugin author explicitly opted in to <code>|</code> separation with <code>-bar</code> (see <code>:h command-bar</code>). So:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">:</span>OutlineFocus <span class="p">|</span> OutlineClose   <span class="c">&quot; BROKEN — OutlineClose is passed as an arg to OutlineFocus</span>
+</span></code></pre></div>
+Fix: use <code>&lt;cmd&gt;...&lt;cr&gt;</code> chaining in a keymap, or just use separate commands. In ex mode, there's no clean workaround — run them separately:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">:</span>OutlineFocus
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">:</span>OutlineClose
+</span></code></pre></div>
+Or in a keymap:
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&lt;leader&gt;X&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="nf">cmd</span><span class="p">(</span><span class="s2">&quot;OutlineFocus&quot;</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="nf">cmd</span><span class="p">(</span><span class="s2">&quot;OutlineClose&quot;</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kr">end</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>e.g.
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">let</span> @<span class="k">b</span><span class="p">=</span><span class="s1">&#39;pls&#39;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="p">:</span><span class="k">put</span> <span class="k">b</span>
+</span></code></pre></div>
+dumps 'pls' into current buffer</p>
+<p>i did try this
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> execute<span class="p">(</span><span class="s1">&#39;echo &quot;hi there&quot;&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+BUT echo doesn't return to a buffer so it wouldn't work. WAIT IGNORE. just needed to escape the " with
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> execute<span class="p">(</span><span class="s1">&#39;echo \&quot;hi there\&quot;&#39;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>....or...
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> <span class="s1">&#39;hi there&#39;</span>
+</span></code></pre></div></p>
+<h3 id="vim-registers-and-the-prefix">Vim registers and the <code>"</code> prefix<a class="headerlink" href="#vim-registers-and-the-prefix" title="Permanent link">&para;</a></h3>
+<p>Registers in vim are accessed with <code>"</code> (double quote) in normal mode.</p>
+<p><strong>Special registers:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Register</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"+</code></td>
+<td style="text-align: left;">System clipboard</td>
+<td style="text-align: left;"><code>"+y</code> yank to clipboard, <code>let @+=expand('%:p')</code> copy file path to clipboard</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"=</code></td>
+<td style="text-align: left;">Expression register — evaluates vimscript</td>
+<td style="text-align: left;"><code>put =execute('Fidget history')</code> dumps command output into buffer</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"0</code></td>
+<td style="text-align: left;">Last yank</td>
+<td style="text-align: left;"><code>"0p</code> paste what you last yanked (not deleted)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>""</code></td>
+<td style="text-align: left;">Default (unnamed)</td>
+<td style="text-align: left;"><code>p</code> pastes from here by default</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>to see help can use vims special 'quote' like <code>:h quote=</code> is equivalent to <code>:h "=</code></p>
+</blockquote>
+<p><strong>Accessing registers — <code>"</code> vs <code>@</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Context</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"</code></td>
+<td style="text-align: left;">Normal mode — select register before an operator</td>
+<td style="text-align: left;"><code>"ay</code> yank into <code>a</code>, <code>"+p</code> paste from clipboard</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>@</code></td>
+<td style="text-align: left;">Ex commands / vimscript — read/write registers</td>
+<td style="text-align: left;"><code>let @+ = expand('%:p')</code>, <code>@a</code> execute macro</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why <code>quote=</code> in vim help?</strong>
+Vim help spells <code>"</code> as <code>quote</code> in its help tags, so <code>:h quote=</code> means "help for the <code>"=</code> register", <code>:h quotea</code> for <code>"a</code>, etc.</p>
+<h3 id="gh-issues">GH issues<a class="headerlink" href="#gh-issues" title="Permanent link">&para;</a></h3>
+<p>I should really learn this.... so search for issues</p>
+<p>have to specify <code>--repo</code> then just gh search issues...
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span>gh<span class="w"> </span>search<span class="w"> </span>issues<span class="w"> </span><span class="s2">&quot;fuzzy search&quot;</span><span class="w"> </span>--repo<span class="w"> </span><span class="s1">&#39;folke/which-key.nvim&#39;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Showing<span class="w"> </span><span class="m">1</span><span class="w"> </span>of<span class="w"> </span><span class="m">1</span><span class="w"> </span>issues
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>REPO<span class="w">                  </span>ID<span class="w">    </span>TITLE<span class="w">                                  </span>LABELS<span class="w">  </span>UPDATED
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>folke/which-key.nvim<span class="w">  </span><span class="c1">#648  bug: Which Key seems to affect keymap  bug     about 1 year ago</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗
+</span></code></pre></div></p>
+<p>Ok so it turned out the relevant issue i was looking for is a discussion (<a href="https://github.com/folke/which-key.nvim/discussions/527">here</a>) and gh api doesnt support discussions....</p>
+<h3 id="disk-space-cheat-sheet">Disk space cheat sheet<a class="headerlink" href="#disk-space-cheat-sheet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">What it shows</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>df -H</code></td>
+<td style="text-align: left;">All mounted filesystems with size/used/avail</td>
+<td style="text-align: left;">Overview of disk usage per mount</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>lsblk -f</code></td>
+<td style="text-align: left;">Tree of disks, partitions, fstype, label, mountpoint</td>
+<td style="text-align: left;">Good quick overview of block devices</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>du -sh &lt;folder&gt;</code></td>
+<td style="text-align: left;">Total size of a specific folder</td>
+<td style="text-align: left;">e.g. <code>du -sh /home</code> or <code>du -sh /nix/store</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sudo parted -l</code></td>
+<td style="text-align: left;">All disks and partitions</td>
+<td style="text-align: left;">Does NOT show free space</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sudo parted /dev/xxx print free</code></td>
+<td style="text-align: left;">Partitions + free gaps on a specific disk</td>
+<td style="text-align: left;">Only way to see unallocated space in parted</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sudo cfdisk /dev/xxx</code></td>
+<td style="text-align: left;">TUI partition viewer with visual blocks + free space</td>
+<td style="text-align: left;">Nice for a quick visual, quit without saving to just view</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gdu</code> / <code>ncdu</code></td>
+<td style="text-align: left;">Interactive TUI drill-down into disk usage</td>
+<td style="text-align: left;">Like a fancy <code>du</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>duf</code></td>
+<td style="text-align: left;">Pretty colorized <code>df</code> replacement with bars</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>To list all block devices (the <code>/dev/xxx</code> names for cfdisk/parted):
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>lsblk
+</span></code></pre></div></p>
+<p><strong>Why <code>nix-tree</code> shows 30GB but <code>/nix/store</code> is 122GB:</strong>
+<code>nix-tree</code> only shows the <strong>closure</strong> of the current system profile — the set of packages reachable from this generation. <code>/nix/store</code> also contains old generations, cached build deps, devenv shells, and anything not yet garbage collected. Run <code>sudo nix-collect-garbage -d</code> to prune old generations (careful: removes rollback ability).</p>
+<p><strong>Does the math add up? (March 2026)</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>/home          =  94 GB
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>/nix/store     = 122 GB
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>swap file      =  32 GB  (configured in nixos-base.nix)
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>/var + other   = ~49 GB  (postgres data, logs, docker leftovers, tmp, etc.)
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>               --------
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>total          ≈ 297 GB  ✓ (matches df -H)
+</span></code></pre></div></p>
+<h3 id="neovim-display-corruption-on-terminal-resize">Neovim display corruption on terminal resize<a class="headerlink" href="#neovim-display-corruption-on-terminal-resize" title="Permanent link">&para;</a></h3>
+<p>Ghost lines, black spots, misaligned rendering when resizing (fullscreen toggle, zellij pane resize).</p>
+<p><strong>Only happens inside zellij</strong> — confirmed no issue in bare kitty terminal.</p>
+<p><strong>Cause:</strong> Neovim's CSI 2026 (<code>termsync</code> / synchronized output) misimplementation conflicts with zellij's terminal emulation layer. Zellij acts as terminal-within-a-terminal and must relay escape sequences — mismatch causes artifacts. Zellij creator confirmed: "99% a misimplementation of CSI 2026 by nvim." (<a href="https://github.com/neovim/neovim/issues/29427">neovim#29427</a>, <a href="https://github.com/zellij-org/zellij/issues/426">zellij#426</a>, <a href="https://github.com/zellij-org/zellij/issues/3415">zellij#3415</a>)</p>
+<p><strong>Fix</strong> — disable termsync in nvim config:
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">o</span><span class="p">.</span><span class="py">termsync</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+</span></code></pre></div></p>
+<p><strong>Other things that help:</strong>
+- Set <code>TERM=xterm-256color</code> inside zellij (avoid <code>xterm-kitty</code> etc)
+- <code>Ctrl-L</code> to manually force redraw
+- If using noice.nvim, set notify stages to <code>"static"</code> (<a href="https://github.com/zellij-org/zellij/issues/3208">zellij#3208</a>)</p>
+<h3 id="yazi-imagevideo-previews-black-in-zellij">Yazi image/video previews black in zellij<a class="headerlink" href="#yazi-imagevideo-previews-black-in-zellij" title="Permanent link">&para;</a></h3>
+<p>Yazi mediainfo plugin shows black screen for both image and video previews.</p>
+<p><strong>Only happens inside zellij</strong> — confirmed previews work fine in bare kitty terminal.</p>
+<p><strong>Cause:</strong> Likely zellij doesn't support passthrough for the kitty graphics protocol, which yazi uses to render inline images. Zellij's terminal emulation layer can't relay the graphics escape sequences properly. (<a href="https://github.com/zellij-org/zellij/issues/1796">zellij#1796</a>)</p>
+<h3 id="helix-vim-equivalent-workflows">Helix — vim equivalent workflows<a class="headerlink" href="#helix-vim-equivalent-workflows" title="Permanent link">&para;</a></h3>
+<p>Helix is selection-first (select then act) vs vim's verb-first (act then motion). Here's the mapping for common vim workflows:</p>
+<table>
+<thead>
+<tr>
+<th>Vim</th>
+<th>Helix</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>V</code> (visual line)</td>
+<td><code>x</code> to select line, repeat <code>x</code> to extend</td>
+<td>No true visual line mode. <code>X</code> extends selection to line bounds</td>
+</tr>
+<tr>
+<td><code>G</code> (go to EOF)</td>
+<td><code>ge</code> (goto mode → end)</td>
+<td>Remapped to <code>G</code> in config</td>
+</tr>
+<tr>
+<td><code>0</code> (start of line)</td>
+<td><code>gh</code> (goto line start)</td>
+<td>Remapped to <code>0</code> in config</td>
+</tr>
+<tr>
+<td><code>yy</code> / <code>3yy</code> (yank lines)</td>
+<td><code>xy</code> (select line + yank), <code>xxx...y</code> for multi</td>
+<td>Select first, then yank. Or <code>3x</code> doesn't work — just repeat <code>x</code></td>
+</tr>
+<tr>
+<td><code>Ctrl-o</code> (jump back)</td>
+<td><code>Ctrl-o</code></td>
+<td>Same — jumplist back</td>
+</tr>
+<tr>
+<td><code>Ctrl-i</code> / <code>Tab</code> (jump forward)</td>
+<td><code>Ctrl-i</code> / <code>Tab</code></td>
+<td>Same — jumplist forward</td>
+</tr>
+<tr>
+<td>Tabs / buffers</td>
+<td><code>Space+b</code> (picker), <code>gn</code>/<code>gp</code> (next/prev)</td>
+<td><code>:buffer-close</code> (<code>:bc</code>) to close, <code>:buffer-close-others</code> for all but current</td>
+</tr>
+<tr>
+<td><code>gx</code> (open URL)</td>
+<td><code>gf</code></td>
+<td>Opens URLs via <code>xdg-open</code>, files in helix (24.7+)</td>
+</tr>
+<tr>
+<td><code>:bd</code> (close buffer)</td>
+<td><code>:buffer-close</code> or <code>:bc</code></td>
+<td><code>:buffer-close!</code> without saving, <code>:buffer-close-all</code> for all</td>
+</tr>
+<tr>
+<td><code>:mksession</code> (sessions)</td>
+<td>N/A</td>
+<td>Not implemented yet — <a href="https://github.com/helix-editor/helix/issues/401">#401</a>, <a href="https://github.com/helix-editor/helix/discussions/899">#899</a></td>
+</tr>
+<tr>
+<td><code>:e</code> (reload file)</td>
+<td><code>:reload</code> or <code>:rl</code></td>
+<td><code>:e</code> in helix opens a file instead, use <code>:reload</code> to refresh current buffer</td>
+</tr>
+<tr>
+<td><code>{</code> / <code>}</code> (paragraph jump)</td>
+<td><code>[p</code> / <code>]p</code></td>
+<td>Selects to the paragraph boundary (helix selection-first)</td>
+</tr>
+<tr>
+<td><code>Ctrl-e</code> / <code>Ctrl-y</code> (scroll)</td>
+<td><code>Ctrl-e</code> / <code>Ctrl-y</code></td>
+<td>Requires <a href="https://docs.helix-editor.com/keymap.html">keybind in config</a> — not bound by default</td>
+</tr>
+<tr>
+<td><code>:help</code> / key lookup</td>
+<td><code>Space+?</code></td>
+<td>Search all keybindings interactively</td>
+</tr>
+<tr>
+<td>Markdown preview</td>
+<td><code>gh markdown-preview FILE</code></td>
+<td><a href="https://github.com/yusukebe/gh-markdown-preview">gh-markdown-preview</a> — browser preview with live reload</td>
+</tr>
+<tr>
+<td>Quickfix list / search results</td>
+<td><code>Space+/</code> (global search)</td>
+<td>Results in picker, <code>n</code>/<code>N</code> to jump between matches in-buffer</td>
+</tr>
+<tr>
+<td><code>%</code> (matching bracket)</td>
+<td><code>mm</code> (match mode → match)</td>
+<td>Jumps to matching bracket/paren/tag</td>
+</tr>
+<tr>
+<td><code>f</code>/<code>F</code> (find char)</td>
+<td><code>f</code>/<code>F</code></td>
+<td>Same but works <strong>across multiple lines</strong> (vim is single-line only)</td>
+</tr>
+<tr>
+<td><code>t</code>/<code>T</code> (till char)</td>
+<td><code>t</code>/<code>T</code></td>
+<td>Same but works <strong>across multiple lines</strong> (vim is single-line only)</td>
+</tr>
+<tr>
+<td><code>}</code> (jump to next paragraph)</td>
+<td><code>]p;</code></td>
+<td><code>]p</code> selects to next paragraph, <code>;</code> collapses selection to cursor (<code>collapse_selection</code>)</td>
+</tr>
+<tr>
+<td><code>V}}}}y</code> (visual line, 4 paragraphs, yank)</td>
+<td><code>xv]p]p]p]py</code></td>
+<td><code>x</code> select line, <code>v</code> enter extend mode (motions extend instead of replace), <code>]p</code> ×4, <code>y</code> yank</td>
+</tr>
+</tbody>
+</table>
+<p>Key mental shift: in helix you <strong>select first, then act</strong>. So "delete 3 lines" is <code>xxd</code> not <code>3dd</code>. Takes getting used to but means you always see what you're about to affect before doing it.</p>
+<h3 id="lazydevnvim-what-it-actually-does">lazydev.nvim — what it actually does<a class="headerlink" href="#lazydevnvim-what-it-actually-does" title="Permanent link">&para;</a></h3>
+<p>Without lazydev, <code>lua_ls</code> only knows Lua syntax — it has no idea <code>vim</code> exists as a global, so you get <code>Undefined global 'vim'</code> warnings and zero completions for <code>vim.*</code>.</p>
+<p><strong>What lazydev does:</strong> tells <code>lua_ls</code> to index Neovim's bundled type definitions (<code>$VIMRUNTIME/lua/vim/</code>) so it learns about <code>vim.api.*</code>, <code>vim.keymap.*</code>, <code>vim.lsp.*</code>, etc. Also loads types for installed plugins.</p>
+<p><strong>The luv/luvit thing:</strong> Neovim's event loop is built on <strong>libuv</strong> (same C library that powers Node.js — async I/O, timers, filesystem). Neovim exposes it to Lua as <code>vim.uv</code>. The <code>{ path = '${3rd}/luv/library', words = { 'vim%.uv' } }</code> in the config just conditionally loads the type defs for <code>vim.uv.*</code> only when you actually use it.</p>
+<h2 id="march-2026_1">March 2026<a class="headerlink" href="#march-2026_1" title="Permanent link">&para;</a></h2>
+<h4 id="zellij-image-preview-yazi-why-its-broken">Zellij + Image Preview (Yazi) — Why It's Broken<a class="headerlink" href="#zellij-image-preview-yazi-why-its-broken" title="Permanent link">&para;</a></h4>
+<p><strong>The problem:</strong> yazi image preview works in zellij but <strong>large or wide images corrupt the entire zellij render</strong> — the screen becomes garbled and unusable.</p>
+<p><strong>Root cause:</strong> Zellij acts as a middleman for terminal graphics. When an image's pixel dimensions exceed the pane boundaries, the sixel/kitty image data bleeds past what zellij expects, corrupting its internal screen buffer. Zellij redraws fail to recover because the image escape sequences have already overwritten cell state. This is a known zellij limitation — multiplexers have to parse and clip image output, and zellij's clipping is incomplete for oversized images.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+<th>Status / Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Foot</strong></td>
+<td>Terminal emulator, supports <strong>sixel</strong> natively. Does NOT support Kitty graphics protocol.</td>
+<td>Works. Chosen over Kitty because Kitty causes random nvim rendering glitches (likely Kitty's own escape sequence handling conflicting with nvim's TUI redraw)</td>
+</tr>
+<tr>
+<td><strong>Kitty (terminal)</strong></td>
+<td>Terminal emulator with its own <strong>Kitty graphics protocol</strong> for images.</td>
+<td>Dropped — causes random nvim rendering artifacts. Kitty graphics protocol also doesn't help inside zellij since zellij must intercept and re-emit it</td>
+</tr>
+<tr>
+<td><strong>Zellij</strong></td>
+<td>Terminal multiplexer. v0.40+ added passthrough support for both sixel and Kitty graphics protocol.</td>
+<td>Passthrough works for normal-sized images. <strong>Breaks on oversized images</strong> — the image data exceeds pane bounds and corrupts zellij's screen state</td>
+</tr>
+<tr>
+<td><strong>Sixel</strong></td>
+<td>Image protocol — encodes images as escape sequences inline in terminal output. Foot supports it, zellij 0.40+ passes it through.</td>
+<td>The protocol yazi should use with Foot. Auto-detection inside zellij can pick wrong protocol — force with <code>YAZI_IMAGE_PROTOCOL=sixel</code> if needed</td>
+</tr>
+<tr>
+<td><strong>Kitty graphics protocol</strong></td>
+<td>Alternative image protocol. Requires Kitty terminal (or compatible).</td>
+<td>Irrelevant with Foot — Foot doesn't support it. Setting <code>TERM=xterm-kitty</code> in Foot is wrong and causes breakage</td>
+</tr>
+<tr>
+<td><strong>Überzugpp</strong></td>
+<td>External process that renders images by drawing over the terminal window using X11/Wayland compositing (not terminal escape sequences).</td>
+<td>A workaround for terminals/multiplexers that don't support inline image protocols. Unnecessary with Foot+Zellij since both support sixel natively. Can cause its own positioning issues in multiplexers</td>
+</tr>
+<tr>
+<td><strong>Yazi</strong></td>
+<td>File manager with image preview. Auto-detects image protocol but can get confused inside zellij.</td>
+<td>Works mostly. The oversized image → zellij corruption is the remaining issue. Not a yazi bug per se — yazi sends valid image data, zellij fails to clip it</td>
+</tr>
+<tr>
+<td><strong><code>TERM=xterm-kitty</code></strong></td>
+<td>Env var hack to trick apps into using Kitty protocol.</td>
+<td><strong>Don't do this.</strong> Foot doesn't speak Kitty protocol. Let Foot set its own <code>TERM=foot</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Current status:</strong> images preview fine until a large image is selected, then zellij's rendering breaks. This is a zellij-side bug with oversized image clipping. No clean workaround yet — can mitigate by setting max preview dimensions in yazi or waiting for a zellij fix.</p>
+<p><strong>Possible mitigation</strong> — cap yazi preview size in <code>yazi.toml</code>:
+<div class="language-toml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">[preview]</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">max_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">max_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span>
+</span></code></pre></div></p>
+<p><strong>Related GitHub issues:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Repo</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/zellij-org/zellij/issues/2048">2048</a></td>
+<td>zellij</td>
+<td>Sixel images distorted, excessive bottom padding, scrolling breaks image and overwrites screen buffer, can crash zellij</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zellij-org/zellij/issues/3981">3981</a></td>
+<td>zellij</td>
+<td>Sixel artifacts remain on status bar and other areas after clearing, not reliably cleaned up</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zellij-org/zellij/issues/4124">4124</a></td>
+<td>zellij</td>
+<td>Many sixel images cause zellij to slow down, hang, and become unresponsive</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zellij-org/zellij/issues/4336">4336</a></td>
+<td>zellij</td>
+<td>Yazi image preview support — notes zellij's sixel is "quite buggy with serious performance issues", lagginess, tearing</td>
+</tr>
+<tr>
+<td><a href="https://github.com/sxyazi/yazi/issues/334">334</a></td>
+<td>yazi</td>
+<td>Tracking issue for previews in zellij — sixel corruption when running yazi through zellij</td>
+</tr>
+<tr>
+<td><a href="https://github.com/sxyazi/yazi/issues/1936">1936</a></td>
+<td>yazi</td>
+<td>Image preview overflow on large images — image bleeds outside preview area</td>
+</tr>
+<tr>
+<td><a href="https://github.com/sxyazi/yazi/issues/3308">3308</a></td>
+<td>yazi</td>
+<td>Images exceeding 10,000px in any dimension won't display even with config allowing it</td>
+</tr>
+</tbody>
+</table>
+<h4 id="zellij-moving-panes-into-stacks">Zellij — Moving Panes into Stacks<a class="headerlink" href="#zellij-moving-panes-into-stacks" title="Permanent link">&para;</a></h4>
+<p><strong>The problem:</strong> no obvious keybinding to move an existing pane into an existing stack in zellij.</p>
+<p><strong>Solution:</strong> use <a href="https://zellij.dev/documentation/cli-actions#stack-panes"><code>zellij action stack-panes</code></a> CLI action — takes pane IDs and combines them into a stack.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>zellij<span class="w"> </span>action<span class="w"> </span>stack-panes<span class="w"> </span>--<span class="w"> </span>&lt;id1&gt;<span class="w"> </span>&lt;id2&gt;
+</span></code></pre></div>
+<p><strong>Getting pane IDs:</strong> need <code>zellij action list-panes</code> (added in <a href="https://zellij.dev/news/remote-sessions-windows-cli/">v0.44.0</a>), which isn't available on NixOS yet. Until then, <code>zellij action dump-layout</code> can be parsed for pane IDs as a fallback, or use multi-select (<code>Alt+p</code> on each pane) to stack interactively.</p>
+<h4 id="libreoffice-calc-reloading-a-file">LibreOffice Calc — Reloading a File<a class="headerlink" href="#libreoffice-calc-reloading-a-file" title="Permanent link">&para;</a></h4>
+<p>To reload the current file in LibreOffice Calc: press <code>Alt+F</code> to open the File menu, then press <code>Down</code> arrow until you reach <strong>Reload</strong>, then press <code>Enter</code>.</p>
+<h4 id="steelseries-arctis-7-mic-not-showing-up">SteelSeries Arctis 7 — Mic Not Showing Up<a class="headerlink" href="#steelseries-arctis-7-mic-not-showing-up" title="Permanent link">&para;</a></h4>
+<p><strong>The problem:</strong> mic input wasn't appearing as an available source.</p>
+<p><strong>Solution:</strong> open <code>pavucontrol</code> → <strong>Configuration</strong> tab → select <strong>Game Output + Game Input</strong> profile for the SteelSeries Arctis 7.</p>
+<p><strong>Why this works:</strong> USB audio devices like the Arctis 7 expose multiple endpoints (output-only, output+input, chat, game, etc). PipeWire/PulseAudio represents these combos as <strong>profiles</strong> on the sound card. Profiles are entirely host-side — the device just advertises available USB audio endpoints, and the audio server decides which to activate. If the selected profile doesn't include a capture endpoint, no mic source gets created. Switching to a profile that includes input activates the capture endpoint and the mic appears.</p>
+<p><strong>Terminal equivalent:</strong>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># list cards and available profiles</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>pactl<span class="w"> </span>list<span class="w"> </span>cards
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># set the right profile</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>pactl<span class="w"> </span>set-card-profile<span class="w"> </span>&lt;card_name&gt;<span class="w"> </span>output:analog-stereo+input:analog-stereo
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># or with wireplumber</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>wpctl<span class="w"> </span>status
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>wpctl<span class="w"> </span>set-profile<span class="w"> </span>&lt;device_id&gt;<span class="w"> </span>&lt;profile_index&gt;
+</span></code></pre></div></p>
+<p>Profile selection is persisted in <code>~/.local/state/wireplumber/</code> (PipeWire) or <code>~/.config/pulse/</code> (PulseAudio) so it survives reboots.</p>
+<h4 id="linux-audio-debugging-tools-terminology">Linux Audio Debugging — Tools &amp; Terminology<a class="headerlink" href="#linux-audio-debugging-tools-terminology" title="Permanent link">&para;</a></h4>
+<p><strong>Audio stack (top to bottom):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What</th>
+<th>NixOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PipeWire</td>
+<td>modern audio server, replaces PulseAudio</td>
+<td><code>services.pipewire.enable</code></td>
+</tr>
+<tr>
+<td>WirePlumber</td>
+<td>session manager for PipeWire, handles routing/defaults</td>
+<td><code>services.pipewire.wireplumber.enable</code></td>
+</tr>
+<tr>
+<td>ALSA</td>
+<td>kernel-level audio interface</td>
+<td><code>services.pipewire.alsa.enable</code> (compatibility layer)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key terms:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sink</td>
+<td>output device (speakers/headphones)</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>input device (microphone)</td>
+</tr>
+<tr>
+<td>Profile</td>
+<td>a config preset on a sound card that activates certain endpoints (e.g. "Game Output + Game Input")</td>
+</tr>
+<tr>
+<td>Node</td>
+<td>a PipeWire object representing an audio stream or device</td>
+</tr>
+<tr>
+<td><code>@DEFAULT_AUDIO_SOURCE@</code></td>
+<td>WirePlumber alias for the current default mic</td>
+</tr>
+<tr>
+<td><code>*</code> in <code>wpctl status</code></td>
+<td>marks the current default sink/source</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recording/playback tools tested:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Package</th>
+<th>Result</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rec</code> / <code>play</code></td>
+<td><code>sox</code></td>
+<td>worked</td>
+<td>queries PipeWire for actual source format (rate, channels, bit depth) and adapts automatically</td>
+</tr>
+<tr>
+<td><code>arecord</code> / <code>aplay</code></td>
+<td><code>alsa-utils</code></td>
+<td>recorded but playback was garbled/fast</td>
+<td>old ALSA tool, assumes defaults (often 44100Hz stereo) instead of negotiating with PipeWire — rate mismatch causes chipmunk audio</td>
+</tr>
+<tr>
+<td><code>pw-record</code></td>
+<td><code>pipewire</code></td>
+<td><code>error: open failed: Operation not supported</code></td>
+<td><code>.wav</code> container not supported in this PipeWire build, needs raw format or different container</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Useful commands:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wpctl status</code></td>
+<td>show all audio nodes, <code>*</code> = default</td>
+</tr>
+<tr>
+<td><code>wpctl set-default &lt;id&gt;</code></td>
+<td>set default sink/source</td>
+</tr>
+<tr>
+<td><code>wpctl inspect @DEFAULT_AUDIO_SOURCE@</code></td>
+<td>detailed info on default mic</td>
+</tr>
+<tr>
+<td><code>wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0</code></td>
+<td>unmute mic</td>
+</tr>
+<tr>
+<td><code>wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1.0</code></td>
+<td>max mic volume</td>
+</tr>
+<tr>
+<td><code>rec /tmp/test.wav trim 0 3</code></td>
+<td>record 3 seconds (sox, recommended)</td>
+</tr>
+<tr>
+<td><code>play /tmp/test.wav</code></td>
+<td>play back (sox)</td>
+</tr>
+<tr>
+<td><code>pavucontrol</code></td>
+<td>GUI for managing audio devices/profiles</td>
+</tr>
+</tbody>
+</table>
+<h4 id="agenix-rekeying-secrets-after-adding-a-new-host">Agenix - rekeying secrets after adding a new host<a class="headerlink" href="#agenix-rekeying-secrets-after-adding-a-new-host" title="Permanent link">&para;</a></h4>
+<p>When you add a new host public key to <code>secrets/secrets.nix</code>, you need to rekey so the secret gets re-encrypted for the new recipient.</p>
+<p>The command that actually works:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">cd</span><span class="w"> </span>secrets
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>sudo<span class="w"> </span>agenix<span class="w"> </span>-r<span class="w"> </span>-i<span class="w"> </span>/etc/ssh/ssh_host_ed25519_key
+</span></code></pre></div></p>
+<p>Key gotchas:
+- <code>-i</code> wants the <strong>private SSH key</strong> of a host already in <code>secrets.nix</code>, NOT the <code>.age</code> file
+- needs <code>sudo</code> because <code>/etc/ssh/ssh_host_ed25519_key</code> is root-owned
+- <code>agenix -r</code> alone fails with "no identity matched any of the recipients" — it doesn't auto-find the host key
+- the error messages are completely unhelpful</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

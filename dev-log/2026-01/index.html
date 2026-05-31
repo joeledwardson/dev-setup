@@ -1,0 +1,2184 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../2025-12/">
+      
+      
+        <link rel="next" href="../2026-02/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>January 2026 - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#january-2026" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              January 2026
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joels-claude-bot/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joels-claude-bot/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joels-claude-bot/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joels-claude-bot/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#revisiting-lsof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revisiting lsof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-module-system-auto-injected-args" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS Module System - Auto-injected Args
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inherit-in-nixos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inherit in nixos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-piping-args" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash piping args
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsof-ss-deep-dive-socket-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lsof &amp; ss deep dive (socket files)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apihttp-requests-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API/HTTP requests client
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixarr-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nixarr setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recyclarr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recyclarr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#radarrsonarr-quality-system-claude" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Radarr/Sonarr Quality System (Claude)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-profiles-my-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality profiles (my notes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-diffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git diffs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wincmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wincmd?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#revisiting-lsof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revisiting lsof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-module-system-auto-injected-args" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS Module System - Auto-injected Args
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inherit-in-nixos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inherit in nixos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-piping-args" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash piping args
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsof-ss-deep-dive-socket-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        lsof &amp; ss deep dive (socket files)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apihttp-requests-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API/HTTP requests client
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixarr-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nixarr setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recyclarr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recyclarr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#radarrsonarr-quality-system-claude" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Radarr/Sonarr Quality System (Claude)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-profiles-my-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality profiles (my notes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-diffs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git diffs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wincmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wincmd?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="january-2026">January 2026<a class="headerlink" href="#january-2026" title="Permanent link">&para;</a></h1>
+<p>Wow new year!
+Should review all these notes at some ponit for a bit of reflection on the year.</p>
+<p>Feels like problem after problem I'm solving in pursuit of the "perfect system" but it will never be perfect lol</p>
+<p>Anyway....</p>
+<h3 id="revisiting-lsof">Revisiting <code>lsof</code><a class="headerlink" href="#revisiting-lsof" title="Permanent link">&para;</a></h3>
+<p>So gemini came up with this, using <code>lsof</code> to listen to open files to find processes that are listening and finding ports. Context is i wanted to find the port that <code>sabnzbd</code> was listening on!
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>➜<span class="w"> </span>jollof<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗<span class="w"> </span>sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>-P<span class="w"> </span>-n<span class="w"> </span>-c<span class="w"> </span>sabnzbd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>listen
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>lsof:<span class="w"> </span>WARNING:<span class="w"> </span>can<span class="s1">&#39;t stat() fuse.gvfsd-fuse file system /run/user/1002/gvfs</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="s1">      Output information may be incomplete.</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s1">lsof: WARNING: can&#39;</span>t<span class="w"> </span>stat<span class="o">()</span><span class="w"> </span>fuse.portal<span class="w"> </span>file<span class="w"> </span>system<span class="w"> </span>/run/user/1002/doc
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span>Output<span class="w"> </span>information<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>incomplete.
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>systemd<span class="w">        </span><span class="m">1</span><span class="w">            </span>root<span class="w"> </span>729u<span class="w">  </span>IPv4<span class="w">  </span><span class="m">17381</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.1:631<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>sshd<span class="w">      </span><span class="m">138238</span><span class="w">            </span>root<span class="w">   </span>6u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">246743</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:22<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>sshd<span class="w">      </span><span class="m">138238</span><span class="w">            </span>root<span class="w">   </span>7u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">246745</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:22<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>systemd-r<span class="w"> </span><span class="m">138246</span><span class="w"> </span>systemd-resolve<span class="w">  </span>12u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">264651</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:5355<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>systemd-r<span class="w"> </span><span class="m">138246</span><span class="w"> </span>systemd-resolve<span class="w">  </span>14u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">264659</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:5355<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>systemd-r<span class="w"> </span><span class="m">138246</span><span class="w"> </span>systemd-resolve<span class="w">  </span>23u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">264667</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.53:53<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>systemd-r<span class="w"> </span><span class="m">138246</span><span class="w"> </span>systemd-resolve<span class="w">  </span>25u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">264669</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.54:53<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>.postgres<span class="w"> </span><span class="m">138341</span><span class="w">        </span>postgres<span class="w">   </span>6u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">270343</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="o">[</span>::1<span class="o">]</span>:5432<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>.postgres<span class="w"> </span><span class="m">138341</span><span class="w">        </span>postgres<span class="w">   </span>7u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">270344</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.1:5432<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>syncthing<span class="w"> </span><span class="m">138406</span><span class="w">          </span>jollof<span class="w">  </span>13u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">270360</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:22000<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>syncthing<span class="w"> </span><span class="m">138406</span><span class="w">          </span>jollof<span class="w">  </span>29u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">267453</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.1:8384<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>Prowlarr<span class="w">  </span><span class="m">180815</span><span class="w">        </span>prowlarr<span class="w"> </span>340u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">407811</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:9696<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>Radarr<span class="w">    </span><span class="m">180819</span><span class="w">          </span>radarr<span class="w"> </span>359u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">396267</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:7878<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>Sonarr<span class="w">    </span><span class="m">180822</span><span class="w">          </span>sonarr<span class="w"> </span>366u<span class="w">  </span>IPv6<span class="w"> </span><span class="m">405579</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:8989<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>nzbget<span class="w">    </span><span class="m">180836</span><span class="w">          </span>nzbget<span class="w">   </span>3u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">389849</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:6789<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>python3.1<span class="w"> </span><span class="m">180925</span><span class="w">         </span>sabnzbd<span class="w">   </span>7u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">403487</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span><span class="m">127</span>.0.0.1:8080<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>markdown-<span class="w"> </span><span class="m">192067</span><span class="w">          </span>jollof<span class="w">  </span>25u<span class="w">  </span>IPv4<span class="w"> </span><span class="m">448020</span><span class="w">      </span>0t0<span class="w">  </span>TCP<span class="w"> </span>*:8336<span class="w"> </span><span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>➜<span class="w"> </span>jollof<span class="w"> </span>dev-setup<span class="w"> </span><span class="o">(</span>main<span class="o">)</span><span class="w"> </span>✗
+</span></code></pre></div></p>
+<p>Can see above its 8080</p>
+<h3 id="nixos-module-system-auto-injected-args">NixOS Module System - Auto-injected Args<a class="headerlink" href="#nixos-module-system-auto-injected-args" title="Permanent link">&para;</a></h3>
+<p>In <code>flake.nix</code> I explicitly create <code>pkgs-unstable</code>:
+<div class="language-nix highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="ss">pkgs-unstable</span> <span class="o">=</span> <span class="nb">import</span> nixpkgs-unstable <span class="p">{</span> <span class="o">...</span> <span class="p">};</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="ss">commonSpecialArgs</span> <span class="o">=</span> <span class="p">{</span> <span class="k">inherit</span> inputs commonGroups pkgs-unstable<span class="p">;</span> <span class="p">};</span>
+</span></code></pre></div></p>
+<p>But in modules like <code>nixos-base.nix</code>, I use <code>{ pkgs, pkgs-unstable, ... }</code> - where does <code>pkgs</code> come from?</p>
+<p><code>pkgs</code> is <strong>automatically provided</strong> by <code>nixpkgs.lib.nixosSystem</code>. When you call it, NixOS evaluates nixpkgs for your system and injects <code>pkgs</code> into all modules.</p>
+<p><code>specialArgs</code> is only for <strong>extra</strong> args NixOS doesn't know about (like <code>pkgs-unstable</code>).</p>
+<p>Other auto-injected module args: <code>config</code>, <code>lib</code>, <code>options</code>, <code>modulesPath</code></p>
+<p>Docs: https://nixos.org/manual/nixos/stable/#sec-writing-modules</p>
+<h3 id="inherit-in-nixos">Inherit in nixos<a class="headerlink" href="#inherit-in-nixos" title="Permanent link">&para;</a></h3>
+<p>Brief refresher on inherit (i always forget)
+<div class="language-nix highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nix-repl<span class="o">&gt;</span> <span class="k">let</span> <span class="ss">a</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span> <span class="k">in</span> <span class="p">{</span><span class="ss">b</span><span class="o">=</span>a<span class="o">+</span><span class="mi">20</span><span class="p">;</span><span class="ss">a</span><span class="o">=</span>a<span class="p">;}</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  <span class="ss">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  <span class="ss">b</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>nix-repl<span class="o">&gt;</span> <span class="k">let</span> <span class="ss">a</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span> <span class="k">in</span> <span class="p">{</span><span class="ss">b</span><span class="o">=</span>a<span class="o">+</span><span class="mi">20</span><span class="p">;</span> <span class="k">inherit</span> a<span class="p">;}</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">{</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  <span class="ss">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  <span class="ss">b</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">}</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>nix-repl<span class="o">&gt;</span>
+</span></code></pre></div></p>
+<h3 id="bash-piping-args">Bash piping args<a class="headerlink" href="#bash-piping-args" title="Permanent link">&para;</a></h3>
+<p>Well I'm finally getting round to trying to get my head round <code>-s</code> and <code>--</code> in bash!</p>
+<p>So.... <code>-s</code> is to take commands from stdinput. so with piping, can see without this it expects a file
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span>bash<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hi<span class="w"> </span>/run/current-system/sw/bin/echo:<span class="w"> </span>/run/current-system/sw/bin/echo:<span class="w"> </span>cannot<span class="w"> </span>execute<span class="w"> </span>binary<span class="w"> </span>file
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~
+</span></code></pre></div>
+ahhhh, not this didn't work as <code>-s</code> expects from STDIN but i passed them as arguments! so it just opens a shell
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span>bash<span class="w"> </span>-s<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hi
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">[</span>joelyboy@desktop-work:~<span class="o">]</span>$<span class="w"> </span>^C
+</span></code></pre></div></p>
+<p>here is a proper working example:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;echo hi&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-s
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>hi
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~
+</span></code></pre></div></p>
+<p>Now, as we know in bash double quotations "" expand args, so below will try to expand <code>$1</code>, and find nothing!
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;echo Argument is: </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;apples&#39;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Argument<span class="w"> </span>is:
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~
+</span></code></pre></div></p>
+<p>Whereas this works! as <code>$1</code> is NOT expanded before piping
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;echo Argument is $1&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;apples&#39;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Argument<span class="w"> </span>is<span class="w"> </span>apples
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~
+</span></code></pre></div></p>
+<p>So, interestingly then, by default <code>bash</code> takes first param as script path to run and then <code>$2</code>, <code>$3</code> etc as positional args to pass to the script.
+I.e. <code>bash testie.sh 'hiya'</code> runs <code>testie.sh</code> with <code>$1</code> as 'hiya'</p>
+<p>BUT, if <code>-s</code> is passed the first one from stdin is the script and then all args following are positionals to the script taken from stdin</p>
+<p>Finally, when we see <code>--</code> it just means to not treat <code>-some_opt</code> stuff as options. Like this where <code>-apples</code> I guess bash thinks is an option (although interesting it didn't complain or throw an error)
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;echo Argument is $1&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-s<span class="w"> </span>-apples
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Argument<span class="w"> </span>is
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;echo Argument is $1&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-apples
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>Argument<span class="w"> </span>is<span class="w"> </span>-apples
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>➜<span class="w"> </span>joelyboy<span class="w"> </span>~
+</span></code></pre></div></p>
+<h3 id="lsof-ss-deep-dive-socket-files">lsof &amp; ss deep dive (socket files)<a class="headerlink" href="#lsof-ss-deep-dive-socket-files" title="Permanent link">&para;</a></h3>
+<p><strong>lsof columns</strong> (<a href="https://man7.org/linux/man-pages/man8/lsof.8.html">man page</a>):</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COMMAND</td>
+<td>Process name (truncated to 9 chars)</td>
+<td><code>dockerd</code>, <code>systemd</code></td>
+</tr>
+<tr>
+<td>PID</td>
+<td>Process ID</td>
+<td><code>1879</code></td>
+</tr>
+<tr>
+<td>USER</td>
+<td>Owner</td>
+<td><code>root</code></td>
+</tr>
+<tr>
+<td>FD</td>
+<td>File Descriptor + mode suffix</td>
+<td><code>594u</code>, <code>3u</code></td>
+</tr>
+<tr>
+<td>TYPE</td>
+<td>File type</td>
+<td><code>unix</code> (socket), <code>REG</code> (file), <code>DIR</code></td>
+</tr>
+<tr>
+<td>DEVICE</td>
+<td>Device identifier (kernel address for sockets)</td>
+<td><code>0xffff8a6a933e3000</code></td>
+</tr>
+<tr>
+<td>SIZE/OFF</td>
+<td>Size or offset</td>
+<td><code>0t0</code> (0 offset)</td>
+</tr>
+<tr>
+<td>NODE</td>
+<td>Inode number</td>
+<td><code>13739</code></td>
+</tr>
+<tr>
+<td>NAME</td>
+<td>File path + socket info</td>
+<td><code>/run/docker.sock type=STREAM</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>FD suffixes</strong> (<a href="https://man7.org/linux/man-pages/man8/lsof.8.html#OUTPUT">docs</a>):
+- <code>u</code> = read+write
+- <code>r</code> = read only
+- <code>w</code> = write only
+- <code>cwd</code> = current working dir
+- <code>txt</code> = program text (code)
+- <code>mem</code> = memory-mapped file</p>
+<p><strong>COMMAND column</strong>: Yes, <code>systemd</code> means the process named "systemd" (PID 1, the init system). It holds the socket FD because systemd created it via socket activation.</p>
+<hr />
+<p><strong>ss columns</strong> (<a href="https://man7.org/linux/man-pages/man8/ss.8.html">man page</a>):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>u_str LISTEN 0 4096 /run/docker.sock 13739 * 0 users:((&quot;dockerd&quot;,pid=1879,fd=3))
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u_str</code></td>
+<td>Unix stream socket (<code>u_dgr</code> = datagram, <code>u_seq</code> = seqpacket)</td>
+</tr>
+<tr>
+<td><code>LISTEN</code></td>
+<td>Socket state</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>Recv-Q (queued bytes)</td>
+</tr>
+<tr>
+<td><code>4096</code></td>
+<td>Send-Q (backlog for LISTEN)</td>
+</tr>
+<tr>
+<td><code>/run/docker.sock</code></td>
+<td>Local address (path)</td>
+</tr>
+<tr>
+<td><code>13739</code></td>
+<td>Inode</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Peer address (none for LISTEN)</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>Peer port/inode</td>
+</tr>
+</tbody>
+</table>
+<p><strong>users field</strong>: <code>users:(("dockerd",pid=1879,fd=3),("systemd",pid=1,fd=595))</code>
+- List of processes with this socket open
+- Format: <code>("command",pid=PID,fd=FD_NUMBER)</code>
+- Multiple entries = multiple processes sharing the socket (socket activation)</p>
+<p><strong>Why 2 entries for docker.sock?</strong>
+Systemd creates the socket (socket activation), then passes FDs to dockerd. Both hold references.</p>
+<p>Docs:
+- lsof: https://man7.org/linux/man-pages/man8/lsof.8.html
+- ss: https://man7.org/linux/man-pages/man8/ss.8.html</p>
+<h3 id="apihttp-requests-client">API/HTTP requests client<a class="headerlink" href="#apihttp-requests-client" title="Permanent link">&para;</a></h3>
+<p>So having used postman in the past and wanting to move to a vim based giga-chad 💪 TUI will review the options:</p>
+<ul>
+<li>atac: crashed on importing cloudflare openAPI schema (it is large but not great....)</li>
+<li>posting: more promising but cloudflare uses openapi spec <code>3.0.3</code> and posting based off <code>openapi-pydantic</code> package which likes <code>3.1.x</code></li>
+<li>resto: 281 stars... last release 2022 </li>
+<li>resterm: lets go: still struggling with errors trying to import metabase openAPI json (which IS a valid openapi <code>3.1</code> so I assume same problem as the others, not updated for latest)</li>
+<li>openapi-tui: </li>
+<li>atac (UPDATE): trying v0.22.1 from unstable nix packages: same issue with metabase API....</li>
+<li>resterm (UPDATE): trying v0.21.3 from unstable nix packages: same problem</li>
+<li>openapi-tui: DOES work for <code>v.3.1</code> openapi BUT i try the <code>:send</code> command and nothing happens....</li>
+</ul>
+<p>Ok, this seems to be a common theme... found a <a href="https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0">link here</a> that explains <code>exclusiveMinimum</code> which seems to be plaguing these TUIs</p>
+<p>So... lets try a down-converter for openapi?</p>
+<h3 id="nixarr-setup">Nixarr setup<a class="headerlink" href="#nixarr-setup" title="Permanent link">&para;</a></h3>
+<p>Decided to go with nixarr (lets give it a try).</p>
+<p>At some point i would like to review using configarr or whatever its called to sync config files...</p>
+<p>Because i keep forgetting (and they changed the ports)... its:
+- radarr: 7878
+- prowlarr: 9696
+- sabnzbd: 6336 (changed from 8080)</p>
+<ul>
+<li>Step 1 *
+so go to sabnzbd:6336 to setup.</li>
+</ul>
+<p>Newshosting is the ... download server?</p>
+<p>Then just add host <code>new.newhosting.com</code> - (then get username and pass - saved in bitwarden, can login to dashboard here: https://controlpanel.newshosting.com/customer/)</p>
+<p>important to note that on the newhosting dash <a href="https://controlpanel.newshosting.com/customer/index.php">here</a> it states 30 max connections so in the <a href="http://localhost:6336/config/server/">server config</a> i set the connections to 30</p>
+<ul>
+<li>Step 2 *
+Using nzbgeek as the ... indexer?&gt;</li>
+</ul>
+<p>Just have to go to prowlarr and add indexer...</p>
+<p>Can get API key from <a href="https://nzbgeek.info/dashboard.php?myaccount">here</a> on nzbgeek but i think its the same as the password?</p>
+<ul>
+<li>
+<p>Step 3 *
+Have added in prowlarr apps <a href="http://localhost:9696/settings/applications">here</a> radarr so that radarr can pull the indexer from prowlarr (i.e. just nzbgeek at the moment)</p>
+</li>
+<li>
+<p>Step 4 *
+Go to <a href="http://localhost:7878/settings/downloadclients">radarr download client</a> and add sabnzbd</p>
+</li>
+</ul>
+<h3 id="recyclarr">Recyclarr<a class="headerlink" href="#recyclarr" title="Permanent link">&para;</a></h3>
+<p>So this is not in true NixOS style but its nice to have a tool to configure trash guides that is NOT through the UI.</p>
+<p>Configarr worth looking at after for a more "complete" declarative option</p>
+<h3 id="radarrsonarr-quality-system-claude">Radarr/Sonarr Quality System (Claude)<a class="headerlink" href="#radarrsonarr-quality-system-claude" title="Permanent link">&para;</a></h3>
+<p>The quality system can be confusing. Here's how it all fits together:</p>
+<p><strong>1. Quality Profile Structure:</strong></p>
+<pre class="mermaid"><code>graph TD
+    QP["Quality Profile&lt;br/&gt;'HD-1080p'"]
+    QP --&gt; SET["Settings"]
+    SET --&gt; CUT["Cutoff: Bluray-1080p"]
+    SET --&gt; UPG["Upgrades: Yes"]
+
+    QP --&gt; RANK["Quality Rankings"]
+    RANK --&gt; Q1["1. Bluray-1080p Remux"]
+    RANK --&gt; Q2["2. Bluray-1080p"]
+    RANK --&gt; Q3["3. WEB 1080p ←group"]
+    RANK --&gt; Q4["4. HDTV-1080p"]</code></pre>
+<p><strong>2. Quality Groups (expand a ranking):</strong></p>
+<pre class="mermaid"><code>graph TD
+    GRP["WEB 1080p&lt;br/&gt;(group)"]
+    GRP --&gt; A["WEBDL-1080p"]
+    GRP --&gt; B["WEBRip-1080p"]
+    GRP --&gt; C["AMZN WEB-DL"]
+
+    NOTE["All treated as EQUAL&lt;br/&gt;no upgrade between them"]
+    style NOTE fill:#fff3cd</code></pre>
+<p><strong>3. Custom Formats:</strong></p>
+<pre class="mermaid"><code>graph TD
+    CF["Custom Format&lt;br/&gt;'HD Bluray Tier 01'"]
+    CF --&gt; COND["Conditions"]
+    COND --&gt; C1["Source: Bluray"]
+    COND --&gt; C2["Resolution: 1080p"]
+    COND --&gt; C3["Group: FraMeSToR"]
+
+    COND --&gt; LOGIC["ALL must match"]
+    LOGIC --&gt; SCORE["+1800 score"]</code></pre>
+<p><strong>4. How matching works:</strong></p>
+<pre class="mermaid"><code>graph TD
+    REL["Release filename"]
+    REL --&gt; PARSE["Parser"]
+
+    PARSE --&gt; P1["Source: Bluray"]
+    PARSE --&gt; P2["Res: 1080p"]
+    PARSE --&gt; P3["Remux: Yes"]
+
+    P1 --&gt; CHECK["Check conditions"]
+    P2 --&gt; CHECK
+    P3 --&gt; CHECK
+
+    CHECK --&gt; MATCH["All pass? → Apply score"]
+    CHECK --&gt; FAIL["Any fail? → No score"]</code></pre>
+<p><strong>The Hierarchy:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>What it is</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Quality Profile</strong></td>
+<td>Assigned to movie/show</td>
+<td>"HD-1080p"</td>
+</tr>
+<tr>
+<td><strong>Quality</strong></td>
+<td>Format+resolution</td>
+<td>Bluray-1080p</td>
+</tr>
+<tr>
+<td><strong>Quality Group</strong></td>
+<td>Equals within ranking</td>
+<td>WEB 1080p</td>
+</tr>
+<tr>
+<td><strong>Custom Format</strong></td>
+<td>Bonus/penalty scoring</td>
+<td>"Tier 01" +1800</td>
+</tr>
+<tr>
+<td><strong>Condition</strong></td>
+<td>Rule in custom format</td>
+<td>Source=Bluray</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Big Picture - How It All Fits Together:</strong></p>
+<pre class="mermaid"><code>graph TD
+    subgraph "A RELEASE (the file)"
+        REL["Movie.2024.1080p.BluRay.x264-GROUP"]
+        REL --&gt; PROPS["Has properties:"]
+        PROPS --&gt; SRC["Source"]
+        PROPS --&gt; RES["Resolution"]
+        PROPS --&gt; COD["Codec"]
+        PROPS --&gt; RMX["Remux flag"]
+        PROPS --&gt; GRP["Release Group"]
+        PROPS --&gt; SVC["Service tag"]
+    end</code></pre>
+<p><strong>1. Source</strong> = WHERE did the video come from?</p>
+<pre class="mermaid"><code>graph TD
+    SOURCE["Source&lt;br/&gt;(origin of video)"]
+
+    SOURCE --&gt; DISC["DISC sources"]
+    DISC --&gt; BD["Bluray"]
+    DISC --&gt; DVD["DVD"]
+
+    SOURCE --&gt; WEB["WEB sources"]
+    WEB --&gt; WEBDL["WEB-DL&lt;br/&gt;(direct download)"]
+    WEB --&gt; WEBRIP["WEBRip&lt;br/&gt;(screen capture)"]
+
+    SOURCE --&gt; TV["BROADCAST"]
+    TV --&gt; HDTV["HDTV"]
+
+    SVC["Service tags&lt;br/&gt;(which streaming)"]
+    SVC --&gt; NF["NF = Netflix"]
+    SVC --&gt; AMZN["AMZN = Amazon"]
+    SVC --&gt; DSNP["DSNP = Disney+"]
+
+    WEB -.-&gt;|"can have"| SVC</code></pre>
+<blockquote>
+<p><strong>Bluray IS a source</strong> - it means "ripped from a Bluray disc"</p>
+<p><strong>NF/AMZN are service tags</strong> - they tell you WHICH streaming service, but the source is still "WEB"</p>
+</blockquote>
+<p><strong>2. Remux</strong> = a FLAG, not a source</p>
+<pre class="mermaid"><code>graph TD
+    DISC["Disc Source&lt;br/&gt;(Bluray/DVD)"]
+    DISC --&gt; CHOICE{"Re-encoded?"}
+
+    CHOICE --&gt;|"NO"| REMUX["REMUX&lt;br/&gt;exact copy, huge file"]
+    CHOICE --&gt;|"YES"| ENCODE["Encode&lt;br/&gt;compressed, smaller"]
+
+    ENCODE --&gt; CODEC["Codec used:"]
+    CODEC --&gt; X264["x264"]
+    CODEC --&gt; X265["x265/HEVC"]</code></pre>
+<blockquote>
+<p>Remux only applies to disc sources. WEB-DL is already "not re-encoded" but we don't call it remux.</p>
+</blockquote>
+<p><strong>3. How Radarr builds a "Quality":</strong></p>
+<pre class="mermaid"><code>graph LR
+    QUAL["Quality in Radarr"]
+    QUAL --&gt; FORMULA["= Source + Resolution"]
+
+    FORMULA --&gt; EX1["Bluray-1080p"]
+    FORMULA --&gt; EX2["WEBDL-1080p"]
+    FORMULA --&gt; EX3["Bluray-2160p Remux"]
+    FORMULA --&gt; EX4["HDTV-720p"]</code></pre>
+<blockquote>
+<p>A "Quality" is just Source + Resolution combined. Radarr has ~30 built-in qualities.</p>
+</blockquote>
+<p><strong>4. The Full Tree:</strong></p>
+<pre class="mermaid"><code>graph TD
+    PROFILE["Quality Profile&lt;br/&gt;'HD-1080p'"]
+
+    PROFILE --&gt; QUALS["List of Qualities&lt;br/&gt;(ranked best→worst)"]
+    PROFILE --&gt; CFS["Custom Format Scores&lt;br/&gt;(bonus/penalty)"]
+    PROFILE --&gt; SETTINGS["Settings&lt;br/&gt;(cutoff, upgrades)"]
+
+    QUALS --&gt; Q1["Bluray-1080p Remux"]
+    QUALS --&gt; Q2["Bluray-1080p"]
+    QUALS --&gt; QGRP["WEB 1080p ← GROUP"]
+    QUALS --&gt; Q4["HDTV-1080p"]
+
+    QGRP --&gt; QG1["WEBDL-1080p"]
+    QGRP --&gt; QG2["WEBRip-1080p"]
+
+    CFS --&gt; CF1["HD Bluray Tier 01: +1800"]
+    CFS --&gt; CF2["NF: +50"]
+    CFS --&gt; CF3["BR-DISK: -10000"]</code></pre>
+<p><strong>Quality Groups explained:</strong></p>
+<p>A group bundles multiple qualities as EQUAL rank. Inside a group, no upgrades happen between members.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Quality Group: &quot;WEB 1080p&quot;
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>├── WEBDL-1080p   ─┐
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>├── WEBRip-1080p  ─┼── all scored the SAME
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>└── (any WEB src) ─┘
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>Won&#39;t upgrade WEBRip → WEBDL
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>But custom formats CAN still prefer one via scoring
+</span></code></pre></div>
+<p><strong>5. Where do Custom Formats come from?</strong></p>
+<pre class="mermaid"><code>graph TD
+    CF["Custom Formats"]
+    CF --&gt; SRC1["Create manually in UI"]
+    CF --&gt; SRC2["Import via Recyclarr"]
+    CF --&gt; SRC3["Import JSON from Trash Guides"]
+
+    SRC2 --&gt; TG["Trash Guides"]
+    SRC3 --&gt; TG
+
+    TG --&gt; TIERS["Defines Tier 01/02/03&lt;br/&gt;based on release group reputation"]</code></pre>
+<blockquote>
+<p>Custom Formats are just pattern matchers YOU define (or import). They scan release names and add/subtract scores.</p>
+</blockquote>
+<p><strong>6. NF: Source vs Custom Format - what's the difference?</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>RELEASE: &quot;Movie.2024.1080p.NF.WEB-DL.x264-GROUP&quot;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>                          │
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>         Parser extracts: │
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>                          ▼
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>┌─────────────────────────────────────────────┐
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>│ Source: WEB-DL        ← Radarr built-in     │
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>│ Resolution: 1080p     ← Radarr built-in     │
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>│ Quality: WEBDL-1080p  ← Source + Resolution │
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>└─────────────────────────────────────────────┘
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>                          │
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>                          ▼
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>┌─────────────────────────────────────────────┐
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>│ Custom Format &quot;NF&quot; checks:                  │
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>│   Condition: title contains &quot;NF&quot;? YES       │
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>│   → Apply score: +50                        │
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>└─────────────────────────────────────────────┘
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>Final score = Quality rank + Custom Format scores
+</span></code></pre></div>
+<blockquote>
+<p>"NF" in the filename is just text. The Custom Format "NF" is a rule that DETECTS that text and adds score.</p>
+</blockquote>
+<p><strong>Jargon Summary Table:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Category</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bluray</td>
+<td>Source</td>
+<td>From physical disc</td>
+</tr>
+<tr>
+<td>WEB-DL</td>
+<td>Source</td>
+<td>Direct stream download</td>
+</tr>
+<tr>
+<td>WEBRip</td>
+<td>Source</td>
+<td>Screen captured stream</td>
+</tr>
+<tr>
+<td>HDTV</td>
+<td>Source</td>
+<td>TV broadcast capture</td>
+</tr>
+<tr>
+<td>Remux</td>
+<td>Flag</td>
+<td>No re-encoding (disc only)</td>
+</tr>
+<tr>
+<td>x264/x265</td>
+<td>Codec</td>
+<td>Compression method</td>
+</tr>
+<tr>
+<td>1080p/2160p</td>
+<td>Resolution</td>
+<td>Pixel dimensions</td>
+</tr>
+<tr>
+<td>NF/AMZN/DSNP</td>
+<td>Service tag</td>
+<td>Which streaming platform</td>
+</tr>
+<tr>
+<td>FraMeSToR</td>
+<td>Release group</td>
+<td>Team that made the release</td>
+</tr>
+<tr>
+<td>Tier 01/02/03</td>
+<td>Trash Guide rank</td>
+<td>Quality ranking of groups</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Filename example decoded:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Movie.2024.1080p.BluRay.REMUX.AVC.TrueHD.7.1-FraMeSToR
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>       │    │      │     │    │    │   │      │
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>       │    │      │     │    │    │   │      └── Release group
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>       │    │      │     │    │    │   └── Audio channels
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>       │    │      │     │    │    └── Audio codec
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>       │    │      │     │    └── Video codec
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>       │    │      │     └── Remux flag (not re-encoded)
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>       │    │      └── Source: disc
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>       │    └── Resolution
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>       └── Year
+</span></code></pre></div>
+<p><strong>Scoring Example:</strong></p>
+<p>In your quality profile, custom formats get scores:</p>
+<table>
+<thead>
+<tr>
+<th>Custom Format</th>
+<th>Score</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HD Bluray Tier 01</td>
+<td>+1800</td>
+<td>Best encode groups (FraMeSToR, etc)</td>
+</tr>
+<tr>
+<td>HD Bluray Tier 02</td>
+<td>+1050</td>
+<td>Good encode groups</td>
+</tr>
+<tr>
+<td>HD Bluray Tier 03</td>
+<td>-1000</td>
+<td>Lower quality encodes</td>
+</tr>
+<tr>
+<td>BR-DISK</td>
+<td>-10000</td>
+<td>Avoid raw disc rips</td>
+</tr>
+</tbody>
+</table>
+<p>When a release matches multiple formats, scores ADD UP. Higher total = preferred.</p>
+<p><strong>Cutoff vs Upgrade:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Current: WEB-1080p (score: 500)
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Cutoff:  Bluray-1080p (score: 1000)
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>→ Will upgrade to Bluray because current &lt; cutoff
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>New release: Bluray-1080p + &quot;Tier 01&quot; format (+1800)
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>Total score: 1000 + 1800 = 2800
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>→ Upgrades because new score &gt; current score
+</span></code></pre></div>
+<p><strong>Why Groups?</strong></p>
+<p>Quality groups treat multiple sources as equivalent. E.g., "WEB 1080p" group:
+- WEBDL-1080p (Netflix direct)
+- WEBRip-1080p (screen capture)
+- AMZN WEB-DL</p>
+<p>All ranked the SAME. Won't upgrade WEBRip→WEBDL, but custom format scores can still prefer one.</p>
+<p>Docs: https://wiki.servarr.com/radarr/settings#quality-profiles</p>
+<h3 id="quality-profiles-my-notes">Quality profiles (my notes)<a class="headerlink" href="#quality-profiles-my-notes" title="Permanent link">&para;</a></h3>
+<p>Well.... what claude wrote is... verbose....</p>
+<p>Will try to simplify my best i can do</p>
+<pre class="mermaid"><code>graph TD
+A[Quality Profile\nHD Bluray + WEB];
+A --&gt; B[Qualities List];
+B --&gt; C[Bluray-1080p];
+B --&gt; D[WEB 1080p group];
+B --&gt; E[Bluray-720p];
+
+D --&gt; G[WEBDL-1080p];
+D --&gt; H[WEBRip-1080p];
+
+A --&gt; S[Scoring];
+S --&gt; T1[HD Bluray Tier 01\n+1800 good score];
+
+T1 --&gt; C1[Not remux\ngood as remux is massive];
+T1 --&gt; C2[BLURAY\nmust be from bluray disk];
+T1 --&gt; C3[Not 2160p\nI guess dont want massive res];
+
+S --&gt;T2[x265\n-1000 bad score, 265 heavy processing];
+T2 --&gt; C4[x265\nmust be encoded with x265];</code></pre>
+<h3 id="git-diffs">Git diffs<a class="headerlink" href="#git-diffs" title="Permanent link">&para;</a></h3>
+<p>So have played around with diffs in neovim but nevery really understood how it worked....</p>
+<p>Got ChatGPT to outline a super simple repo to play around with the <code>DiffView</code> extension.</p>
+<p>I think I understand now that 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>BASE   = common ancestor
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>OURS   = your current branch (HEAD)
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>THEIRS = incoming change
+</span></code></pre></div></p>
+<p>Where theirs e.g. is when we pop a stash (i.e. what the stash "wants")</p>
+<p><code>BASE</code> is a bit misleading... it's in most cases (I can see) the starting point of a stash (i.e. what it was before the stash was done). But that is NOT the same as the prior commit to OURS! I guess its more the last time that <code>OURS</code> and <code>THEIRS</code> was the same? (makes more sense below)</p>
+<p>This is the example</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>git<span class="w"> </span>init
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 1&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 2&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>git<span class="w"> </span>add<span class="w"> </span>file.txt
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;base&quot;</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="c1"># create stash</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 2 - stash change&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 3 from stash&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>git<span class="w"> </span>stash<span class="w"> </span>push<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;stash version&quot;</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="c1"># create branch change</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 2 - branch change&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line 3 from branch&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>file.txt
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;branch change&quot;</span>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="c1"># apply stash (conflict)</span>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>git<span class="w"> </span>stash<span class="w"> </span>apply
+</span></code></pre></div>
+<p>(I have added a prefix for the git stuff so it doesnt think theres a conflict here)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>XXXX &lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream        ← OURS (branch / HEAD)
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>line 2 - branch change
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>line 3 from branch
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>XXXX ||||||| Stash base              ← BASE (common ancestor)
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>line 1
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>line 2
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>XXXX =======
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>line 2 - stash change           ← THEIRS (stash)
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>line 3 from stash
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>XXXX &gt;&gt;&gt;&gt;&gt;&gt;&gt; Stashed changes
+</span></code></pre></div></p>
+<p>And as ChatGPT puts it...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>BASE = where both started
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>OURS = what I have
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>THEIRS = what’s coming in
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>CENTER = what I commit
+</span></code></pre></div></p>
+<h3 id="wincmd">Wincmd?<a class="headerlink" href="#wincmd" title="Permanent link">&para;</a></h3>
+<p>So apparently <code>:tabdo</code> executes for each tab?</p>
+<p>Nice! so like
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">:</span><span class="nv">tabdo</span><span class="w"> </span><span class="p">:</span><span class="py">echo</span><span class="w"> </span><span class="nf">bufname</span><span class="p">()</span>
+</span></code></pre></div></p>
+<p>Goes and prints bufname for each tab (active buffer)</p>
+<p>Ahhhh
+<code>:wincmd =</code> is the same as <code>C-W =</code> a window command...</p>
+<p>Interestingly, the reason the the <code>outline</code> escapes from this when its called (and graciously so, wouldn't want the outline taking up half the page horizontally...)</p>
+<p>It is the <code>winfixwidth</code> property that forces the win to stay constant (when <code>C-w =</code> is called)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
