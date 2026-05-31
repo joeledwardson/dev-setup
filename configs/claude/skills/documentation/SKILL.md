@@ -32,6 +32,31 @@ Naming causes more rewrites than anything else. Before writing a page, file, or 
 
 ---
 
+## The reader test — write for the junior researcher
+
+Before publishing any doc, run this check: **would a smart graduate with no background in this domain understand every claim?**
+
+This applies to three categories the colour rule and the "What + Why" rule don't catch:
+
+**Named external things** — product names, company names, industry programmes. Don't assume the reader knows what World-Check is, what LexisNexis does, or what a "micro-PEP programme" means. On first mention, one clause of context is enough: "World-Check (LSEG's global PEP screening database — used by virtually every major bank)". The test: if you Googled the name with no context, would the first result tell you why it's relevant *here*? If not, add the context.
+
+**Acronyms and regulatory terms** — expand on first use, always. Not just technical acronyms (AML, PEP, KYC) but also regulatory regimes, legal instruments, compliance frameworks. "Under UK MLR" means nothing without "Money Laundering Regulations 2017".
+
+**Causal claims and market assertions** — "X has increased because Y", "the market is underserved", "demand hasn't crystallised" are all claims that need their reasoning on the same page. Don't assert a trend or a dynamic and expect the reader to fill in the why. One sentence of explanation beats three words of implied expertise.
+
+**Pattern for domain-heavy docs:** add a collapsible key terms table for any page with 3+ domain-specific terms. Collapsed by default — doesn't clutter the page, but it's there when a reader hits an unfamiliar term.
+
+```markdown
+??? info "Key terms"
+
+    | Term | Plain English |
+    |---|---|
+    | **PEP** | Politically Exposed Person — senior public official or close associate. Banks must apply enhanced checks. |
+    | **AML** | Anti-Money Laundering — the regulatory regime that mandates PEP screening. |
+```
+
+---
+
 ## Rule 3 — diagram first, always
 
 **A page describing structure, flow, or layout must contain a diagram. Tables and prose alone are not enough.**
@@ -332,9 +357,36 @@ extra_css:
 
 ```python linenums="1" hl_lines="2"
 key_line = here  # (1)!
-` ``
+```
 1. Annotation explains *why*, not *what*.
 
+## Material features cheatsheet
+
+Each of these brings colour. That's the point — colour is how the reader's eye navigates before they read a word. Admonition type = semantic colour (orange warning, blue info, red danger). Tab label = coloured heading. `hl_lines` = blue highlight. `#!lang` inline = syntax colour. Use them instead of flat prose:
+
+```markdown
+!!! tip "When to use this"
+    Best for "you probably want this" guidance.
+
+!!! warning "Does NOT"
+    Explicitly document what this module/page doesn't cover.
+
+??? example "Collapsible — for long examples"
+    Hidden by default.
+```
+
+**Icon verification — do this before using any icon.** The icon shortcode `:material-X:` silently renders as literal text if `X` doesn't exist. Verify first:
+
+```sh
+find ~/.cache/uv -name 'X.svg' -path '*/material/*' 2>/dev/null
+# or for octicons:
+find ~/.cache/uv -name 'X.svg' -path '*/octicons/*' 2>/dev/null
+```
+
+Safe verified icons (common ones): `material-api`, `material-database`, `material-domain`, `material-email-fast`, `material-compare`, `material-delta`, `material-file-compare`, `material-rocket-launch`, `material-table`, `material-code-tags`, `octicons-arrow-right-24`, `octicons-diff-16`.
+
+**Grid cards** (for "list of N things, each with a purpose"):
+```markdown
 <div class="grid cards" markdown>
 -   :material-rocket-launch: **Title**
     ---
@@ -383,3 +435,98 @@ Follow the diagram with a table: `Test | Which step | What the fake controls`
 - this is a person reading the documentation (not a robot)
 - it should be engaging using colour and diagrams to emphasise the important points
 
+### Architecture overview page
+
+```markdown
+# Architecture
+
+> One paragraph: what this system is, who uses it, what it isn't.
+
+## System map
+
+(Mermaid flowchart — the first thing a new dev sees.)
+
+## Key flows
+
+(Sequence diagrams for the 2–3 most important paths.)
+
+## Code layout
+
+(Directory tree with one-line purpose per entry.)
+
+## External services
+
+(Table: service | used for | where configured)
+```
+
+### Module reference page
+
+```markdown
+# `module.name`
+
+One sentence: what this is.
+
+!!! warning "Does NOT"
+    What this module deliberately doesn't do.
+
+## How it fits
+
+(Mermaid showing inputs → this module → outputs.)
+
+## API reference
+
+(Hand-written usage example, then generated reference.)
+```
+
+### Getting Started page
+
+```markdown
+# Getting Started
+
+## What you need
+## Entry points
+
+(Flowchart: "what do you want?" → correct command)
+
+## Step-by-step first run
+## Config / env vars
+```
+
+---
+
+## Full doc-writing ruleset (from scratchpads/doc-guidelines.md)
+
+### Anti-patterns
+
+**❌ Prose describing positions** — "The cache sits between the API and the database…" → draw it.
+
+**❌ A table where a tree would do** — if rows have parent-child relationships, draw a tree.
+
+**❌ Auto-generated API ref as primary doc** — mkdocstrings output is a *lookup*. Every module page needs hand-written purpose + when-to-use *above* the generated ref.
+
+**❌ Six tables on one page** — if a page has 4+ tables, it's probably six pages crammed into one.
+
+**❌ Diagrams that go stale silently** — if a diagram describes code structure, either generate it from code or put an explicit "last verified" date on it. Static hand-drawn diagrams are fine for *intent*; don't use them for *fact*.
+
+**❌ Plain backticks for everything** — when every inline code snippet looks identical, the reader can't build a visual model. Use `#!lang` for symbols that are the *subject* of explanation so they match their appearance in code blocks and diagrams.
+
+**❌ "See the README"** — README is for "what is this and how do I run it". Anything beyond that goes in `docs/`.
+
+**❌ Unexplained named entities** — dropping a product name (World-Check), company name (LSEG), or industry programme name (micro-PEP) without a clause of context. One-clause rule: name (owner/category — what it does). If the reader would need to Google it to understand why it's relevant, add the context inline.
+
+**❌ Asserted causality** — "Brexit-era exposure spike", "demand hasn't crystallised", "the market is underserved" stated without the reasoning. These read as expertise to the author and jargon to the reader. One sentence of *why* after every causal claim.
+
+### Decision logging
+Typically in long projects it is good to have some record of decisions taken.
+
+This should typically include architectural decisions / patterns like which tools, programming languages and architecture are chosen. This can be a mix of unprompted assumptions of explicitly decided with the user
+
+These should be recorded in ADRs (see also research skill)
+
+### Before merging — docs checklist
+
+- [ ] Every page describing structure has at least one diagram
+- [ ] New routes/tools added to the index app table
+- [ ] New architectural decisions have an ADR (if non-trivial)
+- [ ] `mkdocs build --strict` passes locally
+- [ ] No new flat tables for things that have shape
