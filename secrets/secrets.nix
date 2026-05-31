@@ -15,9 +15,12 @@ let
   degen-home =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXl8q4NTmgWA0lJax2zg9HbXWFkOzGoOQx15SGA782w root@degen-home";
 
+  degen-bot =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM7SSAY8M48OOXk8KBD50YSHqDzrCB1EEv4mBxR2yCXY root@degen-bot";
+
   trustedHosts = [ desktop-work jollof-home degen-work degen-home ];
-  allHosts = trustedHosts ++ [ streaming-server ];
+  allHosts = trustedHosts ++ [ streaming-server degen-bot ];
 in {
-  "llm-gemini-key.age".publicKeys = trustedHosts;
+  "llm-gemini-key.age".publicKeys = allHosts;
   "ntfy-token.age".publicKeys = allHosts;
 }

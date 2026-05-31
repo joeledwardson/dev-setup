@@ -10,27 +10,28 @@ vars:
   BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
 
 tasks:
-  hyprland:
+  hyprland:reload:
     internal: true
     cmds:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotfiles, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland
+    desc: Full system rebuild — os:build, dotbot:run, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
     cmds:
       - task: os:build
-      - task: dotfiles
+      - task: dotbot:run
+      - task: llm:keys
       - task: sheldon:lock
-      - task: yazi
+      - task: yazi:pkg
       - task: tmux:tpm
       - task: tmux:reload
-      - task: hyprland
+      - task: hyprland:reload
 
   os:build:
     desc: Rebuild NixOS configuration
     cmds:
       - sudo nixos-rebuild switch --flake .
-      - task: hyprland
+      - task: hyprland:reload
 
   installer:build:
     desc: Build installer ISO
@@ -49,12 +50,12 @@ tasks:
       - sudo nix-collect-garbage -d
       - nix-collect-garbage -d
 
-  dotfiles:
+  dotbot:run:
     desc: Run dotbot and setup hyprland config
     cmds:
       - git submodule update --init
       - dotbot -c install.conf.yaml
-      - task: hyprland
+      - task: hyprland:reload
 
   sheldon:lock:
     desc: Rebuild sheldon plugin lock
@@ -66,17 +67,23 @@ tasks:
     cmds:
       - sheldon lock --update
 
-  yazi:
+  yazi:pkg:
     desc: Reset yazi plugins/flavors and reinstall (avoids stale state from partial pulls)
     cmds:
       - rm -rf configs/yazi/plugins configs/yazi/flavors ~/.local/state/yazi/packages
-      - task: dotfiles
+      - task: dotbot:run
       - ya pkg install
 
   tmux:reload:
     desc: Reload tmux config
     cmds:
-      - tmux source ~/.config/tmux/tmux.conf
+      - |
+        if tmux info >/dev/null 2>&1; then
+          echo 'sourcing tmux conf...'
+          tmux source ~/.config/tmux/tmux.conf
+        else
+          echo 'no tmux session to reload'
+        fi
 
   tmux:tpm:
     desc: Setup tmux plugin manager
