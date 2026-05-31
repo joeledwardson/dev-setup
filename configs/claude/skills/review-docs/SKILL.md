@@ -1,6 +1,6 @@
 ---
 name: review-docs
-description: Visual and structural documentation review. Screenshots live rendered pages, passes to Gemini vision for readability/colour/diagram analysis. Separate pass for structure, acronyms, and assumed knowledge. Persona is a junior researcher with no domain context.
+description: Visual and structural documentation review. Screenshots live rendered pages, passes to Gemini vision for readability/colour/diagram analysis. Separate pass for structure, acronyms, assumed knowledge, and factual accuracy (broken links, stale code refs, image/claim mismatches). Persona is a junior researcher with no domain context.
 ---
 
 # review-docs
@@ -67,6 +67,9 @@ You are a junior researcher from a completely different field who has been hande
 documentation to understand a project you know nothing about.
 
 You have no domain knowledge. You do not know what the project does yet.
+As a junior researcher, you are expected flag things you do not understand- assumed domain knowledge, 
+acronyms, leaps in knowledge that are unclear. unlinked references points and logic points
+
 Your job is to answer 6 questions. No code. Be specific — name files and sections.
 
 FIRST_IMPRESSION:
@@ -196,9 +199,129 @@ SIMPLER:
 
 ---
 
+---
+
+## Pass 4 — factual verification
+
+Checks that claims made in the docs are true. Three sub-steps run in order.
+
+### 4a. Broken links (automated, no Gemini)
+
+Extract every external URL from all in-scope markdown files and HTTP-check each one:
+
+```bash
+grep -rhoP '(?<=\()https?://[^\s)]+' docs/ | sort -u | while read url; do
+  code=$(curl -sL -o /dev/null -w "%{http_code}" --max-time 10 "$url")
+  [[ "$code" != "200" ]] && echo "BROKEN $code $url"
+done
+```
+
+Flag every non-200 response. Include the status code — 404 (gone) and 301 (moved) are different problems.
+
+### 4b. Code and file reference check (automated, no Gemini)
+
+Extract every file path and inline code symbol mentioned in docs and verify it exists in the repo:
+
+```bash
+# File paths: anything that looks like a path (contains / or .) in backticks
+grep -rhoP '`[^`]*[/\.][^`]*`' docs/ | grep -oP '(?<=`).*(?=`)' | sort -u | while read ref; do
+  # skip URLs, commands, extensions-only strings
+  [[ "$ref" =~ ^https? ]] && continue
+  [[ "$ref" =~ ^[a-z]+\.[a-z]+$ ]] && continue
+  # check if it exists anywhere in the project
+  result=$(find . -path "./.git" -prune -o -path "$ref" -print -o -name "$(basename $ref)" -print 2>/dev/null | head -1)
+  [[ -z "$result" ]] && echo "NOT FOUND: $ref"
+done
+```
+
+Flag anything not found. Don't fail on ambiguous short names (e.g. `fn`, `id`) — only flag clear file/path references.
+
+### 4c. Claim verification (per page, Gemini Flash + vision)
+
+Two Gemini calls per page: one text call for factual prose claims, one vision call for any images.
+
+**Text claim check** — for each page, pass markdown source + any referenced local file snippets:
+
+```bash
+# For files referenced in the page, inline their current content
+REFS=$(grep -oP '`[^`]+\.(py|lua|ts|js|nix|toml|yaml|json)[^`]*`' <page.md> | grep -oP '(?<=`).*(?=`)')
+SNIPPETS=""
+for ref in $REFS; do
+  [[ -f "$ref" ]] && SNIPPETS+="=== CURRENT CONTENT OF $ref ===\n$(cat $ref)\n\n"
+done
+{ echo 'VERIFY_PROMPT'; echo "=== DOC SOURCE ==="; cat <page.md>; echo "$SNIPPETS"; } | llm -m gemini-2.5-flash
+```
+
+**VERIFY_PROMPT**:
+
+```
+You are a fact-checker. You have been given a documentation page and, where available,
+the current content of files it references.
+
+Your job: find claims that are provably wrong or unverifiable. Ignore opinion, style, and clarity.
+Focus only on factual accuracy.
+
+List each flag on its own line. If nothing is wrong, output only: VERIFIED
+
+FLAG categories — use exactly these labels:
+
+STALE_REF:   A function, class, config key, or file path mentioned in the docs that does not
+             appear in the provided file content. Means the docs describe something that no
+             longer exists or has been renamed.
+             Example: docs say "call `process_frame()`" but the file has no such function.
+
+WRONG_CLAIM: A specific factual claim (number, behaviour, default value, flag name) that
+             contradicts what the provided file content shows.
+             Example: docs say "default timeout is 30s" but the code sets DEFAULT_TIMEOUT = 60.
+
+UNVERIFIABLE: A specific factual claim that cannot be checked from the provided context
+              (e.g. references an external service, a price, a third-party API response)
+              and should be manually verified.
+              Example: "the Skyscanner API returns prices in GBP" — cannot verify from source.
+
+Format each flag as:
+FLAG_TYPE: "<quoted claim from docs>" — <one sentence why it's flagged>
+```
+
+**Image claim check** — for each image (`![...]`) in the page, screenshot the rendered image and pass alongside the surrounding text:
+
+```bash
+# Extract surrounding 3 lines of context around each image reference
+grep -n '!\[' <page.md> | while read match; do
+  line=$(echo "$match" | cut -d: -f1)
+  context=$(sed -n "$((line-3)),$((line+3))p" <page.md>)
+  img_src=$(echo "$match" | grep -oP '(?<=\().*(?=\))')
+  # screenshot the rendered image from the live page at that anchor
+  llm -m gemini-2.5-pro 'IMAGE_VERIFY_PROMPT' -a "$img_src" <<< "$context"
+done
+```
+
+**IMAGE_VERIFY_PROMPT**:
+
+```
+You are a fact-checker reviewing a documentation screenshot.
+The surrounding text makes claims about what this image shows.
+
+Surrounding context:
+<CONTEXT>
+
+Does the image match the claims in the surrounding text?
+
+FLAG if: a number visible in the image contradicts a number stated in the text
+         (e.g. text says "£300" but screenshot shows "£400").
+FLAG if: the image shows an error state but the text describes it as working.
+FLAG if: the image appears to be outdated (UI elements or data that contradict the text).
+
+If the image matches or the context makes no specific verifiable claim: output only VERIFIED.
+
+Format: IMAGE_MISMATCH: "<claim in text>" vs "<what image actually shows>"
+```
+
+---
+
 ## Filter
 
-Write to report only if **any answer across all passes contains FLAG, FLAT, MISSING, or FIRST_QUESTION has substance**.
+Write to report only if **any answer across all passes contains FLAG, FLAT, MISSING, BROKEN, NOT FOUND, STALE_REF, WRONG_CLAIM, UNVERIFIABLE, IMAGE_MISMATCH, or FIRST_QUESTION has substance**.
 All clear → print `docs review complete — no flags`, write nothing.
 
 ---
@@ -243,6 +366,17 @@ ACRONYMS:  FLAG: "WanAnimate", "KLING", "BG" used without expansion
 ASSUMED:   FLAG: "Temporal consistency" used as if reader knows what it means in ML context
 DOES_NOT:  MISSING: unclear whether this page covers the full pipeline or just the video stage
 SIMPLER:   NO
+
+---
+
+### Factual Verification
+
+BROKEN:          https://old-host.example.com/docs — 404
+NOT FOUND:       `src/pipeline/grader.py` — referenced on docs/pipeline/overview.md, file does not exist
+STALE_REF:       "call `process_frame()`" (docs/pipeline/overview.md) — function not found in src/pipeline/grader.py
+WRONG_CLAIM:     "default timeout is 30s" (docs/pipeline/overview.md) — code sets DEFAULT_TIMEOUT = 60
+UNVERIFIABLE:    "Skyscanner returns prices below £300" — cannot verify from source, requires manual check
+IMAGE_MISMATCH:  "price shown is £295" vs screenshot shows £412 (docs/pipeline/overview.md)
 ```
 
 Append a row to `docs/appendix/reviews/index.md`.
@@ -266,3 +400,5 @@ Append a row to `docs/appendix/reviews/index.md`.
 - Commit output
 - Review `docs/appendix/` (reviews, ADRs, dev-log)
 - Review API reference pages generated from code
+- Fetch external URLs to verify link content claims (flags as UNVERIFIABLE instead)
+- Guarantee correctness of claims about third-party services, prices, or live data
