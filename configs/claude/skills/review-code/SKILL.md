@@ -5,8 +5,8 @@ description: Junior-dev comprehension check on changed code. Per-file design rev
 
 # review-code
 
-**What**: Three passes on every file changed since `main` — file-level design, unit-level logic, then the full diff as one.
-**Why**: Claude reviews its own code with full project context. A stateless external call with no prior context catches what the author normalises away: unclear responsibilities, hidden assumptions, wheel-reinvention.
+**What**: Three passes on every file changed since `main` — architectural sweep of the full codebase, per-file design + unit review, then the full diff as one.
+**Why**: Claude reviews its own code with full project context. A stateless external call with no prior context catches what the author normalises away: unclear responsibilities, hidden assumptions, wheel-reinvention. Tool choice per pass matches the intended reviewer's information access.
 
 ---
 
@@ -25,7 +25,7 @@ Without an argument: all files changed or added since `main`.
 
 ```bash
 git diff --name-only main..HEAD
-git status --short | grep '^?? ' | awk '{print $2}'
+git status --short | grep '^?? '
 ```
 
 Supported: `.go`, `.py`, any source file with recognisable structure.
@@ -33,33 +33,18 @@ Skip: generated files (`*.pb.go`, `*_generated.go`, `docs/grading/api/`).
 
 ---
 
-## What counts as a unit
+## Pass 0 — architectural sweep (full codebase, gemini CLI)
 
-| Language | Units |
-|----------|-------|
-| Go | Each top-level `func` (including methods) |
-| Python | Each `def` and `class` at module level |
-| Any file, no recognisable structure | Whole file as one unit |
-
-Claude identifies units by reading — no external parser.
-
----
-
-## Pass 0 — architectural sweep (full codebase)
-
-One `llm` call against all source files. Runs before per-file passes to establish architectural context.
+Run from project root. Gemini reads the codebase natively — no piping needed.
 
 ```bash
-find . -type f \( -name "*.go" -o -name "*.py" -o -name "*.ts" -o -name "*.tsx" \) \
-  -not -path "*/vendor/*" -not -path "*/.git/*" -not -path "*/node_modules/*" \
-  -not -name "*.pb.go" -not -name "*_generated.go" \
-  | sort | xargs -I {} sh -c 'echo "=== {} ==="; cat {}' \
-  | llm -m gemini-2.5-pro 'ARCH_PROMPT'
+gemini -p 'ARCH_PROMPT'
 ```
 
 **ARCH_PROMPT**:
 
 ```
+Read all source files in this project (excluding vendor/, node_modules/, generated files like *.pb.go and *_generated.go).
 You are a senior architect reviewing this entire codebase cold. You have NOT worked on this project before.
 
 Answer 5 questions. No code. Be specific — name files and functions where relevant.
@@ -87,22 +72,21 @@ ORPHANED:
 
 ---
 
-## Pass 1a — per-file: holistic design critique
+## Pass 1 — per-file: design + rules (Gemini Flash, isolated)
 
-One `llm` call per file. No checklist — asks whether the overall design approach is right.
+One call per changed file. Uses `llm -a` — model sees only this file, enforcing the cold-read frame.
 
 ```bash
-{ echo 'DESIGN_PROMPT'; cat <file>; } | llm -m gemini-2.5-flash
+llm -m gemini-2.5-flash 'FILE_PROMPT' -a <file>
 ```
 
-**DESIGN_PROMPT** (substitute `<FILENAME>`):
+**FILE_PROMPT** (substitute `<FILENAME>`):
 
 ```
-You are a senior developer who has just read this file cold — no prior context about the project.
+You are a senior developer and junior developer reading this file cold — no prior context about the project.
+Answer all questions below. No code. File: <FILENAME>
 
-Design critique only. Answer 3 questions. No code.
-
-File: <FILENAME>
+--- DESIGN ---
 
 INTENT: One sentence — what problem is this file solving?
 
@@ -111,28 +95,9 @@ In 3–4 sentences: what responsibilities would it own, what would it NOT own, a
 would the key design choices be?
 
 DIVERGENCE: What is the single biggest difference between your clean-room design and what
-actually exists? If the current design is reasonable, say so and why. If something
-fundamental should be rethought, say what specifically.
-```
+actually exists? If the current design is reasonable, say so and why.
 
----
-
-## Pass 1b — per-file: rules checklist
-
-Second `llm` call on the same file. Fine-grained checks for specific problems.
-
-```bash
-{ echo 'RULES_PROMPT'; cat <file>; } | llm -m gemini-2.5-flash
-```
-
-**RULES_PROMPT** (substitute `<FILENAME>`):
-
-```
-You are a junior developer reading this file for the first time.
-Answer 7 questions. Do NOT write code. Do NOT suggest rewrites.
-Put each answer on its own line, with a blank line between each.
-
-File: <FILENAME>
+--- RULES ---
 
 WEAK_CONTRACTS:
   NONE — or — FLAG: any caller/callee boundary weaker than the signature suggests:
@@ -145,80 +110,61 @@ TEST_CONTRACTS:
   - fixture values with no comment on whether they're placeholders or meaningful
   - fields documented as "recorded for assertion" where nothing asserts
   - hardcoded slices when an authoritative constant/map exists to range over
-  - unclear function→seam→control link: which step is controlled by what in the fake?
-  Diagnostic: can a reader verify the test's intent without leaving this file?
-
-COMPONENTS:
-  CLEAR  — or —  FLAG: any function/class whose scope is unclear or overlaps another
 
 SCOPE:
-  CLEAR  — or —  FLAG: is the file doing more than one job? one function carrying most of the weight?
+  CLEAR — or — FLAG: is the file doing more than one job? one function carrying most of the weight?
 
 DEPTH:
-  CLEAN  — or —  FLAG: functions with 3+ nesting levels, complex returns, or branching that obscures the happy path
+  CLEAN — or — FLAG: functions with 3+ nesting levels or branching that obscures the happy path
 
 NAMING:
-  CLEAN  — or —  FLAG: any name that surprised you when you read the body. Also flag:
-  - test fixtures named informally (canned, dummy, fake, stub) with no comment on what they simulate
-  - fields named with generic suffixes (idx, cursor, counter, flag) inside structs where the
-    state machine or protocol they implement is not explained
+  CLEAN — or — FLAG: any name that surprised you when you read the body. Also flag:
+  - test fixtures named informally with no comment on what they simulate
+  - fields named with generic suffixes (idx, cursor, counter, flag) where the state machine is unexplained
 
 REINVENTING:
-  NO  — or —  FLAG: anything here that exists in the standard library, a well-known ecosystem
-  library, or already elsewhere in this project — including test utilities, string manipulation,
-  file handling, HTTP helpers, and retry/polling logic. Also flag:
-  - hardcoded string/int slices in tests when a canonical authoritative source (map, constant,
-    enum) already exists in the codebase and could be ranged over instead
-
-SHADOWS:
-  NO  — or —  FLAG: any function/method that accepts a parameter with the same name as an instance attribute
-  or outer-scope variable — flag if it's not immediately obvious why both exist
+  NO — or — FLAG: anything here that exists in the standard library, a well-known ecosystem
+  library, or already elsewhere in this project — including test utilities, retry/polling logic,
+  string manipulation, file handling, HTTP helpers.
 
 SIMPLER:
-  NO  — or —  FLAG: a fundamentally simpler approach to what this file does — one sentence, no code
+  NO — or — FLAG: a fundamentally simpler approach to what this file does — one sentence, no code
 ```
 
 ---
 
-## Pass 2 — per-unit logic review
+## Pass 2 — per-file: unit logic review (Gemini Flash, isolated)
 
-One `llm` call per function/class. Asks whether each unit makes sense in isolation.
+One call per changed file covering all units. Uses `llm -a` — model sees only this file.
 
 ```bash
-{ echo 'UNIT_PROMPT'; cat <file>; } | llm -m gemini-2.5-flash
+llm -m gemini-2.5-flash 'UNIT_PROMPT' -a <file>
 ```
 
-**UNIT_PROMPT** (substitute `<NAME>` and `<LINE>`):
+**UNIT_PROMPT** (substitute `<FILENAME>`):
 
 ```
 You are a junior developer reading this code for the first time.
-Your ONLY job is to answer 4 questions about one function.
-Do NOT write code. Do NOT refactor. Do NOT suggest changes.
-Put each answer on its own line, with a blank line between each.
+File: <FILENAME>
 
-Focus on `<NAME>` starting around line <LINE>.
+For EACH top-level function, method, class, or def in this file, answer 4 questions.
+Emit the unit name as a header before each set of answers.
+Do NOT write code. Do NOT refactor.
 
-WHAT:
-  one sentence — what it does and what it returns. Say so if unclear.
-
-WHY:
-  one sentence — why does it exist separately? what breaks if inlined or removed?
-
-LOGIC:
-  CLEAR  — or —  FLAG: which step confused you and why
-
-SIMPLER:
-  NO  — or —  YES: one sentence describing a simpler approach, no code
+WHAT:  one sentence — what it does and what it returns. Say so if unclear.
+WHY:   one sentence — why does it exist separately? what breaks if inlined or removed?
+LOGIC: CLEAR — or — FLAG: which step confused you and why
+SIMPLER: NO — or — YES: one sentence describing a simpler approach, no code
 ```
 
 ---
 
-## Pass 3 — holistic diff review
+## Pass 3 — holistic diff review (Gemini Flash)
 
-One call with the full diff after all per-file and per-unit passes.
+One call with the full diff after all per-file passes.
 
 ```bash
-{ echo 'HOLISTIC_PROMPT'; git diff main..HEAD; } | llm -m gemini-2.5-flash
+git diff main..HEAD | llm -m gemini-2.5-flash 'HOLISTIC_PROMPT'
 ```
 
 **HOLISTIC_PROMPT**:
@@ -227,9 +173,9 @@ One call with the full diff after all per-file and per-unit passes.
 You are a junior developer who has just read a code diff.
 Your ONLY job is to answer 3 questions. Do NOT write code.
 
-COHERENT:  <CLEAR — or — FLAG: do the changes hang together as one coherent unit of work? what seems inconsistent?>
-COMPLETE:  <CLEAR — or — FLAG: is anything obviously missing from what the diff seems to be trying to do?>
-SURPRISES: <NONE  — or — FLAG: any file or change that doesn't fit with the rest?>
+COHERENT:  CLEAR — or — FLAG: do the changes hang together as one coherent unit of work? what seems inconsistent?
+COMPLETE:  CLEAR — or — FLAG: is anything obviously missing from what the diff seems to be trying to do?
+SURPRISES: NONE  — or — FLAG: any file or change that doesn't fit with the rest?
 ```
 
 ---
@@ -243,77 +189,14 @@ All clear → print `review complete — no flags`, write nothing.
 
 ## Output
 
-`docs/appendix/reviews/YYYY-MM-DD-<basename>.md`:
+`docs/appendix/reviews/YYYY-MM-DD-<basename>.md` — one file per review run.
 
-```markdown
-# Code Review — path/to/file.go
-_YYYY-MM-DD · gemini-2.5-pro (arch) + gemini-2.5-flash (file/unit/diff)_
+Structure: **Architectural** section (Pass 0), then per file: **File** and **Units** subsections together, then **Holistic** section (Pass 3). Append a row to `docs/appendix/reviews/index.md`. Leave unstaged.
 
 ---
 
-### Architectural (full codebase)
+## Models
 
-ARCHITECTURE_INTENT: layered service/repo pattern with clear domain boundary
-DRIFT:       FLAG: internal/scoring/gemini.go is making HTTP calls — that belongs in the adapter layer
-CONSISTENCY: FLAG: error wrapping uses fmt.Errorf in some files, errors.Wrap in others
-COUPLING:    CLEAN
-ORPHANED:    FLAG: internal/legacy/parser.go — no callers, predates current pipeline
-
----
-
----
-
-### File-level
-
-FILE_ROLE:   CLEAR
-ASSUMED:     FLAG: caller must know `scorer.Weights` sums to 1.0 — tested but not explained here
-COMPONENTS:  CLEAR
-REINVENTING: FLAG: walk-up .env parser duplicates logic already in cmd/grade/main.go
-SIMPLER:     NO
-
----
-
-### `parseResponse` — line 121
-
-WHAT:    Extracts structured criterion scores from Gemini's raw JSON text.
-WHY:     CLEAR
-LOGIC:   FLAG: the fence-stripping step is defensive but the trigger condition is unexplained
-SIMPLER: NO
-
----
-
-### Holistic
-
-COHERENT:  CLEAR
-COMPLETE:  FLAG: diff adds a new error path in GradeVideo but cmd/grade doesn't handle the new error type
-SURPRISES: NONE
-```
-
-Append a row to `docs/appendix/reviews/index.md`.
-
----
-
-## Do not commit
-
-Leave review output unstaged. User reads the diff and decides what to act on first.
-
----
-
-## Model
-
-`gemini-2.5-pro` — Pass 0 only. Full codebase fits in 1M context; Pro's reasoning is needed for
-architectural drift detection where Flash misses cross-file patterns.
-
-`gemini-2.5-flash` — Passes 1a, 1b, 2, 3. Strong enough to know language idioms (t.TempDir,
-dataclass, etc.) without filling in gaps the author left. Flash-lite missed too many stdlib patterns.
-
-`llm models | grep gemini` to verify aliases. Do NOT use the `gemini` agentic CLI.
-
----
-
-## Does NOT
-
-- Modify any code
-- Run automatically
-- Commit output
-- Review generated files or docs API reference pages
+- Pass 0: `gemini` CLI — native filesystem access, full 1M context for cross-file architectural analysis
+- Pass 1, 2: `llm -m gemini-2.5-flash` — isolated single-file calls, cold-read frame enforced via `-a`
+- Pass 3: `llm -m gemini-2.5-flash` — diff piped via stdin, no filesystem access needed
