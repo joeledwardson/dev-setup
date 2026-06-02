@@ -8,7 +8,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-
+    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
   ];
 
   # =======================================
@@ -28,16 +28,6 @@
       efiSysMountPoint = "/boot";
     };
   };
-  # agenix secrets
-  age.secrets.llm-gemini-key = {
-    file = ../../secrets/llm-gemini-key.age;
-    owner = "jollof";
-  };
-  age.secrets.ntfy-token = {
-    file = ../../secrets/ntfy-token.age;
-    owner = "jollof";
-  };
-
   environment.systemPackages = with pkgs; [
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI

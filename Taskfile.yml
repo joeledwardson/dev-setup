@@ -236,9 +236,9 @@ tasks:
   llm:keys:
     desc: Set LLM API keys from agenix secrets
     cmds:
-      # if not owner of key needs to be root to cat it
-      - llm keys set gemini --value "$(sudo cat /run/agenix/llm-gemini-key)"
+      - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
 
-  dirs:
-    desc: Print all directories in the project
-    cmd: find . -type d -not -path '*/\.*' | sort
+  secrets:update:
+    desc: update secrets with recipients list
+    dir: ./secrets
+    cmd: sudo agenix -r -i /etc/ssh/ssh_host_ed25519_key

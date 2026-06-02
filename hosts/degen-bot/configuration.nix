@@ -1,7 +1,10 @@
 { pkgs, config, commonGroups, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
+  ];
 
   # =======================================
   # Boot Configuration
@@ -43,15 +46,6 @@
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
-
-  age.secrets.llm-gemini-key = {
-    file = ../../secrets/llm-gemini-key.age;
-    owner = "jollof";
-  };
-  age.secrets.ntfy-token = {
-    file = ../../secrets/ntfy-token.age;
-    owner = "jollof";
-  };
 
   # NVIDIA driver + CUDA
   services.xserver.videoDrivers = [ "nvidia" ];

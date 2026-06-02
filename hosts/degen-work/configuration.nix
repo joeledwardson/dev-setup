@@ -5,6 +5,7 @@
 { config, pkgs, commonGroups, ... }: {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
   ];
 
   # boot configuration
@@ -66,8 +67,4 @@
   nix.settings.trusted-users = [ "root" "jollof" ];
   services.syncthing.user = "jollof";
 
-  age.secrets.ntfy-token = {
-    file = ../../secrets/ntfy-token.age;
-    owner = "jollof";
-  };
 }

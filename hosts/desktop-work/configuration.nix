@@ -7,6 +7,7 @@
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
   ];
 
   boot.loader = {
@@ -48,16 +49,6 @@
       "nofail" # prevent system failure if disk is missing/broken
       "rw"
     ];
-  };
-
-  # agenix secrets
-  age.secrets.llm-gemini-key = {
-    file = ../../secrets/llm-gemini-key.age;
-    owner = "joelyboy";
-  };
-  age.secrets.ntfy-token = {
-    file = ../../secrets/ntfy-token.age;
-    owner = "joelyboy";
   };
 
   networking.hostName = "desktop-work"; # Define your hostname.

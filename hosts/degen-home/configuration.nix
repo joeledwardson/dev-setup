@@ -7,6 +7,7 @@
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
   ];
 
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:trusted" ];
