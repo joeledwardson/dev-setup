@@ -6,3 +6,4 @@
 | # | Title | Status | Date |
 |---|-------|--------|------|
 | [ADR-001](001-claude-code-orchestration.md) | Claude Code external orchestration options | Proposed | 2026-05-31 |
+| [ADR-002](002-robust-docs-review.md) | Robust AI Documentation Review Pipeline | Proposed | 2026-06-01 |
