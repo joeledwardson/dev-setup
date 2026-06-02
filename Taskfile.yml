@@ -236,7 +236,8 @@ tasks:
   llm:keys:
     desc: Set LLM API keys from agenix secrets
     cmds:
-      - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
+      # if not owner of key needs to be root to cat it
+      - llm keys set gemini --value "$(sudo cat /run/agenix/llm-gemini-key)"
 
   dirs:
     desc: Print all directories in the project

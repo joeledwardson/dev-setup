@@ -124,7 +124,6 @@ end
 -- No clipboard provider — p uses normal registers, no OSC52 read hang
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
-    local text = table.concat(vim.v.event.regcontents, '\n')
     require('vim.ui.clipboard.osc52').copy '+'(vim.v.event.regcontents)
   end,
 })

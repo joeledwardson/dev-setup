@@ -207,6 +207,7 @@
     ### neovim
     neovim
     ### neovim dependencies
+    ast-grep
     ripgrep
     prettierd
     stylua
