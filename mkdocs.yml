@@ -62,23 +62,24 @@ plugins:
 nav:
   - Home: index.md
   - Dev Log:
-    - dev-log/index.md
-    - September 2025: dev-log/2025-09.md
-    - October 2025: dev-log/2025-10.md
-    - November 2025: dev-log/2025-11.md
-    - December 2025: dev-log/2025-12.md
-    - January 2026: dev-log/2026-01.md
-    - February 2026: dev-log/2026-02.md
-    - March 2026: dev-log/2026-03.md
-    - April 2026: dev-log/2026-04.md
-    - May 2026: dev-log/2026-05.md
+      - dev-log/index.md
+      - September 2025: dev-log/2025-09.md
+      - October 2025: dev-log/2025-10.md
+      - November 2025: dev-log/2025-11.md
+      - December 2025: dev-log/2025-12.md
+      - January 2026: dev-log/2026-01.md
+      - February 2026: dev-log/2026-02.md
+      - March 2026: dev-log/2026-03.md
+      - April 2026: dev-log/2026-04.md
+      - May 2026: dev-log/2026-05.md
+      - June 2026: dev-log/2026-06.md
   - NixOS: nix/notes.md
   - Reference:
-    - reference/index.md
-    - Vim & Neovim: reference/vim.md
-    - Linux & System: reference/linux.md
-    - Shell & Bash: reference/shell.md
-    - Networking: reference/networking.md
+      - reference/index.md
+      - Vim & Neovim: reference/vim.md
+      - Linux & System: reference/linux.md
+      - Shell & Bash: reference/shell.md
+      - Networking: reference/networking.md
   - ADRs:
-    - appendix/adr/index.md
-    - ADR-001 Claude Orchestration: appendix/adr/001-claude-code-orchestration.md
+      - appendix/adr/index.md
+      - ADR-001 Claude Orchestration: appendix/adr/001-claude-code-orchestration.md
