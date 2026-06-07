@@ -13,3 +13,4 @@ Chronological notes from setting up and iterating on the workstation. Not polish
 | [March 2026](2026-03.md) | q: window, Dadbod, Zellij, Helix, lazydev |
 | [April 2026](2026-04.md) | Telescope, keybrowser, Zellij stacking, escape sequences |
 | [May 2026](2026-05.md) | Grafana/Loki, markdown viewers, Raspberry Pi NixOS |
+| [June 2026](2026-06.md) | Local voice dictation (whisper.cpp + wtype + swhkd) |
