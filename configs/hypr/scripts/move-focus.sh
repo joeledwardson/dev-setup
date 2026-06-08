@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Move focus in Hyprland and flash border if focus fails
 #
 # Usage: move-focus.sh <direction>

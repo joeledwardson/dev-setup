@@ -99,6 +99,10 @@
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
+    # Keeps the driver resident in memory so the GPU doesn't drop to P8 between
+    # frames — prevents the P8→active transition stutter on Wayland compositing.
+    nvidiaPersistenced = true;
+
     # Disabled: nvidia-powerd is a documented contributor to hard Wayland freezes
     # on driver 580.x–595.x. See docs/dev-log/2026-05.md — NixOS boot investigation.
     powerManagement.enable = false;

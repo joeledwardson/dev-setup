@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 choice=$(echo -e "expand-upwards\nexpand-across" | fuzzel --prompt="what do you want to do?" --dmenu)
 if [[ -z "$choice" ]]; then
     notify-send "cancelled"

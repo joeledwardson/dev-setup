@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # get workspace name
 workspacename=$(hyprctl activewindow -j | jq -r '.workspace.name')
 

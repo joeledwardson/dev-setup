@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # 1. Get all monitor names
 MONITORS=$(hyprctl monitors -j | jq -r '.[].name')

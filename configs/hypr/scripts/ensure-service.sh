@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ensure a service is running, otherwise start it
 # Usage: ensure-service.sh <grep_keyword> <command_to_start>
 #   $1 - keyword to search to see if process is running

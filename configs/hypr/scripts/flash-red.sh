@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Flash all active borders red, then restore.
 # Auto-detects tmux via $TMUX env var.
 #

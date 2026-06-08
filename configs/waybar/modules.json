@@ -105,10 +105,10 @@
       "dnd-inhibited-none": ""
     },
     "return-type": "json",
-    "exec-if": "which swaync-client",
-    "exec": "sleep 1 && swaync-client -swb",
-    "on-click": "sleep 0.1 && swaync-client -t -sw",
-    "on-click-right": "sleep 0.1 && swaync-client -d -sw",
+    "exec-if": "PATH=/run/current-system/sw/bin:$PATH which swaync-client",
+    "exec": "sleep 1 && PATH=/run/current-system/sw/bin:$PATH swaync-client -swb",
+    "on-click": "sleep 0.1 && PATH=/run/current-system/sw/bin:$PATH swaync-client -t -sw",
+    "on-click-right": "sleep 0.1 && PATH=/run/current-system/sw/bin:$PATH swaync-client -d -sw",
     "escape": true
   }
 }

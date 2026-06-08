@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Persistent notification showing hotkeys for the Hyprland "group" submap.
 # Triggered by $mainMod ALT, G — see hyprland.conf submap definition.
 # Replace ID 9998 keeps the bubble in place across re-trigger.

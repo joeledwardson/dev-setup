@@ -86,6 +86,13 @@
     style = "adwaita-dark"; # or "breeze", "fusion", etc.
   };
 
+  # Persistent directory for Hyprland session logs.
+  # Hyprland's own log lives in /run (tmpfs) and is lost on every reboot/crash.
+  # A mirror script copies it here every 10s so post-crash forensics are possible.
+  systemd.tmpfiles.rules = [
+    "d /var/log/hyprland 0755 joelyboy users -"
+  ];
+
   # =======================================
   # Boot behaviour
   # =======================================
@@ -104,7 +111,10 @@
   # =======================================
   programs.nm-applet.enable = true;
   programs.waybar = { enable = true; };
-  programs.hyprland.enable = true;  # withUWSM removed — see dev-log 2026-05
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
   programs.hyprlock.enable = true;
 
   # XDG Portal for desktop integration

@@ -239,7 +239,7 @@ hl.bind(mainMod .. '+ALT+j', hl.dsp.window.move { direction = 'd' })
 
 -- Groups
 hl.bind(mainMod .. '+G', hl.dsp.group.toggle())
-hl.bind(mainMod .. '+SHIFT+G', hl.dsp.exec_cmd 'hyprctl dispatch lockactivegroup toggle')
+hl.bind(mainMod .. '+SHIFT+G', hl.dsp.group.lock())
 hl.bind(mainMod .. '+P', hl.dsp.group.next { forward = false })
 hl.bind(mainMod .. '+N', hl.dsp.group.next())
 hl.bind(mainMod .. '+SHIFT+P', hl.dsp.group.move_window { forward = false })
@@ -254,17 +254,17 @@ hl.bind(
 )
 
 -- Workspace switching
-hl.bind(mainMod .. '+ALT+bracketleft',  hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace r-1')
+hl.bind(mainMod .. '+ALT+bracketleft', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace r-1')
 hl.bind(mainMod .. '+ALT+bracketright', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace r+1')
-hl.bind(mainMod .. '+bracketleft',  hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-workspace.sh r-1'))
+hl.bind(mainMod .. '+bracketleft', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-workspace.sh r-1'))
 hl.bind(mainMod .. '+bracketright', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-workspace.sh r+1'))
 
 for i = 1, 9 do
-  hl.bind(mainMod .. '+' .. i,        hl.dsp.focus { workspace = i })
-  hl.bind(mainMod .. '+SHIFT+' .. i,  hl.dsp.exec_cmd('hyprctl dispatch movetoworkspace ' .. i))
+  hl.bind(mainMod .. '+' .. i, hl.dsp.focus { workspace = i })
+  hl.bind(mainMod .. '+SHIFT+' .. i, hl.dsp.exec_cmd('hyprctl dispatch movetoworkspace ' .. i))
 end
-hl.bind(mainMod .. '+0',        hl.dsp.focus { workspace = 10 })
-hl.bind(mainMod .. '+SHIFT+0',  hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace 10')
+hl.bind(mainMod .. '+0', hl.dsp.focus { workspace = 10 })
+hl.bind(mainMod .. '+SHIFT+0', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace 10')
 
 -- Special workspace
 hl.bind(mainMod .. '+S', hl.dsp.workspace.toggle_special 'magic')
@@ -280,9 +280,9 @@ hl.bind(mainMod .. '+mouse:273', hl.dsp.window.resize(), { mouse = true })
 
 -- Resize with hjkl
 hl.bind(mainMod .. '+SHIFT+h', hl.dsp.window.resize { x = -resizeStep, y = 0, relative = true }, { repeat_ = true })
-hl.bind(mainMod .. '+SHIFT+l', hl.dsp.window.resize { x = resizeStep,  y = 0, relative = true }, { repeat_ = true })
+hl.bind(mainMod .. '+SHIFT+l', hl.dsp.window.resize { x = resizeStep, y = 0, relative = true }, { repeat_ = true })
 hl.bind(mainMod .. '+SHIFT+k', hl.dsp.window.resize { x = 0, y = -resizeStep, relative = true }, { repeat_ = true })
-hl.bind(mainMod .. '+SHIFT+j', hl.dsp.window.resize { x = 0, y = resizeStep,  relative = true }, { repeat_ = true })
+hl.bind(mainMod .. '+SHIFT+j', hl.dsp.window.resize { x = 0, y = resizeStep, relative = true }, { repeat_ = true })
 
 -- Media / volume (locked = works on lockscreen)
 hl.bind('XF86AudioRaiseVolume', hl.dsp.exec_cmd 'swayosd-client --output-volume raise', { locked = true })
@@ -311,7 +311,6 @@ hl.window_rule {
   match = { class = '^$', title = '^$', xwayland = true, float = true, fullscreen = false, pin = false },
   no_focus = true,
 }
-
 
 --## SUBMAP: group mode ##
 

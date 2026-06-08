@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/run/current-system/sw/bin/bash
+# Waybar injects a locked minimal PATH (its own deps only) — bash, hyprctl,
+# jq, socat aren't in it. Use the NixOS system profile directly.
+export PATH="/run/current-system/sw/bin:${HOME}/.nix-profile/bin:${PATH}"
+
 # Outputs JSON for waybar custom module — sets class "active" or "inactive"
 # based on whether this bar's monitor is the currently focused one.
 # Waybar sets WAYBAR_OUTPUT_NAME to the monitor this bar instance is on.

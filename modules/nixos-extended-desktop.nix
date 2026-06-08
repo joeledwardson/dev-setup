@@ -68,6 +68,10 @@
       host   all       all     ::1/128         trust
     '';
   };
+  # postgresql.target is WantedBy=multi-user.target by default, putting it on
+  # the graphical.target critical chain. Adding After=multi-user.target keeps
+  # auto-start but means it starts after the desktop sequence, not before.
+  systemd.targets.postgresql.after = [ "multi-user.target" ];
   # keyboard settings
   services.udev.packages = [ pkgs.via ];
 
@@ -91,7 +95,7 @@
         # UWSM is only needed on streaming-server for wayvnc session management.
         # See: docs/dev-log/2026-05.md — NixOS boot investigation
         command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         user = "greeter";
       };
     };
