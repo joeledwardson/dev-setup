@@ -254,8 +254,8 @@ hl.bind(
 )
 
 -- Workspace switching
-hl.bind(mainMod .. '+ALT+bracketleft', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace r-1')
-hl.bind(mainMod .. '+ALT+bracketright', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace r+1')
+hl.bind(mainMod .. '+ALT+bracketleft', hl.dsp.window.move { workspace = 'r-1' })
+hl.bind(mainMod .. '+ALT+bracketright', hl.dsp.window.move { workspace = 'r+1' })
 hl.bind(mainMod .. '+bracketleft', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-workspace.sh r-1'))
 hl.bind(mainMod .. '+bracketright', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-workspace.sh r+1'))
 

@@ -45,13 +45,13 @@ echo "processing windows...."
 for window_address in $(hyprctl clients -j | jq -r ".[] | select($conditions) | .address"); do
     echo "handling window $window_address ....."
     # Send window to special workspace temporarily
-    hyprctl dispatch "hl.dsp.focus({window=\"address:$window_address\"})"
-    hyprctl dispatch "hl.dsp.focus({workspace=\"special:magic\", with_window=true})"
+    hyprctl dispatch "hl.dsp.focus({window='address:$window_address'})"
+    hyprctl dispatch "hl.dsp.focus({workspace='special:magic', with_window=true})"
     # Bring it back to current workspace
     hyprctl dispatch "hl.dsp.focus({workspace=$workspace_id, with_window=true})"
 done
 echo "done processing windows...."
 
 echo "going back to address: $active_address"
-hyprctl dispatch "hl.dsp.focus({window=\"address:$active_address\"})"
+hyprctl dispatch "hl.dsp.focus({window='address:$active_address'})"
 

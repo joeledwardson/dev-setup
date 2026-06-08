@@ -57,6 +57,7 @@
   security.pam.services.greetd.enableGnomeKeyring = true;
 
   # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
+  # to connect just use postgres use with `psql --username=postgres`
   services.postgresql = {
     enable = true;
     ensureDatabases = [ "mydatabase" ];

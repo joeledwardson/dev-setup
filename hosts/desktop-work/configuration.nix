@@ -109,9 +109,10 @@
     powerManagement.finegrained = false;
   };
 
-  # Mitigations for NVIDIA 595.x Wayland hard-freeze regression.
-  # PreserveVideoMemoryAllocations reduces DMA buffer errors on Wayland.
-  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
+  # NOTE: NVreg_PreserveVideoMemoryAllocations=1 was removed.
+  # It requires powerManagement.enable=true to provide the procfs suspend interface.
+  # With powerManagement.enable=false, it causes suspend to fail (error -5), leaving
+  # the NVIDIA driver in a corrupted state that causes full system hangs hours later.
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {
