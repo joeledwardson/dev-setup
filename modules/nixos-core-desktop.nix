@@ -9,7 +9,7 @@
     ### desktop core (referenced by hyprland.conf)
     networkmanagerapplet # nm-applet tray icon
     pavucontrol # pulse audio GTK volume control
-    copyq # copy paste manager
+    cliphist # wayland-native clipboard history manager
     kdePackages.dolphin # default GUI file manager
     kdePackages.qtsvg # svg icons for dolphin
     fuzzel # new launcher to replace rofi/wofi
@@ -87,11 +87,24 @@
   };
 
   # =======================================
+  # Boot behaviour
+  # =======================================
+  # NM-wait-online blocks graphical.target for 35s+ while waiting for DHCP.
+  # Docker depends on network-online.target (upstream default), so it drags
+  # the entire graphical.target chain behind it. On a desktop we don't need
+  # the network fully online before the session starts.
+  # See: docs/dev-log/2026-05.md — NixOS boot investigation
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # Add memtest86+ to GRUB menu — useful for diagnosing RAM/hardware faults
+  boot.loader.grub.memtest86.enable = true;
+
+  # =======================================
   # Wayland Configuration
   # =======================================
   programs.nm-applet.enable = true;
   programs.waybar = { enable = true; };
-  programs.hyprland = { enable = true; withUWSM = true; };
+  programs.hyprland.enable = true;  # withUWSM removed — see dev-log 2026-05
   programs.hyprlock.enable = true;
 
   # XDG Portal for desktop integration

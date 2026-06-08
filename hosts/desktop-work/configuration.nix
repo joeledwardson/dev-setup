@@ -59,13 +59,6 @@
     # optional Nvidia hardware acceleration
     package = (pkgs.obs-studio.override { cudaSupport = true; });
   };
-  # add timescale to postgres extensions
-  services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
-  services.postgresql.extensions = ps: [
-    ps.plpgsql_check
-    ps.timescaledb
-    ps.timescaledb_toolkit
-  ];
 
   # add VM support
   environment.systemPackages = with pkgs; [
@@ -98,28 +91,23 @@
   # =======================================
   hardware.graphics = { enable = true; };
 
-  # Load NVIDIA driver for Xorg and Wayland
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
-    # Modesetting is required for most Wayland compositors
     modesetting.enable = true;
-
-    # Use the NVidia open source kernel module (for Turing and newer GPUs)
-    # RTX 4070 is Ada Lovelace, so this should work well
-    open = false; # Set to true if you want to try the open source module
-
-    # Enable the Nvidia settings menu
+    open = false;
     nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
 
-    # Optionally, you may select a specific driver version
-    package =
-      config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
-
-    # Enable power management (can cause sleep/suspend issues on some laptops)
-    powerManagement.enable = true;
+    # Disabled: nvidia-powerd is a documented contributor to hard Wayland freezes
+    # on driver 580.x–595.x. See docs/dev-log/2026-05.md — NixOS boot investigation.
+    powerManagement.enable = false;
     powerManagement.finegrained = false;
   };
+
+  # Mitigations for NVIDIA 595.x Wayland hard-freeze regression.
+  # PreserveVideoMemoryAllocations reduces DMA buffer errors on Wayland.
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {

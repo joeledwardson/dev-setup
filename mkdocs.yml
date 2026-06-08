@@ -1,7 +1,7 @@
 site_name: Joel's Dev Setup
 site_description: Development notes, NixOS config and tooling reference
-repo_url: https://github.com/joels-claude-bot/dev-setup
-repo_name: joels-claude-bot/dev-setup
+repo_url: https://github.com/joeledwardson/dev-setup
+repo_name: joeledwardson/dev-setup
 docs_dir: docs
 
 theme:

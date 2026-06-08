@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, pkgs-nvim, ... }:
 
 {
   # for windows support (USBs etc)
@@ -145,7 +145,6 @@
     clojure # for metabase
     gcc # for nvim kickstart
     uv
-    pipx # use this for poetry so can use shell plugin
     go
     nixd
     nodejs_22 # add nodejs global just for claude code
@@ -204,8 +203,8 @@
     ### video processing
     ffmpeg
 
-    ### neovim
-    neovim
+    ### neovim (pinned to 0.11.5 — 0.12 broke treesitter plugin APIs)
+    pkgs-nvim.neovim
     ### neovim dependencies
     ast-grep
     ripgrep

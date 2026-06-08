@@ -26,8 +26,10 @@
       ~/.config/git/config: ./configs/gitconfig
       ~/.config/git/ignore: ./configs/gitignore
       ~/.config/copyq/copyq.conf: ./configs/copyq.conf
-      ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+      # ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
+      ~/.config/hypr/hyprland.lua: ./configs/hypr/hyprland.lua
       ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
+      ~/.config/hypr/hypridle.conf: ./configs/hypr/hypridle.conf
       ~/.config/hypr/scripts: ./configs/hypr/scripts
       ~/.config/hypr/wallpapers: ./wallpapers
       ~/.config/kitty/kitty.conf: ./configs/kitty.conf
@@ -63,15 +65,15 @@
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/tig/config: ./configs/tig/config
 
-# create custom and monitors conf if doesnt exist
+# create machine-specific lua overrides if they don't exist
 - if:
-      cond: "[ ! -f ~/.config/hypr/custom.conf ]"
+      cond: "[ ! -f ~/.config/hypr/hyprland_custom.lua ]"
       met:
           - shell:
-                - touch  ~/.config/hypr/custom.conf
+                - touch ~/.config/hypr/hyprland_custom.lua
 
 - if:
-      cond: "[ ! -f ~/.config/hypr/monitors.conf ]"
+      cond: "[ ! -f ~/.config/hypr/hyprland_monitors.lua ]"
       met:
           - shell:
-                - touch ~/.config/hypr/monitors.conf
+                - touch ~/.config/hypr/hyprland_monitors.lua

@@ -12,4 +12,4 @@ This is a living document — equal parts technical reference and developer jour
 
 ## Repo
 
-Config files, dotfiles and scripts live at [github.com/joels-claude-bot/dev-setup](https://github.com/joels-claude-bot/dev-setup).
+Config files, dotfiles and scripts live at [github.com/joeledwardson/dev-setup](https://github.com/joeledwardson/dev-setup).
