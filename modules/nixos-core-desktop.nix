@@ -24,6 +24,7 @@
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications
     libnotify # send notifications to daemon
+    swaylock # lock screen
     xdg-utils # for "open with..." integrations
     rofimoji # emoji picker
     dragon-drop # drag and drop utility
@@ -115,7 +116,8 @@
     enable = true;
     withUWSM = true;
   };
-  programs.hyprlock.enable = true;
+  # swaylock needs a PAM entry to authenticate — without this passwords won't work
+  security.pam.services.swaylock = {};
 
   # XDG Portal for desktop integration
   # NOTE: programs.hyprland.enable already adds xdg-desktop-portal-hyprland

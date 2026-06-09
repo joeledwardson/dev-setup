@@ -25,11 +25,12 @@
       ~/.config/tmux/scripts: ./configs/tmux-scripts
       ~/.config/git/config: ./configs/gitconfig
       ~/.config/git/ignore: ./configs/gitignore
-      ~/.config/copyq/copyq.conf: ./configs/copyq.conf
       # ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
       ~/.config/hypr/hyprland.lua: ./configs/hypr/hyprland.lua
       ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
       ~/.config/hypr/hypridle.conf: ./configs/hypr/hypridle.conf
+      ~/.config/swaylock/config: ./configs/swaylock/config
+      ~/.config/swaylock/wallpaper.jpeg: ./configs/swaylock/wallpaper.jpeg
       ~/.config/hypr/scripts: ./configs/hypr/scripts
       ~/.config/hypr/wallpapers: ./wallpapers
       ~/.config/kitty/kitty.conf: ./configs/kitty.conf
