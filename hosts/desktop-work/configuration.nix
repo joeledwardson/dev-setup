@@ -10,6 +10,19 @@
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
   ];
 
+  # Stream kernel log to degen-bot over UDP in real time.
+  # On the receiving end: nc -ulp 6666 | tee ~/crash.log
+  # Captures the last kernel messages even when the disk never gets them.
+  boot.kernelModules = [ "netconsole" ];
+  boot.extraModprobeConfig = ''
+    options netconsole netconsole=6665@10.144.0.15/enp7s0,6666@10.144.0.234/d8:43:ae:85:c3:1d
+  '';
+
+  # pstore: on kernel panic, writes ring buffer to EFI memory before dying.
+  # Survives reboot — read at /sys/fs/pstore/ afterwards.
+  # Only fires on actual panics, not silent hard hangs (use netconsole for those).
+  boot.kernelParams = [ "pstore.backend=efi" ];
+
   boot.loader = {
     grub = {
       enable = true;
@@ -108,6 +121,7 @@
     powerManagement.enable = false;
     powerManagement.finegrained = false;
   };
+
 
   # NOTE: NVreg_PreserveVideoMemoryAllocations=1 was removed.
   # It requires powerManagement.enable=true to provide the procfs suspend interface.
