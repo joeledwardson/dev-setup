@@ -27,6 +27,9 @@
   # =======================================
   networking.hostName = "degen-bot";
 
+  # Allow netconsole UDP stream from desktop-work
+  networking.firewall.allowedUDPPorts = [ 6666 ];
+
   # =======================================
   # Users
   # =======================================
