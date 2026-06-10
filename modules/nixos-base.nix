@@ -337,6 +337,8 @@
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
     # moor pager (less replacement with sane defaults)
     PAGER = "moor";
+    # allow moor to be used in systemctl and journalctl calls (see journalctl manual)
+    SYSTEMD_PAGERSECURE = "1";
   };
 
   # Enable the OpenSSH daemon.

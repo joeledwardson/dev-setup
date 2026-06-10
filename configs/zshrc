@@ -395,3 +395,6 @@ if [[ -n "$ZSH_DEBUGRC" ]]; then
   zprof
 fi
 
+# Reset terminal settings left broken by pagers (moor) exiting uncleanly
+tty -s && stty sane 2>/dev/null
+

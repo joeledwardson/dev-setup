@@ -766,7 +766,7 @@ require('lazy').setup {
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
 
         marksman = {},
 
@@ -956,7 +956,6 @@ require('lazy').setup {
       vim.lsp.enable 'systemd_ls'
       vim.lsp.enable 'gopls'
       vim.lsp.enable 'ansiblels'
-      vim.lsp.enable 'ruff'
 
       vim.filetype.add {
         filename = {
