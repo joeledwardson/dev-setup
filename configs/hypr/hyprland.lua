@@ -245,7 +245,7 @@ hl.bind(mainMod .. '+N', hl.dsp.group.next())
 hl.bind(mainMod .. '+SHIFT+P', hl.dsp.group.move_window { forward = false })
 hl.bind(mainMod .. '+SHIFT+N', hl.dsp.group.move_window { forward = true })
 hl.bind(mainMod .. '+ALT+G', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/group-menu.sh'))
-hl.bind(mainMod .. '+ALT+G', hl.dsp.submap 'group')
+-- hl.bind(mainMod .. '+ALT+G', hl.dsp.submap 'interactive_group')
 
 -- Rename current workspace
 hl.bind(
@@ -314,31 +314,29 @@ hl.window_rule {
 
 --## SUBMAP: group mode ##
 
-hl.define_submap('group', function()
-  hl.bind('T', hl.dsp.group.toggle())
-  hl.bind('T', hl.dsp.submap 'reset')
-  hl.bind('L', hl.dsp.exec_cmd 'hyprctl dispatch lockactivegroup toggle')
-  hl.bind('L', hl.dsp.submap 'reset')
-  hl.bind('h', hl.dsp.exec_cmd 'hyprctl dispatch moveintogroup l')
-  hl.bind('h', hl.dsp.submap 'reset')
-  hl.bind('l', hl.dsp.exec_cmd 'hyprctl dispatch moveintogroup r')
-  hl.bind('l', hl.dsp.submap 'reset')
-  hl.bind('k', hl.dsp.exec_cmd 'hyprctl dispatch moveintogroup u')
-  hl.bind('k', hl.dsp.submap 'reset')
-  hl.bind('j', hl.dsp.exec_cmd 'hyprctl dispatch moveintogroup d')
-  hl.bind('j', hl.dsp.submap 'reset')
-  hl.bind('U', hl.dsp.exec_cmd 'hyprctl dispatch moveoutofgroup')
-  hl.bind('U', hl.dsp.submap 'reset')
-  hl.bind('N', hl.dsp.group.next())
-  hl.bind('N', hl.dsp.submap 'reset')
-  hl.bind('P', hl.dsp.group.next { forward = false })
-  hl.bind('P', hl.dsp.submap 'reset')
-  hl.bind('comma', hl.dsp.group.move_window { forward = false })
-  hl.bind('comma', hl.dsp.submap 'reset')
-  hl.bind('period', hl.dsp.group.move_window { forward = true })
-  hl.bind('period', hl.dsp.submap 'reset')
-  hl.bind('escape', hl.dsp.submap 'reset')
-  hl.bind('Q', hl.dsp.submap 'reset')
+local function set_red()
+  hl.exec_cmd "hyprctl keyword general:col.active_border 'rgba(ff0000ff)'"
+  hl.exec_cmd "hyprctl keyword group:col.border_active 'rgba(ff0000ff)'"
+  hl.exec_cmd "hyprctl keyword group:groupbar:col.active 'rgba(ff0000ff)'"
+end
+
+local function reset_colors()
+  hl.exec_cmd "hyprctl keyword general:col.active_border 'rgba(b5e853ee) rgba(b5e853ee) 45deg'"
+  hl.exec_cmd "hyprctl keyword group:col.border_active 'rgba(b5e853ee) rgba(b5e853ee) 45deg'"
+  hl.exec_cmd "hyprctl keyword group:groupbar:col.active 'rgba(b5e853ff)'"
+end
+
+local function reset_submap()
+  reset_colors()
+  hl.dispatch(hl.dsp.submap 'reset')
+end
+
+hl.define_submap('interactive_group', function()
+  set_red()
+  hl.bind('L', hl.dsp.window.move { into_group = 'l' })
+  hl.bind('L', reset_submap)
+  hl.bind('escape', reset_submap)
+  hl.bind('Q', reset_submap)
 end)
 
 --## AUTOSTART ##
@@ -356,10 +354,7 @@ hl.on('config.reloaded', function()
   -- Activate graphical-session.target so waybar/hypridle/nm-applet systemd
   -- user services start. Without UWSM this target is never activated otherwise.
   hl.exec_cmd 'systemctl --user start graphical-session.target'
-  hl.exec_cmd(ensureService .. " udiskie 'udiskie --tray --notify'")
-  hl.exec_cmd(ensureService .. ' hyprpaper hyprpaper')
-  hl.exec_cmd(ensureService .. ' swayosd-server swayosd-server')
-  hl.exec_cmd 'wl-paste --watch cliphist store'
+  -- udiskie, hyprpaper, swayosd-server, cliphist managed by systemd user services
   hl.exec_cmd('sleep 1 && ' .. HOME .. '/.config/hypr/scripts/randomise-wallpaper.sh')
 end)
 

@@ -53,6 +53,14 @@ window#waybar {
     border-radius: 15px;
 }
 
+#submap {
+    padding: 0 12px;
+    border-radius: 15px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    font-weight: bold;
+}
+
 #clock:hover,
 #battery:hover,
 #cpu:hover,

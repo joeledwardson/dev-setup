@@ -41,6 +41,48 @@
   # Subscribe to the jollof-claude ntfy topic on login and bridge incoming
   # messages into desktop notifications via notify-send → swaync. Token lives
   # in /run/agenix/ntfy-token (provisioned per-host in configuration.nix).
+  systemd.user.services.hyprpaper = {
+    description = "Hyprland wallpaper daemon";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.swayosd-server = {
+    description = "SwayOSD — OSD popups for volume/brightness";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.swayosd}/bin/swayosd-server";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.udiskie = {
+    description = "udiskie automount tray daemon";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    path = [ pkgs.xdg-utils ];
+    serviceConfig = {
+      ExecStart = "${pkgs.udiskie}/bin/udiskie --tray --notify";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.cliphist = {
+    description = "Clipboard history daemon";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store'";
+      Restart = "on-failure";
+    };
+  };
+
   systemd.user.services.ntfy-claude-subscribe = {
     description =
       "ntfy subscriber → notify-send bridge for jollof-claude topic";

@@ -31,7 +31,7 @@
       "Bash(head:*)"
     ]
   },
-  "model": "sonnet[1m]",
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -80,6 +80,7 @@
       }
     }
   },
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
   "editorMode": "normal",

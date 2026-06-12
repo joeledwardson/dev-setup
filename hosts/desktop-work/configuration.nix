@@ -21,7 +21,16 @@
   # pstore: on kernel panic, writes ring buffer to EFI memory before dying.
   # Survives reboot — read at /sys/fs/pstore/ afterwards.
   # Only fires on actual panics, not silent hard hangs (use netconsole for those).
-  boot.kernelParams = [ "pstore.backend=efi" ];
+  boot.kernelParams = [
+    "pstore.backend=efi"
+
+    # DIAGNOSTIC: Ryzen 5800X can hang silently at maximum idle depth (CC6 C-state) —
+    # symptoms are exactly the overnight freezes: no SSH, no SysRq, journal stops cold.
+    # This limits the CPU to C-state 1 (light sleep only) to test that theory.
+    # Costs some idle power. Remove once confirmed not the cause, or fix properly in
+    # BIOS: Global C-State Control → disabled, Power Supply Idle Control → Typical Current Idle.
+    "processor.max_cstate=1"
+  ];
 
   boot.loader = {
     grub = {
