@@ -6,7 +6,7 @@ workspacename=$(hyprctl activewindow -j | jq -r '.workspace.name')
 if [ "$workspacename" != "special:magic" ]; then
     # not in special workspace, send there
     echo "got workspace name as $workspacename, sending to special..."
-    hyprctl dispatch movetoworkspace special:magic
+    hyprctl dispatch "hl.dsp.focus({workspace='special:magic', with_window=true})"
     exit 0
 fi
 
@@ -23,4 +23,4 @@ if [ -z "$workspaceid" ]; then
 fi
 
 echo "sending back to retrieved workspace $workspaceid"
-hyprctl dispatch movetoworkspace "$workspaceid"
+hyprctl dispatch "hl.dsp.focus({workspace=$workspaceid, with_window=true})"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # get workspace name
 workspacename=$(hyprctl activewindow -j | jq -r '.workspace.name')
 
@@ -14,7 +14,7 @@ current_address=$(hyprctl activeworkspace -j | jq -r ".id")
 echo "got current address to be: $current_address"
 
 # move focus to first argv
-hyprctl dispatch workspace "$1"
+hyprctl dispatch "hl.dsp.focus({workspace='$1'})"
 
 # give time fo address to update and query it again
 sleep 0.1

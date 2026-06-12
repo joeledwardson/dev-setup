@@ -13,12 +13,10 @@
 
 # Per-project ports
 - Each project gets a deterministic port block: base = `9000 + CRC32(<name>) % 900`, then api=base, frontend=base+1, storybook=base+2, observability=base+3. Compute once, write into `justfile`/`docker-compose.yml`. Never hardcode conventional defaults, never auto-pick.
-- `9999` reserved for `port-dash`. Every repo needs a `.registered-ports.toml` at root — that's how port-dash discovers services:
+- `9999` reserved for `port-dash`. Every repo needs a `.registered-ports.toml` at root — that's how port-dash discovers services. use one line for each service that has its own port (replace with the actual name and actual port, e.g. api = 9000 if you have an API serving on port 9000)
   ```toml
-  api          = 9123
-  frontend     = 9124
-  storybook    = 9125
-  my-extra-svc = 9126
+  <service_name>          = <port_number>
+  <another_service_name>  = <another_port_number>
   ```
 - New project: `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"`. Add a preflight that fails loudly if port is held (print pid+cmdline). Don't pick a fallback — fix the conflict.
 - Dev servers run in named cowork panes (`<project>-<service>`). List panes and reuse before spawning a new one.

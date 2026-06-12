@@ -9,7 +9,7 @@
     ### desktop core (referenced by hyprland.conf)
     networkmanagerapplet # nm-applet tray icon
     pavucontrol # pulse audio GTK volume control
-    copyq # copy paste manager
+    cliphist # wayland-native clipboard history manager
     kdePackages.dolphin # default GUI file manager
     kdePackages.qtsvg # svg icons for dolphin
     fuzzel # new launcher to replace rofi/wofi
@@ -24,6 +24,7 @@
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications
     libnotify # send notifications to daemon
+    swaylock # lock screen
     xdg-utils # for "open with..." integrations
     rofimoji # emoji picker
     dragon-drop # drag and drop utility
@@ -40,6 +41,48 @@
   # Subscribe to the jollof-claude ntfy topic on login and bridge incoming
   # messages into desktop notifications via notify-send → swaync. Token lives
   # in /run/agenix/ntfy-token (provisioned per-host in configuration.nix).
+  systemd.user.services.hyprpaper = {
+    description = "Hyprland wallpaper daemon";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.swayosd-server = {
+    description = "SwayOSD — OSD popups for volume/brightness";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.swayosd}/bin/swayosd-server";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.udiskie = {
+    description = "udiskie automount tray daemon";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    path = [ pkgs.xdg-utils ];
+    serviceConfig = {
+      ExecStart = "${pkgs.udiskie}/bin/udiskie --tray --notify";
+      Restart = "on-failure";
+    };
+  };
+
+  systemd.user.services.cliphist = {
+    description = "Clipboard history daemon";
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store'";
+      Restart = "on-failure";
+    };
+  };
+
   systemd.user.services.ntfy-claude-subscribe = {
     description =
       "ntfy subscriber → notify-send bridge for jollof-claude topic";
@@ -86,13 +129,37 @@
     style = "adwaita-dark"; # or "breeze", "fusion", etc.
   };
 
+  # Persistent directory for Hyprland session logs.
+  # Hyprland's own log lives in /run (tmpfs) and is lost on every reboot/crash.
+  # A mirror script copies it here every 10s so post-crash forensics are possible.
+  systemd.tmpfiles.rules = [
+    "d /var/log/hyprland 0755 joelyboy users -"
+  ];
+
+  # =======================================
+  # Boot behaviour
+  # =======================================
+  # NM-wait-online blocks graphical.target for 35s+ while waiting for DHCP.
+  # Docker depends on network-online.target (upstream default), so it drags
+  # the entire graphical.target chain behind it. On a desktop we don't need
+  # the network fully online before the session starts.
+  # See: docs/dev-log/2026-05.md — NixOS boot investigation
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # Add memtest86+ to GRUB menu — useful for diagnosing RAM/hardware faults
+  boot.loader.grub.memtest86.enable = true;
+
   # =======================================
   # Wayland Configuration
   # =======================================
   programs.nm-applet.enable = true;
   programs.waybar = { enable = true; };
-  programs.hyprland = { enable = true; withUWSM = true; };
-  programs.hyprlock.enable = true;
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
+  # swaylock needs a PAM entry to authenticate — without this passwords won't work
+  security.pam.services.swaylock = {};
 
   # XDG Portal for desktop integration
   # NOTE: programs.hyprland.enable already adds xdg-desktop-portal-hyprland

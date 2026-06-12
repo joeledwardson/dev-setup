@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Move focus in Hyprland and flash border if focus fails
 #
 # Usage: move-focus.sh <direction>
@@ -10,8 +10,7 @@ fullscreen=$(hyprctl activewindow -j | jq -r '.fullscreen')
 # get address of active window
 current_address=$(hyprctl activewindow -j | jq -r ".address")
 
-# move focus to first argv
-hyprctl dispatch movefocus "$1"
+hyprctl dispatch "hl.dsp.focus({direction = '$1'})"
 
 # give time fo address to update and query it again
 sleep 0.1
@@ -24,8 +23,7 @@ if [ "$current_address" != "$new_address" ]; then
 fi
 
 if [ "$1" == "l" ] || [ "$1" == "r" ]; then
-    # try changing monitor if fullscreen
-    hyprctl dispatch focusmonitor "$1"
+    hyprctl dispatch "hl.dsp.focus({monitor = '$1'})"
     sleep 0.1
 fi
 

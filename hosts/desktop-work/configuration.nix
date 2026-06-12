@@ -10,6 +10,28 @@
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
   ];
 
+  # Stream kernel log to degen-bot over UDP in real time.
+  # On the receiving end: nc -ulp 6666 | tee ~/crash.log
+  # Captures the last kernel messages even when the disk never gets them.
+  boot.kernelModules = [ "netconsole" ];
+  boot.extraModprobeConfig = ''
+    options netconsole netconsole=6665@10.144.0.15/enp7s0,6666@10.144.0.234/d8:43:ae:85:c3:1d
+  '';
+
+  # pstore: on kernel panic, writes ring buffer to EFI memory before dying.
+  # Survives reboot — read at /sys/fs/pstore/ afterwards.
+  # Only fires on actual panics, not silent hard hangs (use netconsole for those).
+  boot.kernelParams = [
+    "pstore.backend=efi"
+
+    # DIAGNOSTIC: Ryzen 5800X can hang silently at maximum idle depth (CC6 C-state) —
+    # symptoms are exactly the overnight freezes: no SSH, no SysRq, journal stops cold.
+    # This limits the CPU to C-state 1 (light sleep only) to test that theory.
+    # Costs some idle power. Remove once confirmed not the cause, or fix properly in
+    # BIOS: Global C-State Control → disabled, Power Supply Idle Control → Typical Current Idle.
+    "processor.max_cstate=1"
+  ];
+
   boot.loader = {
     grub = {
       enable = true;
@@ -59,13 +81,6 @@
     # optional Nvidia hardware acceleration
     package = (pkgs.obs-studio.override { cudaSupport = true; });
   };
-  # add timescale to postgres extensions
-  services.postgresql.settings = { shared_preload_libraries = "timescaledb"; };
-  services.postgresql.extensions = ps: [
-    ps.plpgsql_check
-    ps.timescaledb
-    ps.timescaledb_toolkit
-  ];
 
   # add VM support
   environment.systemPackages = with pkgs; [
@@ -98,28 +113,29 @@
   # =======================================
   hardware.graphics = { enable = true; };
 
-  # Load NVIDIA driver for Xorg and Wayland
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
-    # Modesetting is required for most Wayland compositors
     modesetting.enable = true;
-
-    # Use the NVidia open source kernel module (for Turing and newer GPUs)
-    # RTX 4070 is Ada Lovelace, so this should work well
-    open = false; # Set to true if you want to try the open source module
-
-    # Enable the Nvidia settings menu
+    open = false;
     nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
 
-    # Optionally, you may select a specific driver version
-    package =
-      config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
+    # Keeps the driver resident in memory so the GPU doesn't drop to P8 between
+    # frames — prevents the P8→active transition stutter on Wayland compositing.
+    nvidiaPersistenced = true;
 
-    # Enable power management (can cause sleep/suspend issues on some laptops)
-    powerManagement.enable = true;
+    # Disabled: nvidia-powerd is a documented contributor to hard Wayland freezes
+    # on driver 580.x–595.x. See docs/dev-log/2026-05.md — NixOS boot investigation.
+    powerManagement.enable = false;
     powerManagement.finegrained = false;
   };
+
+
+  # NOTE: NVreg_PreserveVideoMemoryAllocations=1 was removed.
+  # It requires powerManagement.enable=true to provide the procfs suspend interface.
+  # With powerManagement.enable=false, it causes suspend to fail (error -5), leaving
+  # the NVIDIA driver in a corrupted state that causes full system hangs hours later.
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {

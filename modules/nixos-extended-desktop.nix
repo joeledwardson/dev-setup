@@ -57,6 +57,7 @@
   security.pam.services.greetd.enableGnomeKeyring = true;
 
   # having a local postgres database to play around with is IMMENSELY helpful for trying stuff out
+  # to connect just use postgres use with `psql --username=postgres`
   services.postgresql = {
     enable = true;
     ensureDatabases = [ "mydatabase" ];
@@ -68,6 +69,10 @@
       host   all       all     ::1/128         trust
     '';
   };
+  # postgresql.target is WantedBy=multi-user.target by default, putting it on
+  # the graphical.target critical chain. Adding After=multi-user.target keeps
+  # auto-start but means it starts after the desktop sequence, not before.
+  systemd.targets.postgresql.after = [ "multi-user.target" ];
   # keyboard settings
   services.udev.packages = [ pkgs.via ];
 
@@ -87,11 +92,11 @@
     enable = true;
     settings = {
       default_session = {
-        # hyprland-uwsm.desktop is defined in the wiki (has uwsm) - see docs with nixos here https://wiki.hypr.land/Useful-Utilities/Systemd-start/#uwsm
+        # UWSM removed — was causing NVIDIA driver MCEs on desktop-work (Bank 5 UMC errors).
+        # UWSM is only needed on streaming-server for wayvnc session management.
+        # See: docs/dev-log/2026-05.md — NixOS boot investigation
         command =
           "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
-        # command =
-        #   "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "greeter";
       };
     };

@@ -9,6 +9,7 @@
     "modules-left": [
         "custom/phoenix",
         "hyprland/workspaces",
+        "hyprland/submap",
         "custom/focus"
     ],
     "modules-center": [

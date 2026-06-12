@@ -225,6 +225,16 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+-- -- nvim-treesitter main-branch rewrite (commit 4916d65+) removed nvim-treesitter.parsers.ft_to_lang().
+-- -- telescope.nvim 0.1.x still calls it. Shim it to vim.treesitter.language.get_lang() which
+-- -- is the Neovim 0.11+ equivalent. See docs/dev-log/2026-05.md — treesitter notes.
+-- local _ok, _ts_parsers = pcall(require, 'nvim-treesitter.parsers')
+-- if _ok and type(_ts_parsers) == 'table' and _ts_parsers.ft_to_lang == nil then
+--   _ts_parsers.ft_to_lang = function(ft)
+--     return vim.treesitter.language.get_lang(ft) or ft
+--   end
+-- end
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -756,7 +766,7 @@ require('lazy').setup {
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
 
         marksman = {},
 
@@ -946,7 +956,6 @@ require('lazy').setup {
       vim.lsp.enable 'systemd_ls'
       vim.lsp.enable 'gopls'
       vim.lsp.enable 'ansiblels'
-      vim.lsp.enable 'ruff'
 
       vim.filetype.add {
         filename = {
@@ -1209,40 +1218,37 @@ require('lazy').setup {
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master', -- main branch requires Neovim 0.12 nightly; master is locked for 0.11
     build = ':TSUpdate',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     keys = { { '<leader>tt', ':InspectTree<CR>', { desc = 'Toggle treesitter' } } },
     config = function(_, opts)
-      require('nvim-treesitter.configs').setup {
-
-        ensure_installed = {
-          'bash',
-          'c',
-          'diff',
-          'html',
-          'lua',
-          'luadoc',
-          'markdown',
-          'markdown_inline',
-          'query',
-          'vim',
-          'vimdoc',
-          'sql',
-          'typescript',
-          'javascript',
-          'tsx',
-          'svelte',
-        },
-        -- Autoinstall languages that are not installed
-        auto_install = true,
-        highlight = {
-          enable = true,
-          -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-          --  If you are experiencing weird indenting issues, add the language to
-          --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-          additional_vim_regex_highlighting = { 'ruby' },
-        },
-        indent = { enable = true, disable = { 'ruby' } },
+      require('nvim-treesitter').setup {
+        -- ensure_installed = {
+        --   'bash',
+        --   'c',
+        --   'diff',
+        --   'html',
+        --   'lua',
+        --   'luadoc',
+        --   'markdown',
+        --   'markdown_inline',
+        --   'query',
+        --   'vim',
+        --   'vimdoc',
+        --   'sql',
+        --   'typescript',
+        --   'javascript',
+        --   'tsx',
+        --   'svelte',
+        -- },
+        -- -- Autoinstall languages that are not installed
+        -- auto_install = true,
+        -- highlight = {
+        --   enable = true,
+        --   additional_vim_regex_highlighting = { 'ruby' },
+        -- },
+        -- indent = { enable = true, disable = { 'ruby' } },
       }
 
       -- Treesitter nav utils
@@ -1431,7 +1437,10 @@ require('lazy').setup {
   },
   checker = {
     enabled = false, -- no update unless i call it specifically
-    notify = false, -- notify on update
+    notify = false,
+  },
+  change_detection = {
+    enabled = false, -- don't auto-install when init.lua changes — use :Lazy restore manually
   },
 }
 

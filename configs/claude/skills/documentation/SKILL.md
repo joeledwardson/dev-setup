@@ -333,6 +333,22 @@ extra_css:
 - `pymdownx.emoji` required for `:material-*:` icons — without it they render as literal text
 - Skip `navigation.instant` — makes mermaid go blank on page navigation
 
+### Prevent nav collapse on zoom (extra.css)
+
+Material's responsive breakpoints collapse the sidebar and tabs when the CSS viewport width drops below ~960px and ~1220px respectively. Zooming in shrinks the effective viewport, triggering mobile layout at normal desktop sizes. Override with:
+
+```css
+/* Keep tabs and sidebar visible when zoomed in */
+@media screen and (min-width: 45em) {
+  .md-header__button.md-icon[for="__drawer"] { display: none; }
+  .md-tabs { display: flex; }
+  .md-sidebar--primary { display: block; }
+  .md-nav--primary .md-nav__title[for="__drawer"] { display: none; }
+}
+```
+
+---
+
 ### Header pin (extra.css)
 
 ```css

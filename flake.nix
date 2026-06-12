@@ -2,8 +2,9 @@
   description = "NixOS configuration of joel";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-nvim.url = "github:NixOS/nixpkgs/nixos-25.11"; # nvim 0.11.7 — latest stable before 0.12 broke plugin APIs
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
 
@@ -32,6 +33,7 @@
       ];
       mkArgs = sys: {
         pkgs-unstable = mkPkgs sys;
+        pkgs-nvim = import inputs.nixpkgs-nvim { system = sys; config.allowUnfree = true; };
         inherit inputs commonGroups;
       };
     in {

@@ -1,7 +1,11 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, pkgs-nvim, ... }:
 
 {
+  # Enable Magic SysRq keys for emergency recovery (Alt+SysRq+R/S/B etc).
+  # Required for TTY/keyboard recovery when the compositor hard-hangs.
+  boot.kernel.sysctl."kernel.sysrq" = 1;
+
   # for windows support (USBs etc)
   boot.supportedFilesystems = [ "ntfs" ];
 
@@ -145,7 +149,6 @@
     clojure # for metabase
     gcc # for nvim kickstart
     uv
-    pipx # use this for poetry so can use shell plugin
     go
     nixd
     nodejs_22 # add nodejs global just for claude code
@@ -204,8 +207,8 @@
     ### video processing
     ffmpeg
 
-    ### neovim
-    neovim
+    ### neovim (pinned to 0.11.5 — 0.12 broke treesitter plugin APIs)
+    pkgs-nvim.neovim
     ### neovim dependencies
     ast-grep
     ripgrep
@@ -270,6 +273,10 @@
 
   # enable docker
   virtualisation.docker.enable = true;
+  # docker declares Wants=network-online.target which puts it on the
+  # graphical.target critical chain (~5s). Start it after multi-user.target
+  # instead — same fix as postgresql.
+  systemd.services.docker.after = [ "multi-user.target" ];
 
   # this is needed for stuff like markdown-preview extension in neovim with random binaries
   programs.nix-ld.enable = true;
@@ -330,6 +337,8 @@
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
     # moor pager (less replacement with sane defaults)
     PAGER = "moor";
+    # allow moor to be used in systemctl and journalctl calls (see journalctl manual)
+    SYSTEMD_PAGERSECURE = "1";
   };
 
   # Enable the OpenSSH daemon.
