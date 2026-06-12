@@ -239,7 +239,7 @@ hl.bind(mainMod .. '+ALT+j', hl.dsp.window.move { direction = 'd' })
 
 -- Groups
 hl.bind(mainMod .. '+G', hl.dsp.group.toggle())
-hl.bind(mainMod .. '+SHIFT+G', hl.dsp.group.lock())
+hl.bind(mainMod .. '+SHIFT+G', hl.dsp.group.lock_active())
 hl.bind(mainMod .. '+P', hl.dsp.group.prev())
 hl.bind(mainMod .. '+N', hl.dsp.group.next())
 hl.bind(mainMod .. '+SHIFT+P', hl.dsp.group.move_window { forward = false })
