@@ -2,7 +2,6 @@
 ---@module 'hl'
 
 local HOME = os.getenv 'HOME'
-local ensureService = HOME .. '/.config/hypr/scripts/ensure-service.sh'
 
 --###############
 --## MONITORS ###
@@ -21,6 +20,7 @@ local terminal = 'kitty'
 local fileManager = 'dolphin'
 local menu = 'fuzzel'
 local active_colour = { colors = { 'rgba(b5e853ee)', 'rgba(b5e853ee)' }, angle = 45 }
+local groupbar_active_colour = 'rgba(b5e853ff)'
 local mainMod = 'SUPER'
 local resizeStep = 40
 
@@ -149,7 +149,7 @@ hl.config {
       font_weight_active = 'bold',
       text_color = 'rgba(1a1a1aff)',
       text_color_inactive = 'rgba(ffffffff)',
-      ['col.active'] = 'rgba(b5e853ff)',
+      ['col.active'] = groupbar_active_colour,
       ['col.inactive'] = 'rgba(595959ff)',
       ['col.locked_active'] = 'rgba(ff5555ff)',
       ['col.locked_inactive'] = 'rgba(595959ff)',
@@ -244,8 +244,8 @@ hl.bind(mainMod .. '+P', hl.dsp.group.prev())
 hl.bind(mainMod .. '+N', hl.dsp.group.next())
 hl.bind(mainMod .. '+SHIFT+P', hl.dsp.group.move_window { forward = false })
 hl.bind(mainMod .. '+SHIFT+N', hl.dsp.group.move_window { forward = true })
+-- group-menu.sh enters the interactive_group submap and shows the hotkey menu
 hl.bind(mainMod .. '+ALT+G', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/group-menu.sh'))
--- hl.bind(mainMod .. '+ALT+G', hl.dsp.submap 'interactive_group')
 
 -- Rename current workspace
 hl.bind(
@@ -279,10 +279,10 @@ hl.bind(mainMod .. '+mouse:272', hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. '+mouse:273', hl.dsp.window.resize(), { mouse = true })
 
 -- Resize with hjkl
-hl.bind(mainMod .. '+SHIFT+h', hl.dsp.window.resize { x = -resizeStep, y = 0, relative = true }, { repeat_ = true })
-hl.bind(mainMod .. '+SHIFT+l', hl.dsp.window.resize { x = resizeStep, y = 0, relative = true }, { repeat_ = true })
-hl.bind(mainMod .. '+SHIFT+k', hl.dsp.window.resize { x = 0, y = -resizeStep, relative = true }, { repeat_ = true })
-hl.bind(mainMod .. '+SHIFT+j', hl.dsp.window.resize { x = 0, y = resizeStep, relative = true }, { repeat_ = true })
+hl.bind(mainMod .. '+SHIFT+h', hl.dsp.window.resize { x = -resizeStep, y = 0, relative = true }, { repeating = true })
+hl.bind(mainMod .. '+SHIFT+l', hl.dsp.window.resize { x = resizeStep, y = 0, relative = true }, { repeating = true })
+hl.bind(mainMod .. '+SHIFT+k', hl.dsp.window.resize { x = 0, y = -resizeStep, relative = true }, { repeating = true })
+hl.bind(mainMod .. '+SHIFT+j', hl.dsp.window.resize { x = 0, y = resizeStep, relative = true }, { repeating = true })
 
 -- Media / volume (locked = works on lockscreen)
 hl.bind('XF86AudioRaiseVolume', hl.dsp.exec_cmd 'swayosd-client --output-volume raise', { locked = true })
@@ -313,30 +313,63 @@ hl.window_rule {
 }
 
 --## SUBMAP: group mode ##
+-- Entered via group-menu.sh (SUPER+ALT+G), persistent until escape/q.
+-- Borders turn purple while the mode is active, restored on exit.
+-- Note: `hyprctl keyword` is rejected under the lua config, and runtime
+-- hl.config changes don't repaint the focused window until its focus state
+-- changes — the per-window active_border_color prop does repaint immediately,
+-- so every colour change also pokes the active window with set_prop.
 
-local function set_red()
-  hl.exec_cmd "hyprctl keyword general:col.active_border 'rgba(ff0000ff)'"
-  hl.exec_cmd "hyprctl keyword group:col.border_active 'rgba(ff0000ff)'"
-  hl.exec_cmd "hyprctl keyword group:groupbar:col.active 'rgba(ff0000ff)'"
+local group_mode_colour = 'rgba(c678ddff)'
+-- string form of active_colour, for set_prop (which only takes strings)
+local active_colour_str = table.concat(active_colour.colors, ' ') .. ' ' .. active_colour.angle .. 'deg'
+
+local function apply_border_colours(gradient, groupbar_colour, prop_value)
+  hl.config {
+    general = { ['col.active_border'] = gradient },
+    group = {
+      ['col.border_active'] = gradient,
+      groupbar = { ['col.active'] = groupbar_colour },
+    },
+  }
+  if hl.get_active_window() then
+    hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = prop_value })
+  end
 end
 
-local function reset_colors()
-  hl.exec_cmd "hyprctl keyword general:col.active_border 'rgba(b5e853ee) rgba(b5e853ee) 45deg'"
-  hl.exec_cmd "hyprctl keyword group:col.border_active 'rgba(b5e853ee) rgba(b5e853ee) 45deg'"
-  hl.exec_cmd "hyprctl keyword group:groupbar:col.active 'rgba(b5e853ff)'"
-end
+hl.on('keybinds.submap', function(name)
+  if name == 'interactive_group' then
+    apply_border_colours(group_mode_colour, group_mode_colour, group_mode_colour)
+  else
+    apply_border_colours(active_colour, groupbar_active_colour, active_colour_str)
+  end
+end)
 
-local function reset_submap()
-  reset_colors()
-  hl.dispatch(hl.dsp.submap 'reset')
+-- runs the action then re-pokes the (possibly new) active window so the
+-- purple stays visible while the mode persists
+local function group_action(dispatcher)
+  return function()
+    hl.dispatch(dispatcher)
+    if hl.get_active_window() then
+      hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = group_mode_colour })
+    end
+  end
 end
 
 hl.define_submap('interactive_group', function()
-  set_red()
-  hl.bind('L', hl.dsp.window.move { into_group = 'l' })
-  hl.bind('L', reset_submap)
-  hl.bind('escape', reset_submap)
-  hl.bind('Q', reset_submap)
+  hl.bind('t', group_action(hl.dsp.group.toggle()))
+  hl.bind('SHIFT+l', group_action(hl.dsp.group.lock_active()))
+  hl.bind('h', group_action(hl.dsp.window.move { into_group = 'l' }))
+  hl.bind('l', group_action(hl.dsp.window.move { into_group = 'r' }))
+  hl.bind('k', group_action(hl.dsp.window.move { into_group = 'u' }))
+  hl.bind('j', group_action(hl.dsp.window.move { into_group = 'd' }))
+  hl.bind('u', group_action(hl.dsp.window.move { out_of_group = true }))
+  hl.bind('n', group_action(hl.dsp.group.next()))
+  hl.bind('p', group_action(hl.dsp.group.prev()))
+  hl.bind('comma', group_action(hl.dsp.group.move_window { forward = false }))
+  hl.bind('period', group_action(hl.dsp.group.move_window { forward = true }))
+  hl.bind('escape', hl.dsp.submap 'reset')
+  hl.bind('q', hl.dsp.submap 'reset')
 end)
 
 --## AUTOSTART ##
