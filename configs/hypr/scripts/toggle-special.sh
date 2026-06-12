@@ -6,11 +6,14 @@ workspacename=$(hyprctl activewindow -j | jq -r '.workspace.name')
 if [ "$workspacename" != "special:magic" ]; then
     # not in special workspace, send there
     echo "got workspace name as $workspacename, sending to special..."
-    hyprctl dispatch "hl.dsp.focus({workspace='special:magic', with_window=true})"
+    hyprctl dispatch "hl.dsp.window.move({workspace='special:magic'})"
     exit 0
 fi
 
 # in special workspace
+# note: monitors' .activeWorkspace stays the NORMAL workspace while a special
+# workspace is overlaid (special lives in .specialWorkspace), so this correctly
+# retrieves the workspace to send the window back to — verified on 0.55
 workspaceid=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true) | .activeWorkspace.id')
 if [ $? -ne 0 ]; then
     echo "failed to get workspace ID!"
@@ -23,4 +26,4 @@ if [ -z "$workspaceid" ]; then
 fi
 
 echo "sending back to retrieved workspace $workspaceid"
-hyprctl dispatch "hl.dsp.focus({workspace=$workspaceid, with_window=true})"
+hyprctl dispatch "hl.dsp.window.move({workspace=$workspaceid})"
