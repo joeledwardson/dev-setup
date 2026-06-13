@@ -192,6 +192,7 @@
     jq
     jo # json utility
     yq-go
+    crudini # section-aware editor for INI/key=value files (remmina.pref etc)
     kbd # has showkey
     btop # fancy version of top
     navi

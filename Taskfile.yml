@@ -8,6 +8,7 @@ vars:
   BRAVE_DIR: "{{.HOME}}/.config/BraveSoftware/Brave-Browser"
   BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
   BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
+  REMMINA_PREF: "{{.HOME}}/.config/remmina/remmina.pref"
 
 tasks:
   hyprland:reload:
@@ -16,10 +17,11 @@ tasks:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotbot:run, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
+    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
     cmds:
       - task: os:build
       - task: dotbot:run
+      - task: remmina:configure
       - task: llm:keys
       - task: sheldon:lock
       - task: yazi:pkg
@@ -187,6 +189,17 @@ tasks:
           fi
         done
         exit $fail
+
+  remmina:configure:
+    desc: Apply Remmina preferences via crudini (skips if the pref file doesn't exist yet)
+    cmds:
+      - |
+        if [ ! -f "{{.REMMINA_PREF}}" ]; then
+          echo "remmina:configure — {{.REMMINA_PREF}} not found, skipping (launch Remmina once to generate it)"
+          exit 0
+        fi
+        # set host key to F12
+        crudini --set "{{.REMMINA_PREF}}" remmina_pref hostkey 65481
 
   dev:build:
     desc: Build dev container
