@@ -37,12 +37,12 @@ If step 3 doesn't show the expected change, re-observe before retrying. Don't bl
 
 | Tool | Use for | Notes |
 |---|---|---|
-| `hyprctl dispatch sendshortcut KEY,class:^(app)$` | Key chord to a specific window — **bypasses focus** | Preferred over wtype when you know the target class |
+| `hyprctl dispatch "hl.dsp.send_shortcut({mods='SUPER', key='m', window='class:^(app)$'})"` | Key chord to a specific window — **bypasses focus** | Preferred over wtype when you know the target class |
 | `wtype` | Free-form text or chords to focused window | `wtype -M ctrl -p v -m ctrl` = Ctrl+V |
 | `ydotool` | Mouse clicks and moves | Needs `ydotoold` running + user in `ydotool` group |
 | `hyprctl clients -j` | List all windows with class, title, geometry | Always locate before acting |
 | `grim -g "X,Y WxH" /tmp/out.png` | Screenshot a region | Pull geometry from `hyprctl clients -j` |
-| `hyprctl dispatch exec "[float; size W H; center 1] cmd"` | Launch floating window centred | Good for browser UI tests |
+| `hyprctl dispatch "hl.dsp.exec_cmd('[float; size W H; center 1] cmd')"` | Launch floating window centred | Good for browser UI tests |
 
 **If `ydotool` fails with permission denied:** check `id` for `ydotool` group membership. For keys-only, fall back to `wtype` or `sendshortcut` instead.
 

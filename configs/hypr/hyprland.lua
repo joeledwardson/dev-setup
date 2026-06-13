@@ -204,14 +204,15 @@ hl.bind(mainMod .. '+Q', hl.dsp.window.close())
 hl.bind(mainMod .. '+SHIFT+Q', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/confirm-exit.sh'))
 hl.bind(mainMod .. '+E', hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. '+SHIFT+E', hl.dsp.exec_cmd(terminal .. ' yazi'))
-hl.bind(
-  mainMod .. '+SHIFT+T',
-  hl.dsp.exec_cmd "hyprctl activewindow -j | jq -e '.floating' && hyprctl dispatch cyclenext tiled || hyprctl dispatch cyclenext floating"
-)
-hl.bind(
-  mainMod .. '+O',
-  hl.dsp.exec_cmd 'hyprctl -j getoption decoration:inactive_opacity | jq -e ".float > 0.5" && hyprctl keyword decoration:inactive_opacity 0.5 || hyprctl keyword decoration:inactive_opacity 1.0'
-)
+-- focus-cycle the opposite layer: from a floating window jump to tiled, else to floating
+hl.bind(mainMod .. '+SHIFT+T', function()
+  local active = hl.get_active_window()
+  if active and active.floating then
+    hl.dispatch(hl.dsp.window.cycle_next { tiled = true })
+  else
+    hl.dispatch(hl.dsp.window.cycle_next { floating = true })
+  end
+end)
 hl.bind(mainMod .. '+T', hl.dsp.window.float())
 hl.bind(mainMod .. '+F', hl.dsp.window.fullscreen())
 hl.bind(mainMod .. '+V', hl.dsp.exec_cmd 'cliphist list | fuzzel --dmenu | cliphist decode | wl-copy')
@@ -223,7 +224,6 @@ hl.bind(mainMod .. '+X', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/screensh
 hl.bind(mainMod .. '+R', hl.dsp.exec_cmd "hyprctl reload && notify-send Hyprland 'Reloaded successfully' || notify-send Hyprland 'Reload failed'")
 hl.bind('CTRL+ALT+L', hl.dsp.exec_cmd 'swaylock -f')
 hl.bind(mainMod .. '+C', hl.dsp.exec_cmd 'swaync-client --close-all')
-hl.bind(mainMod .. '+ALT+n', hl.dsp.exec_cmd 'hyprctl dispatch swapnext')
 hl.bind(mainMod .. '+TAB', hl.dsp.window.cycle_next())
 hl.bind(mainMod .. '+ALT+m', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/window-menu.sh'))
 hl.bind(mainMod .. '+slash', hl.dsp.exec_cmd 'rofimoji --action clipboard')
@@ -253,7 +253,7 @@ hl.bind(mainMod .. '+ALT+G', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/grou
 -- Rename current workspace
 hl.bind(
   mainMod .. '+SHIFT+R',
-  hl.dsp.exec_cmd 'name=$(fuzzel --dmenu --prompt \'rename workspace: \') && [ -n "$name" ] && hyprctl dispatch renameworkspace "$(hyprctl activeworkspace -j | jq -r .id)" "$name"'
+  hl.dsp.exec_cmd 'name=$(fuzzel --dmenu --prompt \'rename workspace: \') && [ -n "$name" ] && hyprctl dispatch "hl.dsp.workspace.rename({workspace=$(hyprctl activeworkspace -j | jq -r .id), name=\'$name\'})"'
 )
 
 -- Workspace switching
@@ -264,10 +264,10 @@ hl.bind(mainMod .. '+bracketright', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scrip
 
 for i = 1, 9 do
   hl.bind(mainMod .. '+' .. i, hl.dsp.focus { workspace = i })
-  hl.bind(mainMod .. '+SHIFT+' .. i, hl.dsp.exec_cmd('hyprctl dispatch movetoworkspace ' .. i))
+  hl.bind(mainMod .. '+SHIFT+' .. i, hl.dsp.window.move { workspace = i })
 end
 hl.bind(mainMod .. '+0', hl.dsp.focus { workspace = 10 })
-hl.bind(mainMod .. '+SHIFT+0', hl.dsp.exec_cmd 'hyprctl dispatch movetoworkspace 10')
+hl.bind(mainMod .. '+SHIFT+0', hl.dsp.window.move { workspace = 10 })
 
 -- Special workspace
 hl.bind(mainMod .. '+S', hl.dsp.workspace.toggle_special 'magic')
