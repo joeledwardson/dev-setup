@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Persistent notification showing hotkeys for the Hyprland "group" submap.
-# Triggered by $mainMod ALT, G — see hyprland.conf submap definition.
+# Triggered by $mainMod ALT, G — see the interactive_group submap in hyprland.lua.
 # Replace ID 9998 keeps the bubble in place across re-trigger.
 hyprctl dispatch "hl.dsp.submap 'interactive_group'"
 notify-send -t 0 -r 9998 \

@@ -5,7 +5,7 @@ workspacename=$(hyprctl activewindow -j | jq -r '.workspace.name')
 # if in magic then shouldn't be changing workspace
 # its 99% a mistake - changes workspace underneath special but not special itself
 if [ "$workspacename" == "special:magic" ]; then
-    "$(dirname "$0")/flash-red.sh"
+    hyprctl eval "FlashActiveBorder()" >/dev/null 2>&1
     exit 1
 fi
 
@@ -23,6 +23,6 @@ sleep 0.1
 new_address=$(hyprctl activeworkspace -j | jq -r ".id")
 echo "new addres is $new_address"
 if [ "$current_address" == "$new_address" ]; then
-    "$(dirname "$0")/flash-red.sh"
+    hyprctl eval "FlashActiveBorder()" >/dev/null 2>&1
     exit 1
 fi

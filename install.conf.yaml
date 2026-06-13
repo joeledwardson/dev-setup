@@ -21,11 +21,10 @@
       ~/.config/swaync: ./configs/swaync
       ~/.config/zsh/.zshrc: ./configs/zshrc
       ~/.config/nvim: ./configs/nvim
-      ~/.config/tmux/tmux.conf: ./configs/tmux.conf
-      ~/.config/tmux/scripts: ./configs/tmux-scripts
+      ~/.config/tmux/tmux.conf: ./configs/tmux/tmux.conf
+      ~/.config/tmux/scripts: ./configs/tmux/scripts
       ~/.config/git/config: ./configs/gitconfig
       ~/.config/git/ignore: ./configs/gitignore
-      # ~/.config/hypr/hyprland.conf: ./configs/hypr/hyprland.conf
       ~/.config/hypr/hyprland.lua: ./configs/hypr/hyprland.lua
       ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
       ~/.config/hypr/hypridle.conf: ./configs/hypr/hypridle.conf

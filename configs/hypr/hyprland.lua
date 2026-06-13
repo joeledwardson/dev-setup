@@ -1,4 +1,4 @@
--- Converted from hyprland.conf for Hyprland 0.55+ Lua config
+-- Hyprland 0.55+ Lua config
 ---@module 'hl'
 
 local HOME = os.getenv 'HOME'
@@ -21,6 +21,9 @@ local fileManager = 'dolphin'
 local menu = 'fuzzel'
 local active_colour = { colors = { 'rgba(b5e853ee)', 'rgba(b5e853ee)' }, angle = 45 }
 local groupbar_active_colour = 'rgba(b5e853ff)'
+-- string form of active_colour, for set_prop (which only accepts strings)
+local active_colour_str = table.concat(active_colour.colors, ' ') .. ' ' .. active_colour.angle .. 'deg'
+local flash_colour = 'rgba(ff0000ff)'
 local mainMod = 'SUPER'
 local resizeStep = 40
 
@@ -312,6 +315,23 @@ hl.window_rule {
   no_focus = true,
 }
 
+--## BORDER FLASH ##
+-- Briefly flash the active window's border red, then restore. Global so shell
+-- scripts can trigger it via `hyprctl eval "FlashActiveBorder()"` — used by
+-- move-focus.sh/move-workspace.sh on a failed move and by the tmux nav binds.
+-- Restore colour is derived from active_colour above — one source of truth.
+-- hl.timer does the delay so nothing blocks. The real trigger (failed focus)
+-- leaves the active window unchanged, so restoring the active window is correct.
+function FlashActiveBorder()
+  if not hl.get_active_window() then return end
+  hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = flash_colour })
+  hl.timer(function()
+    if hl.get_active_window() then
+      hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = active_colour_str })
+    end
+  end, { timeout = 300, type = 'oneshot' })
+end
+
 --## SUBMAP: group mode ##
 -- Entered via group-menu.sh (SUPER+ALT+G), persistent until escape/q.
 -- Borders turn purple while the mode is active, restored on exit.
@@ -321,8 +341,6 @@ hl.window_rule {
 -- so every colour change also pokes the active window with set_prop.
 
 local group_mode_colour = 'rgba(c678ddff)'
--- string form of active_colour, for set_prop (which only takes strings)
-local active_colour_str = table.concat(active_colour.colors, ' ') .. ' ' .. active_colour.angle .. 'deg'
 
 local function apply_border_colours(gradient, groupbar_colour, prop_value)
   hl.config {

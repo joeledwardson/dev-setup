@@ -37,6 +37,6 @@ fi
 if [ "$fullscreen" -ne "0" ]; then
     notify-send "PLEB" "cannot change window in fullscreen"
 else
-    "$(dirname "$0")/flash-red.sh"
+    hyprctl eval "FlashActiveBorder()" >/dev/null 2>&1
 fi
 exit 1
