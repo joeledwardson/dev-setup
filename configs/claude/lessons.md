@@ -114,3 +114,27 @@ outDir := t.TempDir()
 
 ---
 
+## DRY is about knowledge, not text
+
+**The principle**: duplicating *text* is cheap; duplicating *knowledge* (a fact or decision that must
+change in lockstep across places) is what DRY actually protects against. Deduplicate facts, not characters.
+
+**Diagnostic**: "if this changes, how many places must change — and can they drift *silently*?"
+
+- Two variants of a statement, adjacent (same function, < ~100 lines apart), each readable in full:
+  **duplicate them**. A reader sees both; drift is caught on sight. Extract only at 3+ variants or
+  once they stop being adjacent.
+- The same *fact* stated in two systems (a hardcoded string in code that must match values in a DB
+  table or external config): **knowledge duplication** — drifts silently, fails at runtime. The fix
+  is not a shared constant; it's deriving the value from the canonical source.
+
+| Looked like | Actually was | Right move |
+|---|---|---|
+| two near-identical SQL statements in an if/else | text duplication, adjacent | write both in full, psql-pastable — never mash fragments (`f"{base_sql} AND …{group_by}"`) |
+| `DAMBLE_HUB88_OPERATOR = "damble_eu"` constant + comment warning that `"dambles"` returns 0 rows | knowledge duplication: the operator value lives in the rtps table AND in code | derive the lookup key from the row data (`operator_name`) — constant deleted, failure class gone |
+
+**The tell**: a comment explaining why a literal must hold a specific value to match data living
+elsewhere. That comment is the duplicated knowledge apologizing for itself — derive, don't restate.
+
+---
+
