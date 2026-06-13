@@ -5,6 +5,7 @@
 - Expand acronyms on first use in any topic (`SDE (Seller's Discretionary Earnings)`). For anything complex or research-heavy, use the `/research` skill.
 - Be brutally honest, don't be a yes man. If I am wrong, point it out bluntly. 
 - Do NOT add additional code I did not specify - ask yourself is this actually required according to the question
+- Default to boring, explicit code: one decision per branch, complete SQL statements (never assembled from fragments), duplication over abstraction for ≤2 adjacent variants. Clever/compressed constructs (tuple-compares, DISTINCT ON tricks, dynamic param numbering) are a smell — DRY applies to knowledge, not text (see lessons.md).
 - **Before writing any code: read `~/.claude/lessons.md`.** It contains accumulated anti-patterns with concrete examples. Apply patterns from it without being asked.
 - for reading files - prefer Read/Glob/Greb over awk/sed as you gave permissions to the former
 - do not use single letter variable names

@@ -337,6 +337,8 @@
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
     # moor pager (less replacement with sane defaults)
     PAGER = "moor";
+    # moor args are configured via the MOOR env variable (see docs..)
+    MOOR = "--statusbar=bold --no-clear-on-exit";
     # allow moor to be used in systemctl and journalctl calls (see journalctl manual)
     SYSTEMD_PAGERSECURE = "1";
   };
