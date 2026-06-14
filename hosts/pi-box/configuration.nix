@@ -1,7 +1,17 @@
-{ pkgs, commonGroups, ... }:
+{ pkgs, lib, commonGroups, ... }:
 
 {
   imports = [ ./hardware-configuration.nix ];
+
+  # =======================================
+  # Swap: zram instead of an SD-card swapfile
+  # =======================================
+  # nixos-base defines a 32GB swapfile at /var/lib/swapfile. On a Pi that lives
+  # on the SD card, and swapping to SD card (terrible random I/O) is what makes
+  # the box thrash and feel sluggish. Force it off and use compressed RAM swap
+  # instead — no SD-card writes, no wear, no thrash.
+  swapDevices = lib.mkForce [ ];
+  zramSwap.enable = true;
 
   # =======================================
   # Boot Configuration
