@@ -83,3 +83,5 @@ nav:
   - ADRs:
       - appendix/adr/index.md
       - ADR-001 Claude Orchestration: appendix/adr/001-claude-code-orchestration.md
+      - ADR-002 Robust Docs Review: appendix/adr/002-robust-docs-review.md
+      - ADR-003 Claude Session Monitor: appendix/adr/003-claude-session-monitor.md
