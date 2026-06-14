@@ -1,4 +1,4 @@
-image=/home/joelyboy/.config/swaylock/wallpaper.jpeg
+image=$HOME/.config/swaylock/wallpaper.jpeg
 scaling=fill
 
 ring-color=b5e853ee
