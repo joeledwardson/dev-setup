@@ -1,7 +1,20 @@
-{ pkgs, lib, commonGroups, ... }:
+{ pkgs, lib, commonGroups, modulesPath, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    # Build a bootable Raspberry Pi image: firmware partition (Pi firmware +
+    # U-Boot) + an auto-expanding ext4 root, with the extlinux bootloader.
+    # This replaces a hand-written hardware-configuration.nix — the module
+    # defines the bootloader and filesystems itself. Flash the build output to
+    # the USB SSD; the config is baked in (SSH + users), so no console/PiKVM is
+    # needed on first boot. Build with:
+    #   nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
+    "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
+  ];
+
+  # Root lives on a USB-attached SSD in a UASP caddy, so the initrd needs the
+  # USB-storage drivers to find the root filesystem at boot.
+  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "usb_storage" "uas" ];
 
   # =======================================
   # Swap: zram instead of an SD-card swapfile
@@ -12,14 +25,6 @@
   # instead — no SD-card writes, no wear, no thrash.
   swapDevices = lib.mkForce [ ];
   zramSwap.enable = true;
-
-  # =======================================
-  # Boot Configuration
-  # =======================================
-  boot.loader = {
-    grub.enable = false;
-    generic-extlinux-compatible.enable = true;
-  };
 
   # =======================================
   # Networking Configuration

@@ -196,7 +196,6 @@
     kbd # has showkey
     btop # fancy version of top
     navi
-    terraform
     skopeo # useful for searching remote docker tags (required for video consumer)
     awscli2
     ssm-session-manager-plugin
@@ -256,8 +255,6 @@
 
     # work stuff
     grafana-alloy
-    cloud-init
-    vault
     ansible-lint
 
     ### unstable packages

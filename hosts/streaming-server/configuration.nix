@@ -32,6 +32,7 @@
       efiSysMountPoint = "/boot";
     };
   };
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # =======================================
   # Media server 
