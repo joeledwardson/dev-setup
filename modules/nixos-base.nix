@@ -341,6 +341,9 @@
     SYSTEMD_PAGERSECURE = "1";
   };
 
+  # Put ~/.local/bin on PATH so the xdg-open shim shadows the system one.
+  environment.localBinInPath = true;
+
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 

@@ -246,6 +246,13 @@ tasks:
     cmds:
       - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --livereload -a 0.0.0.0:9653
 
+  port-dash:serve:
+    desc: Run port-dash — service status dashboard on port 9999
+    # Launch via `task` (not the bare binary) so tmux-resurrect — which whitelists
+    # `task` — restores it on restart. Re-runs `task port-dash:serve`, cwd-independent.
+    cmds:
+      - "{{.HOME}}/.local/bin/port-dash"
+
   llm:keys:
     desc: Set LLM API keys from agenix secrets
     cmds:
