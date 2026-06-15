@@ -49,6 +49,12 @@
     ### dictation (experimental)
     pkgs-unstable.hyprwhspr-rs
     sox
+
+    ### work (rarely used so don't put in base)
+    terraform
+    cloud-init
+    vault
+
   ];
 
   # use gnome keywring in remmina

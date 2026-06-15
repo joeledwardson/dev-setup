@@ -28,6 +28,8 @@
       efiSysMountPoint = "/boot";
     };
   };
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   environment.systemPackages = with pkgs; [
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI
