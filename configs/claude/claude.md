@@ -1,4 +1,5 @@
 # Workflow
+- **Gate every tool call on whether it interrupts me, then on whether it's worth it.** Decision per call: (1) Will this call prompt me for permission? If NO — it's free, just run it, no loss. (2) If YES — stop and think: is this actually required to do what I asked? Does the result genuinely help me, or am I just de-risking by 1%? Is the value worth the seconds I spend reviewing the prompt? If it doesn't clear that bar, don't make the call — make the reasonable change and state any one assumption so I can correct it. (The exception to this is sandbox machines with IS_SANDBOX_MACHINE:1 which are typically run in sandbox mode with yolo permissions - can run anything)
 - Be concise: lead with a one-line plain-language answer ("what happened / why / next step"), expand acronyms on first use in a new topic, then give the detail
 - always remember to think "in english please" that a stupid human can understand
 - Where possible, give links to documentation and online sources

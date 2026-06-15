@@ -7,12 +7,20 @@ local HOME = os.getenv 'HOME'
 --## MONITORS ###
 --###############
 
-hl.monitor {
-  output = '',
-  mode = 'preferred',
-  position = 'auto',
-  scale = 'auto',
-}
+-- machine-local monitor layout; falls back to auto if the file is absent
+local monitors_file = HOME .. '/.config/hypr/hyprland_monitors.lua'
+local monitors_handle = io.open(monitors_file)
+if monitors_handle then
+  monitors_handle:close()
+  dofile(monitors_file)
+else
+  hl.monitor {
+    output = '',
+    mode = 'preferred',
+    position = 'auto',
+    scale = 'auto',
+  }
+end
 
 --### VARIABLES ###
 
@@ -320,15 +328,17 @@ hl.window_rule {
 -- scripts can trigger it via `hyprctl eval "FlashActiveBorder()"` — used by
 -- move-focus.sh/move-workspace.sh on a failed move and by the tmux nav binds.
 -- Restore colour is derived from active_colour above — one source of truth.
--- hl.timer does the delay so nothing blocks. The real trigger (failed focus)
--- leaves the active window unchanged, so restoring the active window is correct.
+-- hl.timer does the delay so nothing blocks. We capture the flashed window's
+-- address up front and target it by address on both flash and restore, so if
+-- focus moves during the 300ms the restore still hits the window we flashed
+-- (not whatever happens to be active when the timer fires).
 function FlashActiveBorder()
-  if not hl.get_active_window() then return end
-  hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = flash_colour })
+  local flashed = hl.get_active_window()
+  if not flashed then return end
+  local target = 'address:' .. flashed.address
+  hl.dispatch(hl.dsp.window.set_prop { window = target, prop = 'active_border_color', value = flash_colour })
   hl.timer(function()
-    if hl.get_active_window() then
-      hl.dispatch(hl.dsp.window.set_prop { prop = 'active_border_color', value = active_colour_str })
-    end
+    hl.dispatch(hl.dsp.window.set_prop { window = target, prop = 'active_border_color', value = active_colour_str })
   end, { timeout = 300, type = 'oneshot' })
 end
 
@@ -409,6 +419,11 @@ hl.on('config.reloaded', function()
   hl.exec_cmd('sleep 1 && ' .. HOME .. '/.config/hypr/scripts/randomise-wallpaper.sh')
 end)
 
--- per-machine config — falls back silently if file doesn't exist
-pcall(require, 'hyprland_monitors')
-pcall(require, 'hyprland_custom')
+-- per-machine overrides; loaded last so they win. Missing file is fine; a real
+-- error inside it still surfaces (unlike pcall, which would swallow it silently).
+local custom_file = HOME .. '/.config/hypr/hyprland_custom.lua'
+local custom_handle = io.open(custom_file)
+if custom_handle then
+  custom_handle:close()
+  dofile(custom_file)
+end
