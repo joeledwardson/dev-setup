@@ -1,0 +1,2201 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../2026-03/">
+      
+      
+        <link rel="next" href="../2026-05/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>April 2026 - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#april-2026" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              April 2026
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#socat-unix-socket-notification-forwarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Socat - unix socket notification forwarding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazy-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy window
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notification-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notification history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-history-search-diffview-fugitive-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git history search — diffview, fugitive &amp; terminal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telescope-live-grep-with-directoryfiletype-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telescope live grep with directory/filetype filtering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keybrowser-browsable-keybinding-pickers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keybrowser — browsable keybinding pickers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intuitive-zellij-stacking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intuitive Zellij Stacking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-variable-scopes-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim variable scopes cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-escape-sequences-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal escape sequences cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#april-2026_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        April 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="April 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yazi-as-xdg-file-picker-research-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yazi as XDG file picker — research summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvim-treesitter-archived-012-broken-pinned-for-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvim-treesitter: archived, 0.12 broken, pinned for now
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nvim-treesitter: archived, 0.12 broken, pinned for now">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-012-breaks-the-current-pin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why 0.12 breaks the current pin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-frozen-branches-two-behaviours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two frozen branches, two behaviours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-decision-stay-pinned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current decision: stay pinned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-revisit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to revisit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#socat-unix-socket-notification-forwarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Socat - unix socket notification forwarding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lazy-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy window
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notification-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notification history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#git-history-search-diffview-fugitive-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git history search — diffview, fugitive &amp; terminal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#telescope-live-grep-with-directoryfiletype-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telescope live grep with directory/filetype filtering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keybrowser-browsable-keybinding-pickers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keybrowser — browsable keybinding pickers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intuitive-zellij-stacking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intuitive Zellij Stacking
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-variable-scopes-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim variable scopes cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-escape-sequences-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal escape sequences cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#april-2026_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        April 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="April 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yazi-as-xdg-file-picker-research-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Yazi as XDG file picker — research summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvim-treesitter-archived-012-broken-pinned-for-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvim-treesitter: archived, 0.12 broken, pinned for now
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nvim-treesitter: archived, 0.12 broken, pinned for now">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-012-breaks-the-current-pin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why 0.12 breaks the current pin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-frozen-branches-two-behaviours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two frozen branches, two behaviours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-decision-stay-pinned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current decision: stay pinned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-revisit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to revisit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="april-2026">April 2026<a class="headerlink" href="#april-2026" title="Permanent link">&para;</a></h1>
+<h4 id="socat-unix-socket-notification-forwarding">Socat - unix socket notification forwarding<a class="headerlink" href="#socat-unix-socket-notification-forwarding" title="Permanent link">&para;</a></h4>
+<p>Needed a way to get Claude Code notifications out of Docker containers to the host desktop. Used socat with unix sockets. Here's how socat works, building up piece by piece:</p>
+<p><strong>How socat syntax works</strong></p>
+<p>The man page says <code>socat [options] &lt;address&gt; &lt;address&gt;</code>. The confusing bit is that <code>fork</code>, <code>reuseaddr</code> etc are NOT command-line options (those go before the addresses, like <code>-d</code>). They are <strong>address options</strong> — appended to an address type with commas:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ADDRESS-TYPE:argument,option1,option2
+</span></code></pre></div>
+<p>The man page lists each address type (e.g. <code>UNIX-LISTEN</code>) with its "Useful options" — that's where you find which address options apply. <code>fork</code> and <code>reuseaddr</code> are listed under the LISTEN/CHILD option groups.</p>
+<p><strong>1. Basic socat — connect two things</strong></p>
+<p>socat connects two "addresses" bidirectionally. Simplest example — act like <code>cat</code>:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>socat<span class="w"> </span>STDIN<span class="w"> </span>STDOUT
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># type something, it echoes back</span>
+</span></code></pre></div></p>
+<p><strong>2. Unix sockets — listener side</strong></p>
+<p>Create a unix socket and listen on it. <code>-</code> is shorthand for STDIN/STDOUT:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># terminal 1: listen</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock<span class="w"> </span>-
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># terminal 2: connect and send</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>socat<span class="w"> </span>-<span class="w"> </span>UNIX-CONNECT:/tmp/test.sock
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># &quot;hello&quot; appears in terminal 1</span>
+</span></code></pre></div></p>
+<p>After one message the listener exits. That's because <code>UNIX-LISTEN</code> accepts one connection then closes.</p>
+<p><strong>3. <code>fork</code> — keep listening</strong></p>
+<p><code>fork</code> spawns a child process per connection so the listener stays alive:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork<span class="w"> </span>-
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># now multiple clients can connect, listener stays up</span>
+</span></code></pre></div></p>
+<p><strong>4. <code>reuseaddr</code> — restart without "address already in use"</strong></p>
+<p>When socat creates a UNIX-LISTEN socket, it creates a file on disk (e.g. <code>/tmp/test.sock</code>). When it exits cleanly it removes the file. But if it crashes or gets killed, the stale <code>.sock</code> file stays behind. Next time you start the listener, socat tries to <code>bind()</code> to that path and gets <code>Address already in use</code> because the file already exists.</p>
+<p>Try it yourself:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># terminal 1: start listener</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork<span class="w"> </span>-
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># terminal 2: kill it hard (simulating a crash)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;socat UNIX-LISTEN:/tmp/test.sock&quot;</span><span class="k">)</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># terminal 1: try to restart — fails</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork<span class="w"> </span>-
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># ERROR: Address already in use</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># check: the stale socket file is still there</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>ls<span class="w"> </span>-la<span class="w"> </span>/tmp/test.sock
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="c1"># with reuseaddr it just works (removes stale file before binding)</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr<span class="w"> </span>-
+</span></code></pre></div></p>
+<p>This is why the systemd service also has <code>ExecStartPre = rm -f /tmp/notify-forward.sock</code> — belt and braces.</p>
+<p><strong>5. <code>SYSTEM:</code> — run a command per connection</strong></p>
+<p>Instead of printing to STDOUT, run a shell command. The incoming data is available on stdin of that command:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr<span class="w"> </span>SYSTEM:<span class="s1">&#39;read line; echo &quot;got: $line&quot;&#39;</span>
+</span></code></pre></div></p>
+<p>Send a test: <code>echo "hello" | socat - UNIX-CONNECT:/tmp/test.sock</code> — the listener shell runs <code>read line</code> and can do whatever with it.</p>
+<p><strong>6. The actual notification listener</strong></p>
+<p>Putting it all together — receive <code>title|body</code> format, split on <code>|</code>, send desktop notification:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>socat<span class="w"> </span>UNIX-LISTEN:/tmp/notify-forward.sock,fork,reuseaddr<span class="w"> </span>SYSTEM:<span class="s1">&#39;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="s1">    read line</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="s1">    title=&quot;${line%%|*}&quot;    # everything before first |</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="s1">    body=&quot;${line#*|}&quot;      # everything after first |</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="s1">    notify-send &quot;$title&quot; &quot;$body&quot;</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s1">&#39;</span>
+</span></code></pre></div></p>
+<p><strong>7. <code>-d</code> flag — debug output</strong></p>
+<p><code>-d</code> is a command-line option (goes before addresses). Adds connection logging. Stack for more verbosity:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>socat<span class="w"> </span>-d<span class="w"> </span>UNIX-LISTEN:/tmp/test.sock,fork,reuseaddr<span class="w"> </span>SYSTEM:<span class="s1">&#39;read line; echo &quot;$line&quot;&#39;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># -d = notices, -d -d = info, -d -d -d = debug</span>
+</span></code></pre></div></p>
+<h3 id="lazy-window">Lazy window<a class="headerlink" href="#lazy-window" title="Permanent link">&para;</a></h3>
+<p>lol i NEVER new this - <code>C-w</code> then <code>w</code> is "switch window" so if focus is lost to <code>:Lazy</code> window just do that to go back to it 🤣 - see <a href="https://github.com/LazyVim/LazyVim/discussions/4001#discussioncomment-10031674">here</a></p>
+<h3 id="notification-history">Notification history<a class="headerlink" href="#notification-history" title="Permanent link">&para;</a></h3>
+<p>I also forget I have <code>:Telescope fidget</code> which has a nice viewer with telescope</p>
+<h3 id="git-history-search-diffview-fugitive-terminal">Git history search — diffview, fugitive &amp; terminal<a class="headerlink" href="#git-history-search-diffview-fugitive-terminal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+<th>Args</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:DiffviewFileHistory %</code></td>
+<td>browse all commits touching current file in diffview</td>
+<td><code>%</code> = vim's current buffer filename</td>
+</tr>
+<tr>
+<td><code>:DiffviewFileHistory % -G"FileChangedShellPost"</code></td>
+<td>diffview filtered to commits where diff matches regex in current file</td>
+<td><code>-G"pattern"</code> = git log regex diff search, <code>%</code> = current file</td>
+</tr>
+<tr>
+<td><code>:DiffviewFileHistory -G"FileChangedShellPost"</code></td>
+<td>same but across entire repo (no <code>%</code>)</td>
+<td><code>-G"pattern"</code> = regex search across all files</td>
+</tr>
+<tr>
+<td><code>git log -p -G"FileChangedShellPost" -- path/to/file</code></td>
+<td>terminal equivalent — log with patches filtered by regex for a file</td>
+<td><code>-p</code> = show patch, <code>-G</code> = regex diff search, <code>--</code> = path delimiter</td>
+</tr>
+<tr>
+<td><code>:Git log -p -- %</code></td>
+<td>fugitive scrollable log with full diffs for current file</td>
+<td><code>-p</code> = show patch, <code>%</code> = current file</td>
+</tr>
+<tr>
+<td><code>:Git log -p -G"FileChangedShellPost" -- %</code></td>
+<td>fugitive log filtered by regex search for current file</td>
+<td><code>-p</code> = patch, <code>-G</code> = regex search, <code>%</code> = current file</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>-S"string"</code> is an alternative to <code>-G</code> — finds commits where the <strong>count</strong> of that string changed (added/removed) rather than matching the diff line</p>
+</blockquote>
+<h3 id="telescope-live-grep-with-directoryfiletype-filtering">Telescope live grep with directory/filetype filtering<a class="headerlink" href="#telescope-live-grep-with-directoryfiletype-filtering" title="Permanent link">&para;</a></h3>
+<p>Uses <code>live_grep_args</code> extension. The key shortcut <code>&lt;C-f&gt;</code> auto-quotes the search term and appends <code>--iglob</code> so you can type a path/glob filter.</p>
+<p><strong>Search in a directory:</strong> <code>&lt;leader&gt;g</code> → type <code>vertical</code> → <code>&lt;C-f&gt;</code> → type <code>configs/nvim/**</code>
+- result: <code>"vertical" --iglob configs/nvim/**</code> — searches for "vertical" only in files under <code>configs/nvim/</code></p>
+<p><strong>Search by filetype:</strong> <code>&lt;leader&gt;g</code> → type <code>zc</code> → <code>&lt;C-f&gt;</code> → type <code>**/*.lua</code>
+- result: <code>"zc" --iglob **/*.lua</code> — searches for "zc" only in <code>.lua</code> files across the whole repo</p>
+<blockquote>
+<p><code>--iglob</code> is case-insensitive glob. You can chain multiple: <code>"term" --iglob configs/** --iglob !*.json</code> (exclude json files)</p>
+<p>note: <code>&lt;C-i&gt;</code> does NOT work for this because terminals send <code>&lt;C-i&gt;</code> as <code>&lt;Tab&gt;</code> — that's why we use <code>&lt;C-f&gt;</code> instead</p>
+</blockquote>
+<h3 id="keybrowser-browsable-keybinding-pickers">Keybrowser — browsable keybinding pickers<a class="headerlink" href="#keybrowser-browsable-keybinding-pickers" title="Permanent link">&para;</a></h3>
+<p>Built a custom telescope-based keybinding browser in <code>lua/custom/keybrowser.lua</code>. All under <code>&lt;space&gt;k</code>:</p>
+<ul>
+<li><code>&lt;space&gt;kk</code> — nvim keymaps (your configured mappings, via telescope builtin)</li>
+<li><code>&lt;space&gt;kv</code> — vim built-in keys (parsed from <code>$VIMRUNTIME/doc/index.txt</code>, enter opens <code>:help</code>)</li>
+<li><code>&lt;space&gt;kz</code> — zsh keybindings (live-queried from <code>bindkey -M</code> across all keymaps: vicmd, viins, etc)</li>
+<li><code>&lt;space&gt;kt</code> — telescope keybindings (queried from <code>require("telescope.config").values.mappings</code> at runtime)</li>
+</ul>
+<p>All pickers support a "mode filter" search: type two words and the first word filters the first column exactly, the second is a lua pattern on the rest. e.g. <code>n p</code> in the vim picker shows all normal-mode keys containing <code>p</code>, <code>vicmd kill</code> in zsh shows vicmd bindings matching "kill".</p>
+<p>The zsh picker also translates raw terminal codes to friendly names — <code>^[OA</code> → <code>Up (SS3)</code>, <code>^M</code> → <code>Enter (CR)</code>, <code>^[x</code> → <code>Alt-x</code>, etc.</p>
+<p>Discovery that prompted this: <code>C-t</code> in telescope opens the selected entry in a new tab. I kept forgetting this existed. Now <code>&lt;space&gt;kt</code> → search "tab" and there it is.</p>
+<h3 id="intuitive-zellij-stacking">Intuitive Zellij Stacking<a class="headerlink" href="#intuitive-zellij-stacking" title="Permanent link">&para;</a></h3>
+<p>Didnt realise this was a feature...  <code>ToggleGroupMarking</code> (for me <code>Alt Shift p</code>) opens group mode where we can select multiple panes and then <code>s</code> to stack!</p>
+<p>And then can use the <code>alt [</code> to change layout (which will unstack) .. and <code>alt t [</code> to move a pane to another tab!</p>
+<h3 id="vim-variable-scopes-cheat-sheet">Vim variable scopes cheat sheet<a class="headerlink" href="#vim-variable-scopes-cheat-sheet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What</th>
+<th>Vim get</th>
+<th>Vim set</th>
+<th>Lua get</th>
+<th>Lua set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g:</code></td>
+<td>global variables</td>
+<td><code>:echo g:foo</code></td>
+<td><code>:let g:foo = 1</code></td>
+<td><code>vim.g.foo</code></td>
+<td><code>vim.g.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>b:</code></td>
+<td>buffer-local variables</td>
+<td><code>:echo b:foo</code></td>
+<td><code>:let b:foo = 1</code></td>
+<td><code>vim.b.foo</code> or <code>vim.b[bufnr].foo</code></td>
+<td><code>vim.b.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>w:</code></td>
+<td>window-local variables</td>
+<td><code>:echo w:foo</code></td>
+<td><code>:let w:foo = 1</code></td>
+<td><code>vim.w.foo</code> or <code>vim.w[winid].foo</code></td>
+<td><code>vim.w.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>t:</code></td>
+<td>tab-local variables</td>
+<td><code>:echo t:foo</code></td>
+<td><code>:let t:foo = 1</code></td>
+<td><code>vim.t.foo</code> or <code>vim.t[tabnr].foo</code></td>
+<td><code>vim.t.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>v:</code></td>
+<td>vim predefined variables</td>
+<td><code>:echo v:count</code></td>
+<td>(read-only mostly)</td>
+<td><code>vim.v.count</code></td>
+<td>(read-only mostly)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Options</strong> (settings like <code>number</code>, <code>expandtab</code>) use <code>vim.opt</code> / <code>vim.o</code> / <code>vim.bo</code> / <code>vim.wo</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What</th>
+<th>Vim get</th>
+<th>Vim set</th>
+<th>Lua get</th>
+<th>Lua set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>global option</td>
+<td><code>:set foo</code></td>
+<td><code>:echo &amp;foo</code></td>
+<td><code>:set foo=1</code></td>
+<td><code>vim.o.foo</code> or <code>vim.opt.foo:get()</code></td>
+<td><code>vim.o.foo = 1</code> or <code>vim.opt.foo = 1</code></td>
+</tr>
+<tr>
+<td>buffer option</td>
+<td><code>:setlocal foo</code> (buffer)</td>
+<td><code>:echo &amp;l:foo</code></td>
+<td><code>:setlocal foo=1</code></td>
+<td><code>vim.bo.foo</code> or <code>vim.bo[bufnr].foo</code></td>
+<td><code>vim.bo.foo = 1</code></td>
+</tr>
+<tr>
+<td>window option</td>
+<td><code>:setlocal foo</code> (window)</td>
+<td><code>:echo &amp;l:foo</code></td>
+<td><code>:setlocal foo=1</code></td>
+<td><code>vim.wo.foo</code> or <code>vim.wo[winid].foo</code></td>
+<td><code>vim.wo.foo = 1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vim.g.mapleader</code></td>
+<td><code>vim.g.mapleader = ' '</code></td>
+<td>global var, set leader key</td>
+</tr>
+<tr>
+<td><code>vim.g.clipboard</code></td>
+<td><code>vim.g.clipboard = {...}</code></td>
+<td>global var, clipboard provider config</td>
+</tr>
+<tr>
+<td><code>vim.b.disable_autoformat</code></td>
+<td><code>vim.b.disable_autoformat = true</code></td>
+<td>buffer var, custom flag for conform.nvim</td>
+</tr>
+<tr>
+<td><code>vim.opt.number</code></td>
+<td><code>vim.opt.number = true</code></td>
+<td>option, show line numbers</td>
+</tr>
+<tr>
+<td><code>vim.bo.filetype</code></td>
+<td><code>vim.bo.filetype</code></td>
+<td>buffer option, get current filetype</td>
+</tr>
+<tr>
+<td><code>vim.wo.wrap</code></td>
+<td><code>vim.wo.wrap = false</code></td>
+<td>window option, disable line wrap</td>
+</tr>
+<tr>
+<td><code>vim.v.event</code></td>
+<td><code>vim.v.event.regcontents</code></td>
+<td>vim predefined, yank event data</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>vim.opt</code> vs <code>vim.o</code>: <code>vim.opt</code> returns a special object with <code>:get()</code>, <code>:append()</code>, <code>:prepend()</code>, <code>:remove()</code>. <code>vim.o</code> is simpler direct access. For setting simple values they're interchangeable.</p>
+</blockquote>
+<h3 id="terminal-escape-sequences-cheat-sheet">Terminal escape sequences cheat sheet<a class="headerlink" href="#terminal-escape-sequences-cheat-sheet" title="Permanent link">&para;</a></h3>
+<p>Escape sequences control terminal behavior. Two main types: <strong>CSI</strong> (Control Sequence Introducer) for cursor/display and <strong>OSC</strong> (Operating System Command) for terminal features.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Command</th>
+<th>Breakdown</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[2J'</code></td>
+<td><code>\e[</code> + <code>2</code> + <code>J</code></td>
+<td>clear entire screen (<code>J</code>=erase, <code>2</code>=all)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[10;5H'</code></td>
+<td><code>\e[</code> + <code>10;5</code> + <code>H</code></td>
+<td>move cursor to row 10, col 5 (<code>H</code>=position)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[31mRed\e[0m'</code></td>
+<td><code>\e[</code> + <code>31</code> + <code>m</code></td>
+<td>set text red (<code>m</code>=SGR, <code>31</code>=red fg)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[0m'</code></td>
+<td><code>\e[</code> + <code>0</code> + <code>m</code></td>
+<td>reset all attributes (<code>0</code>=reset)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[2 q'</code></td>
+<td><code>\e[</code> + <code>2</code> + <code>q</code></td>
+<td>set cursor to block (<code>q</code>=cursor shape)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[5 q'</code></td>
+<td><code>\e[</code> + <code>5</code> + <code>q</code></td>
+<td>set cursor to bar/beam</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[?25l'</code></td>
+<td><code>\e[</code> + <code>?25</code> + <code>l</code></td>
+<td>hide cursor (<code>l</code>=low/off)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[?25h'</code></td>
+<td><code>\e[</code> + <code>?25</code> + <code>h</code></td>
+<td>show cursor (<code>h</code>=high/on)</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]0;My Title\a'</code></td>
+<td><code>\e]</code> + <code>0;</code> + <code>title</code> + <code>\a</code></td>
+<td>set window title</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]9;%s\e\\' "msg"</code></td>
+<td><code>\e]</code> + <code>9;</code> + <code>msg</code> + <code>\e\\</code></td>
+<td>desktop notification (works over SSH)</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]52;c;%s\a' "$(echo -n 'hello' \| base64)"</code></td>
+<td><code>\e]</code> + <code>52;c;</code> + <code>BASE64</code> + <code>\a</code></td>
+<td>copy to clipboard</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key:</strong>
+- <code>\e</code> or <code>\033</code> = ESC (0x1B)
+- <code>\a</code> or <code>\007</code> = BEL (terminates OSC)
+- CSI ends with a letter (<code>J</code>, <code>H</code>, <code>m</code>, <code>q</code>, <code>l</code>, <code>h</code>)
+- OSC ends with BEL (<code>\a</code>) or ST (<code>\e\\</code>)</p>
+<p><strong>SGR (Select Graphic Rendition) codes for <code>\e[...m</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Effect</th>
+<th>Code</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>reset all</td>
+<td><code>1</code></td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>30-37</code></td>
+<td>fg colors</td>
+<td><code>40-47</code></td>
+<td>bg colors</td>
+</tr>
+<tr>
+<td><code>38;5;N</code></td>
+<td>256-color fg</td>
+<td><code>48;5;N</code></td>
+<td>256-color bg</td>
+</tr>
+<tr>
+<td><code>38;2;R;G;B</code></td>
+<td>truecolor fg</td>
+<td><code>48;2;R;G;B</code></td>
+<td>truecolor bg</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example combining:</strong> <code>\e[1;31m</code> = bold + red, <code>\e[38;2;255;100;0mOrange\e[0m</code> = truecolor orange then reset</p>
+<p><strong>OSC 52 clipboard breakdown:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>printf &#39;\e]52;c;%s\a&#39; &quot;$(echo -n &#39;hello&#39; | base64)&quot;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>        │ │  │ │       │                   │
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        │ │  │ │       │                   └─ base64 encode (required by spec)
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        │ │  │ │       └─ substituted into %s
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        │ │  │ └───────── \a = BEL, &quot;end of message&quot;
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        │ │  └─────────── c = clipboard target (c=clipboard, p=primary, s=select)
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>        │ └────────────── 52 = clipboard operation (xterm assigned number)
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        └──────────────── \e] = OSC introducer (&quot;hey terminal, incoming command&quot;)
+</span></code></pre></div>
+<p>Why base64? The clipboard content might contain special characters that would break the escape sequence. Base64 ensures it's safe ASCII.</p>
+<p>Works over SSH because the escape sequence travels through the terminal stream back to your <em>local</em> terminal (kitty/wezterm/etc) which handles the actual clipboard.</p>
+<p>Ref: https://terminalguide.namepad.de/seq/osc-52/</p>
+<h2 id="april-2026_1">April 2026<a class="headerlink" href="#april-2026_1" title="Permanent link">&para;</a></h2>
+<h3 id="yazi-as-xdg-file-picker-research-summary">Yazi as XDG file picker — research summary<a class="headerlink" href="#yazi-as-xdg-file-picker-research-summary" title="Permanent link">&para;</a></h3>
+<p><strong>Tool</strong>: <code>xdg-desktop-portal-termfilechooser</code> (in nixpkgs as v1.2.1)</p>
+<p><strong>Repo</strong>: https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser</p>
+<p><strong>How it works</strong>: implements <code>org.freedesktop.impl.portal.FileChooser</code>, so it intercepts the same D-Bus calls currently routed to <code>xdg-desktop-portal-gtk</code>. Spawns <code>kitty</code> running <code>yazi --chooser-file=/tmp/...</code>; portal reads the temp file when yazi exits.</p>
+<p><strong>To enable</strong> (3 small files):
+1. <code>modules/nixos-core-desktop.nix</code>:
+   <div class="language-nix highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>xdg<span class="o">.</span>portal<span class="o">.</span><span class="ss">extraPortals</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  pkgs<span class="o">.</span>xdg-desktop-portal-gtk
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  pkgs<span class="o">.</span>xdg-desktop-portal-termfilechooser
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">];</span>
+</span></code></pre></div>
+2. <code>~/.config/xdg-desktop-portal/portals.conf</code>:
+   <div class="language-ini highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">[preferred]</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="na">default</span><span class="o">=</span><span class="s">gtk</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="na">org.freedesktop.impl.portal.FileChooser</span><span class="o">=</span><span class="s">termfilechooser</span>
+</span></code></pre></div>
+3. <code>~/.config/xdg-desktop-portal-termfilechooser/config</code>:
+   <div class="language-ini highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">[filechooser]</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="na">cmd</span><span class="o">=</span><span class="s">yazi-wrapper.sh</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="na">default_dir</span><span class="o">=</span><span class="s">$HOME</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="na">env=TERMCMD</span><span class="o">=</span><span class="s">&#39;kitty --title &quot;</span><span class="na">File Chooser&quot;&#39;</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="na">env=PATH</span><span class="o">=</span><span class="s">&quot;$PATH:/run/current-system/sw/bin&quot;</span>
+</span></code></pre></div></p>
+<p><strong>Test</strong>: <code>GDK_DEBUG=portals zenity --file-selection</code></p>
+<p><strong>Gotchas</strong>:
+- <code>smart-enter.yazi</code> plugin (currently in keymap) breaks directory selection — Enter navigates instead of selects. Workaround: use <code>YAZI_CONFIG_HOME=...</code> in wrapper for an alternate config without smart-enter.
+- Qt apps may bypass the portal entirely (open issue #46).
+- Two closed NixOS issues (#56, #67) document systemd integration friction — reboot recommended after install.
+- Save dialogs work but UX is unusual: yazi creates a help-file at the destination path with instructions.</p>
+<p><strong>Recommendation</strong>: try it AFTER the GTK portal click-offset fix (<code>GDK_SCALE=1</code> + removing <code>wlr.enable</code>) lands. If that resolves the GTK issue you may not need this. But config is ~10 lines and trivially reversible.</p>
+<h3 id="nvim-treesitter-archived-012-broken-pinned-for-now">nvim-treesitter: archived, 0.12 broken, pinned for now<a class="headerlink" href="#nvim-treesitter-archived-012-broken-pinned-for-now" title="Permanent link">&para;</a></h3>
+<p>On <strong>April 3, 2026</strong> the entire <code>nvim-treesitter/nvim-treesitter</code> repo went <strong>Public archive</strong> on GitHub. Both <code>master</code> and <code>main</code> branches are frozen — no new commits will land anywhere in the repo. No official successor was named.</p>
+<h4 id="why-012-breaks-the-current-pin">Why 0.12 breaks the current pin<a class="headerlink" href="#why-012-breaks-the-current-pin" title="Permanent link">&para;</a></h4>
+<p>Neovim 0.12 changed the treesitter query match API to support quantifiers (<a href="https://github.com/neovim/neovim/pull/31293">neovim#31293</a>):</p>
+<ul>
+<li>0.11: <code>match[capture_id]</code> → single <code>TSNode | nil</code></li>
+<li>0.12: <code>match[capture_id]</code> → <code>TSNode[]</code> (list, always)</li>
+</ul>
+<p>The pinned <code>master</code> commit (<code>42fc28ba</code>) registers 7 custom directives in <code>query_predicates.lua</code> that do <code>match[capture_id]:range()</code>. On 0.12 that crashes with <code>attempt to call method 'range' (a nil value)</code> because the value is now a list, not a node. Markdown's injection query (<code>set-lang-from-info-string!</code>) is the most obvious trigger but it affects anything with injections.</p>
+<p>The <code>master</code> branch will never be fixed (archived). So: either stay on 0.11, or migrate off master entirely.</p>
+<h4 id="two-frozen-branches-two-behaviours">Two frozen branches, two behaviours<a class="headerlink" href="#two-frozen-branches-two-behaviours" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>branch</th>
+<th>last commit</th>
+<th>works with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td><code>42fc28ba</code> (May 2025)</td>
+<td>nvim ≤ 0.11</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td><code>4916d659</code> (Apr 2026)</td>
+<td>nvim ≥ 0.12 (0.11 dropped explicitly: <code>feat!: drop support for Nvim 0.11</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Both are now snapshots — no future fixes, no new parsers. <code>main</code> happens to be the 0.12-compatible snapshot.</p>
+<p>The <code>main</code> branch was a full rewrite with a different API shape:
+- setup: <code>require('nvim-treesitter').setup()</code> (no <code>.configs</code>)
+- install: explicit <code>.install({...})</code> call (no <code>ensure_installed</code>)
+- highlight/indent: not auto-enabled — you write a <code>FileType</code> autocmd calling <code>vim.treesitter.start()</code>
+- helpers (<code>ts_utils</code>, <code>configs</code>, etc.): gone — use <code>vim.treesitter.*</code> built-ins (available since 0.10)</p>
+<h4 id="current-decision-stay-pinned">Current decision: stay pinned<a class="headerlink" href="#current-decision-stay-pinned" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Host nvim is 0.11.7 (NixOS <code>nixos-25.11</code>), master-branch pin works fine.</li>
+<li>Dev container (<a href="https://github.com/joeledwardson/dev-setup/pull/6">PR #6</a>) pins to nvim 0.11.7 via <code>ARG NVIM_VERSION</code> (Arch ships 0.12 by default — that's what caused the original container break).</li>
+<li>Experiment branch that migrated config to <code>main</code> branch was tested working on 0.12.1 (<a href="https://github.com/joeledwardson/dev-setup/pull/7">PR #7</a>, now closed) but not worth merging yet — would commit to a frozen snapshot.</li>
+</ul>
+<h4 id="when-to-revisit">When to revisit<a class="headerlink" href="#when-to-revisit" title="Permanent link">&para;</a></h4>
+<p>When NixOS bumps nvim past 0.11 (likely <code>nixos-26.x</code>), the pin stops helping. Options at that point, best to worst:</p>
+<ol>
+<li><strong>Neovim built-in treesitter + tiny parser installer</strong>. 0.11+ has <code>vim.treesitter.start</code>, <code>get_node</code>, parser loading from <code>runtime/parser/*.so</code> built-in. Highlighting/indent/folding don't need the plugin. You just need parsers installed somewhere on <code>runtimepath</code>. A small helper like <strong><a href="https://github.com/romus204/tree-sitter-manager.nvim">tree-sitter-manager.nvim</a></strong> (actively maintained, lightweight, 0.12+) is probably the minimum replacement.</li>
+<li><strong><a href="https://github.com/nvim-neorocks/rocks-treesitter.nvim">rocks-treesitter.nvim</a></strong> — rocks.nvim module, pre-built parsers hosted on rocks-binaries (no local compile). Relevant if/when you adopt rocks.nvim.</li>
+<li><strong>Resurrect the main-branch migration</strong> from the closed PR #7 — works but targets an archived repo, so only a stopgap.</li>
+</ol>
+<p>Community discussion: <a href="https://lobste.rs/s/jr4acs/nvim_treesitter_repository_was_archived">Lobsters</a>, <a href="https://news.ycombinator.com/item?id=47644667">HN</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3764 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../2026-04/">
+      
+      
+        <link rel="next" href="../2026-06/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>May 2026 - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#may-2026" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              May 2026
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#middle-ground-tools-between-grafana-loki-and-a-custom-react-dash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middle-ground tools between Grafana Loki and a custom React dash
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Middle-ground tools between Grafana Loki and a custom React dash">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr-per-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLDR per tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-concept-refreshers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick concept refreshers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text-mind-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Text mind map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-heuristic-for-future-me" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision heuristic for future-me
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bulk-wrap-words-with-substitute-and-reclaiming-s-for-minisurround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bulk-wrap words with substitute, and reclaiming s for mini.surround
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bulk-wrap words with substitute, and reclaiming s for mini.surround">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-substitute-inside-a-visual-selection-very-magic-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Substitute inside a visual selection (very-magic mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dropping-flashnvim-keeping-minisurrounds-default-s-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dropping flash.nvim, keeping mini.surround's default s mappings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#markdown-viewer-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Markdown viewer comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Markdown viewer comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#browser-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser-based
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal-based
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LSP issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attempting-nixos-on-raspberry-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attempting nixos on raspberry pi
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="attempting nixos on raspberry pi">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-minimal-iso-didnt-work-but-the-sd-image-did" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the minimal ISO didn't work, but the SD image did
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boot-chain-comparison-pi-vs-x86-vs-pipftf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boot chain comparison — Pi vs x86 vs Pi+pftf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#messages-log-and-notification-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messages log and notification history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linux-font-system-refresher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux font system — refresher
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linux font system — refresher">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-font-family-abstractions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The font family abstractions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-resolution-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The resolution chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-each-app-actually-gets-its-font" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where each app actually gets its font
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fc-tools-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fc-* tools cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ligatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ligatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nixos-font-config-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS font config map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-control-characters-why-c-escape-and-c-c-_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal Control Characters — why C-[ = Escape and C-/ = C-_
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal Control Characters — why C-[ = Escape and C-/ = C-_">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ascii-ranges-and-what-bit-operations-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII ranges and what bit operations do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-actually-happens-when-you-hold-ctrl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What actually happens when you hold Ctrl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ctrl-wrinkle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Ctrl+/ wrinkle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surprising-aliases-all-terminal-level-byte-set-before-neovim-sees-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Surprising aliases (all terminal-level — byte set before Neovim sees it)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-what-your-terminal-actually-sends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify what your terminal actually sends
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-boot-hangs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS boot hangs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NixOS boot hangs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-graphicaltarget-is-queued-for-start-waiting-for-60s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1 — "graphical.target is queued for start, waiting for 60s…"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-hypridle-crashes-every-single-boot-all-15-coredumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2 — hypridle crashes every single boot (all 15 coredumps)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-pixman-invalid-rectangle-spam-nvidia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3 — pixman "Invalid rectangle" spam (NVIDIA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-knowledge-how-does-this-all-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain knowledge: how does this all fit together?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Domain knowledge: how does this all fit together?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#systemd-analyze-critical-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        systemd-analyze critical-chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hypridle-where-does-it-come-from-if-its-not-in-the-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hypridle: where does it come from if it's not in the config?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syslog_identifier-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SYSLOG_IDENTIFIER — what it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nvim-treesitter-eli5-how-tree-sitter-parsers-queries-and-nvim-all-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvim-treesitter ELI5 — how tree-sitter, parsers, queries, and nvim all fit together
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nvim-treesitter ELI5 — how tree-sitter, parsers, queries, and nvim all fit together">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-full-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The full picture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-tree-sitter-gives-you-a-syntax-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Tree-sitter gives you a syntax tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-parsers-are-the-compiled-grammar-for-one-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Parsers are the compiled grammar for one language
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-queries-tell-neovim-what-to-do-with-the-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Queries tell Neovim what to DO with the tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-what-neovim-provides-built-in-vs-what-needs-a-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — What Neovim provides built-in vs what needs a plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#folds-specifically-where-does-neovim-end-and-the-plugin-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Folds specifically — where does Neovim end and the plugin begin?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text-objects-what-are-they-and-where-do-they-come-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Text objects — what are they and where do they come from?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-changed-across-neovim-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed across Neovim versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#so-what-does-nvim-treesitter-actually-do-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        So what does nvim-treesitter actually do today?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-broke-on-the-2605-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What broke on the 26.05 upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-version-mismatch-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version mismatch issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-work-with-parsers-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to work with parsers now
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#middle-ground-tools-between-grafana-loki-and-a-custom-react-dash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middle-ground tools between Grafana Loki and a custom React dash
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Middle-ground tools between Grafana Loki and a custom React dash">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr-per-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLDR per tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-concept-refreshers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick concept refreshers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text-mind-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Text mind map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-heuristic-for-future-me" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision heuristic for future-me
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bulk-wrap-words-with-substitute-and-reclaiming-s-for-minisurround" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bulk-wrap words with substitute, and reclaiming s for mini.surround
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bulk-wrap words with substitute, and reclaiming s for mini.surround">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-substitute-inside-a-visual-selection-very-magic-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Substitute inside a visual selection (very-magic mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dropping-flashnvim-keeping-minisurrounds-default-s-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dropping flash.nvim, keeping mini.surround's default s mappings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#markdown-viewer-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Markdown viewer comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Markdown viewer comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#browser-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser-based
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal-based
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LSP issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attempting-nixos-on-raspberry-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attempting nixos on raspberry pi
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="attempting nixos on raspberry pi">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-minimal-iso-didnt-work-but-the-sd-image-did" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the minimal ISO didn't work, but the SD image did
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boot-chain-comparison-pi-vs-x86-vs-pipftf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boot chain comparison — Pi vs x86 vs Pi+pftf
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#messages-log-and-notification-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messages log and notification history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linux-font-system-refresher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux font system — refresher
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linux font system — refresher">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-font-family-abstractions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The font family abstractions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-resolution-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The resolution chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-each-app-actually-gets-its-font" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where each app actually gets its font
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fc-tools-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fc-* tools cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ligatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ligatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nixos-font-config-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS font config map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-control-characters-why-c-escape-and-c-c-_" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal Control Characters — why C-[ = Escape and C-/ = C-_
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal Control Characters — why C-[ = Escape and C-/ = C-_">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ascii-ranges-and-what-bit-operations-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII ranges and what bit operations do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-actually-happens-when-you-hold-ctrl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What actually happens when you hold Ctrl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ctrl-wrinkle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Ctrl+/ wrinkle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surprising-aliases-all-terminal-level-byte-set-before-neovim-sees-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Surprising aliases (all terminal-level — byte set before Neovim sees it)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-what-your-terminal-actually-sends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify what your terminal actually sends
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-boot-hangs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS boot hangs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NixOS boot hangs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-graphicaltarget-is-queued-for-start-waiting-for-60s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 1 — "graphical.target is queued for start, waiting for 60s…"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-hypridle-crashes-every-single-boot-all-15-coredumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 2 — hypridle crashes every single boot (all 15 coredumps)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-3-pixman-invalid-rectangle-spam-nvidia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue 3 — pixman "Invalid rectangle" spam (NVIDIA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-knowledge-how-does-this-all-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain knowledge: how does this all fit together?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Domain knowledge: how does this all fit together?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#systemd-analyze-critical-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        systemd-analyze critical-chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hypridle-where-does-it-come-from-if-its-not-in-the-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hypridle: where does it come from if it's not in the config?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syslog_identifier-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SYSLOG_IDENTIFIER — what it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nvim-treesitter-eli5-how-tree-sitter-parsers-queries-and-nvim-all-fit-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvim-treesitter ELI5 — how tree-sitter, parsers, queries, and nvim all fit together
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nvim-treesitter ELI5 — how tree-sitter, parsers, queries, and nvim all fit together">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-full-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The full picture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-tree-sitter-gives-you-a-syntax-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Tree-sitter gives you a syntax tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-parsers-are-the-compiled-grammar-for-one-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Parsers are the compiled grammar for one language
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-queries-tell-neovim-what-to-do-with-the-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Queries tell Neovim what to DO with the tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-what-neovim-provides-built-in-vs-what-needs-a-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — What Neovim provides built-in vs what needs a plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#folds-specifically-where-does-neovim-end-and-the-plugin-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Folds specifically — where does Neovim end and the plugin begin?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text-objects-what-are-they-and-where-do-they-come-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Text objects — what are they and where do they come from?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-changed-across-neovim-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed across Neovim versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#so-what-does-nvim-treesitter-actually-do-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        So what does nvim-treesitter actually do today?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-broke-on-the-2605-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What broke on the 26.05 upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-version-mismatch-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The version mismatch issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-work-with-parsers-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to work with parsers now
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="may-2026">May 2026<a class="headerlink" href="#may-2026" title="Permanent link">&para;</a></h1>
+<h3 id="middle-ground-tools-between-grafana-loki-and-a-custom-react-dash">Middle-ground tools between Grafana Loki and a custom React dash<a class="headerlink" href="#middle-ground-tools-between-grafana-loki-and-a-custom-react-dash" title="Permanent link">&para;</a></h3>
+<p>Context: my dash has a custom event/log browser (AG Grid + tRPC + React) that does correlation tagging, integer IDs from UUIDs, colour-coded cells, freeze-filters etc. Loki is too plain for this; the React dash works but is heavy to maintain. Survey of what sits <em>between</em> those two extremes.</p>
+<h4 id="tldr-per-tool">TLDR per tool<a class="headerlink" href="#tldr-per-tool" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>One-line</th>
+<th>Fit for log/event browser</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grafana Table panel + transformations</strong></td>
+<td>Built-in <code>Organize fields</code> / <code>Convert field type</code> / <code>Value mappings</code> / cell colour mapping over a Loki or SQL datasource</td>
+<td>Good first stop — covers integer-from-UUID + per-value colours without writing code</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Grafana custom panel plugin</strong></td>
+<td>Write a React component (AG Grid is fine) packaged as a Grafana panel; inherits datasource + auth + dashboarding</td>
+<td>Strong if already centralised on Grafana; weekend POC</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong><a href="https://datasette.io">Datasette</a></strong></td>
+<td>Point at SQLite (or Postgres via plugin) → instant browsable web UI + JSON API + SQL playground. Read-only, plugin hooks for custom cell HTML</td>
+<td>Wrong shape for <em>live</em> events — it's batch/exploration. Fine for "browse a frozen window"</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong><a href="https://evidence.dev">Evidence.dev</a></strong></td>
+<td>Markdown + SQL blocks → static dashboard site. BI flavour</td>
+<td>Wrong shape — "publish a report", not "browse a stream". Skip for this problem</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong>Metabase</strong></td>
+<td>Point-and-click BI, killer for non-technical exploration</td>
+<td>iOS-philosophy: simple but customisability hits a wall. Not its strength</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong><a href="https://retool.com">Retool</a> / Appsmith / ToolJet</strong></td>
+<td>Low-code internal tool builder; drag table component, connect to DB/tRPC, write JS for custom cell renderers (Retool uses AG Grid)</td>
+<td><strong>Sweet spot for this exact problem shape.</strong> Few hours to working tool. Retool = paid + lock-in, Appsmith/ToolJet = FOSS self-host</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong><a href="https://clickhouse.com">ClickHouse</a></strong></td>
+<td>Column-store database; stupid fast at "scan billions of rows + aggregate", useless for CRUD. Pair with Grafana table panel</td>
+<td>Only relevant when Postgres event volume hurts. Not a UI solution</td>
+<td>Medium (infra)</td>
+</tr>
+<tr>
+<td><strong><a href="https://quickwit.io">Quickwit</a> / <a href="https://openobserve.ai">OpenObserve</a></strong></td>
+<td>Newer Loki-alternatives with richer querying</td>
+<td>Worth knowing exist if Loki itself becomes the bottleneck</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Streamlit / Gradio / Panel</td>
+<td>Python web apps in ~30 lines</td>
+<td>Fight you on dense interactive grids — wrong tool here</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Kibana</td>
+<td>Elasticsearch's UI</td>
+<td>ES tax for not much over Loki + Grafana transformations</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<h4 id="quick-concept-refreshers">Quick concept refreshers<a class="headerlink" href="#quick-concept-refreshers" title="Permanent link">&para;</a></h4>
+<p><strong>Datasette</strong>: take a SQLite file, run <code>datasette serve events.db</code>, get a queryable read-only web UI. Plugin hook <code>render_cell</code> lets you return custom HTML per cell (so colour-coded integer tags = ~30 lines of Python). Single Python process, zero ceremony. Made by Simon Willison. Bad fit for live streams (you'd replicate Postgres → SQLite first), great for "here's a frozen dataset, explore it".</p>
+<p><strong>Evidence.dev</strong>: write <code>pages/foo.md</code> with SQL blocks fenced as <code>```sql</code> and components like <code>&lt;DataTable data={events} /&gt;</code> → builds a static HTML site. Sources: Postgres, BigQuery, Snowflake, DuckDB. Page-level filters yes; complex live filtering/correlation no.</p>
+<p><strong>ClickHouse</strong>: column-store = stores all values of one column contiguously instead of all fields of one row. Means <code>SELECT avg(latency)</code> reads only the latency column, not the other 50 fields. Same-column values compress like crazy too. Result: count/group over 100s of millions of rows in seconds on one box. Trade-off: weak transactions, painful updates/deletes — append, query, expire only. Used by Uber logging, Cloudflare analytics, Sentry, PostHog. Run via <code>docker run clickhouse/clickhouse-server</code>, single binary, no JVM.</p>
+<p><strong>Grafana custom panel</strong>: yes you can use AG Grid + React inside one (<code>@grafana/create-plugin</code> scaffold + <code>npm i ag-grid-react</code>). Pain isn't React — it's Grafana's plugin build tooling, signing for prod, mapping data frame format → AG Grid rows, panel options editor. Trade <em>your</em> infra pain for <em>Grafana's</em> plugin ergonomics.</p>
+<h4 id="text-mind-map">Text mind map<a class="headerlink" href="#text-mind-map" title="Permanent link">&para;</a></h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                         &quot;log/event browser tools&quot;
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                    │
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>       ┌────────────────┬───────────┴───────────┬─────────────────────┐
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>       │                │                       │                     │
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   STAY IN          LOW-CODE              CODE-LIGHT             SCALE-UP
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   GRAFANA          TOOL BUILDER          PUBLISHING             (volume)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>       │                │                       │                     │
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   ┌───┴───┐       ┌────┴────┐            ┌────┴────┐           ┌────┴────┐
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   │       │       │         │            │         │           │         │
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a> Table   Custom  Retool   Appsmith     Datasette  Evidence   ClickHouse  Quickwit
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a> panel + panel   ($$,     /ToolJet     (SQLite,   (SQL+md →  (column-    OpenObserve
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> trans-  plugin  fast)    (FOSS)       plugins,   static     store,
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a> forms   (React+                       read-only) site)      OLAP)
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a> (free)  AG Grid)
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   │       │       │                                            │
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>   │       │       │                                            └─ pair with
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   │       │       │                                               Grafana/
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   │       │       │                                               Superset/
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   │       │       │                                               Metabase
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>   │       │       │
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>   │       │       └──── ★ best fit for THIS problem shape
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>   │       │              (table + custom cells + buttons + DB resource)
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>   │       │
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>   │       └──── good if already Grafana-centric
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>   │              (weekend POC, AG Grid still works)
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>   │
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>   └──── try first — zero new infra
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>          (value mappings, cell colours, field convert)
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>   NOT A FIT for log/event browsing:
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>     Metabase ───── too opinionated for custom cells
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>     Streamlit ──── fights you on dense grids
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>     Kibana ─────── ES tax not justified
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>     Evidence ───── publishes reports, doesn&#39;t browse streams
+</span></code></pre></div>
+<h4 id="decision-heuristic-for-future-me">Decision heuristic for future-me<a class="headerlink" href="#decision-heuristic-for-future-me" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Try Grafana transformations first</strong> — zero new infra, often gets further than expected</li>
+<li><strong>Retool / Appsmith</strong> if I want to <em>stop maintaining a frontend</em> — best fit for the exact problem shape (table + custom cells + buttons)</li>
+<li><strong>Grafana custom panel plugin</strong> if committed to Grafana and need AG Grid back</li>
+<li><strong>ClickHouse</strong> only when Postgres event queries start timing out — orthogonal concern (storage, not UI)</li>
+<li>Skip Datasette/Evidence/Metabase/Streamlit/Kibana for <em>this</em> problem shape</li>
+</ol>
+<h3 id="bulk-wrap-words-with-substitute-and-reclaiming-s-for-minisurround">Bulk-wrap words with substitute, and reclaiming <code>s</code> for mini.surround<a class="headerlink" href="#bulk-wrap-words-with-substitute-and-reclaiming-s-for-minisurround" title="Permanent link">&para;</a></h3>
+<p>Two related nvim things — wrapping every word in a list with <code>round(...)</code>, and dropping flash.nvim so mini.surround can keep its default <code>s</code> prefix.</p>
+<h4 id="1-substitute-inside-a-visual-selection-very-magic-mode">1. Substitute inside a visual selection (very-magic mode)<a class="headerlink" href="#1-substitute-inside-a-visual-selection-very-magic-mode" title="Permanent link">&para;</a></h4>
+<p>Goal: turn <code>SELECT bet_id, amount, payout, amount_usd</code> → <code>SELECT bet_id, round(amount), round(payout), round(amount_usd)</code>.</p>
+<p>Visually select the words after <code>bet_id,</code> (charwise <code>v</code>, then move to end), then:</p>
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">:</span>s<span class="sr">/\v%V\w+/</span>round<span class="p">(</span>&amp;<span class="p">)</span>/<span class="k">g</span>
+</span></code></pre></div>
+<p>Breaking it down:</p>
+<ul>
+<li><code>:s/.../.../g</code> — substitute, <code>g</code> = all matches on the line (not just the first)</li>
+<li><code>\v</code> — <strong>very magic</strong> mode. Means most regex metachars (<code>+</code>, <code>(</code>, <code>|</code>, <code>%V</code>) work <em>without</em> backslashes. Without <code>\v</code> you'd write <code>\%V\w\+</code>.</li>
+<li><code>%V</code> — "only inside the current visual selection". Needed because <code>:s</code> from visual mode auto-fills <code>'&lt;,'&gt;</code> which is a <strong>line range</strong>, not a character range — so without <code>%V</code> it would also try to wrap <code>bet_id</code>.</li>
+<li><code>\w+</code> — one or more "word" characters (letters, digits, underscore). Why still <code>\w</code> under <code>\v</code>? Because <code>\v</code> only changes which chars need escaping; <code>\w</code> is the <em>name</em> of the character class itself (same as <code>\d</code>, <code>\s</code>). Very-magic doesn't replace <code>\w</code> with <code>w</code> — bare <code>w</code> would just match the literal letter "w".</li>
+<li><code>round(&amp;)</code> — <code>&amp;</code> in the replacement = the whole match. So each matched word gets wrapped.</li>
+</ul>
+<h4 id="2-dropping-flashnvim-keeping-minisurrounds-default-s-mappings">2. Dropping flash.nvim, keeping mini.surround's default <code>s</code> mappings<a class="headerlink" href="#2-dropping-flashnvim-keeping-minisurrounds-default-s-mappings" title="Permanent link">&para;</a></h4>
+<p>flash.nvim claimed <code>s</code>/<code>S</code> in normal/visual/operator mode, which collided with mini.surround's <code>sa</code>/<code>sd</code>/<code>sr</code>. Removed flash entirely (<code>f</code>/<code>t</code>/<code>/</code> cover most jumps fine). mini.surround now works with its defaults.</p>
+<p>ELI5 mini.surround:</p>
+<ul>
+<li><code>sa</code> = surround <strong>add</strong>, <code>sd</code> = <strong>delete</strong>, <code>sr</code> = <strong>replace</strong></li>
+<li>After <code>sa</code> you give it: (a) <em>what</em> to wrap — a textobject like <code>iw</code> (inner word) or a visual selection — then (b) <em>what</em> to wrap with — a single char: <code>(</code> <code>[</code> <code>{</code> <code>"</code> <code>'</code>, or <code>f</code> for a function call (prompts for a name).</li>
+<li>It does <strong>one wrap per invocation</strong>. No auto-iteration over commas/words.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>saiw)</code> on <code>amount</code> → <code>(amount)</code> — add, inner word, with <code>)</code></li>
+<li><code>saiwf</code> on <code>amount</code>, type <code>round&lt;CR&gt;</code> → <code>round(amount)</code></li>
+<li>visual-select <code>a, b, c</code> then <code>safround&lt;CR&gt;</code> → <code>round(a, b, c)</code> — wraps the <strong>whole selection as one unit</strong></li>
+<li><code>sd"</code> inside <code>"hello"</code> → <code>hello</code> — delete surrounding quotes</li>
+<li><code>sr({</code> on <code>(x)</code> → <code>{x}</code> — replace <code>(</code> with <code>{</code></li>
+</ul>
+<p>So: for the SQL line, substitute (option 1) wins because it's bulk. mini.surround shines for one-off wraps where typing <code>round()</code> and arrowing back in feels clunky.</p>
+<h3 id="markdown-viewer-comparison">Markdown viewer comparison<a class="headerlink" href="#markdown-viewer-comparison" title="Permanent link">&para;</a></h3>
+<p>Looking for a good way to preview <code>.md</code> files in a browser. Two categories: <strong>terminal renderers</strong> (render in-terminal) and <strong>browser-based</strong> (serve to localhost).</p>
+<h4 id="browser-based">Browser-based<a class="headerlink" href="#browser-based" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/iamcco/markdown-preview.nvim">markdown-preview.nvim</a></td>
+<td>nvim extension</td>
+<td>UX clean</td>
+<td>only from nvim, building is a pain</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/md-viewer-py/">md-viewer-py</a></td>
+<td>python package (<code>uv tool install</code>)</td>
+<td>UX good</td>
+<td>scrolling not great, titles use headings not filenames, new package (low maintenance)</td>
+</tr>
+<tr>
+<td><a href="https://www.mkdocs.org/">mkdocs</a></td>
+<td>docs gen/serve</td>
+<td>looks great (especially with Material theme)</td>
+<td>needs <code>mkdocs.yml</code> + <code>docs/</code> dir structure, not single-file friendly</td>
+</tr>
+<tr>
+<td><a href="https://github.com/joeyespo/grip">grip</a></td>
+<td>python, GitHub-style</td>
+<td><code>grip file.md</code> — dead simple, single command</td>
+<td>missing styles/CSS, looks unstyled. Uses GitHub API (rate-limited without token)</td>
+</tr>
+<tr>
+<td>gh markdown-preview (GH CLI extension)</td>
+<td>GitHub CLI extension</td>
+<td>renders with GH styling</td>
+<td>narrow width, must be logged into GitHub</td>
+</tr>
+</tbody>
+</table>
+<h4 id="terminal-based">Terminal-based<a class="headerlink" href="#terminal-based" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/MeanderingProgrammer/render-markdown.nvim">render-markdown.nvim</a></td>
+<td>nvim plugin</td>
+<td>already using — renders inline in neovim buffer. Tables with wide content wrap/misalign. <a href="https://github.com/MeanderingProgrammer/render-markdown.nvim/issues/616">Open issue #616</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/charmbracelet/glow">glow</a></td>
+<td>standalone terminal renderer</td>
+<td>superseded by render-markdown for nvim users</td>
+</tr>
+<tr>
+<td><a href="https://github.com/swsnr/mdcat">mdcat</a></td>
+<td>standalone terminal renderer</td>
+<td>lighter than glow, same category</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lsp-issues">LSP issues<a class="headerlink" href="#lsp-issues" title="Permanent link">&para;</a></h3>
+<p>pasting this here while i remember - having some nvim LSP issues getting errors spewed out into messages
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>E486: Pattern not found: m-a
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>E486: Pattern not found: m-d
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&quot;configs/tmux.conf&quot; 250L, 8729B written
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>E486: Pattern not found: resize
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>1 change; before #12  1 second ago
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>1 change; before #22  2 seconds ago
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>1 change; before #23  1 second ago
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>1 change; before #28  1 second ago
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>&quot;configs/tmux.conf&quot; 256L, 8863B written
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>&quot;configs/tmux.conf&quot; 252L, 8697B written
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>252 changes; before #37  18 seconds ago
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>252 changes; after #37  21 seconds ago
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>&quot;configs/tmux.conf&quot; 252L, 8908B written
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>&quot;configs/tmux.conf&quot; 252L, 8878B written
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>E486: Pattern not found: md-viewier
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>(outline) No response from provider when requesting symbols!
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>(outline) No response from provider when requesting symbols!
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>1 change; before #1  1 second ago
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>(outline) No response from provider when requesting symbols!
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>Already at oldest change
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>E490: No fold found
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>E486: Pattern not found: open 
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>clipboard: error: Nothing is copied
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>Error executing vim.schedule lua callback: ...cal/share/nvim/lazy/outline.nvim/lua/outline/sidebar.lua:348: attempt to index field &#39;view&#39; (a nil value)
+</span></code></pre></div></p>
+<h3 id="attempting-nixos-on-raspberry-pi">attempting nixos on raspberry pi<a class="headerlink" href="#attempting-nixos-on-raspberry-pi" title="Permanent link">&para;</a></h3>
+<p>trying to follow this guys guide...
+so i made 0 notes last time...
+https://mtlynch.io/nixos-pi4/</p>
+<p>so going to hydra and latest builds
+actually fuck it just used nixos minimal ISO (64 bit arm) from their downloads page... https://nixos.org/download/#nix-install-linux</p>
+<p>back to hydra again (sigh) - think it needs a full image with booting capabilities or soetmhing</p>
+<p>so</p>
+<ol>
+<li>download image (go to hydra click job =&gt; latest builds)</li>
+<li>just use the link claude gave me...  https://hydra.nixos.org/job/nixos/release-25.05/nixos.sd_image.aarch64-linux/latest</li>
+<li>download the zst</li>
+<li>run the zst unpack zstd -d ~/Downloads/nixos-image-sd-card-25.05.813814.ac62194c3917-aarch64-linux\ (2).img.zst</li>
+<li>burn with caligula to SD (<code>sudo caligula burn &lt;path&gt;.img</code>)</li>
+<li><strong>important</strong> — disconnect pikvm's virtual USB-MSD before booting. Pi boot order tried USB-MSD first and got stuck on pikvm's emulated drive, never falling back to SD. In pikvm UI: Drive → eject/disconnect.</li>
+</ol>
+<h4 id="why-the-minimal-iso-didnt-work-but-the-sd-image-did">Why the minimal ISO didn't work, but the SD image did<a class="headerlink" href="#why-the-minimal-iso-didnt-work-but-the-sd-image-did" title="Permanent link">&para;</a></h4>
+<p>Was burning <code>nixos-minimal-*-aarch64-linux.iso</code> first. That ISO is built for <strong>generic aarch64 UEFI servers</strong> — expects something to provide UEFI so it can chainload GRUB. Pi 4's boot ROM has no UEFI; it only knows to find <code>start4.elf</code> + <code>config.txt</code> on a FAT partition. So the minimal ISO is unbootable on a Pi alone.</p>
+<p>The SD image (<code>nixos-image-sd-card-*.img.zst</code>) bundles everything Pi-native: <code>start4.elf</code>, U-Boot, kernel, rootfs. The Pi firmware boots it directly with no shim.</p>
+<p>(Alternative: keep the minimal ISO and put <strong>pftf UEFI firmware</strong> on a separate SD — that gives the Pi UEFI capability and the ISO boots normally. Two-stage; the mtlynch guide uses this route. SD image is simpler.)</p>
+<h4 id="boot-chain-comparison-pi-vs-x86-vs-pipftf">Boot chain comparison — Pi vs x86 vs Pi+pftf<a class="headerlink" href="#boot-chain-comparison-pi-vs-x86-vs-pipftf" title="Permanent link">&para;</a></h4>
+<p>Every boot has 4 stages: <strong>ROM → FIRMWARE → BOOTLOADER → KERNEL</strong>. What differs is where each stage lives.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>── A) x86 PC with UEFI ───────────────────────────────────────────
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>   ┌─────────────────┐    ┌─────────────────────────┐
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>   │ MOTHERBOARD     │    │ DISK                    │
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>   │                 │    │                         │
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>   │ ROM ─▶ UEFI ────┼───▶│ ESP partition:          │
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>   │        firmware │    │   EFI/BOOT/BOOTX64.EFI  │
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>   │ &quot;I speak UEFI,  │    │   ▲ this is GRUB        │
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>   │  I look for ESP&quot;│    │      │                  │
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>   └─────────────────┘    │      ▼                  │
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>                          │   /boot/vmlinuz (Linux) │
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                          └─────────────────────────┘
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>   ROM and FIRMWARE both live in the motherboard chip.
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>   BOOTLOADER + KERNEL on disk.
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>── B) Pi 4 native (NixOS SD image) ───────────────────────────────
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>   ┌─────────────────┐    ┌──────────────────────────────────┐
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>   │ SoC chip        │    │ SD CARD                          │
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>   │                 │    │                                  │
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>   │ ROM ────────────┼───▶│ FAT partition:                   │
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>   │ &quot;I&#39;m tiny, I    │    │   start4.elf  ◀── THE FIRMWARE   │
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>   │  only know how  │    │   config.txt  ◀── firmware cfg   │
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>   │  to load        │    │   u-boot.bin  ◀── THE BOOTLOADER │
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>   │  start4.elf&quot;    │    │                                  │
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>   └─────────────────┘    │ ext4 partition:                  │
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>                          │   /boot/extlinux/extlinux.conf   │
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>                          │   /boot/Image (Linux)            │
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>                          └──────────────────────────────────┘
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>   ONLY the ROM is in the chip. FIRMWARE itself lives on the SD.
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>   No UEFI involved. No &quot;EFI file&quot;. Just Pi&#39;s own files.
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>── C) Pi 4 + pftf UEFI shim (the minimal-ISO route) ──────────────
+</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>
+</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>   ┌─────────────────┐    ┌──────────────────────────────────┐
+</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>   │ Same Pi SoC ROM │    │ FAT partition (your pftf SD):    │
+</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>   │                 │    │   start4.elf                     │
+</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>   │ ROM ────────────┼───▶│   config.txt ─▶ &quot;load RPI_EFI.fd │
+</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>   │                 │    │                  as kernel&quot;      │
+</span><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>   └─────────────────┘    │   RPI_EFI.fd  ◀── A UEFI         │
+</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>                          │                   implementation │
+</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>                          │                   in a file      │
+</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a>                          └─────────────────┬────────────────┘
+</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>                                            │ now Pi acts like
+</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>                                            │ a UEFI machine
+</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>                                            ▼
+</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>                          ┌──────────────────────────────────┐
+</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>                          │ USB drive with minimal ISO:      │
+</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>                          │   ESP: EFI/BOOT/BOOTAA64.EFI ──▶ │
+</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>                          │        ▲ this is GRUB            │
+</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>                          │   /boot/Image (Linux)            │
+</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a>                          └──────────────────────────────────┘
+</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a>
+</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a>   pftf is a translator: tricks the Pi into being UEFI-capable.
+</span></code></pre></div>
+<p><strong>Key takeaways:</strong>
+- On x86 UEFI, firmware lives in the <strong>motherboard chip</strong> and natively understands the EFI System Partition convention (<code>EFI/BOOT/BOOTxxx.EFI</code>).
+- On Pi 4, the chip-ROM is <strong>deliberately tiny</strong> — only knows to find <code>start4.elf</code> on a FAT partition and run it. The real firmware (<code>start4.elf</code>) lives on the SD card.
+- <code>config.txt</code> = Pi firmware config file (analogous to UEFI variables).
+- <code>u-boot</code> = the Pi-side equivalent of GRUB (reads <code>extlinux.conf</code>, picks a kernel).
+- pftf packages a full UEFI implementation as a "kernel" that <code>start4.elf</code> loads — once running, anything downstream sees a UEFI machine.
+- The same conceptual chain (ROM → firmware → bootloader → kernel) exists everywhere; only filenames and conventions differ.</p>
+<p>A "Pi-bootable image" = one containing <code>start4.elf</code> + <code>config.txt</code> + <code>u-boot.bin</code>. NixOS SD image, Ubuntu Pi image, Raspberry Pi OS — all siblings. NixOS minimal ISO, Ubuntu server ISO, Debian aarch64 netinst — all siblings on the <strong>other</strong> side, designed for UEFI machines.</p>
+<h3 id="messages-log-and-notification-history">Messages log and notification history<a class="headerlink" href="#messages-log-and-notification-history" title="Permanent link">&para;</a></h3>
+<p>Because i forgot AGAIN - im writing another note because i keep forgetting 😓 LMAO.
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">:</span><span class="nv">Telescope</span><span class="w"> </span><span class="nv">fidget</span>
+</span></code></pre></div></p>
+<hr />
+<h3 id="linux-font-system-refresher">Linux font system — refresher<a class="headerlink" href="#linux-font-system-refresher" title="Permanent link">&para;</a></h3>
+<p>Came up investigating why <code>-&gt;</code> was rendering as an arrow in both Kitty and Brave's URL bar.</p>
+<h4 id="the-font-family-abstractions">The font family abstractions<a class="headerlink" href="#the-font-family-abstractions" title="Permanent link">&para;</a></h4>
+<p><code>serif</code>, <code>sans-serif</code>, <code>monospace</code> etc. are <strong>generic family names</strong> — not real fonts. They're abstract labels. When an app asks for "monospace", fontconfig resolves that label to a concrete font file based on your config. The app never picks a file directly.</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>What it means</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>serif</code></td>
+<td>Has decorative strokes ("feet") on letter ends — Times-style</td>
+<td>Print, long-form reading, some body text</td>
+</tr>
+<tr>
+<td><code>sans-serif</code></td>
+<td>No strokes — Helvetica/Arial-style, clean</td>
+<td>UI elements, body text in modern apps, browser default</td>
+</tr>
+<tr>
+<td><code>monospace</code></td>
+<td>Fixed-width — every character same column width</td>
+<td>Terminals, code editors, URL bars (Chromium), <code>&lt;code&gt;</code> tags</td>
+</tr>
+<tr>
+<td><code>fantasy</code></td>
+<td>Decorative/display</td>
+<td>Rarely configured on Linux</td>
+</tr>
+<tr>
+<td><code>cursive</code></td>
+<td>Handwriting-style</td>
+<td>Rarely configured on Linux</td>
+</tr>
+</tbody>
+</table>
+<p><code>standardised</code> in Brave's font settings = the browser's default proportional font (what you read body text in). Brave maps it to <code>sans-serif</code> under the hood.</p>
+<h4 id="the-resolution-chain">The resolution chain<a class="headerlink" href="#the-resolution-chain" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>graph TD
+    APP["App\ne.g. Kitty, Brave, GTK app"]:::app
+
+    APP --&gt;|"requests family\ne.g. 'monospace'"| FC["fontconfig\n/etc/fonts/conf.d/\n~/.config/fontconfig/\nNixOS: fonts.fontconfig"]:::fc
+
+    FC --&gt;|"priority list lookup\n(your defaultFonts config)"| MATCH["Matched font\ne.g. SpaceMono Nerd Font"]:::match
+
+    MATCH --&gt;|"font file loaded\nOpenType features applied\n(liga, calt = ligatures)"| RENDER["Rendered glyphs\non screen"]:::render
+
+    FC --&gt;|"no match → fallback chain"| FALLBACK["System fallback\nDejaVu / Noto / Liberation"]:::fallback
+    FALLBACK --&gt; RENDER
+
+    classDef app      fill:#2471a3,color:#fff,stroke:#1a5276
+    classDef fc       fill:#8e44ad,color:#fff,stroke:#6c3483
+    classDef match    fill:#1e8449,color:#fff,stroke:#196f3d
+    classDef render   fill:#d35400,color:#fff,stroke:#a04000
+    classDef fallback fill:#5d6d7e,color:#fff,stroke:#4d5d6e</code></pre>
+<h4 id="where-each-app-actually-gets-its-font">Where each app actually gets its font<a class="headerlink" href="#where-each-app-actually-gets-its-font" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>graph LR
+    subgraph FAMILIES["fontconfig generic families"]
+        M["monospace"]:::mono
+        S["sans-serif"]:::sans
+        SE["serif"]:::serif
+    end
+
+    subgraph APPS["Apps → which family they request"]
+        KITTY["Kitty terminal\nfont_family in kitty.conf\n↳ fallback: monospace"]:::app
+        BRAVE_URL["Brave URL bar\nfixed-width font\n(chrome://settings/fonts)"]:::app
+        BRAVE_UI["Brave UI / body text\nsans-serif\n(chrome://settings/fonts)"]:::app
+        GTK["GTK apps\nGNOME: gsettings\nor gtk-3.0/settings.ini\nor gnome-tweaks"]:::app
+        QT["Qt apps\nqt5ct / qt6ct\nor KDE System Settings"]:::app
+        NVIM_TUI["Neovim (TUI)\ninherits terminal font\n= whatever Kitty uses"]:::app
+        NVIM_GUI["Neovim (GUI e.g. Neovide)\nset guifont=... in init.lua"]:::app
+    end
+
+    M --&gt;|resolves| KITTY
+    M --&gt;|resolves| BRAVE_URL
+    M --&gt;|resolves| NVIM_TUI
+    S --&gt;|resolves| BRAVE_UI
+    S --&gt;|resolves| GTK
+    S --&gt;|resolves| QT
+    NVIM_GUI --&gt;|"own config\nnot fontconfig"| NVIM_GUI
+
+    classDef mono fill:#c0392b,color:#fff,stroke:#922b21
+    classDef sans fill:#2471a3,color:#fff,stroke:#1a5276
+    classDef serif fill:#1e8449,color:#fff,stroke:#196f3d
+    classDef app  fill:#5d6d7e,color:#fff,stroke:#4d5d6e</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Brave's 'fixed-width' font = your URL bar font</p>
+<p>Chromium renders the URL bar text in the fixed-width (monospace) font from <code>chrome://settings/fonts</code>, not the sans-serif. If your monospace font has ligatures, <code>-&gt;</code> in a URL becomes <code>→</code>.</p>
+</div>
+<h4 id="fc-tools-cheatsheet">fc-* tools cheatsheet<a class="headerlink" href="#fc-tools-cheatsheet" title="Permanent link">&para;</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>fc-match<span class="w"> </span>monospace<span class="w">              </span><span class="c1"># what font resolves for the monospace family</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>fc-match<span class="w"> </span>sans-serif<span class="w">             </span><span class="c1"># same for sans-serif</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>fc-match<span class="w"> </span><span class="s2">&quot;SpaceMono Nerd Font&quot;</span><span class="w">  </span><span class="c1"># exact font → which file it maps to</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>fc-query<span class="w"> </span><span class="k">$(</span>fc-match<span class="w"> </span>monospace<span class="w"> </span>--format<span class="o">=</span><span class="s2">&quot;%{file}&quot;</span><span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;liga\|calt&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># ↑ does the resolved font have ligature OpenType features?</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>fc-list<span class="w">                         </span><span class="c1"># all installed fonts</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>fc-list<span class="w"> </span>:<span class="w"> </span>family<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w">         </span><span class="c1"># just family names, sorted</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>fc-list<span class="w"> </span>:<span class="w"> </span>family<span class="w"> </span><span class="nv">spacing</span><span class="o">=</span><span class="m">100</span><span class="w">    </span><span class="c1"># monospace fonts only (spacing=100 = fixed-width)</span>
+</span></code></pre></div>
+<h4 id="ligatures">Ligatures<a class="headerlink" href="#ligatures" title="Permanent link">&para;</a></h4>
+<p>Ligatures are an <strong>OpenType feature</strong> — the font file contains substitution rules that replace a sequence of characters (<code>-&gt;</code>) with a single combined glyph (<code>→</code>). Two feature flags control this:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Name</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>liga</code></td>
+<td>Standard ligatures</td>
+<td>Classic combos: <code>fi</code>, <code>fl</code>, <code>ff</code> — mostly typography</td>
+</tr>
+<tr>
+<td><code>calt</code></td>
+<td>Contextual alternates</td>
+<td>Context-aware substitutions — where programming ligatures (<code>-&gt;</code> <code>=&gt;</code> <code>!=</code> <code>&lt;=</code>) live</td>
+</tr>
+</tbody>
+</table>
+<p>Programming ligature fonts: Fira Code, JetBrains Mono, Cascadia Code, Hasklig, Iosevka.
+Space Mono (including the Nerd Font variant) does <strong>not</strong> have ligatures — if <code>-&gt;</code> still renders as an arrow, check what font is <em>actually</em> being loaded (use <code>fc-query</code> above).</p>
+<p><strong>Disabling per app:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Kitty — add to kitty.conf</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>font_features<span class="w"> </span>SpaceMonoNerdFont-Regular<span class="w"> </span>-liga<span class="w"> </span>-calt
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>font_features<span class="w"> </span>SpaceMonoNerdFont-Bold<span class="w">    </span>-liga<span class="w"> </span>-calt
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># WezTerm</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nv">harfbuzz_features</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="s2">&quot;calt=0&quot;</span>,<span class="w"> </span><span class="s2">&quot;liga=0&quot;</span><span class="o">}</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1"># Alacritty — no ligature support at all (disabled by design)</span>
+</span></code></pre></div>
+<h4 id="nixos-font-config-map">NixOS font config map<a class="headerlink" href="#nixos-font-config-map" title="Permanent link">&para;</a></h4>
+<div class="language-nix highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="ss">fonts</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  <span class="ss">packages</span> <span class="o">=</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    nerd-fonts<span class="o">.</span>space-mono   <span class="c1"># installs the font file</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  <span class="p">];</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  <span class="ss">fontconfig</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="ss">defaultFonts</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>      <span class="ss">monospace</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;SpaceMono Nerd Font&quot;</span> <span class="p">];</span>  <span class="c1"># fc-match monospace → this</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>      <span class="ss">sansSerif</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;DejaVu Sans&quot;</span> <span class="p">];</span>          <span class="c1"># not set = system picks (usually DejaVu anyway)</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>      <span class="ss">serif</span>     <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;DejaVu Serif&quot;</span> <span class="p">];</span>         <span class="c1"># same</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    <span class="p">};</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>  <span class="p">};</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="p">};</span>
+</span></code></pre></div>
+<p>GTK and Qt pick up <code>fontconfig</code> defaults <strong>only if</strong> no app-specific or DE-specific override exists. GNOME overrides via <code>gsettings</code> (set by gnome-tweaks or <code>dconf</code>). KDE overrides via Plasma System Settings. Without a DE, they fall straight through to fontconfig — making your NixOS config the single source of truth.</p>
+<hr />
+<h3 id="terminal-control-characters-why-c-escape-and-c-c-_">Terminal Control Characters — why <code>C-[</code> = Escape and <code>C-/</code> = <code>C-_</code><a class="headerlink" href="#terminal-control-characters-why-c-escape-and-c-c-_" title="Permanent link">&para;</a></h3>
+<p>Came up debugging why a Telescope mapping <code class="language-lua highlight"><span class="p">[</span><span class="s1">&#39;&lt;C-/&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span></code> registered fine but silently did nothing when pressed.</p>
+<p><strong>Root cause:</strong> the terminal converts your keypress into a raw byte <em>before</em> Neovim sees anything. The byte for <code>Ctrl+/</code> is the same byte as <code>Ctrl+_</code>. Neovim names that byte <code class="language-lua highlight"><span class="s1">&#39;&lt;C-_&gt;&#39;</span></code>. The mapping was registered under <code class="language-lua highlight"><span class="s1">&#39;&lt;C-/&gt;&#39;</span></code> — wrong name, no match.</p>
+<h4 id="ascii-ranges-and-what-bit-operations-do">ASCII ranges and what bit operations do<a class="headerlink" href="#ascii-ranges-and-what-bit-operations-do" title="Permanent link">&para;</a></h4>
+<p>The 128 ASCII characters split into four ranges. Bit operations move between them:</p>
+<pre class="mermaid"><code>flowchart LR
+    C["&lt;b&gt;0 – 31&lt;/b&gt;&lt;br/&gt;Control codes&lt;br/&gt;&lt;i&gt;NUL BS TAB LF CR ESC…&lt;/i&gt;"]:::ctrl
+    U["&lt;b&gt;64 – 95&lt;/b&gt;&lt;br/&gt;@ A–Z [ \\ ] ^ _&lt;br/&gt;&lt;i&gt;uppercase + symbols&lt;/i&gt;"]:::upper
+    L["&lt;b&gt;96 – 127&lt;/b&gt;&lt;br/&gt;` a–z { | } ~ DEL&lt;br/&gt;&lt;i&gt;lowercase + symbols&lt;/i&gt;"]:::lower
+    S["&lt;b&gt;32 – 63&lt;/b&gt;&lt;br/&gt;space ! &amp;quot; # $ …&lt;br/&gt;digits 0–9 : ; &amp;lt; = &amp;gt; ?&lt;br/&gt;&lt;i&gt;punctuation + numbers&lt;/i&gt;"]:::sym
+
+    U --&gt;|"Ctrl key&lt;br/&gt;&lt;b&gt;clear bit 6&lt;/b&gt;&lt;br/&gt;− 64"| C
+    U --&gt;|"case toggle&lt;br/&gt;&lt;b&gt;set bit 5&lt;/b&gt;&lt;br/&gt;+ 32"| L
+    S --&gt;|"set bit 6&lt;br/&gt;+ 64"| U
+
+    classDef ctrl  fill:#c0392b,color:#fff,stroke:#922b21,rx:6
+    classDef upper fill:#2471a3,color:#fff,stroke:#1a5276,rx:6
+    classDef lower fill:#1e8449,color:#fff,stroke:#196f3d,rx:6
+    classDef sym   fill:#5d6d7e,color:#fff,stroke:#4d5d6e,rx:6</code></pre>
+<p>Key points from the diagram:</p>
+<ul>
+<li><strong>Ctrl key</strong> = "I am in the blue box, clear bit 6" → lands in red (control codes)</li>
+<li><strong>Case toggle</strong> = "I am in the blue box, set bit 5" → lands in green (lowercase)</li>
+<li><code>A</code>–<code>Z</code> map cleanly: <code>A</code>(65) ↔ <code>a</code>(97), <code>Z</code>(90) ↔ <code>z</code>(122)</li>
+<li>Edge case: <code>_</code>(95) + 32 = <strong>127 = DEL</strong> — the "lowercase" of <code>_</code> is the Delete character</li>
+</ul>
+<h4 id="what-actually-happens-when-you-hold-ctrl">What actually happens when you hold Ctrl<a class="headerlink" href="#what-actually-happens-when-you-hold-ctrl" title="Permanent link">&para;</a></h4>
+<p>The terminal (kitty, xterm, etc.) doesn't send <code>Ctrl+A</code> as a chord — it sends a <strong>single byte</strong>. The byte is computed by taking the character's ASCII value and stripping bit 6 (subtracting 64). This is a hardware-era convention from 1960s teletypes, documented in <a href="https://en.wikipedia.org/wiki/ASCII#Control_characters">ANSI X3.4 / ASCII standard</a>.</p>
+<p>Columnar bit view — exactly which bit changes:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>         bit: 6  5  4  3  2  1  0
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>              64 32 16  8  4  2  1
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>         ─────────────────────────
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>A      =  65: 1  0  0  0  0  0  1
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>a      =  97: 1  1  0  0  0  0  1  ← bit 5 ON  (+32)  case toggle
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>Ctrl+A =   1: 0  0  0  0  0  0  1  ← bit 6 OFF (−64)  Ctrl key
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>         ─────────────────────────
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>[      =  91: 1  0  1  1  0  1  1
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>{      = 123: 1  1  1  1  0  1  1  ← bit 5 ON  (+32)  &#39;[&#39; lowercase is &#39;{&#39;
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>Ctrl+[ =  27: 0  0  1  1  0  1  1  ← bit 6 OFF (−64)  ESC !!
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>         ─────────────────────────
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>_      =  95: 1  0  1  1  1  1  1
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>DEL    = 127: 1  1  1  1  1  1  1  ← bit 5 ON  (+32)  &#39;_&#39; lowercase = DEL (!)
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>Ctrl+_ =  31: 0  0  1  1  1  1  1  ← bit 6 OFF (−64)  0x1F
+</span></code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1"><code>Ctrl+A</code> → <code>0x01</code></label><label for="__tabbed_1_2"><code>Ctrl+[</code> → <code>0x1B</code> (Escape!)</label><label for="__tabbed_1_3"><code>Ctrl+_</code> → <code>0x1F</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>key:     A  =  65  =  0b 0100 0001
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                              ↓
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>             strip bit 6  (AND 0b0001 1111)
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>                              ↓
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>result:         1  =  0b 0000 0001  =  0x01
+</span></code></pre></div>
+Vim name: <strong><code>&lt;C-a&gt;</code></strong> — "increment number" in normal mode</p>
+</div>
+<div class="tabbed-block">
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>key:     [  =  91  =  0b 0101 1011
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>                              ↓
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>             strip bit 6  (AND 0b0001 1111)
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>                              ↓
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>result:        27  =  0b 0001 1011  =  0x1B  ← ESC
+</span></code></pre></div>
+Vim name: <strong><code>&lt;C-[&gt;</code></strong> — identical to <strong><code>&lt;Esc&gt;</code></strong>, always, no exceptions</p>
+</div>
+<div class="tabbed-block">
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>key:     _  =  95  =  0b 0101 1111
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>                              ↓
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>             strip bit 6  (AND 0b0001 1111)
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>                              ↓
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>result:        31  =  0b 0001 1111  =  0x1F
+</span></code></pre></div>
+Vim name: <strong><code>&lt;C-_&gt;</code></strong> — also what <code>Ctrl+/</code> sends (see below)</p>
+</div>
+</div>
+</div>
+<p>This works cleanly for the <code>@A–Z[\]^_</code> range (ASCII 64–95). Outside that range (like <code>/</code> = 47), behaviour is terminal-specific.</p>
+<h4 id="the-ctrl-wrinkle">The <code>Ctrl+/</code> wrinkle<a class="headerlink" href="#the-ctrl-wrinkle" title="Permanent link">&para;</a></h4>
+<p><code>/</code> is ASCII 47 — below the clean range. <code>47 &amp; 31 = 15</code>, not useful. But on a US keyboard, <code>/</code> and <code>?</code> share the same physical key. Most terminals use the <strong>shifted character</strong> (<code>?</code>) when applying Ctrl to keys outside the range:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1"><code>Ctrl+/</code> → <code>0x1F</code> (via <code>?</code>)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>key:     ?  =  63  =  0b 0011 1111   ← shifted &#39;/&#39; on US keyboard
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>                              ↓
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>             strip bit 6  (AND 0b0001 1111)
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>                              ↓
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>result:        31  =  0b 0001 1111  =  0x1F  ← same as Ctrl+_
+</span></code></pre></div>
+Vim receives byte <code>0x1F</code> and names it <strong><code>&lt;C-_&gt;</code></strong> — NOT <code>&lt;C-/&gt;</code></p>
+</div>
+</div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Why <code class="language-lua highlight"><span class="p">[</span><span class="s1">&#39;&lt;C-/&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span></code> silently failed</p>
+<p>The mapping registered under the name <code class="language-lua highlight"><span class="s1">&#39;&lt;C-/&gt;&#39;</span></code>, but the terminal sent <code>0x1F</code> which Neovim labels <code class="language-lua highlight"><span class="s1">&#39;&lt;C-_&gt;&#39;</span></code>. Different names → no match → fell through to Telescope's default <code>&lt;C-/&gt;</code> handler (which_key).</p>
+<div class="language-lua highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span>
+<span class="normal"><a href="#__codelineno-13-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="p">[</span><span class="s1">&#39;&lt;C-/&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1">-- (1)! registered but never fired</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="hll"><span class="p">[</span><span class="s1">&#39;&lt;C-_&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1">-- (2)! add this: actual byte the terminal sends</span>
+</span></span></code></pre></div></td></tr></table></div>
+<ol>
+<li>Neovim registers this name, but the terminal never produces this exact byte sequence</li>
+<li><code>0x1F</code> — this is what the terminal actually sends for <code>Ctrl+/</code></li>
+</ol>
+</div>
+<h4 id="surprising-aliases-all-terminal-level-byte-set-before-neovim-sees-it">Surprising aliases (all terminal-level — byte set before Neovim sees it)<a class="headerlink" href="#surprising-aliases-all-terminal-level-byte-set-before-neovim-sees-it" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>You press</th>
+<th>Byte</th>
+<th>Neovim name</th>
+<th>Same as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+H</code></td>
+<td><code>0x08</code></td>
+<td><code class="language-lua highlight"><span class="s1">&#39;&lt;C-h&gt;&#39;</span></code></td>
+<td><code>&lt;BS&gt;</code> Backspace</td>
+</tr>
+<tr>
+<td><code>Ctrl+I</code></td>
+<td><code>0x09</code></td>
+<td><code class="language-lua highlight"><span class="s1">&#39;&lt;C-i&gt;&#39;</span></code></td>
+<td><code>&lt;Tab&gt;</code></td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td><code>0x0D</code></td>
+<td><code class="language-lua highlight"><span class="s1">&#39;&lt;C-m&gt;&#39;</span></code></td>
+<td><code>&lt;CR&gt;</code> Enter</td>
+</tr>
+<tr>
+<td><strong><code>Ctrl+[</code></strong></td>
+<td><strong><code>0x1B</code></strong></td>
+<td><strong><code class="language-lua highlight"><span class="s1">&#39;&lt;C-[&gt;&#39;</span></code></strong></td>
+<td><strong><code>&lt;Esc&gt;</code> — always, no exceptions</strong></td>
+</tr>
+<tr>
+<td><code>Ctrl+/</code></td>
+<td><code>0x1F</code></td>
+<td><code class="language-lua highlight"><span class="s1">&#39;&lt;C-_&gt;&#39;</span></code></td>
+<td><code>Ctrl+_</code> — same byte</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title"><code class="language-lua highlight"><span class="s1">&#39;&lt;C-[&gt;&#39;</span></code> and <code class="language-lua highlight"><span class="s1">&#39;&lt;Esc&gt;&#39;</span></code> are the same byte — you cannot remap one without the other</p>
+<p>Both produce <code>0x1B</code>. Kitty's <a href="https://sw.kovidgoyal.net/kitty/keyboard-protocol/">extended keyboard protocol</a> can distinguish them, but only if the <em>application</em> (Neovim, Telescope) opts in. Telescope does not.</p>
+</div>
+<h4 id="verify-what-your-terminal-actually-sends">Verify what your terminal actually sends<a class="headerlink" href="#verify-what-your-terminal-actually-sends" title="Permanent link">&para;</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>cat<span class="w"> </span>-v<span class="w">        </span><span class="c1"># -v renders control chars visibly as ^X notation</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">              </span><span class="c1"># Ctrl+[  →  ^[   (caret-bracket = ESC = 0x1B)</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">              </span><span class="c1"># Ctrl+/  →  ^_   (caret-underscore = 0x1F = same as Ctrl+_)</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">              </span><span class="c1"># Ctrl+C  to quit</span>
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># raw hex — type key, Enter, Ctrl+D</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>xxd<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="c1"># Ctrl+[ + Enter:  0000000: 1b0a ..</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1">#                            ^^</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="c1">#                            1b = ESC</span>
+</span></code></pre></div>
+<hr />
+<h3 id="nixos-boot-hangs">NixOS boot hangs<a class="headerlink" href="#nixos-boot-hangs" title="Permanent link">&para;</a></h3>
+<p><strong>Date:</strong> 2026-06-04 — after rebuilding the machine with UWSM + Hyprland.</p>
+<p>Three separate issues, all showing up on every boot. Investigated with a diagnostic script (<code>scratchpads/investigate-uwsm-hang.sh</code>).</p>
+<h4 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Frozen in tuigreet</strong> — <code>NetworkManager-wait-online</code> takes 34s and blocks <code>graphical.target</code>; UWSM has a 60s timeout that races it</li>
+<li><strong>15 coredumps every boot</strong> — <code>hypridle</code> hard-crashes because <code>~/.config/hypr/hypridle.conf</code> doesn't exist</li>
+<li><strong>pixman BUG log spam</strong> — NVIDIA + Hyprland upstream rendering bug, non-fatal</li>
+</ul>
+<hr />
+<h4 id="issue-1-graphicaltarget-is-queued-for-start-waiting-for-60s">Issue 1 — "graphical.target is queued for start, waiting for 60s…"<a class="headerlink" href="#issue-1-graphicaltarget-is-queued-for-start-waiting-for-60s" title="Permanent link">&para;</a></h4>
+<p><strong>What you see:</strong> After logging in via tuigreet, a countdown appears. On a good network day it completes. On a bad network day (offline, DHCP slow, cold boot) it hits zero, Hyprland never launches, and you're left in a non-responsive tuigreet.</p>
+<p><strong>The dependency chain causing the race:</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    classDef entry    fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef logic    fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef bad      fill:#e74c3c,color:#fff,stroke:#c0392b
+    classDef ok       fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    GT["graphical.target\nactivates @ 40s after boot"]:::entry
+    MU["multi-user.target"]:::logic
+    DK["docker.service\n+2.1s"]:::logic
+    NO["network-online.target"]:::bad
+    NW["NetworkManager-wait-online\n⚠ took 33.872s"]:::bad
+    NM["NetworkManager.service"]:::ok
+
+    GT --&gt; MU --&gt; DK --&gt; NO --&gt; NW --&gt; NM</code></pre>
+<p>The boot timeline shows the race clearly — tuigreet is ready at ~4s, the user can log in at ~15s, but UWSM needs <code>graphical.target</code> which isn't active until 40s:</p>
+<pre class="mermaid"><code>gantt
+    title Boot timeline (seconds after boot start)
+    dateFormat X
+    axisFormat %ss
+
+    section System services
+    NetworkManager-wait-online (34s!) :crit, nmw, 4, 38
+    docker.service                    :crit, dk,  38, 40
+    graphical.target ACTIVE           :milestone, gt, 40, 40
+
+    section Greeter
+    greetd starts                     :done, gd, 4, 5
+    User logs in                      :milestone, login, 18, 18
+    UWSM waiting for graphical.target :active, uwsm, 18, 40
+
+    section Risk window
+    Timeout if NM takes &gt;42s extra    :crit, risk, 18, 78</code></pre>
+<p><strong>Evidence — the smoking gun:</strong></p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>systemd-analyze<span class="w"> </span>critical-chain<span class="w"> </span>graphical.target
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>graphical.target @40.203s
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>└─multi-user.target @40.203s
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>  └─docker.service @38.080s +2.123s      ← docker waits for network-online
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    └─network-online.target @38.079s
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>      └─NetworkManager-wait-online.service @4.206s +33.872s   ← 34 seconds
+</span></code></pre></div></p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>journalctl<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span><span class="w"> </span>-t<span class="w"> </span>uwsm<span class="w"> </span>--no-pager
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>10:18:18  uwsm: graphical.target is queued for start, waiting for 60s...
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>10:18:28  uwsm: 50        ← counting down every 10s
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>10:18:38  uwsm: 40
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>10:18:45  uwsm: Starting hyprland-uwsm.desktop...  ← squeaked through (22s wait)
+</span></code></pre></div></p>
+<p>This boot worked. If NM-wait-online had taken 45s instead of 34s, Hyprland would never have started.</p>
+<div class="admonition warning">
+<p class="admonition-title">When this causes the visible freeze</p>
+<p>The unresponsive tuigreet happens when UWSM's 60s timeout expires. It exits, greetd gets the session back, but the VT (Virtual Terminal) state is mangled — the screen shows the last countdown digit and won't accept input.</p>
+</div>
+<p><strong>Fix:</strong></p>
+<div class="language-nix highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># nixos-extended-desktop.nix or host config</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>systemd<span class="o">.</span>services<span class="o">.</span>NetworkManager-wait-online<span class="o">.</span><span class="ss">enable</span> <span class="o">=</span> <span class="no">false</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Docker's daemon doesn't need the network to be fully online before starting. This removes the 34s block entirely.</p>
+<hr />
+<h4 id="issue-2-hypridle-crashes-every-single-boot-all-15-coredumps">Issue 2 — hypridle crashes every single boot (all 15 coredumps)<a class="headerlink" href="#issue-2-hypridle-crashes-every-single-boot-all-15-coredumps" title="Permanent link">&para;</a></h4>
+<p><strong>What you see:</strong> After leaving the machine the screen may go dark (DPMS) but the session is never locked. On return: blank screen, no lock prompt, machine feels dead.</p>
+<p><strong>Why:</strong> <code>hypridle</code> 0.1.7 throws an unhandled C++ <code>std::runtime_error</code> if its config file doesn't exist. It doesn't print a warning and exit — it calls <code>abort()</code>. systemd restarts it 5 times in 72ms then gives up.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef entry fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef bad   fill:#e74c3c,color:#fff,stroke:#c0392b
+    classDef ok    fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef dead  fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    START["graphical-session.target\nstarts hypridle"]:::entry
+    CHECK{"~/.config/hypr/\nhypridle.conf\nexists?"}
+    RUN["runs fine\nmanages idle + lock"]:::ok
+    CRASH["throw std::runtime_error\nabort()  →  SIGABRT"]:::bad
+    RESTART["systemd restarts\n(up to 5 times)"]:::bad
+    DEAD["gives up\nno idle daemon"]:::dead
+
+    START --&gt; CHECK
+    CHECK -- yes --&gt; RUN
+    CHECK -- NO --&gt; CRASH --&gt; RESTART --&gt; CHECK
+    RESTART -- "5th attempt" --&gt; DEAD</code></pre>
+<p><strong>Evidence:</strong></p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>systemctl<span class="w"> </span>--user<span class="w"> </span>--failed<span class="w"> </span>--no-pager
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>● hypridle.service   loaded   failed   failed   Hyprland&#39;s idle daemon
+</span></code></pre></div></p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>journalctl<span class="w"> </span>--user<span class="w"> </span>-u<span class="w"> </span>hypridle.service<span class="w"> </span>--no-pager<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>hypridle[2499]: terminate called after throwing an instance of &#39;std::runtime_error&#39;
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>hypridle[2499]:   what():  Could not find config in HOME, XDG_CONFIG_HOME, XDG_CONFIG_DIRS or /etc/hypr.
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>systemd[1552]: hypridle.service: Main process exited, code=dumped, status=6/ABRT
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>systemd[1552]: hypridle.service: Start request repeated too quickly.
+</span></code></pre></div></p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>coredumpctl<span class="w"> </span>list<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;7 days ago&quot;</span><span class="w"> </span>--no-pager
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a># 15 entries — all SIGABRT — all hypridle-0.1.7/bin/hypridle
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a># Nothing else. Every single coredump on this machine = missing config file.
+</span></code></pre></div></p>
+<p><strong>Fix:</strong> create <code>~/.config/hypr/hypridle.conf</code>. Minimal working example:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="na">general {</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="w">    </span><span class="na">lock_cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">hyprlock</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="w">    </span><span class="na">before_sleep_cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">hyprlock</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="na">}</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="na">listener {</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="w">    </span><span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">300</span><span class="w">        </span><span class="c1"># 5 min → lock screen</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">    </span><span class="na">on-timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">hyprlock</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="na">}</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="na">listener {</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="w">    </span><span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">600</span><span class="w">        </span><span class="c1"># 10 min → suspend</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a><span class="w">    </span><span class="na">on-timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">systemctl suspend</span>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a><span class="na">}</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Adjust <code>lock_cmd</code> to your locker</p>
+<p><code>hyprlock</code> is the standard Hyprland locker. <code>swaylock</code> works too. The file just needs to exist and parse — hypridle won't crash even if the lock command fails at runtime.</p>
+</div>
+<hr />
+<h4 id="issue-3-pixman-invalid-rectangle-spam-nvidia">Issue 3 — pixman "Invalid rectangle" spam (NVIDIA)<a class="headerlink" href="#issue-3-pixman-invalid-rectangle-spam-nvidia" title="Permanent link">&para;</a></h4>
+<p>Non-fatal. Hyprland keeps running. Just log noise and occasional minor rendering glitches.</p>
+<p><strong>What's happening:</strong> Hyprland's damage-tracking code (via aquamarine/wlroots) computes zero-size or negative rectangles under certain NVIDIA GPU states, then passes them to pixman's region API. Pixman logs the bug and recovers.</p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>journalctl<span class="w"> </span>--user<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span><span class="w"> </span>--no-pager<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A1<span class="w"> </span><span class="s2">&quot;BUG&quot;</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>uwsm_hyprland-uwsm.desktop[2206]: *** BUG ***
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>uwsm_hyprland-uwsm.desktop[2206]: In pixman_region32_init_rect: Invalid rectangle passed
+</span></code></pre></div></p>
+<p>Driver version confirmed:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>journalctl<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span><span class="w"> </span>-k<span class="w"> </span>--no-pager<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>NVRM
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>kernel: NVRM: loading NVIDIA UNIX x86_64 Kernel Module  580.142
+</span></code></pre></div></p>
+<p><strong>Workaround</strong> — add to <code>~/.config/hypr/hyprland.conf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="na">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">WLR_NO_HARDWARE_CURSORS,1</span><span class="w">       </span><span class="c1"># reduces one class of invalid-rect path</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="na">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">HYPRLAND_NO_DIRECT_SCANOUT,1</span><span class="w">    </span><span class="c1"># disables direct scanout (another trigger)</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">This is an upstream Hyprland/aquamarine bug</p>
+<p>Not fixable in config alone. The env vars reduce frequency. Track <a href="https://github.com/hyprwm/Hyprland/issues">github.com/hyprwm/Hyprland</a> for a proper fix.</p>
+</div>
+<hr />
+<h4 id="fix-summary">Fix summary<a class="headerlink" href="#fix-summary" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Root cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frozen in tuigreet</td>
+<td><code>NetworkManager-wait-online</code> (35s) blocks <code>graphical.target</code>; UWSM 60s timeout races it</td>
+<td><code>systemd.services.NetworkManager-wait-online.enable = false</code></td>
+</tr>
+<tr>
+<td>No screen lock, 20 coredumps/boot</td>
+<td><code>hypridle</code> aborts on missing config — not a graceful exit</td>
+<td>Create <code>~/.config/hypr/hypridle.conf</code></td>
+</tr>
+<tr>
+<td>pixman BUG log spam</td>
+<td>NVIDIA + Hyprland damage-tracking bug, non-fatal</td>
+<td><code>WLR_NO_HARDWARE_CURSORS=1</code> + <code>HYPRLAND_NO_DIRECT_SCANOUT=1</code> in hyprland.conf</td>
+</tr>
+<tr>
+<td>waybar focus module error loop</td>
+<td><code>waybar-focus.sh</code> shebang uses <code>/bin/bash</code> — doesn't exist on NixOS</td>
+<td>Change shebang to <code>#!/usr/bin/env bash</code></td>
+</tr>
+<tr>
+<td>waybar notification module broken</td>
+<td><code>swaync-client</code> not in PATH for the shell waybar spawns</td>
+<td>Use full nix store path or wrap in <code>exec</code> with correct env</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="domain-knowledge-how-does-this-all-fit-together">Domain knowledge: how does this all fit together?<a class="headerlink" href="#domain-knowledge-how-does-this-all-fit-together" title="Permanent link">&para;</a></h4>
+<h5 id="systemd-analyze-critical-chain">systemd-analyze critical-chain<a class="headerlink" href="#systemd-analyze-critical-chain" title="Permanent link">&para;</a></h5>
+<p><code>critical-chain TARGET</code> walks the <code>After=</code> ordering graph <strong>backwards</strong> from your target, picks the slowest predecessor at each step, and prints the resulting chain. The numbers mean:</p>
+<ul>
+<li><code>@40s</code> = this unit became active 40 seconds after boot start</li>
+<li><code>+10s</code> = this unit itself took 10 seconds to start</li>
+</ul>
+<p>It's a critical path algorithm (same idea as in project management Gantt charts). Every unit in the chain is a bottleneck — removing any one of them wouldn't speed things up because the others are still there.</p>
+<p>The actual unit files that created the dependencies:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># graphical.target → multi-user.target (BAKED INTO SYSTEMD — not configurable)</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="c1"># /nix/store/.../systemd-258.5/example/systemd/system/graphical.target</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="k">[Unit]</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="na">Requires</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w">   </span><span class="c1"># ← this line</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="na">After</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w">      </span><span class="c1"># ← and this</span>
+</span></code></pre></div>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># docker → network-online.target (DOCKER&#39;S UPSTREAM DEFAULT — not NixOS&#39;s fault)</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="c1"># moby-28.5.2 unit file</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span><span class="w">  </span><span class="c1"># ← this pulls in NM-wait-online as a side effect</span>
+</span></code></pre></div>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># NetworkManager-wait-online → activates network-online.target</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="k">[Install]</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">network-online.target</span><span class="w">  </span><span class="c1"># ← causes it to start whenever network-online is wanted</span>
+</span></code></pre></div>
+<p>Docker added <code>Wants=network-online.target</code> for server use cases (pulling images at boot, restarting containers). On a desktop where you start docker manually, it's dead weight and costs 35 seconds.</p>
+<h5 id="hypridle-where-does-it-come-from-if-its-not-in-the-config">hypridle: where does it come from if it's not in the config?<a class="headerlink" href="#hypridle-where-does-it-come-from-if-its-not-in-the-config" title="Permanent link">&para;</a></h5>
+<p><code>programs.hyprlock.enable = true</code> in <code>nixos-core-desktop.nix</code> installs hyprlock <strong>and</strong> hypridle as a pair — they're companion tools (hypridle = idle detection daemon that decides when to trigger the lock; hyprlock = the actual lock screen). The NixOS <code>programs.hyprlock</code> module pulls in both.</p>
+<p>The mechanism for auto-starting: the <code>hypridle</code> package ships its own systemd unit file with:
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="k">[Install]</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">graphical-session.target</span>
+</span></code></pre></div>
+NixOS sees this and creates a symlink <code>/etc/systemd/user/graphical-session.target.wants/hypridle.service</code> → pointing back to the unit in the nix store. When <code>graphical-session.target</code> activates (i.e. after you log in and Hyprland starts), hypridle starts automatically. You never wrote <code>hypridle</code> anywhere — it arrived as a silent side-effect of enabling hyprlock.</p>
+<h5 id="syslog_identifier-what-it-is">SYSLOG_IDENTIFIER — what it is<a class="headerlink" href="#syslog_identifier-what-it-is" title="Permanent link">&para;</a></h5>
+<p>Every journal entry is stored as structured key=value fields. <code>SYSLOG_IDENTIFIER</code> is the field that identifies who wrote a message. For systemd-started processes, it defaults to the binary name. Programs can override it in code or via <code>SyslogIdentifier=</code> in their unit file.</p>
+<p>The hex hashes in <code>journalctl -F SYSLOG_IDENTIFIER</code> are <strong>kernel/firmware messages</strong> (GRUB, EFI, initrd) — <code>printk()</code> doesn't set a name so they get a hash. Ignore them. The human-readable names are what you'd filter by.</p>
+<p>UWSM sets four identifiers, one per startup phase:</p>
+<table>
+<thead>
+<tr>
+<th><code>-t &lt;identifier&gt;</code></th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uwsm</code></td>
+<td>The main <code>uwsm start</code> process (the countdown lives here)</td>
+</tr>
+<tr>
+<td><code>uwsm_env-preloader</code></td>
+<td>Pre-loads env vars before Hyprland starts</td>
+</tr>
+<tr>
+<td><code>uwsm_waitenv</code></td>
+<td>Waits for Wayland env vars to appear</td>
+</tr>
+<tr>
+<td><code>uwsm_hyprland-uwsm.desktop</code></td>
+<td>Hyprland process itself (all stdout/stderr)</td>
+</tr>
+</tbody>
+</table>
+<p>Canonical reference: <code>man systemd.journal-fields</code> or https://systemd.io/JOURNAL_NATIVE_PROTOCOL/</p>
+<p>Useful commands:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>journalctl<span class="w"> </span>-F<span class="w"> </span>SYSLOG_IDENTIFIER<span class="w">   </span><span class="c1"># list every unique identifier in the whole journal</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>journalctl<span class="w"> </span>-t<span class="w"> </span>hypridle<span class="w">             </span><span class="c1"># filter journal to just hypridle messages</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>journalctl<span class="w"> </span>-t<span class="w"> </span>uwsm<span class="w"> </span>-t<span class="w"> </span>uwsm_waitenv<span class="w"> </span><span class="c1"># combine multiple identifiers</span>
+</span></code></pre></div></p>
+<hr />
+<h3 id="nvim-treesitter-eli5-how-tree-sitter-parsers-queries-and-nvim-all-fit-together">nvim-treesitter ELI5 — how tree-sitter, parsers, queries, and nvim all fit together<a class="headerlink" href="#nvim-treesitter-eli5-how-tree-sitter-parsers-queries-and-nvim-all-fit-together" title="Permanent link">&para;</a></h3>
+<p><strong>Date:</strong> 2026-06-05 — after NixOS 26.05 upgrade broke treesitter config and telescope.</p>
+<h4 id="tldr_1">TL;DR<a class="headerlink" href="#tldr_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Tree-sitter</strong> = a C library that parses source code into a syntax tree</li>
+<li><strong>Parsers</strong> = compiled grammar files (<code>.so</code>) — one per language</li>
+<li><strong>Queries</strong> = pattern-matching rules (<code>.scm</code> files) that say "highlight this node red"</li>
+<li><strong>vim.treesitter</strong> = Neovim's built-in integration of tree-sitter (since Neovim 0.5)</li>
+<li><strong>nvim-treesitter (plugin)</strong> = used to do everything; now (v1.0 rewrite) just installs parsers + provides queries</li>
+<li><strong>nvim-treesitter v1.0</strong> requires Neovim 0.12 nightly — we're on 0.11.7, which is why things broke</li>
+</ul>
+<hr />
+<h4 id="the-full-picture">The full picture<a class="headerlink" href="#the-full-picture" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart TD
+    classDef ext    fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef core   fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef plugin fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef file   fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef result fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    TS["tree-sitter\n(C library)"]:::ext
+    P["Parser — lua.so\nPython.so, rust.so…\none compiled .so per language"]:::file
+    Q["Queries — highlights.scm\nfolds.scm, indents.scm\ninjections.scm"]:::file
+    VT["vim.treesitter\nNeovim built-in API\nsince Neovim 0.5"]:::core
+    NTS["nvim-treesitter\n(plugin)"]:::plugin
+    HL["Syntax highlighting"]:::result
+    FD["Code folding"]:::result
+    IN["Smart indent"]:::result
+    TX["Textobjects\n(select a function, etc.)"]:::result
+
+    TS --&gt;|"compiled into"| P
+    P --&gt;|"loaded by"| VT
+    Q --&gt;|"read by"| VT
+    VT --&gt;|"produces"| HL
+    VT --&gt;|"produces"| FD
+    VT --&gt;|"produces"| IN
+    NTS --&gt;|"installs"| P
+    NTS --&gt;|"provides"| Q
+    NTS --&gt;|"exposes API for"| TX</code></pre>
+<h4 id="step-1-tree-sitter-gives-you-a-syntax-tree">Step 1 — Tree-sitter gives you a syntax tree<a class="headerlink" href="#step-1-tree-sitter-gives-you-a-syntax-tree" title="Permanent link">&para;</a></h4>
+<p>You give tree-sitter source code text, it gives back a <strong>tree</strong>. That's it. That's all it does.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>-- Lua code:  function foo(x) return x + 1 end
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>-- Tree-sitter output (simplified):
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>function_declaration
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>  name: identifier &quot;foo&quot;
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>  parameters: (x)
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>  body:
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>    return_statement
+</span><span id="__span-38-9"><a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>      binary_expression
+</span><span id="__span-38-10"><a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>        identifier &quot;x&quot;
+</span><span id="__span-38-11"><a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>        number &quot;1&quot;
+</span></code></pre></div>
+<p>Without this tree, highlighting is done with regex (dumb string matching). With the tree, Neovim knows <code>foo</code> is a <em>function name</em>, not just a word that happens to follow <code>function</code>. That's why treesitter highlighting is more accurate and doesn't break across multiple lines.</p>
+<hr />
+<h4 id="step-2-parsers-are-the-compiled-grammar-for-one-language">Step 2 — Parsers are the compiled grammar for one language<a class="headerlink" href="#step-2-parsers-are-the-compiled-grammar-for-one-language" title="Permanent link">&para;</a></h4>
+<p>A <strong>parser</strong> is a <code>.so</code> (compiled C library) file — one per language. It contains the grammar rules that let tree-sitter understand that language's syntax.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>~/.local/share/nvim/site/parser/
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>  lua.so          ← knows Lua grammar
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>  python.so       ← knows Python grammar
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>  typescript.so   ← knows TypeScript grammar
+</span></code></pre></div>
+<p>Without <code>lua.so</code>, tree-sitter cannot parse Lua. Neovim 0.11 bundles several parsers baked into its own binary (lua, vim, vimdoc, bash, markdown). Everything else you install via <code>:TSInstall</code>.</p>
+<hr />
+<h4 id="step-3-queries-tell-neovim-what-to-do-with-the-tree">Step 3 — Queries tell Neovim what to DO with the tree<a class="headerlink" href="#step-3-queries-tell-neovim-what-to-do-with-the-tree" title="Permanent link">&para;</a></h4>
+<p>A parser gives you the tree. A <strong>query</strong> (<code>.scm</code> file) tells Neovim what to do with specific tree nodes.</p>
+<div class="language-scheme highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1">; highlights.scm — &quot;colour function names blue&quot;</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a><span class="p">(</span><span class="nf">function_declaration</span><span class="w"> </span><span class="nv">name:</span><span class="w"> </span><span class="p">(</span><span class="nf">identifier</span><span class="p">)</span><span class="w"> </span><span class="nv">@function</span><span class="p">)</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="c1">; folds.scm — &quot;fold from function start to end&quot;</span>
+</span><span id="__span-40-5"><a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a><span class="p">(</span><span class="nf">function_declaration</span><span class="p">)</span><span class="w"> </span><span class="nv">@fold</span>
+</span><span id="__span-40-6"><a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>
+</span><span id="__span-40-7"><a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a><span class="c1">; indents.scm — &quot;indent the body of a function&quot;</span>
+</span><span id="__span-40-8"><a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a><span class="p">(</span><span class="nf">function_declaration</span><span class="w"> </span><span class="nv">body:</span><span class="w"> </span><span class="p">(</span><span class="k">_</span><span class="p">)</span><span class="w"> </span><span class="nv">@indent</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Queries are the link between "I have a parsed tree" and "I want highlighting / folds / indents". Without queries, the parser is useless.</p>
+<hr />
+<h4 id="step-4-what-neovim-provides-built-in-vs-what-needs-a-plugin">Step 4 — What Neovim provides built-in vs what needs a plugin<a class="headerlink" href="#step-4-what-neovim-provides-built-in-vs-what-needs-a-plugin" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart TD
+    classDef builtin fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef plugin  fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef needs   fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef sep     fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    subgraph NV["Neovim built-in (vim.treesitter)"]
+        direction TB
+        API["Parse tree API\nvim.treesitter.get_parser()"]:::builtin
+        HL["Highlighting engine\nvim.treesitter.start()"]:::builtin
+        FOLD["Fold expression\nvim.treesitter.foldexpr()"]:::builtin
+        BPARS["Bundled parsers\nlua, vim, bash, markdown…"]:::builtin
+    end
+
+    subgraph PLUGIN["nvim-treesitter plugin"]
+        direction TB
+        INST["Parser installer\n:TSInstall python\n:TSUpdate"]:::plugin
+        QUERIES["Query files\nhighlights.scm\nfolds.scm\nindents.scm\nfor 100+ languages"]:::plugin
+    end
+
+    subgraph SEPARATE["Separate plugins (not nvim-treesitter)"]
+        direction TB
+        TXOBJ["nvim-treesitter-textobjects\nvaf = select around function\ndic = delete inside class\n]m = jump to next method"]:::needs
+        CTX["nvim-treesitter-context\nshows current function header\nwhen scrolled into body"]:::needs
+    end
+
+    PLUGIN --&gt;|"provides queries to"| NV
+    PLUGIN --&gt;|"installs parsers into"| NV
+    SEPARATE --&gt;|"calls vim.treesitter API directly"| NV</code></pre>
+<p><strong>Key point:</strong> Neovim knows HOW to fold (the mechanism). But it needs a query file to know WHAT to fold. nvim-treesitter provides those query files for 100+ languages. That's its main job now.</p>
+<hr />
+<h4 id="folds-specifically-where-does-neovim-end-and-the-plugin-begin">Folds specifically — where does Neovim end and the plugin begin?<a class="headerlink" href="#folds-specifically-where-does-neovim-end-and-the-plugin-begin" title="Permanent link">&para;</a></h4>
+<p>Neovim has always had folding. The fold <em>mechanisms</em> (<code>manual</code>, <code>indent</code>, <code>marker</code>, <code>expr</code>) are built-in. Tree-sitter folding uses <code>expr</code> mode:</p>
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1">-- You set this in your config:</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldmethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;expr&#39;</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldexpr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;v:lua.vim.treesitter.foldexpr()&#39;</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1">--                  ↑ this function IS built into Neovim 0.10+</span>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="c1">-- But for it to know where functions/classes start and end,</span>
+</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="c1">-- it reads folds.scm query files — provided by nvim-treesitter plugin</span>
+</span></code></pre></div>
+<p>So: the fold engine = Neovim. The fold map for each language = nvim-treesitter's query files.</p>
+<hr />
+<h4 id="text-objects-what-are-they-and-where-do-they-come-from">Text objects — what are they and where do they come from?<a class="headerlink" href="#text-objects-what-are-they-and-where-do-they-come-from" title="Permanent link">&para;</a></h4>
+<p><code>vaf</code> (visual around function), <code>dic</code> (delete inside class), <code>]m</code> (jump to next method) — these are <strong>not</strong> built into Neovim, and <strong>not</strong> part of nvim-treesitter core. They come from the <strong>separate</strong> plugin <code>nvim-treesitter-textobjects</code>.</p>
+<p>How it works:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>User presses: vaf
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>     ↓
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>nvim-treesitter-textobjects plugin reads:
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>  textobjects/select.scm: &quot;(function_declaration) @function.outer&quot;
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>     ↓
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>Calls vim.treesitter.get_parser() to get the current buffer&#39;s tree
+</span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>     ↓
+</span><span id="__span-42-8"><a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>Finds the function_declaration node containing the cursor
+</span><span id="__span-42-9"><a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>     ↓
+</span><span id="__span-42-10"><a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>Visually selects that range
+</span></code></pre></div>
+<p>Without <code>nvim-treesitter-textobjects</code> installed, <code>vaf</code> does nothing. It's a separate plugin that uses the tree-sitter API.</p>
+<hr />
+<h4 id="what-changed-across-neovim-versions">What changed across Neovim versions<a class="headerlink" href="#what-changed-across-neovim-versions" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart LR
+    classDef v   fill:#2471a3,color:#fff,stroke:#1a5276
+    classDef old fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef now fill:#196f3d,color:#fff,stroke:#145a32
+
+    V05["Neovim 0.5\n2021"]:::v
+    V09["Neovim 0.9\n2023"]:::v
+    V10["Neovim 0.10\n2024"]:::v
+    V11["Neovim 0.11\n2025"]:::v
+    V12["Neovim 0.12\n2026"]:::v
+
+    N05["Plugin does everything\nhighlighting, indent, fold,\nparser install, queries"]:::old
+    N09["vim.treesitter.start() added\nHighlighting works natively\nft_to_lang() added"]:::old
+    N10["foldexpr() added\nft_to_lang deprecated\n→ get_lang()"]:::old
+    N11["More bundled parsers\nmost features work\nwithout plugin modules"]:::old
+    N12["Plugin sheds modules\nNeovim owns highlight/indent/fold\nPlugin = installer + queries only"]:::now
+
+    V05 --- N05
+    V09 --- N09
+    V10 --- N10
+    V11 --- N11
+    V12 --- N12
+
+    V05 --&gt; V09 --&gt; V10 --&gt; V11 --&gt; V12</code></pre>
+<p>The short version: <strong>Neovim has been slowly absorbing the plugin's functionality.</strong> Every release, something that needed the plugin now works natively. By 0.12, enough moved in that the plugin shed its feature modules entirely.</p>
+<hr />
+<h4 id="so-what-does-nvim-treesitter-actually-do-today">So what does nvim-treesitter actually do today?<a class="headerlink" href="#so-what-does-nvim-treesitter-actually-do-today" title="Permanent link">&para;</a></h4>
+<p>After v1.0:</p>
+<ol>
+<li><strong>Installs parsers</strong> — <code>python.so</code>, <code>typescript.so</code>, etc. via <code>:TSInstall</code>. Neovim only bundles ~10 parsers. There are 100+.</li>
+<li><strong>Provides query files</strong> — the <code>.scm</code> files for highlighting, folding, indenting across all those languages. Without these, Neovim has the parser but no rules for what to do with it.</li>
+</ol>
+<p>That's it. It's a data package + an installer. All the actual <em>doing</em> moved into Neovim.</p>
+<div class="admonition note">
+<p class="admonition-title">Why is it still a separate plugin at all?</p>
+<p>The query files are developed fast (new languages, bug fixes) and need to be versioned separately from Neovim itself. Bundling 100+ languages' query files into Neovim's binary would bloat it and slow down the release cycle.</p>
+</div>
+<hr />
+<h4 id="what-broke-on-the-2605-upgrade">What broke on the 26.05 upgrade<a class="headerlink" href="#what-broke-on-the-2605-upgrade" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart LR
+    classDef bad  fill:#e74c3c,color:#fff,stroke:#c0392b
+    classDef ok   fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef warn fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    NV["Neovim 0.11.7\n(what we have)"]:::warn
+    NTS["nvim-treesitter main\ncommit 4916d65\n(requires 0.12 nightly)"]:::bad
+    TEL["telescope.nvim 0.1.x\n(calls old API)"]:::bad
+
+    NV --&gt;|"ships with"| NTS
+    NTS --&gt;|"removed configs.lua\nremoved parsers.ft_to_lang"| BAD1["configs.lua → config.lua\nensure_installed gone\nft_to_lang gone"]:::bad
+    TEL --&gt;|"calls"| BAD2["ts_parsers.ft_to_lang()\n= nil → crash"]:::bad</code></pre>
+<p>Three specific breakages:</p>
+<table>
+<thead>
+<tr>
+<th>What broke</th>
+<th>Old call</th>
+<th>New call</th>
+<th>Fix applied</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>treesitter setup</td>
+<td><code>require('nvim-treesitter.configs').setup{}</code></td>
+<td><code>require('nvim-treesitter.config').setup{}</code></td>
+<td>Changed <code>configs</code> → <code>config</code></td>
+</tr>
+<tr>
+<td>parser install</td>
+<td><code>ensure_installed = {...}</code></td>
+<td><code>:TSInstall lua</code> or <code>require('nvim-treesitter').install{...}</code></td>
+<td>Removed old block</td>
+</tr>
+<tr>
+<td>telescope preview</td>
+<td><code>ts_parsers.ft_to_lang(ft)</code></td>
+<td><code>vim.treesitter.language.get_lang(ft)</code></td>
+<td>Shim added in init.lua</td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-version-mismatch-issue">The version mismatch issue<a class="headerlink" href="#the-version-mismatch-issue" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">nvim-treesitter v1.0 requires Neovim 0.12 — we're on 0.11.7</p>
+<p>The new plugin explicitly says "Neovim 0.12.0 or later (nightly)". The <code>master</code> branch is locked and supports 0.11. If more things break, pin nvim-treesitter back to <code>master</code> branch in lazy-lock.json or the lazy spec:
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="p">{</span><span class="w"> </span><span class="s1">&#39;nvim-treesitter/nvim-treesitter&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">branch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;master&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">build</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;:TSUpdate&#39;</span><span class="w"> </span><span class="p">}</span>
+</span></code></pre></div></p>
+</div>
+<h4 id="how-to-work-with-parsers-now">How to work with parsers now<a class="headerlink" href="#how-to-work-with-parsers-now" title="Permanent link">&para;</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="c1"># Inside nvim:</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>:TSInstall<span class="w"> </span>lua<span class="w"> </span>python<span class="w"> </span>rust<span class="w"> </span>typescript<span class="w">   </span><span class="c1"># install specific parsers</span>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>:TSUpdate<span class="w">                               </span><span class="c1"># update all installed parsers</span>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>:TSInstall<span class="w"> </span>&lt;tab&gt;<span class="w">                        </span><span class="c1"># tab-complete to see all available</span>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="c1"># See what&#39;s actually installed (includes Neovim&#39;s bundled ones):</span>
+</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>:lua<span class="w"> </span>print<span class="o">(</span>vim.inspect<span class="o">(</span>vim.api.nvim_get_runtime_file<span class="o">(</span><span class="s1">&#39;parser/*.so&#39;</span>,<span class="w"> </span><span class="nb">true</span><span class="o">)))</span>
+</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>
+</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a><span class="c1"># Neovim&#39;s bundled parsers live in the nix store — managed by Neovim package, not the plugin:</span>
+</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a><span class="c1"># /nix/store/.../nvim-.../lib/nvim/parser/</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
