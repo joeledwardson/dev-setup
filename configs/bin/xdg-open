@@ -1,0 +1,40 @@
+#!/bin/sh
+# xdg-open shim: when inside an SSH session, forward URL opens back to the
+# local host via kitty remote control. Everything else (files, no SSH, no
+# kitty) falls through to the real system xdg-open.
+#
+# No socket, no tunnel, no service — kitty remote control rides the existing
+# tty back to the kitty instance on your workstation. Requires:
+#   - local kitty.conf:  allow_remote_control yes   (already set)
+#   - `kitten` on PATH in the SSH session (kitten ssh bootstraps this for you)
+
+FALLBACK=/run/current-system/sw/bin/xdg-open
+target=$1
+
+is_url() {
+    case "$1" in
+        http://* | https://* | mailto:* | ftp://* | ftps://*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+fallback() {
+    if [ -x "$FALLBACK" ]; then
+        exec "$FALLBACK" "$@"
+    fi
+    echo "xdg-open shim: no fallback xdg-open at $FALLBACK" >&2
+    exit 3
+}
+
+# Only intercept over SSH: a local file path is meaningless on the remote, and
+# routing local opens through kitty would just add a pointless hop.
+if [ -n "$SSH_CONNECTION" ] && is_url "$target" && command -v kitten >/dev/null 2>&1; then
+    # `launch --type=background` runs xdg-open on the machine where kitty lives
+    # (your local host), so the URL opens in your real browser.
+    if kitten @ launch --type=background xdg-open "$target" >/dev/null 2>&1; then
+        exit 0
+    fi
+    echo "xdg-open shim: kitty remote control failed, falling back to $FALLBACK" >&2
+fi
+
+fallback "$@"
