@@ -79,7 +79,7 @@
       }
     }
   },
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
   "editorMode": "normal",
