@@ -1,6 +1,6 @@
 # only load mod where specified
 if [[ -n "$ZSH_DEBUGRC" ]]; then
-  zmodload zsh/zprof
+    zmodload zsh/zprof
 fi
 
 # capture the terminal emulator PID (e.g. foot) before Zellij or anything else runs
@@ -16,11 +16,11 @@ HISTSIZE=50000
 # shellcheck disable=SC2034
 SAVEHIST=50000
 # History settings
-setopt SHARE_HISTORY          # Share history between sessions
-setopt INC_APPEND_HISTORY     # Add commands to history immediately
-setopt EXTENDED_HISTORY       # Add timestamps to history
-setopt HIST_FIND_NO_DUPS     # Don't display duplicates during searches
-setopt HIST_IGNORE_ALL_DUPS  # Don't record duplicated entries
+setopt SHARE_HISTORY        # Share history between sessions
+setopt INC_APPEND_HISTORY   # Add commands to history immediately
+setopt EXTENDED_HISTORY     # Add timestamps to history
+setopt HIST_FIND_NO_DUPS    # Don't display duplicates during searches
+setopt HIST_IGNORE_ALL_DUPS # Don't record duplicated entries
 # other options
 setopt interactivecomments
 
@@ -30,7 +30,7 @@ pretty-path() {
 }
 
 function reload-tmux {
-  tmux source-file ~/.config/tmux/tmux.conf
+    tmux source-file ~/.config/tmux/tmux.conf
 }
 # copy a file to clipboard
 function copyfile {
@@ -56,11 +56,11 @@ autoload -U +X bashcompinit && bashcompinit
 # notify-send wrapper - uses OSC 9 over SSH/Docker, native otherwise
 # must be done before sheldon or zsh-auto-notify will complain about lack of `notify-send`
 notify-send() {
-  if [[ -n "$SSH_TTY" ]] || [[ -f /.dockerenv ]]; then
-    printf '\e]9;%s\e\\' "$*"
-  else
-    command notify-send "$@"
-  fi
+    if [[ -n "$SSH_TTY" ]] || [[ -f /.dockerenv ]]; then
+        printf '\e]9;%s\e\\' "$*"
+    else
+        command notify-send "$@"
+    fi
 }
 
 # load sheldon plugins
@@ -68,7 +68,6 @@ eval "$(sheldon source)"
 
 # show hostname
 DRACULA_DISPLAY_CONTEXT=1
-
 
 # Autosuggest settings
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#707070,underline"
@@ -86,7 +85,7 @@ if command -v navi >/dev/null; then
 fi
 
 # see https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-completion.html
-function setup-aws () {
+function setup-aws() {
     local aws_path aws_dir aws_completer
     aws_path=$(readlink -f "$(which aws)")
     aws_dir=$(dirname "$aws_path")
@@ -115,7 +114,7 @@ if command -v sg >/dev/null; then zsh-defer -c 'eval "$(ast-grep completions)"';
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
 # fnm completion and shell
 if command -v fnm >/dev/null; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
+    eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
 # nvim alias to clear session and start
@@ -131,7 +130,7 @@ alias llg='llm chat -t fast'
 alias lg='lazygit'
 
 # change bitwarden data directory to work location to separate from personal
-function bw-use-work () {
+function bw-use-work() {
     BITWARDENCLI_APPDATA_DIR="$(realpath ~/.config/bw-work)"
     export BITWARDENCLI_APPDATA_DIR
 }
@@ -142,7 +141,7 @@ function bw-view() {
     bw_items=$(bw list items)
 
     # pass ID (hidden as 1st col) to fzf with details
-    selected_id=$(jq -r '.[] | .id + " " + .name + " " + .login.username' <<< "$bw_items" | fzf --with-nth 2.. | awk '{print $1}')
+    selected_id=$(jq -r '.[] | .id + " " + .name + " " + .login.username' <<<"$bw_items" | fzf --with-nth 2.. | awk '{print $1}')
 
     # check user selected an item
     if test -z "$selected_id"; then
@@ -151,7 +150,7 @@ function bw-view() {
     fi
 
     # filter items based on selected ID and convert to yaml
-    jq -r ".[] | select(.id == \"$selected_id\")" <<< "$bw_items" | yq -p=json
+    jq -r ".[] | select(.id == \"$selected_id\")" <<<"$bw_items" | yq -p=json
 }
 
 # find and edit a bitwarden entry
@@ -164,7 +163,7 @@ function bw-edit() {
     fi
 
     # pass ID (hidden as 1st col) to fzf with details
-    selected_id=$(jq -r '.[] | .id + " " + .name + " " + .login.username' <<< "$bw_items" | fzf --with-nth 2.. | awk '{print $1}')
+    selected_id=$(jq -r '.[] | .id + " " + .name + " " + .login.username' <<<"$bw_items" | fzf --with-nth 2.. | awk '{print $1}')
 
     # check user selected an item
     if test -z "$selected_id"; then
@@ -177,7 +176,7 @@ function bw-edit() {
     tmpfile=$(mktemp)
 
     # write JSON to temp file
-    jq -r ".[] | select(.id == \"$selected_id\")" <<< "$bw_items" >"$tmpfile"
+    jq -r ".[] | select(.id == \"$selected_id\")" <<<"$bw_items" >"$tmpfile"
 
     # check file not empty
     if test -z "$(cat -A "$tmpfile")"; then
@@ -213,7 +212,7 @@ function check-glab-ci {
 function encode-uri {
     if [[ -z "$1" ]]; then
         printf "Error: argument must be supplied\n" >&2
-        return 1;
+        return 1
     fi
     # pass $pwd as a raw string to avoid any escaping to jq, then apply the @uri encoding
     jq -rn --arg pwd "$1" '$pwd | @uri'
@@ -227,28 +226,27 @@ bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
 # Bind Ctrl-N and Ctrl-P to next/previous history commands
-bindkey '^N' down-history        # Ctrl-N for next command
-bindkey '^P' up-history          # Ctrl-P for previous command
+bindkey '^N' down-history # Ctrl-N for next command
+bindkey '^P' up-history   # Ctrl-P for previous command
 
 # if in xterm (not kitty or other proper terminal), it wont automatically bind these
-bindkey "^[[H" beginning-of-line   # Home
-bindkey "^[[F" end-of-line         # End
-bindkey "^[OH" beginning-of-line   # Home (application mode)
-bindkey "^[OF" end-of-line         # End (application mode)
+bindkey "^[[H" beginning-of-line # Home
+bindkey "^[[F" end-of-line       # End
+bindkey "^[OH" beginning-of-line # Home (application mode)
+bindkey "^[OF" end-of-line       # End (application mode)
 
 # otherwise cant delete words if pasted over new lines
 bindkey '^?' backward-delete-char
-bindkey '^W' backward-kill-word  # This will use WORDCHARS
+bindkey '^W' backward-kill-word # This will use WORDCHARS
 
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey '^X^E' edit-command-line  # Ctrl+x Ctrl+e (standard)
+bindkey '^X^E' edit-command-line # Ctrl+x Ctrl+e (standard)
 
 autoload -U select-word-style
 
 # only treat . and - as special chars so c-w doesnt delete whole words
 export WORDCHARS='.-_'
-
 
 # fzf tab config
 # enable tab completion on empty line
@@ -279,49 +277,46 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
 
-
 # apply to all command
 zstyle ':fzf-tab:*' popup-min-size 80 12
 # preview directory's content with eza when completing cd
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always $realpath'
 
-
 # eza aliases stolen from here: https://github.com/MohamedElashri/eza-zsh/blob/main/eza-zsh.plugin.zsh
 alias ..='cd ..'
-alias l='eza --long --icons -bF' # Extended details with binary sizes and type indicators
-alias ll='eza --long -a' # Long format, including hidden files
-alias la='eza -a --group-directories-first' # Show all files, with directories listed first
+alias l='eza --long --icons -bF'                          # Extended details with binary sizes and type indicators
+alias ll='eza --long -a'                                  # Long format, including hidden files
+alias la='eza -a --group-directories-first'               # Show all files, with directories listed first
 alias lx='eza -a -l --group-directories-first --extended' # Show all files and extended attributes, directories first
-alias lT='eza --tree --long' # Tree view with extended details
-alias lr='eza --long --modified --sort=modified -r' # sort by modified desc
+alias lT='eza --tree --long'                              # Tree view with extended details
+alias lr='eza --long --modified --sort=modified -r'       # sort by modified desc
 function lP() {
-  local target="${1:-.}"
-  local resolved=$(realpath "$target")
-  find "$resolved" -maxdepth 1
+    local target="${1:-.}"
+    local resolved=$(realpath "$target")
+    find "$resolved" -maxdepth 1
 }
-
 
 # stolen from OMZ tmux plugin
 # Essential tmux aliases
-alias ta='tmux attach'     # Attach to a session
+alias ta='tmux attach'         # Attach to a session
 alias ts='tmux new-session -s' # Start new session with name
-alias tl='tmux list-sessions' # List all sessions
+alias tl='tmux list-sessions'  # List all sessions
 
-
+# kitty ssh wrapper
+alias s=kitty ssh
 
 # OSC52 copy - works over SSH/containers where wl-copy doesn't
 # see https://terminalguide.namepad.de/seq/osc-52/
 osc52copy() {
-  printf '\033]52;c;%s\a' "$(base64)"
+    printf '\033]52;c;%s\a' "$(base64)"
 }
-
 
 # copy to system clipboard on vi yank
 # zle -N docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-zle
 # bindkey docs: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#index-bindkey
 function vi-yank-to-clipboard() {
-  zle vi-yank
-  printf '%s' "$CUTBUFFER" | osc52copy
+    zle vi-yank
+    printf '%s' "$CUTBUFFER" | osc52copy
 }
 zle -N vi-yank-to-clipboard
 bindkey -M vicmd 'y' vi-yank-to-clipboard
@@ -329,16 +324,16 @@ bindkey -M vicmd 'y' vi-yank-to-clipboard
 # vi mode cursor shape (bar=insert, block=normal)
 # special widgets: https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#Special-Widgets
 function zle-keymap-select {
-  if [[ $KEYMAP == vicmd ]] || [[ $1 == 'block' ]]; then
-    printf '\e[2 q'
-  elif [[ $KEYMAP == main ]] || [[ $KEYMAP == viins ]] || [[ $1 == 'beam' ]]; then
-    printf '\e[5 q'
-  fi
+    if [[ $KEYMAP == vicmd ]] || [[ $1 == 'block' ]]; then
+        printf '\e[2 q'
+    elif [[ $KEYMAP == main ]] || [[ $KEYMAP == viins ]] || [[ $1 == 'beam' ]]; then
+        printf '\e[5 q'
+    fi
 }
 zle -N zle-keymap-select
 
-function zle-line-init { 
-    printf '\e[5 q' 
+function zle-line-init {
+    printf '\e[5 q'
 }
 zle -N zle-line-init
 
@@ -348,53 +343,48 @@ autoload -U add-zsh-hook
 # emit OSC 2 each prompt so the terminal title reflects current state.
 # Inside tmux this updates pane title (#T → catppuccin fallback when in zsh).
 # Outside tmux this updates the outer terminal title directly.
-function _set_term_title { print -Pn '\e]2;%m:%~\a' }  # hostname:cwd
+function _set_term_title { print -Pn '\e]2;%m:%~\a'; } # hostname:cwd
 add-zsh-hook precmd _set_term_title
-
-
 
 # tmux escape chars for `next-prompt` and `previous-prompt`
 function tmux_preexec() {
-  print -Pn '\e]133;A\a'
+    print -Pn '\e]133;A\a'
 }
 function tmux_precmd() {
-  print -Pn '\e]133;B\a'
+    print -Pn '\e]133;B\a'
 }
 
 add-zsh-hook preexec tmux_preexec
 add-zsh-hook precmd tmux_precmd
 
-
 # bun completions
 [ -s "/home/claude/.bun/_bun" ] && source "/home/claude/.bun/_bun"
-if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then 
-    source "$HOME"/.nix-profile/etc/profile.d/nix.sh; 
-fi 
+if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then
+    source "$HOME"/.nix-profile/etc/profile.d/nix.sh
+fi
 
 if [ -e "$HOME"/.config/zshrclocal ]; then
-  source "$HOME"/.config/zshrclocal
+    source "$HOME"/.config/zshrclocal
 fi
 fastfetch
 
 # sandbox machine extras (IS_SANDBOX_MACHINE=1 set via NixOS environment.variables)
 if [[ "$IS_SANDBOX_MACHINE" == "1" ]]; then
-  # claude code in YOLO mode: see https://github.com/anthropics/claude-code/issues/9184#issuecomment-3594539302
-  alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
-  # gemini in YOLO mode
-  alias yolo-gemini='GEMINI_CLI_TRUST_WORKSPACE=true gemini --approval-mode yolo'
+    # claude code in YOLO mode: see https://github.com/anthropics/claude-code/issues/9184#issuecomment-3594539302
+    alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
+    # gemini in YOLO mode
+    alias yolo-gemini='GEMINI_CLI_TRUST_WORKSPACE=true gemini --approval-mode yolo'
 
-  echo ""
-  echo -e "\e[1;35m  Welcome to jollof's sandbox container!\e[0m"
-  echo -e "  To give agents god tier permissions, run: \e[1;96myolo-claude\e[0m or \e[1;96myolo-gemini\e[0m"
-  echo -e "  \e[2;32menjoy ✨\e[0m"
-  echo ""
+    echo ""
+    echo -e "\e[1;35m  Welcome to jollof's sandbox container!\e[0m"
+    echo -e "  To give agents god tier permissions, run: \e[1;96myolo-claude\e[0m or \e[1;96myolo-gemini\e[0m"
+    echo -e "  \e[2;32menjoy ✨\e[0m"
+    echo ""
 fi
 
-
 if [[ -n "$ZSH_DEBUGRC" ]]; then
-  zprof
+    zprof
 fi
 
 # Reset terminal settings left broken by pagers (moor) exiting uncleanly
 tty -s && stty sane 2>/dev/null
-

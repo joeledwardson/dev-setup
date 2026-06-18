@@ -32,7 +32,6 @@
       efiSysMountPoint = "/boot";
     };
   };
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # =======================================
   # Media server 
@@ -53,6 +52,14 @@
     # vpn.enable = true;
     # sabnzbd.vpn.enable = true;
   };
+
+  # =======================================
+  # Cross-build for the Pi (aarch64)
+  # =======================================
+  # streaming-server is x86_64; building the pi-box aarch64 image needs QEMU
+  # user-mode emulation so the aarch64 build/image-assembly steps can run here.
+  # Adds qemu + binfmt only — does not rebuild this host's apps.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # =======================================
   # Networking Configuration
