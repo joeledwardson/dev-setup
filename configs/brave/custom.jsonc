@@ -1,14 +1,30 @@
 {
   "brave": {
+    // Vertical tabs: enabled, collapsed by default, pinned to the right side
     "tabs": {
       "vertical_tabs_collapsed": true,
       "vertical_tabs_enabled": true,
       "vertical_tabs_on_right": true
     },
+
+    // Keyboard shortcut overrides.
+    // IDs are Brave's internal command IDs — find them by inspecting
+    // ~/.config/BraveSoftware/Brave-Browser/Default/Preferences under
+    // brave.accelerators, then cross-reference with the Telescope brave
+    // shortcut picker (keybrowser.lua → M.open_brave()).
     "accelerators": {
+      // Toggle sidebar panel (e.g. Brave Sidebar / Leo)
       "56215": ["Control+BracketRight"],
+
+      // Find in page. C-Shift-F is a fallback for sites that override C-F
+      // at the JS level (Google Docs, Notion, etc.)
       "37000": ["Control+KeyF", "Control+Shift+KeyF"]
     },
+
+    // Google as default search in private windows.
+    // Copied from a working Brave Preferences after setting Google manually —
+    // the GUID (485bf7d3-...-538868000001) is Brave/Chromium's built-in
+    // prepopulate ID for Google, stable across installs.
     "default_private_search_provider_guid": "485bf7d3-0215-45af-87dc-538868000001",
     "default_private_search_provider_data": {
       "short_name": "Google",
@@ -21,16 +37,25 @@
       "safe_for_autoreplace": false
     }
   },
-  "account_values": {
-    "autofill": { "credit_card_enabled": false }
-  },
+
+  // Disable Bitwarden-incompatible native password saving.
+  // Bitwarden handles all credentials — Brave's built-in password manager
+  // just gets in the way.
   "password_manager": {
     "autofillable_credentials_account_store_login_database": false,
     "autofillable_credentials_profile_store_login_database": false
   },
+
+  // Google as default search in normal windows.
+  // guid points to the prepopulate entry defined in default_search_provider_data below.
   "default_search_provider": {
     "guid": "485bf7d3-0215-45af-87dc-538868000001"
   },
+
+  // Full Google search engine definition — both template_url_data and
+  // mirrored_template_url_data are required; Brave uses both internally.
+  // Copied from a working Preferences and kept verbatim — the {google:*}
+  // placeholders are expanded by Chromium at request time.
   "default_search_provider_data": {
     "template_url_data": {
       "short_name": "Google",
