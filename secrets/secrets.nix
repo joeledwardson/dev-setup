@@ -19,7 +19,7 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM7SSAY8M48OOXk8KBD50YSHqDzrCB1EEv4mBxR2yCXY root@degen-bot";
 
   pi-box =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICilkEBxxHmJo/7B0oVZEQh1vFCz3we1G0tgdh3ivJgM root@nixos";
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF57D+XGQUT/kBI5fGdpL3fo9SPCfmc4XXk/1NiLiZjI root@pi-box";
 
   trustedHosts = [ desktop-work jollof-home degen-work degen-home ];
   allHosts = trustedHosts ++ [ streaming-server degen-bot pi-box ];
