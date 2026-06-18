@@ -12,8 +12,7 @@ hyprctl eval "FlashActiveBorder()" >/dev/null 2>&1
 # restore on its own. Capture and restore the original style (set in tmux.conf)
 # rather than hardcoding the theme colour.
 (
-  original=$(tmux show -gv pane-active-border-style 2>/dev/null)
   tmux set -g pane-active-border-style 'fg=red,bold'
   sleep 0.3
-  tmux set -g pane-active-border-style "$original"
+  tmux set -g pane-active-border-style "fg=#{@thm_lavender}"
 ) &
