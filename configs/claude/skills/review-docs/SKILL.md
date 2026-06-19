@@ -96,20 +96,26 @@ ASSUMED:
 
 ### Screenshot
 
+**Do not use `chromium --headless --screenshot` — it hangs here.** The one-shot flag waits for
+the page to reach network-idle, but a mkdocs-material page never does (`navigation.instant` keeps
+an SPA observer alive, the search Web Worker runs continuously, mermaid has rAF loops), and
+`--virtual-time-budget` doesn't force the capture on this Chromium build. Both chromium and brave
+fail identically — it's the technique, not the browser. (Diagnosis: `appendix/reviews/2026-06-18-docs-observability.md` era.)
+
+Use the CDP helper alongside this skill instead — it navigates, waits a fixed time, then captures
+the full scrollable page *regardless of idle* (the same reason `mmdc` works). Node 22 + a
+chromium-family browser only; no npm deps.
+
 ```bash
 SLUG=$(echo "<page-path>" | sed 's|docs/||;s|\.md$||;s|index$||')
 URL="http://localhost:<PORT>/${SLUG}/"
-chromium --headless=new \
-  --screenshot="/tmp/docs-review/${SLUG//\//-}.png" \
-  --window-size=1440,8000 \
-  --hide-scrollbars \
-  --no-sandbox \
-  "${URL}"
+node ~/.claude/skills/review-docs/cdp-shot.mjs "${URL}" "/tmp/docs-review/${SLUG//\//-}.png" 4000
+# last arg = wait ms (bump if diagrams render slowly). CDP_BROWSER=brave to switch browser.
 ```
 
-8000px height: `--screenshot` clips to window height — a short viewport silently drops diagrams and render errors below the fold. Increase to 12000px for very long pages.
-
-If `chromium` not found, try `google-chrome-stable` then `chromium-browser`.
+Captures the full page automatically (no window-height guessing), up to Chrome's ~16000px
+single-shot ceiling. For a taller page the helper logs the clip — split the review or screenshot
+the lower half separately.
 
 ### Visual analysis
 
