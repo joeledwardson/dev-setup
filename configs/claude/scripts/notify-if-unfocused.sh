@@ -83,14 +83,12 @@ should_notify() {
 should_notify || exit 0
 
 # ===== mark this session's tmux window as pending =====
-# We only reach here when stopped/asking AND unfocused = "pending, needs you". Flag the window
-# (a per-window tmux option — no rename, so automatic-rename and names like cowork-docs survive)
-# and the global flag that drives the terminal title. Cleared by the pane-focus-in hook in
-# tmux.conf when you focus the window. See configs/tmux/scripts/claude-{clear,next}.sh.
+# We only reach here when stopped/asking AND unfocused = "pending, needs you". claude-flag.sh
+# flags this window (a per-window tmux option — no rename, so automatic-rename and names like
+# cowork-docs survive) and recomputes the global flag that drives the terminal title. Cleared by
+# the focus hooks in tmux.conf when you move to the window. See configs/tmux/scripts/claude-*.sh.
 if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
-    timeout 1 tmux set-window-option -t "$TMUX_PANE" @claude_pending 1 2>/dev/null || true
-    timeout 1 tmux set-option -g @claude_any 1 2>/dev/null || true
-    timeout 1 tmux refresh-client -S 2>/dev/null || true
+    timeout 1 ~/.config/tmux/scripts/claude-flag.sh pending "$TMUX_PANE" 2>/dev/null || true
 fi
 
 # ===== fire ntfy (curl is backgrounded so it never blocks the hook) =====

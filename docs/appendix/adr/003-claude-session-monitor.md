@@ -68,6 +68,7 @@ One daemon, three triggers, one authoritative pull, one render. Remotes are pass
 | **D7** | Acquire remote state | **SSH-pull** = source of truth; ntfy = trigger only. No per-host API | Pull gives complete *levels*; reuses SSH + Tailscale already in place; no daemon on remotes |
 | **D8** | Focus transport | **Event-driven**: Hyprland `socket2` + tmux hooks | Already proven for `waybar-focus.sh`; no polling |
 | **D9** | Remote (SSH) focus | **Pull on local focus event** — piggyback the SSH-pull | No remote-push channel, no ntfy side-topic, no key interception |
+| **D10** | The `CLAUDE!` terminal-title flag across hosts | **Open** — title is a 4th render surface; see below | Today it's per-tmux-server and misses remote/other-server pending sessions |
 
 ### D7 — how the pull works
 
@@ -82,6 +83,28 @@ Local sessions are a plain file read. Remote sessions: the daemon runs `ssh <hos
 ### D9 — remote focus without a remote channel
 
 For an SSH session the tmux that matters runs on the *remote* host. Rather than have the remote push its focus back (another channel to keep alive), the daemon pulls: **when local Hyprland focus lands on the terminal that's SSH'd into `<host>`, the same SSH-pull also returns that host's tmux focus bits**, computed where tmux actually lives. Remote focus = *local* window event → pull. No remote push.
+
+### D10 — the `CLAUDE!` terminal-title flag is per-server (open)
+
+There is a pre-existing affordance, separate from `claude-mon`: the outer terminal's title gains a `CLAUDE! ` prefix while a Claude session is pending. It's driven by `set -g set-titles-string '#{?#{@claude_any},CLAUDE! ,}#H:#S'` (`configs/tmux/tmux.conf:14`), where `@claude_any` is a tmux **server-global** option set/cleared by `configs/tmux/scripts/claude-flag.sh` (recomputed from *all* windows), driven by the notify hook on pending and the focus hooks on view.
+
+!!! warning "The gap"
+    `@claude_any` lives on **one tmux server**. So:
+
+    - **Within that server** the title already flips for *any* pending window, focused or not — `refresh-client -S` pushes it to every client. This part works.
+    - **Across servers / hosts** it can't: a session pending on pi-box (or any remote, or a second local tmux socket) sets `@claude_any` on *that* server only. The terminal you're actually looking at never sees it → no `CLAUDE!`.
+
+    This is precisely the multi-host case the daemon exists for. The title is just an **unrecognised fourth render surface** (alongside Waybar / CLI / HTTP in D2) that was never wired to the daemon's fleet-wide truth.
+
+**Honest framing:** this surface partly duplicates the Waybar badge and the ntfy push the daemon already drives. Its only real edge is being glanceable when Waybar is hidden or a window is fullscreen. Record the options; don't assume it's worth building.
+
+| Approach | How | Trade-off |
+|---|---|---|
+| **A — daemon owns a global title flag** (recommended if built) | Daemon writes a separate `@claude_remote_pending` option into each local tmux server on reconcile; title becomes `#{?#{\|\|:#{@claude_any},#{@claude_remote_pending}},CLAUDE! ,}`. Local hook fast-path (`@claude_any`) stays untouched; remote/fleet truth is OR'd in. | Cleanest separation: local stays instant, remote rides the daemon. Daemon must enumerate local tmux sockets and clear the flag when the fleet goes quiet. |
+| **B — daemon writes a status file, zsh `precmd` reads it** | Daemon writes e.g. `/run/user/$UID/claude-mon/any-pending`; a `precmd` hook prefixes the title from it. | Works for plain (non-tmux) zsh too. But `precmd` only fires at prompt redraw → stale until you hit Enter; more moving parts than reusing `set-titles`. |
+| **C — leave title local, rely on Waybar/ntfy for cross-host** (do-nothing) | Explicitly decide the title is a *local-server* affordance; the daemon-driven Waybar badge is the cross-host glanceable surface. | Zero new code; accepts that a remote-only pending session shows in Waybar/ntfy but not the local title. Likely the right v1 call given the redundancy above. |
+
+Note that `@claude_pending` (the per-window marker driving `claude-next.sh`'s "jump to next pending window" and the per-tab label) is inherently local — you can't `select-window` onto a remote host's window — so only `@claude_any` (the title flag) is a candidate for going fleet-wide; the per-window marker stays per-server.
 
 ---
 
