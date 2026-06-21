@@ -42,3 +42,11 @@ with a stable `-p sparkyfitness` project name.
 
 **Not yet tested**: reboot survival (units are enabled + `wantedBy multi-user.target`, but I did
 not reboot the box unattended). First account still needs registering via the UI.
+
+## 2026-06-21 — Review pass + re-verify
+
+Ran a focused code review (proportionate to a 91-line, e2e-verified Nix diff). 3 findings, all
+fixed in commit "address review findings": stale Podman comment, clone-wedge on interrupted first
+clone (added `rm -rf` guard), and DRY for the data paths. Rebuilt (3rd switch) → stack restarted,
+re-verified: localhost:3004 / https root / https /api/health all 200, valid TLS, login page
+(with passkey button) renders. DONE — on branch `sparkyfitness-pi-box-deploy`, not merged.
