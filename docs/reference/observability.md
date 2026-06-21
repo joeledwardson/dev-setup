@@ -27,8 +27,10 @@ How to monitor a script that runs forever (a daemon) or on a schedule (cron), at
 - [The base template (tiers)](#base-template)
 - [The tools, with pictures](#the-tools)
 - [What the metrics look like (CPU over time)](#metrics-detail)
+- [Dashboards — look vs be told](#dashboards)
 - [NixOS recipe](#recipe)
 - [Avoid](#avoid)
+- [TL;DR — what should I actually do?](#tldr)
 - [Further reading](#further-reading)
 
 <a id="the-reframe"></a>
@@ -312,6 +314,35 @@ Metrics are *levels sampled over time* — CPU%, RAM, disk IOPS, load. An agent 
 
 `disk IOPS`, RAM and load look the same — one series per metric, each with its own threshold. Beszel draws these out of the box; with node_exporter you get them via `node_disk_*`, `node_memory_*`, etc.
 
+<a id="dashboards"></a>
+## Dashboards — look vs be told (parallel to alerts)
+
+Alerting is *reactive* — it tells you once something has already crossed a line. A **dashboard is *proactive*** — you go *look* and catch the disk slowly filling, memory creeping up, or IOPS climbing every night, and fix it *before* it ever trips a threshold. They're two parallel branches off the same store, and the important part: **a dashboard is useful with zero alert rules set.** You don't have to configure a single monitor to benefit from "let me just see CPU/RAM/IOPS over the last week".
+
+```mermaid
+flowchart LR
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef key  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    M["metrics store"]:::tool --> D["dashboard<br/>LOOK — spot trends early (proactive)"]:::tool
+    M --> R{"alert rule<br/>(optional, add later)"}:::key
+    R -->|breach| N["notify — BE TOLD (reactive)"]:::leaf
+```
+
+Which tool gives you a "just go look" dashboard:
+
+| Want | Use | What you get |
+|---|---|---|
+| Instant, zero-config, deepest | **Netdata** | every metric at 1-second resolution the moment it's installed (but heavy — see [Avoid](#avoid)) |
+| Lightweight, built-in | **Beszel** | CPU / RAM / disk-I/O / net + SMART per host, with history, in a small hub UI |
+| Build / customise anything | **Grafana** (over Prometheus or VictoriaMetrics) | the most flexible dashboards — assemble panels from PromQL, or import community ones |
+| Up/down + response time | **Uptime Kuma** | service status and latency graphs, not deep host resources |
+| Logs + metrics + traces together | **Axiom / SigNoz** | query-driven views rather than always-on resource gauges |
+
+**Just want to eyeball this box right now, with nothing to run?** `btop` / `htop` give a live terminal view (no history); `glances` adds a quick web/REST view. No storage, so no trends — but they answer "what's happening *now*" in one command.
+
+So if your actual itch is "I want to glance at CPU/RAM/IOPS trends", that's a **dashboard need, not an alerting need** — reach for **Beszel** (light) or **Netdata** (deep, on a roomy box), or **Grafana** if you want to build your own. Alert rules can come later, or never; the dashboard stands on its own.
+
 <a id="recipe"></a>
 ## NixOS recipe (shape)
 
@@ -346,6 +377,23 @@ services.vector = {
 - **Netdata on a constrained box** — its RAM growth is a *known, open* bug (#16412, recurred on v2.8.2 in Dec 2025); the UI is now proprietary and it was dropped from Debian. Beautiful, but it ate a mini-PC. Use Beszel instead unless you have a roomy box and want the per-second depth.
 - **Self-hosted Loki alerting** — its Ruler leans on WAL replay (no rules evaluate during replay → alerts silently delayed/missed); the documented "fix" adds complexity. This is the "alerting is ungodly complex" trap.
 - **A 9-service Grafana/Prometheus stack for one cron job** — the common over-build. Tier 0 + Tier 1 covers it.
+
+<a id="tldr"></a>
+## TL;DR — what should I actually do?
+
+Pick the lowest row that covers what you need; everything alerts to whatever channel you like.
+
+| Approach | Effort + upkeep | Moving parts | Dashboard / QoL | Pros | Cons |
+|---|---|---|---|---|---|
+| **systemd + Healthchecks** (Tier 0+1) | tiny | ~1 (a hosted check, or one service) | none — alert-only | catches "didn't run / box down"; near-zero maintenance; native to NixOS | no trends, nothing to *look* at |
+| **Beszel** | low | 2 (hub + agent) | good, lightweight built-in | ~10 MB agent; CPU/RAM/IOPS+SMART dashboard **and** alerts in one; won't eat the box | younger project; fixed metric set; no PromQL |
+| **Netdata** | low | 1 per node | best instant dashboard (1 s, zero-config) | gorgeous and deep the moment it's installed | RAM growth on small boxes ([Avoid](#avoid)); UI now proprietary |
+| **Uptime Kuma** | low | 1 | status + response graphs | dead-simple, pretty status pages, push monitors for cron | up/down only — not deep host resources |
+| **Prometheus + Grafana + Alertmanager** | high | 4+ (exporters · Prometheus · Grafana · Alertmanager) | best + most flexible | the standard; powerful PromQL; huge dashboard + exporter ecosystem | steepest curve; most parts to run and break |
+| **Vector → Axiom** (SaaS) | low | 1 agent + a SaaS account | good — logs+metrics+traces UI | no infra to run; the UX you already like; 500 GB/mo free | data leaves the box; vendor dependency |
+| **SigNoz / OpenObserve** (self-host all-in-one) | medium–high | OpenObserve ≈ 1 binary · SigNoz = a ClickHouse stack | good — all signals in one UI | own your data; logs+metrics+traces together | SigNoz heavy (ClickHouse); OpenObserve younger |
+
+**The honest default for you:** ship **Tier 0 + Tier 1** (systemd + Healthchecks) on every box first — an afternoon, and it catches the failures that matter. Add **Beszel** the moment you want to *look* at CPU/RAM/IOPS trends (lightweight, dashboard + alerts in one). Reach for **Prometheus + Grafana** only once you've outgrown that and genuinely want PromQL and the ecosystem — not before.
 
 <a id="further-reading"></a>
 ## Further reading
