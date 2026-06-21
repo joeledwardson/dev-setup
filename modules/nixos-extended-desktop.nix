@@ -46,9 +46,8 @@
     nomachine-client
     wifi-qr
 
-    ### dictation (experimental)
-    pkgs-unstable.hyprwhspr-rs
-    sox
+    # NOTE: voice dictation (hyprwhspr-rs + sox) moved to modules/nixos-dictation.nix,
+    # imported by jollof-home only (needs the GGML model + a working systemd service).
 
     ### work (rarely used so don't put in base)
     terraform

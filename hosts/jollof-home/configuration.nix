@@ -9,6 +9,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
+    ../../modules/nixos-dictation.nix # local voice dictation (hyprwhspr-rs)
   ];
 
   # =======================================

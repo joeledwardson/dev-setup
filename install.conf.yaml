@@ -37,6 +37,7 @@
       ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
       ~/.config/io.datasette.llm/templates: ./configs/io.datasette.llm/templates
       ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
+      ~/.config/hyprwhspr-rs/config.jsonc: ./configs/hyprwhspr-rs/config.jsonc
       ~/.local/share/applications/custom: ./applications
       ~/.config/mpv/input.conf: ./configs/mpv/input.conf
       ~/.config/mpv/scripts: ./configs/mpv/scripts
