@@ -25,7 +25,9 @@ let
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin";
     hash = "sha256-oDd5yG3zMjB19eeWyyzlAp8A7Ihp7uP9+4l6/jbG0AI=";
   };
-  modelsDir = "/home/jollof/.local/share/hyprwhspr-rs/models";
+  # %h is a systemd-tmpfiles specifier that expands to each user's home dir, so this module
+  # is user/host-agnostic — no hardcoded /home/jollof. (Works in user tmpfiles, below.)
+  modelsDir = "%h/.local/share/hyprwhspr-rs/models";
 in
 {
   environment.systemPackages = [
@@ -35,9 +37,10 @@ in
   ];
 
   # Drop the fetched model into the dir hyprwhspr-rs scans (config: transcription.whisper_cpp.models_dirs).
+  # USER tmpfiles (run per-user) so %h resolves and the symlink is owned by the user, not root.
   # `d` ensures the dir exists on a fresh machine; `L+` creates/replaces the symlink to the store path.
-  systemd.tmpfiles.rules = [
-    "d ${modelsDir} 0755 jollof users -"
+  systemd.user.tmpfiles.rules = [
+    "d ${modelsDir} 0755 - - -"
     "L+ ${modelsDir}/ggml-base.en.bin - - - - ${whisperModel}"
   ];
 

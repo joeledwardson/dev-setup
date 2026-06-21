@@ -117,3 +117,18 @@ window#waybar {
 #custom-focus.monitor-inactive {
     background: transparent;
 }
+
+/* Voice dictation indicator (hyprwhspr-rs). class comes from ~/.cache/hyprwhspr-rs/status.json */
+#custom-hyprwhspr.inactive {
+    color: #555;
+}
+#custom-hyprwhspr.active {
+    color: #ffffff;
+    background: #e01b24;          /* solid red pill while recording */
+    padding: 0 10px;
+    border-radius: 10px;
+    animation: hyprwhspr-blink 1s steps(2) infinite;
+}
+@keyframes hyprwhspr-blink {
+    50% { opacity: 0.4; }
+}

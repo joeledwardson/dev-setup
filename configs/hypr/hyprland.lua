@@ -242,6 +242,7 @@ hl.bind(mainMod .. '+C', hl.dsp.exec_cmd 'swaync-client --close-all')
 hl.bind(mainMod .. '+TAB', hl.dsp.window.cycle_next())
 hl.bind(mainMod .. '+ALT+m', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/window-menu.sh'))
 hl.bind(mainMod .. '+slash', hl.dsp.exec_cmd 'rofimoji --action clipboard')
+hl.bind(mainMod .. '+u', hl.dsp.exec_cmd 'hyprwhspr-rs record toggle')
 
 -- Move focus
 hl.bind(mainMod .. '+h', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-focus.sh l'))
@@ -341,7 +342,9 @@ hl.window_rule {
 -- (not whatever happens to be active when the timer fires).
 function FlashActiveBorder()
   local flashed = hl.get_active_window()
-  if not flashed then return end
+  if not flashed then
+    return
+  end
   local target = 'address:' .. flashed.address
   hl.dispatch(hl.dsp.window.set_prop { window = target, prop = 'active_border_color', value = flash_colour })
   hl.timer(function()

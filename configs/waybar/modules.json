@@ -110,5 +110,13 @@
     "on-click": "sleep 0.1 && PATH=/run/current-system/sw/bin:$PATH swaync-client -t -sw",
     "on-click-right": "sleep 0.1 && PATH=/run/current-system/sw/bin:$PATH swaync-client -d -sw",
     "escape": true
+  },
+
+  "custom/hyprwhspr": {
+    "exec": "cat ~/.cache/hyprwhspr-rs/status.json",
+    "return-type": "json",
+    "interval": 1,
+    "tooltip": true,
+    "on-click": "hyprwhspr-rs record toggle"
   }
 }

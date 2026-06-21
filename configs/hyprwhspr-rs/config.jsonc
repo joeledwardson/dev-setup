@@ -1,6 +1,7 @@
 {
   "shortcuts": {
-    "press": "SUPER+ALT+R"
+    "comment": "Hotkey is bound in Hyprland (SUPER+ALT+R -> `hyprwhspr-rs record toggle`), not here. hyprwhspr's built-in grabber reads /dev/input directly and needs the 'input' group; the Hyprland bind avoids that.",
+    "press": null
   },
   "word_overrides": {},
   "audio_feedback": false,
@@ -9,7 +10,7 @@
   "start_sound_path": null,
   "stop_sound_path": null,
   "auto_copy_clipboard": true,
-  "shift_paste": true,
+  "shift_paste": false,
   "global_paste_shortcut": false,
   "paste_hints": {},
   "audio_device": null,

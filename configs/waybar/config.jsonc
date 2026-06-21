@@ -13,6 +13,7 @@
         "custom/focus"
     ],
     "modules-center": [
+        "custom/hyprwhspr",
         "hyprland/window"
     ],
     "modules-right": [
