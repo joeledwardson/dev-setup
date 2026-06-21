@@ -1223,32 +1223,37 @@ require('lazy').setup {
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     keys = { { '<leader>tt', ':InspectTree<CR>', { desc = 'Toggle treesitter' } } },
     config = function(_, opts)
-      require('nvim-treesitter').setup {
-        -- ensure_installed = {
-        --   'bash',
-        --   'c',
-        --   'diff',
-        --   'html',
-        --   'lua',
-        --   'luadoc',
-        --   'markdown',
-        --   'markdown_inline',
-        --   'query',
-        --   'vim',
-        --   'vimdoc',
-        --   'sql',
-        --   'typescript',
-        --   'javascript',
-        --   'tsx',
-        --   'svelte',
-        -- },
-        -- -- Autoinstall languages that are not installed
-        -- auto_install = true,
-        -- highlight = {
-        --   enable = true,
-        --   additional_vim_regex_highlighting = { 'ruby' },
-        -- },
-        -- indent = { enable = true, disable = { 'ruby' } },
+      -- NOTE (master branch): ensure_installed / auto_install / highlight / indent are read by the
+      -- `nvim-treesitter.configs` module. The top-level `require('nvim-treesitter').setup()` takes
+      -- NO arguments (it only registers the :TS* commands, and plugin/nvim-treesitter.lua already
+      -- calls it on load) — so passing this table to it silently does nothing. That was the bug.
+      require('nvim-treesitter.configs').setup {
+        ensure_installed = {
+          'bash',
+          'c',
+          'diff',
+          'html',
+          'lua',
+          'luadoc',
+          'markdown',
+          'markdown_inline',
+          'query',
+          'vim',
+          'vimdoc',
+          'sql',
+          'typescript',
+          'javascript',
+          'tsx',
+          'svelte',
+          'go',
+        },
+        -- Autoinstall languages that are not installed
+        auto_install = true,
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = { 'ruby' },
+        },
+        indent = { enable = true, disable = { 'ruby' } },
       }
 
       -- Treesitter nav utils
