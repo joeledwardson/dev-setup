@@ -129,6 +129,20 @@ vim.api.nvim_create_user_command('PrintServerCapabilities', function()
   vim.bo.filetype = 'lua'
 end, {})
 
+vim.api.nvim_create_user_command('Bufferize', function(opts)
+  ---@type string[]
+  local lines = {}
+  local out = vim.fn.execute(opts.fargs)
+  for _, line in ipairs(vim.split(out, '\n')) do
+    table.insert(lines, line)
+  end
+
+  vim.cmd.tabnew()
+  local newbuf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(0, newbuf)
+  vim.api.nvim_buf_set_text(newbuf, 0, 0, 0, 0, lines)
+end, { nargs = '+', complete = 'command' })
+
 vim.api.nvim_create_user_command('PrintFoldLevel', function()
   local line = vim.fn.line '.'
   local level = vim.fn.foldlevel(line)
