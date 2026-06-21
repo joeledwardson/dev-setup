@@ -46,14 +46,17 @@ in
       SPARKY_FITNESS_DB_NAME = "sparkyfitness";
       SPARKY_FITNESS_DB_USER = "sparky";
       SPARKY_FITNESS_FRONTEND_URL = "https://pi-box.rove-lydian.ts.net";
-      DB_PATH = "/var/lib/sparkyfitness/postgresql";
-      SERVER_BACKUP_PATH = "/var/lib/sparkyfitness/backup";
-      SERVER_UPLOADS_PATH = "/var/lib/sparkyfitness/uploads";
+      DB_PATH = "${stateDir}/postgresql";
+      SERVER_BACKUP_PATH = "${stateDir}/backup";
+      SERVER_UPLOADS_PATH = "${stateDir}/uploads";
     };
 
-    # Clone on first boot only. Idempotent: skipped once the repo exists.
+    # Clone on first boot only. Idempotent: skipped once the repo exists. If a previous clone was
+    # interrupted (dir exists but no .git), clear the partial dir first so the retry isn't wedged
+    # by "destination already exists and is not empty".
     preStart = ''
       if [ ! -e "${repoDir}/.git" ]; then
+        rm -rf "${repoDir}"
         git clone --depth=1 ${repoUrl} "${repoDir}"
       fi
     '';

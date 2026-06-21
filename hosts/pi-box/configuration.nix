@@ -11,7 +11,7 @@
     #   nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
 
-    # SparkyFitness production stack (Podman / oci-containers + Tailscale Serve)
+    # SparkyFitness production stack (docker compose via systemd + Tailscale Serve)
     ./sparkyfitness.nix
   ];
 
