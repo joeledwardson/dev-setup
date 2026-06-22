@@ -142,17 +142,22 @@ in
       done
       container=$(docker ps --filter name=sparkyfitness-server --format '{{.Names}}' | head -1)
       if [ -z "$container" ]; then echo "ai-seed: server container not found"; exit 1; fi
-      key=$(cat ${geminiKeyFile})
-      docker exec -e GEMINI_KEY="$key" "$container" ./node_modules/.bin/tsx -e '
-        import("./models/chatRepository.ts").then(async (m) => {
-          const key = process.env.GEMINI_KEY;
-          const existing = (await m.getGlobalAiServiceSettings()).find((s) => s.service_type === "google");
-          const data = { service_name: "Gemini (declarative)", service_type: "google", model_name: "gemini-2.5-flash", api_key: key, is_active: true };
-          await m.upsertGlobalAiServiceSetting(existing ? { ...data, id: existing.id } : data);
-          console.log(existing ? "ai-seed: updated global gemini" : "ai-seed: inserted global gemini");
-          process.exit(0);
-        }).catch((e) => { console.error("ai-seed ERR", e.message); process.exit(1); });
-      '
+      # Pipe the key in via stdin (NOT -e/argv) so it never shows up in host `ps` output.
+      docker exec -i "$container" ./node_modules/.bin/tsx -e '
+        let buf = "";
+        process.stdin.on("data", (c) => { buf += c; });
+        process.stdin.on("end", async () => {
+          try {
+            const key = buf.trim();
+            const m = await import("./models/chatRepository.ts");
+            const existing = (await m.getGlobalAiServiceSettings()).find((s) => s.service_type === "google");
+            const cfg = { service_name: "Gemini (declarative)", service_type: "google", model_name: "gemini-2.5-flash", api_key: key, is_active: true };
+            await m.upsertGlobalAiServiceSetting(existing ? { ...cfg, id: existing.id } : cfg);
+            console.log(existing ? "ai-seed: updated global gemini" : "ai-seed: inserted global gemini");
+            process.exit(0);
+          } catch (e) { console.error("ai-seed ERR", e.message); process.exit(1); }
+        });
+      ' < ${geminiKeyFile}
     '';
   };
 
