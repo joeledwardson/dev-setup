@@ -48,7 +48,7 @@ lua-language-server
 # Pin neovim to match host (NixOS nixos-25.11 ships 0.11.x). Arch's bleeding-edge
 # 0.12.x breaks the pinned nvim-treesitter master commit — 0.12 changed the
 # query match API (values are TSNode[] lists, not single nodes), and master
-# was archived before adapting. See DEV-LOG "nvim-treesitter: archived" entry.
+# was archived before adapting. See docs/dev-log/2026-04.md — "nvim-treesitter: archived" entry.
 ARG NVIM_VERSION=v0.11.7
 RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
     | tar -xz -C /opt && \

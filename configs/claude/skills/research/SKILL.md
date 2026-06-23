@@ -41,7 +41,7 @@ Before drafting, ask the user (once, in one message, bundled):
 If these are already obvious from the request, skip — don't ask just to ask.
 
 ### Unattended (under `/unattended`)
-Do not block on clarifying questions. Pick reasonable defaults, log them to `DEV-LOG.md` per the unattended skill, and proceed. Bias toward:
+Do not block on clarifying questions. Pick reasonable defaults, log them to the current month's dev log (`docs/dev-log/YYYY-MM.md`) per the unattended skill, and proceed. Bias toward:
 - Scope: medium (5–15 sources, 2–4 pages)
 - Audience: the user themselves, technically fluent
 - Decision-oriented if any hint of a decision exists
@@ -223,7 +223,7 @@ If any rubric fails, fix before presenting. If after 2 revision passes it still 
 
 ### `/unattended`
 - Research is normally attended, but if `/unattended` is active, skip clarifying questions
-- Log scope decisions to `DEV-LOG.md`
+- Log scope decisions to the current month's dev log (`docs/dev-log/YYYY-MM.md`)
 - Keep drafting and delivering — don't block waiting for user on ambiguous scope
 - Before final delivery under unattended, run an extra self-review pass since no human reviewed the scope
 

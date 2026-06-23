@@ -229,11 +229,11 @@ When code changes, docs change in the same commit:
 
 ## Project records — three types, one place
 
-All project history lives in `docs/appendix/`. Three types:
+Project history lives in the docs site. Three types:
 
-### Dev Log (`docs/appendix/dev-log.md` → `DEV-LOG.md`)
+### Dev Log (`docs/dev-log/YYYY-MM.md`)
 
-Append one entry per meaningful session event. Format:
+There is **no** root `DEV-LOG.md` — the dev log is split into one Markdown file per month under `docs/dev-log/`, surfaced as the **Dev Log** nav section in `mkdocs.yml`. Append each new entry to the current month's file (create `docs/dev-log/YYYY-MM.md` and add it to the nav when the month rolls over). Format:
 
 ```
 ## YYYY-MM-DD — title

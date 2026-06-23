@@ -165,5 +165,5 @@ else
 fi
 ```
 
-> According to claude, we have to forcifully set the dns otherwise it does not work? - have added claudes notes in ./DEV-LOG.md
+> According to claude, we have to forcifully set the dns otherwise it does not work? - claude's notes are in the [dev log](https://joels-claude-bot.github.io/dev-setup/dev-log/) (see Nov/Dec 2025).
 

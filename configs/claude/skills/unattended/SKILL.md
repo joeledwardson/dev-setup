@@ -109,7 +109,7 @@ Log when you exceed budgets. Don't pretend you didn't.
 
 ## The log
 
-Append to `DEV-LOG.md` at project root. One entry per meaningful event:
+Append to the current month's dev log file, `docs/dev-log/YYYY-MM.md` (there is no root `DEV-LOG.md`). One entry per meaningful event:
 
 ```
 ## YYYY-MM-DD HH:MM — title

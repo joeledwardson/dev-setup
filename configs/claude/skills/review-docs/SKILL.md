@@ -27,7 +27,7 @@ Without argument: full project review. With argument: single page (Pass 1 skippe
 find docs/ -name "*.md" -not -path "*/appendix/*" -not -name "index.md" | sort
 ```
 
-Skip: `docs/appendix/` (reviews, ADRs, dev-log), auto-generated API reference.
+Skip: `docs/appendix/` (reviews, ADRs), `docs/dev-log/` (append-only working notes), auto-generated API reference.
 
 ---
 
