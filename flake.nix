@@ -112,6 +112,7 @@
           system = archSystem;
           specialArgs = mkArgs archSystem;
           modules = [
+            inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/pi-box/configuration.nix

@@ -10,6 +10,9 @@
     # needed on first boot. Build with:
     #   nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
+
+    # SparkyFitness production stack (Podman / oci-containers + Tailscale Serve)
+    ./sparkyfitness.nix
   ];
 
   # Root lives on a USB-attached SSD in a UASP caddy, so the initrd needs the

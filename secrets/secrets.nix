@@ -29,4 +29,5 @@ in {
   "usda.age".publicKeys = allHosts;
   "fatsecret-client-id.age".publicKeys = allHosts;
   "fatsecret-client-secret.age".publicKeys = allHosts;
+  "sparkyfitness-secrets.age".publicKeys = allHosts;
 }
