@@ -26,4 +26,7 @@ let
 in {
   "llm-gemini-key.age".publicKeys = allHosts;
   "ntfy-token.age".publicKeys = allHosts;
+  "usda.age".publicKeys = allHosts;
+  "fatsecret-client-id.age".publicKeys = allHosts;
+  "fatsecret-client-secret.age".publicKeys = allHosts;
 }
