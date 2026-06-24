@@ -91,4 +91,5 @@ nav:
       - ADR-003 Claude Session Monitor: appendix/adr/003-claude-session-monitor.md
       - ADR-004 pi-box Storage: appendix/adr/004-pi-box-storage-vs-replace.md
       - ADR-005 Homelab Observability: appendix/adr/005-homelab-observability-stack.md
-      - ADR-006 Orchestration Eval Harness: appendix/adr/006-orchestration-eval-harness.md
+      - ADR-006 hyprwhspr Dictation: appendix/adr/006-hyprwhspr-dictation.md
+      - ADR-007 Orchestration Eval Harness: appendix/adr/007-orchestration-eval-harness.md

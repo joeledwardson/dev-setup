@@ -1,7 +1,7 @@
-# ADR-005 — Voice dictation: one daemon (`hyprwhspr-rs`) over hand-wired glue
+# ADR-006 — Voice dictation: one daemon (`hyprwhspr-rs`) over hand-wired glue
 
-**Status**: Accepted
-**Date**: 2026-06-20
+**Status**: Accepted  
+**Date**: 2026-06-20  
 **Context**: I want push-to-talk dictation on Wayland/Hyprland — hold a key, speak, have the text typed into whatever window is focused (terminal, Claude Code prompt, browser). Fully local, no API key. An earlier attempt this month wired this by hand from three separate tools (`whisper.cpp` + `wtype` + `swhkd`); see *Local voice dictation on Linux* in dev-log 2026-06. This records the move to a single integrated daemon and how it's scaffolded in NixOS.
 
 **Decision**: Use [`hyprwhspr-rs`](https://github.com/goodroot/hyprwhspr) — a single Rust daemon that owns hotkey + record + transcribe + inject — instead of gluing `swhkd` → `pw-record` → `whisper.cpp` → `wtype` myself. Same engine underneath (`whisper.cpp` for transcription, Wayland virtual keyboard / `wtype` for injection), one process to supervise. Scaffolded declaratively for **jollof-home** in `modules/nixos-dictation.nix`; the editable config stays in git and is symlinked by dotbot.

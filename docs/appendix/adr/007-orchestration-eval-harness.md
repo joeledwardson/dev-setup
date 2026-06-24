@@ -1,8 +1,8 @@
-# ADR-006 — Meta-eval harness: scoring the orchestration options from ADR-001
+# ADR-007 — Meta-eval harness: scoring the orchestration options from ADR-001
 
-**Status**: Proposed
-**Date**: 2026-06-24
-**Context**: [ADR-001](001-claude-code-orchestration.md) lists six ways to run an autonomous spec→implement→review→fix loop (options A–F) and ranks them on *predicted* effort and capability. Before committing to one, I want to **measure** them instead of guessing — run a hard, fixed coding task through each tool and score the *tool's behaviour*, not the LLM's answer. This ADR captures the goal, requirements, the probe-task design, and the grading criteria. It is the spec for a harness, not the harness.
+**Status**: Proposed  
+**Date**: 2026-06-24  
+**Context**: [ADR-001](001-claude-code-orchestration.md) lists six ways to run an autonomous spec→implement→review→fix loop (options A–F) and ranks them on *predicted* effort and capability. Before committing to one, I want to **measure** them instead of guessing — run a hard, fixed coding task through each tool and score the *tool's behaviour*, not the LLM's answer. This ADR captures the goal, requirements, the probe-task design, and the grading criteria. It is the spec for a harness, not the harness.  
 **Decision**: Not yet made — this records the approach and the open decisions (D1–D5 below).
 
 !!! warning "Does NOT cover"

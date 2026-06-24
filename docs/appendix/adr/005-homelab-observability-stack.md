@@ -1,7 +1,7 @@
 # ADR-005 — Homelab observability: trial Beszel vs Prometheus/Grafana/Alertmanager
 
-**Status**: Proposed (trial)
-**Date**: 2026-06-20
+**Status**: Proposed (trial)  
+**Date**: 2026-06-20  
 **Context**: The landscape is mapped in [reference/observability](../../reference/observability.md). For host metrics + dashboards + alerts on the homelab boxes, two approaches are worth trialling on real hardware. The rest are ruled out: **Netdata** (its RAM-growth bug is open and recurred on v2.8.2 in Dec 2025, the UI went proprietary, and it was dropped from Debian — enshittification), and **SigNoz** (OpenTelemetry/ClickHouse all-in-one — too enterprise-shaped and heavy for this scale).
 
 **Decision**: Trial **Beszel** (lightweight, dashboard + alerts in one) and **Prometheus + Grafana + Alertmanager** (the standard, for when PromQL and the ecosystem are wanted). Minimal NixOS configs below. Beszel is the default-light; reach for the Prometheus stack only once Beszel's fixed metric set isn't enough.

@@ -1,8 +1,8 @@
 # ADR-004 — pi-box: add storage, or replace the machine?
 
-**Status**: Accepted
-**Date**: 2026-06-14
-**Resolution (2026-06-14)**: Keep the Pi; **ordered a Fikwot FX815 256GB 2.5" SATA SSD (£34.99) + UGREEN 2.5" UASP USB-3 caddy (£9.99) = £44.98.** Reusing the internal WD Blue was rejected — it's an internal `sata` drive holding live data, so freeing it means opening the desktop for no net saving over a £45 new drive.
+**Status**: Accepted  
+**Date**: 2026-06-14  
+**Resolution (2026-06-14)**: Keep the Pi; **ordered a Fikwot FX815 256GB 2.5" SATA SSD (£34.99) + UGREEN 2.5" UASP USB-3 caddy (£9.99) = £44.98.** Reusing the internal WD Blue was rejected — it's an internal `sata` drive holding live data, so freeing it means opening the desktop for no net saving over a £45 new drive.  
 **Context**: pi-box (Raspberry Pi 4, 8GB RAM, bought ~£100) is meant to be the **cheap, stable, low-maintenance box that just *runs* low-resource apps** (e.g. the SparkyFitness calorie tracker) — explicitly **not** a dev box. That role belongs to streaming-server (the Beelink N100). pi-box felt sluggish; diagnosis ([dev-log 2026-06-14](../../dev-log/2026-06.md)) found the **only** weakness is its SD card (~750 random-write IOPS, plus the long-term wear/corruption risk SD cards carry). The question this ADR answers is **not** "which SSD" — it's "**is upgrading this Pi worth it for a run-only box, or should I spend similar money on a different machine?**"
 
 !!! success "Decided & ordered"

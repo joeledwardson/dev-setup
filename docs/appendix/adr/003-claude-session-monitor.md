@@ -1,7 +1,7 @@
 # ADR-003 — Claude Session Monitor: event-driven, multi-host state tracking
 
-**Status**: Accepted
-**Date**: 2026-06-14
+**Status**: Accepted  
+**Date**: 2026-06-14  
 **Context**: One at-a-glance view of every Claude Code session across all machines — the local desktop **and** remote boxes reached over SSH (Secure Shell). Each session is **running**, **idle**, or **pending** ("Claude stopped or is asking, and you haven't looked yet"). This records the chosen architecture. (Full feature spec: `dev-notes/claude-session-monitor-spec.md`.)
 
 **Decision**: One `claude-mon` daemon on the local desktop. **Events decide *when* to refresh; a pull decides *what's true*.** ntfy + Hyprland + tmux hooks are triggers; an SSH-pull of `~/.claude/sessions/*.json` is the source of truth. Remotes run only a tiny `claude-mon collect` script — no daemon, no API.

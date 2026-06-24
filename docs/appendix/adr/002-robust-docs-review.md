@@ -1,8 +1,8 @@
-## ADR-002 — Robust AI Documentation Review Pipeline
+# ADR-002 — Robust AI Documentation Review Pipeline
 
-**Status**: Proposed
-**Date**: 2026-06-01
-**Context**: The current `review-docs` bash-based skill relies on fixed-height `chromium` screenshots and Gemini LLM calls to handle both deterministic checks (broken links, missing acronyms) and semantic reasoning. This causes truncation of long pages, misses lazy-loaded elements, and burns context tokens on tasks better suited for static analysis.
+**Status**: Proposed  
+**Date**: 2026-06-01  
+**Context**: The current `review-docs` bash-based skill relies on fixed-height `chromium` screenshots and Gemini LLM calls to handle both deterministic checks (broken links, missing acronyms) and semantic reasoning. This causes truncation of long pages, misses lazy-loaded elements, and burns context tokens on tasks better suited for static analysis.  
 **Decision**: Transition the documentation review pipeline to a hybrid architecture: offload deterministic checks to purpose-built static analysis tools (Lychee, Vale, AST parsing) and reserve Gemini strictly for holistic semantic review and targeted Playwright element screenshots.
 
 **Consequences**:
