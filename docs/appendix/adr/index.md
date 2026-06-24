@@ -10,3 +10,4 @@
 | [ADR-003](003-claude-session-monitor.md) | Claude Session Monitor: event-driven, multi-host state tracking | Accepted | 2026-06-14 |
 | [ADR-004](004-pi-box-storage-vs-replace.md) | pi-box: add storage, or replace the machine? | Accepted | 2026-06-14 |
 | [ADR-005](005-homelab-observability-stack.md) | Homelab observability: Beszel vs Prometheus/Grafana/Alertmanager | Proposed | 2026-06-20 |
+| [ADR-006](006-orchestration-eval-harness.md) | Meta-eval harness: scoring the ADR-001 orchestration options | Proposed | 2026-06-24 |
