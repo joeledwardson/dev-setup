@@ -45,13 +45,6 @@ hl.env('ELECTRON_OZONE_PLATFORM_HINT', 'auto')
 hl.env('GTK_THEME', 'Tokyonight-Dark')
 hl.env('GDK_SCALE', 1)
 
--- Mitigations for NVIDIA 595.x Wayland freeze/segfault regression.
--- Hardware cursors and direct scanout are two Nvidia/Wayland interaction
--- points that break under this driver series.
--- Use native Hyprland cursor config instead of WLR_NO_HARDWARE_CURSORS env var
--- so that ext-image-copy-capture (used by wayvnc) can still capture the cursor.
-hl.env('HYPRLAND_NO_DIRECT_SCANOUT', 1)
-
 --##################
 --## PERMISSIONS ###
 --##################
@@ -173,12 +166,6 @@ hl.config {
   misc = {
     force_default_wallpaper = -1,
     disable_hyprland_logo = false,
-  },
-}
-
-hl.config {
-  cursor = {
-    no_hardware_cursors = true,
   },
 }
 

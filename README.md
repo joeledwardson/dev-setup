@@ -14,7 +14,7 @@
     - [Syncthing](#syncthing)
     - [Work VPN setup](#work-vpn-setup)
 
-> Reference notes, dev log and cheat sheets have moved to the **[docs site](https://joels-claude-bot.github.io/dev-setup/)**.
+> Reference notes, dev log and cheat sheets have moved to the **[docs site](https://joeledwardson.github.io/dev-setup/)**.
 
 # Development setup
 This repository covers my development setup, including
