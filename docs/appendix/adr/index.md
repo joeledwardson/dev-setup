@@ -11,3 +11,4 @@
 | [ADR-004](004-pi-box-storage-vs-replace.md) | pi-box: add storage, or replace the machine? | Accepted | 2026-06-14 |
 | [ADR-005](005-homelab-observability-stack.md) | Homelab observability: Beszel vs Prometheus/Grafana/Alertmanager | Proposed | 2026-06-20 |
 | [ADR-006](006-hyprwhspr-dictation.md) | Voice dictation: one daemon (`hyprwhspr-rs`) over hand-wired glue | Accepted | 2026-06-20 |
+| [ADR-007](007-orchestration-eval-harness.md) | Meta-eval harness: scoring the ADR-001 orchestration options | Proposed | 2026-06-24 |

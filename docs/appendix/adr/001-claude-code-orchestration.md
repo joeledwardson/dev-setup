@@ -43,13 +43,13 @@ The tools fall into three layers. You need to understand all three to pick the r
 
 ```mermaid
 flowchart TD
-    subgraph G["Layer 1 — LLM Gateways\n(unified API key, model routing)"]
+    subgraph G["Layer 1 — LLM Gateways · unified API key, model routing"]
         OR["OpenRouter"]
         LL["LiteLLM"]
         PK["Portkey"]
     end
 
-    subgraph O["Layer 2 — Orchestrators\n(who drives the loop)"]
+    subgraph O["Layer 2 — Orchestrators · who drives the loop"]
         subgraph V["Visual"]
             N8["n8n"]
             DF["Dify"]
@@ -65,15 +65,18 @@ flowchart TD
         end
     end
 
-    subgraph M["Layer 3 — Model execution\n(where code actually runs)"]
+    subgraph M["Layer 3 — Model execution · where code actually runs"]
         CC["claude CLI\n(Claude Code)"]
     end
 
     G --> O --> M
 
-    style G fill:#f5f0ff,stroke:#c39bd3
-    style O fill:#f0fff4,stroke:#52be80
-    style M fill:#fff5f0,stroke:#f0b27a
+    style G fill:transparent,stroke:#c39bd3
+    style O fill:transparent,stroke:#52be80
+    style M fill:transparent,stroke:#f0b27a
+    style V fill:transparent,stroke:#52be80
+    style C fill:transparent,stroke:#52be80
+    style S fill:transparent,stroke:#52be80
     style OR fill:#c39bd3,color:#4a235a,stroke:#7d3c98
     style LL fill:#c39bd3,color:#4a235a,stroke:#7d3c98
     style PK fill:#c39bd3,color:#4a235a,stroke:#7d3c98

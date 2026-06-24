@@ -1,0 +1,9 @@
+/* Mermaid subgraph (cluster) titles inherit --md-mermaid-label-fg-color, which
+   mkdocs-material maps to the muted code foreground grey. On the dark (slate)
+   palette that grey is too dim to read. mkdocs-material reads these variables
+   at mermaid init, so overriding the variable recolours the labels reliably —
+   unlike targeting the rendered SVG, whose class names vary by mermaid version.
+   Light palette keeps the default (dark grey reads fine on white). */
+[data-md-color-scheme="slate"] {
+  --md-mermaid-label-fg-color: #d9dde3;
+}
