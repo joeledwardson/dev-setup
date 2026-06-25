@@ -6,6 +6,7 @@ docs_dir: docs
 
 extra_css:
   - stylesheets/mermaid.css
+  - stylesheets/custom.css
 
 theme:
   name: material
@@ -93,3 +94,4 @@ nav:
       - ADR-005 Homelab Observability: appendix/adr/005-homelab-observability-stack.md
       - ADR-006 hyprwhspr Dictation: appendix/adr/006-hyprwhspr-dictation.md
       - ADR-007 Orchestration Eval Harness: appendix/adr/007-orchestration-eval-harness.md
+      - ADR-008 MDX vs mkdocs: appendix/adr/008-mdx-vs-mkdocs.md
