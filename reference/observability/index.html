@@ -1,0 +1,2408 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../networking/">
+      
+      
+        <link rel="next" href="../../appendix/adr/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Observability & Monitoring - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/mermaid.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#observability-monitoring" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Observability & Monitoring
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../dev-log/" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-reframe-three-problems-not-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The reframe — three problems, not one
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-real-homelab-setups-actually-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What real homelab setups actually run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-core-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two core architectures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-base-template-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The base template (tiers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tools-with-pictures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The tools, with pictures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The tools, with pictures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uptime-kuma-liveness-status-pages-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uptime Kuma — liveness + status pages (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#healthchecksio-the-cron-dead-mans-switch-self-host-or-free-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Healthchecks.io — the cron dead-man's-switch (self-host or free SaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beszel-lightweight-metrics-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beszel — lightweight metrics (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-grafana-the-standard-metrics-stack-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus + Grafana — the standard metrics stack (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netdata-instant-per-node-deep-metrics-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Netdata — instant per-node deep metrics (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axiom-logs-metrics-traces-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Axiom — logs + metrics + traces (SaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signoz-self-host-all-in-one-the-datadog-shaped-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SigNoz — self-host all-in-one (the Datadog-shaped option)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-metrics-look-like-cpu-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the metrics look like (CPU over time)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboards-look-vs-be-told-parallel-to-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboards — look vs be told (parallel to alerts)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-recipe-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS recipe (shape)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avoid-for-this-scale-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avoid (for this scale + constraints)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tldr-what-should-i-actually-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR — what should I actually do?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/004-pi-box-storage-vs-replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 pi-box Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/005-homelab-observability-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 Homelab Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/006-hyprwhspr-dictation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 hyprwhspr Dictation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/007-orchestration-eval-harness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/008-mdx-vs-mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 MDX vs mkdocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-reframe-three-problems-not-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The reframe — three problems, not one
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-real-homelab-setups-actually-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What real homelab setups actually run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-core-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two core architectures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-base-template-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The base template (tiers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tools-with-pictures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The tools, with pictures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The tools, with pictures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uptime-kuma-liveness-status-pages-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uptime Kuma — liveness + status pages (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#healthchecksio-the-cron-dead-mans-switch-self-host-or-free-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Healthchecks.io — the cron dead-man's-switch (self-host or free SaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beszel-lightweight-metrics-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beszel — lightweight metrics (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-grafana-the-standard-metrics-stack-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus + Grafana — the standard metrics stack (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netdata-instant-per-node-deep-metrics-self-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Netdata — instant per-node deep metrics (self-host)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#axiom-logs-metrics-traces-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Axiom — logs + metrics + traces (SaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signoz-self-host-all-in-one-the-datadog-shaped-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SigNoz — self-host all-in-one (the Datadog-shaped option)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-metrics-look-like-cpu-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the metrics look like (CPU over time)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboards-look-vs-be-told-parallel-to-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboards — look vs be told (parallel to alerts)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixos-recipe-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NixOS recipe (shape)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avoid-for-this-scale-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avoid (for this scale + constraints)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tldr-what-should-i-actually-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR — what should I actually do?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="observability-monitoring">Observability &amp; monitoring<a class="headerlink" href="#observability-monitoring" title="Permanent link">&para;</a></h1>
+<p>How to monitor a script that runs forever (a daemon) or on a schedule (cron), at homelab / small-startup scale — what the tools actually are, what real setups use, and a base template to start from. Grounded in real writeups (see <a href="#further-reading">Further reading</a>), not vendor decks.</p>
+<blockquote>
+<p><strong>Alert delivery is a swappable leaf, not the hub.</strong> Every quality writeup routes alerts to a <em>receiver you can change</em> (ntfy, Slack, Discord, email, Gotify, Telegram, PagerDuty) behind Alertmanager / Shoutrrr / a tool's own integrations. Pick the <em>collector and store</em> deliberately; the channel is a one-line config. Diagrams below say "notify" — substitute whatever you like.</p>
+</blockquote>
+<details class="abstract">
+<summary>Acronyms &amp; jargon (click to expand)</summary>
+<ul>
+<li><strong>IOPS</strong> — disk I/O operations per second (throughput in ops, not bytes).</li>
+<li><strong>TSDB</strong> — time-series database (stores metrics over time).</li>
+<li><strong>SaaS</strong> — software-as-a-service (a vendor hosts it; your data leaves the box).</li>
+<li><strong>PromQL / APL</strong> — the query languages of Prometheus / Axiom.</li>
+<li><strong>OpenTelemetry (OTel) / OTLP</strong> — vendor-neutral standard + wire protocol for logs, metrics and traces.</li>
+<li><strong>APM</strong> — application performance monitoring (latency / error rate / throughput of your app's own code).</li>
+<li><strong>ML anomaly</strong> — machine-learning detection of "this looks abnormal vs the usual pattern".</li>
+<li><strong>WAL</strong> — write-ahead log (an append-only durability log; it's why Loki's alert ruler can miss evaluations).</li>
+<li><strong>node_exporter / cAdvisor</strong> — the standard agents that expose a Linux host's / containers' metrics for Prometheus to scrape.</li>
+<li><strong>Alertmanager</strong> — Prometheus's separate alert router (groups, silences, dedupes, routes to receivers).</li>
+<li><strong>journald</strong> — systemd's built-in log store, queried with <code>journalctl</code>.</li>
+<li><strong>Shoutrrr</strong> — a library giving one URL syntax for many notify backends (Beszel uses it).</li>
+<li><strong>PocketBase / ClickHouse / SQLite</strong> — the embedded / columnar datastores these tools keep their data in; you rarely touch them directly.</li>
+</ul>
+</details>
+<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#the-reframe">The reframe — three problems, not one</a></li>
+<li><a href="#what-real-setups-run">What real homelab setups actually run</a></li>
+<li><a href="#two-architectures">The two core architectures</a></li>
+<li><a href="#base-template">The base template (tiers)</a></li>
+<li><a href="#the-tools">The tools, with pictures</a></li>
+<li><a href="#metrics-detail">What the metrics look like (CPU over time)</a></li>
+<li><a href="#dashboards">Dashboards — look vs be told</a></li>
+<li><a href="#recipe">NixOS recipe</a></li>
+<li><a href="#avoid">Avoid</a></li>
+<li><a href="#tldr">TL;DR — what should I actually do?</a></li>
+<li><a href="#further-reading">Further reading</a></li>
+</ul>
+<p><a id="the-reframe"></a></p>
+<h2 id="the-reframe-three-problems-not-one">The reframe — three problems, not one<a class="headerlink" href="#the-reframe-three-problems-not-one" title="Permanent link">&para;</a></h2>
+<p>A "monitoring" need is really three failure questions, each needing a different tool:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Detected by</th>
+<th>Tool class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Did it even run / is it alive?</td>
+<td><strong>absence</strong> of a signal</td>
+<td>dead-man's-switch (heartbeat)</td>
+</tr>
+<tr>
+<td>Is the box healthy (CPU/RAM/IOPS)?</td>
+<td>threshold on a level</td>
+<td>metrics / time-series DB</td>
+</tr>
+<tr>
+<td>Did it error or go quiet?</td>
+<td>a log pattern / log silence</td>
+<td>logs (or just journald)</td>
+</tr>
+</tbody>
+</table>
+<p>The first is the highest-value and most-skipped: a CPU graph looks identical whether your cron ran or never fired. Only a heartbeat turns "nothing happened" into an alert.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef key  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    JOB["your script&lt;br/&gt;daemon or cron"]:::src
+    JOB --&gt; Q1["did it even run?&lt;br/&gt;is it alive?"]:::key
+    JOB --&gt; Q2["CPU / RAM / IOPS&lt;br/&gt;healthy?"]:::tool
+    JOB --&gt; Q3["errored?&lt;br/&gt;gone quiet?"]:::tool
+    Q1 --&gt; H["dead-man's-switch&lt;br/&gt;detects ABSENCE"]:::key
+    Q2 --&gt; M["metrics / TSDB"]:::tool
+    Q3 --&gt; L["logs / journald"]:::tool
+    H --&gt; N["notify&lt;br/&gt;(ntfy · Slack · email · …)"]:::leaf
+    M --&gt; N
+    L --&gt; N
+    N --&gt; YOU["you"]:::leaf</code></pre>
+<p><em>Purple = the liveness path metrics can't see. Grey = the notify channel — swappable; same colours mean the same thing in every diagram below.</em></p>
+<p><a id="what-real-setups-run"></a></p>
+<h2 id="what-real-homelab-setups-actually-run">What real homelab setups actually run<a class="headerlink" href="#what-real-homelab-setups-actually-run" title="Permanent link">&para;</a></h2>
+<p>Five real writeups (2023–2026) solving close to this problem:<sup id="fnref:natsuki"><a class="footnote-ref" href="#fn:natsuki">1</a></sup><sup id="fnref:nxsi"><a class="footnote-ref" href="#fn:nxsi">2</a></sup><sup id="fnref:xda"><a class="footnote-ref" href="#fn:xda">3</a></sup><sup id="fnref:bdr"><a class="footnote-ref" href="#fn:bdr">4</a></sup><sup id="fnref:pecos"><a class="footnote-ref" href="#fn:pecos">5</a></sup></p>
+<table>
+<thead>
+<tr>
+<th>Writeup (date)</th>
+<th>What it recommends</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Natsuki — <em>End-to-end homelab monitoring</em> (2026-01)</td>
+<td>node_exporter + cAdvisor → <strong>Prometheus</strong> → <strong>Grafana</strong> → <strong>Alertmanager</strong> → channel; + Loki/Promtail for logs</td>
+</tr>
+<tr>
+<td>nxsi — <em>Complete stack via Docker Compose</em> (2026-02)</td>
+<td>9-service Prometheus + Loki + Grafana + Alertmanager; <strong>Uptime Kuma</strong> alongside; receiver left blank on purpose</td>
+</tr>
+<tr>
+<td>XDA — <em>Beszel changed how I monitor my homelab</em> (2025-05)</td>
+<td><strong>Beszel</strong> hub + agents as the lightweight middle ground between Uptime Kuma and a Grafana/Prometheus build</td>
+</tr>
+<tr>
+<td>BigData Republic — <em>Effective cron job monitoring</em> (2023-06)</td>
+<td>logs + notifications + a <strong>heartbeat</strong> tool (Healthchecks.io / Cronitor) — the dead-man's-switch model</td>
+</tr>
+<tr>
+<td>Daniel Pecos — <em>Homelab monitoring w/ Grafana + Prometheus</em> (2024-08)</td>
+<td>node_exporter + cAdvisor → Prometheus → Grafana (metrics-only)</td>
+</tr>
+</tbody>
+</table>
+<p>Two patterns dominate, chosen by <em>what</em> you're watching: a <strong>pull-based metrics stack</strong> (Prometheus + Grafana family) for host/container resources, and a <strong>push-based heartbeat</strong> (Healthchecks-style) for "did my job run". For a cron job or long-running script, the heartbeat is the <em>direct</em> fit; the metrics stack is what people layer on once they have several hosts/containers. Lighter single-purpose tools — <strong>Beszel</strong>, <strong>Uptime Kuma</strong>, <strong>Netdata</strong> — show up repeatedly for people who find the full stack too heavy, often run <em>alongside</em> it rather than instead.</p>
+<p><strong>So what:</strong> Don't copy the 9-service Grafana stack for a single cron job — that's the common over-build. Start with a heartbeat; add a metrics tool when host resources become a real question; treat the alert channel as a leaf you swap freely.</p>
+<p><a id="two-architectures"></a></p>
+<h2 id="the-two-core-architectures">The two core architectures<a class="headerlink" href="#the-two-core-architectures" title="Permanent link">&para;</a></h2>
+<p><strong>Pull-based metrics stack</strong> — the box exposes numbers, a scraper pulls them on a schedule:</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    E["exporters /metrics&lt;br/&gt;node_exporter · cAdvisor"]:::src --&gt;|"scrape every 15s"| P["Prometheus&lt;br/&gt;TSDB + alert rules"]:::tool
+    P --&gt; G["Grafana&lt;br/&gt;PromQL dashboards"]:::tool
+    P --&gt;|"rule fires"| AM["Alertmanager&lt;br/&gt;route · dedupe · silence"]:::tool --&gt; N["notify (any receiver)"]:::leaf</code></pre>
+<p><strong>Push-based heartbeat</strong> — the job announces itself; <em>absence</em> is the alarm:</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef key  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    J["your job&lt;br/&gt;curl a ping on success"]:::src --&gt;|"heartbeat"| H["heartbeat monitor&lt;br/&gt;expects ping within&lt;br/&gt;period + grace"]:::key
+    H --&gt;|"ping missing"| N["notify (any channel)"]:::leaf</code></pre>
+<p><strong>So what:</strong> Pull suits always-on hosts on a known network; push suits scheduled/ephemeral work — and a cron job is <em>inherently</em> push (it announces "I ran"), which is why a scrape-based stack structurally can't tell you it never started.</p>
+<p><a id="base-template"></a></p>
+<h2 id="the-base-template-tiers">The base template (tiers)<a class="headerlink" href="#the-base-template-tiers" title="Permanent link">&para;</a></h2>
+<p>Match the tier to the question you actually have. "notify" = your channel of choice.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Know that…</th>
+<th>Add</th>
+<th>Pick</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0</strong> always</td>
+<td>it errored / daemon stuck</td>
+<td>systemd <code>OnFailure=</code> + journal-grep timer + <code>WatchdogSec=</code></td>
+<td>native, zero new services</td>
+</tr>
+<tr>
+<td><strong>1</strong> almost always</td>
+<td>it ran at all / box is up</td>
+<td>dead-man's-switch</td>
+<td><strong>Healthchecks.io</strong> (hosted free → self-host) or <strong>Uptime Kuma</strong></td>
+</tr>
+<tr>
+<td><strong>2</strong> capacity matters</td>
+<td>CPU/RAM/IOPS trend</td>
+<td>metrics</td>
+<td><strong>Beszel</strong> → Prometheus+Grafana if outgrown</td>
+</tr>
+<tr>
+<td><strong>3</strong> want search/UI/multi-box</td>
+<td>what it logged / went quiet</td>
+<td>logs</td>
+<td><strong>Vector → Axiom</strong>, or self-host <strong>SigNoz</strong>/OpenObserve</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>flowchart LR
+    classDef src  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef key  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    subgraph BOX["your box · NixOS"]
+      JOB["script / daemon / cron"]:::src
+      T0["Tier 0 · systemd"]:::tool
+      AG["Tier 2 · metrics agent"]:::tool
+      VE["Tier 3 · log shipper"]:::tool
+      JOB --&gt; T0
+      JOB --&gt; AG
+      JOB --&gt; VE
+    end
+    JOB --&gt;|"heartbeat"| HC["Tier 1 · heartbeat monitor"]:::key
+    AG --&gt; MB["metrics backend"]:::tool
+    VE --&gt; LB["logs backend"]:::tool
+    T0 --&gt; N["notify channel"]:::leaf
+    HC --&gt; N
+    MB --&gt; N
+    LB --&gt; N
+    N --&gt; YOU["you"]:::leaf</code></pre>
+<p><strong>So what:</strong> Ship Tier 0 + Tier 1 on every box (an afternoon); add 2 and 3 per-box only when a real question appears. systemd can't detect its <em>own</em> absence (it dies with the box) — that's why Tier 1 is a separate external witness.</p>
+<p><a id="the-tools"></a></p>
+<h2 id="the-tools-with-pictures">The tools, with pictures<a class="headerlink" href="#the-tools-with-pictures" title="Permanent link">&para;</a></h2>
+<p>What each option actually is, how its data flows, and what its UI looks like. Screenshots are from each project's own site/docs (see <a href="#further-reading">Further reading</a> for sources).</p>
+<h3 id="uptime-kuma-liveness-status-pages-self-host">Uptime Kuma — liveness + status pages (self-host)<a class="headerlink" href="#uptime-kuma-liveness-status-pages-self-host" title="Permanent link">&para;</a></h3>
+<p>Define monitors (HTTP/TCP/ping/DNS, or a <strong>push</strong> type for cron jobs); Kuma probes on a schedule or receives heartbeats, stores results in SQLite, shows a live dashboard + public status page, and fires 90+ notification integrations on state change.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    M["monitors you define&lt;br/&gt;HTTP · TCP · ping · push"]:::src --&gt; K["Uptime Kuma&lt;br/&gt;probe / receive → SQLite"]:::tool
+    K --&gt; D["dashboard + status page"]:::tool
+    K --&gt;|"state change"| N["notify (90+ integrations)"]:::leaf</code></pre>
+<p><img alt="Uptime Kuma dashboard — monitor list with uptime % and response-time graph" src="../assets/observability/uptime-kuma-dashboard.jpg" />
+<em>Dashboard: each monitor's uptime and response time at a glance.</em></p>
+<p><img alt="Uptime Kuma public status page" src="../assets/observability/uptime-kuma-status.png" />
+<em>A published status page — services and their up/down state.</em></p>
+<h3 id="healthchecksio-the-cron-dead-mans-switch-self-host-or-free-saas">Healthchecks.io — the cron dead-man's-switch (self-host or free SaaS)<a class="headerlink" href="#healthchecksio-the-cron-dead-mans-switch-self-host-or-free-saas" title="Permanent link">&para;</a></h3>
+<p>Purpose-built heartbeat monitor: each check has a ping URL; your job <code>curl</code>s it on success. If a ping doesn't arrive within <em>period + grace</em>, the check goes down and notifies. This is the one tool that catches "the cron never ran".</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef key fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    J["cron / job&lt;br/&gt;... &amp;&amp; curl hc-ping.com/&amp;lt;uuid&amp;gt;"]:::src --&gt;|"heartbeat"| H["Healthchecks&lt;br/&gt;period + grace tracker"]:::key
+    H --&gt; D["checks dashboard + event log"]:::key
+    H --&gt;|"ping missing"| N["notify (any channel)"]:::leaf</code></pre>
+<p><img alt="Healthchecks 'My Checks' dashboard listing cron jobs with status and period" src="../assets/observability/healthchecks-checks.png" />
+<em>The checks list — each background job's status, period and last ping.</em></p>
+<p><img alt="Healthchecks check detail page with live ping/event log" src="../assets/observability/healthchecks-details.png" />
+<em>A single check's detail + live event log.</em></p>
+<h3 id="beszel-lightweight-metrics-self-host">Beszel — lightweight metrics (self-host)<a class="headerlink" href="#beszel-lightweight-metrics-self-host" title="Permanent link">&para;</a></h3>
+<p>The "new lightweight" pick: a ~10 MB agent per host reads CPU/mem/disk-I/O/net/containers and reports to a small hub (PocketBase + SQLite) that draws the dashboard and evaluates threshold alerts (CPU/mem/disk/temp/status). The middle ground between Uptime Kuma and a Grafana/Prometheus build.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    A["agent per host (~10 MB)&lt;br/&gt;cpu·mem·disk·net·containers"]:::src --&gt; HUB["Beszel hub&lt;br/&gt;PocketBase + SQLite"]:::tool
+    HUB --&gt; D["dashboard + per-system pages"]:::tool
+    HUB --&gt;|"threshold"| N["notify (Shoutrrr:&lt;br/&gt;email · Telegram · webhook · …)"]:::leaf</code></pre>
+<p><img alt="Beszel dashboard — several systems side by side with key metrics" src="../assets/observability/beszel-dashboard.png" />
+<em>Multi-system overview.</em></p>
+<p><img alt="Beszel per-system detail — CPU, memory, disk, network, containers" src="../assets/observability/beszel-system.png" />
+<em>Per-system detail, including disk I/O and containers.</em></p>
+<h3 id="prometheus-grafana-the-standard-metrics-stack-self-host">Prometheus + Grafana — the standard metrics stack (self-host)<a class="headerlink" href="#prometheus-grafana-the-standard-metrics-stack-self-host" title="Permanent link">&para;</a></h3>
+<p>The de-facto homelab stack. Exporters expose <code>/metrics</code>; <strong>Prometheus</strong> scrapes and stores them as time-series + evaluates alert rules; <strong>Grafana</strong> queries Prometheus with PromQL and draws dashboards; <strong>Alertmanager</strong> routes/dedupes firing alerts to a receiver. Powerful and flexible — and the heaviest to learn and run.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    E["exporters /metrics&lt;br/&gt;node_exporter · cAdvisor"]:::src --&gt;|"scrape"| P["Prometheus&lt;br/&gt;TSDB + rules"]:::tool
+    P --&gt; G["Grafana&lt;br/&gt;PromQL dashboards"]:::tool
+    P --&gt;|"firing"| AM["Alertmanager"]:::tool --&gt; N["notify (any receiver)"]:::leaf</code></pre>
+<p><img alt="Grafana dashboard — multiple time-series panels, gauges and stat tiles" src="../assets/observability/grafana-dashboard.png" />
+<em>Grafana: dashboards built from PromQL queries against Prometheus.</em></p>
+<p><img alt="Grafana alert-rule editor — building a query/expression for an alert" src="../assets/observability/grafana-alerting.png" />
+<em>Grafana's alert-rule editor (the flexibility that's also the complexity).</em></p>
+<p><img alt="Prometheus expression browser graphing a PromQL query" src="../assets/observability/prometheus-graph.png" />
+<em>Prometheus' own expression browser — raw PromQL + graph.</em></p>
+<p><img alt="Alertmanager web UI showing active alerts" src="../assets/observability/prometheus-alertmanager.png" />
+<em>Alertmanager — where firing alerts are grouped, silenced and routed.</em></p>
+<h3 id="netdata-instant-per-node-deep-metrics-self-host">Netdata — instant per-node deep metrics (self-host)<a class="headerlink" href="#netdata-instant-per-node-deep-metrics-self-host" title="Permanent link">&para;</a></h3>
+<p>An agent per node auto-discovers thousands of metrics at <strong>1-second</strong> granularity into a local TSDB, with a zero-config dashboard on <code>:19999</code> and built-in health + ML-anomaly alerts. Gorgeous out of the box — but heavy on a constrained box (see <a href="#avoid">Avoid</a>).</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    AG["Netdata agent per node&lt;br/&gt;1s metrics → local TSDB"]:::src --&gt; D["built-in dashboard :19999&lt;br/&gt;(or Netdata Cloud)"]:::tool
+    AG --&gt;|"health + ML anomaly"| N["notify (any method)"]:::leaf</code></pre>
+<p><img alt="Netdata single-node metrics tab — dense auto-generated real-time charts" src="../assets/observability/netdata-metrics.png" />
+<em>Per-second auto-generated charts — nothing to configure.</em></p>
+<p><img alt="Netdata multi-node view grouped by alert status" src="../assets/observability/netdata-alerts.png" />
+<em>Nodes grouped by alert status (warning/critical).</em></p>
+<h3 id="axiom-logs-metrics-traces-saas">Axiom — logs + metrics + traces (SaaS)<a class="headerlink" href="#axiom-logs-metrics-traces-saas" title="Permanent link">&para;</a></h3>
+<p>A managed platform: apps / OpenTelemetry / Vector ship events in, Axiom stores them cheaply in object storage and runs query compute on demand. You explore with APL across logs/metrics/traces together; monitors evaluate on a schedule and notify. Lowest-maintenance (no infra), generous free tier.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    I["apps · OTel · Vector"]:::src --&gt;|"ingest"| AX["Axiom&lt;br/&gt;object storage"]:::tool
+    AX --&gt; Q["APL queries · dashboards"]:::tool
+    AX --&gt;|"monitor"| N["notify (webhook · Slack · …)"]:::leaf</code></pre>
+<p><img alt="Axiom Explore — querying HTTP logs, filtered and grouped, with a time-series result" src="../assets/observability/axiom-logs.png" />
+<em>Querying logs in the Axiom console (APL).</em></p>
+<p><img alt="Axiom metrics query — aggregating a metrics dataset" src="../assets/observability/axiom-metrics.png" />
+<em>The same console over a metrics dataset.</em></p>
+<h3 id="signoz-self-host-all-in-one-the-datadog-shaped-option">SigNoz — self-host all-in-one (the Datadog-shaped option)<a class="headerlink" href="#signoz-self-host-all-in-one-the-datadog-shaped-option" title="Permanent link">&para;</a></h3>
+<p>OpenTelemetry-native: apps emit OTLP → an OTel Collector → SigNoz, which stores everything in ClickHouse and serves APM/traces/logs/dashboards/alerts in one UI. The self-hostable "single tool for all three signals" — at the cost of a ClickHouse-sized footprint.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef src fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    AP["apps"]:::src --&gt;|"OTLP"| OC["OTel Collector"]:::tool --&gt; SG["SigNoz&lt;br/&gt;ClickHouse"]:::tool
+    SG --&gt; U["UI: APM · traces · logs · dashboards"]:::tool
+    SG --&gt;|"alert rule"| N["notify (any)"]:::leaf</code></pre>
+<p><img alt="SigNoz dashboards management page" src="../assets/observability/signoz-dashboards.webp" />
+<em>SigNoz dashboards — logs, metrics and traces in one place.</em></p>
+<p><img alt="SigNoz alert-rules tab" src="../assets/observability/signoz-alerts.gif" />
+<em>Defining alert rules in SigNoz.</em></p>
+<p><a id="metrics-detail"></a></p>
+<h2 id="what-the-metrics-look-like-cpu-over-time">What the metrics look like (CPU over time)<a class="headerlink" href="#what-the-metrics-look-like-cpu-over-time" title="Permanent link">&para;</a></h2>
+<p>Metrics are <em>levels sampled over time</em> — CPU%, RAM, disk IOPS, load. An agent reads the host, a TSDB stores the samples, a dashboard plots them, and a rule notifies you when a level crosses a threshold <em>for long enough</em> (so a blip doesn't page you, a sustained breach does):</p>
+<p><img alt="CPU % over 24h with an 85% alert threshold; a sustained spike crosses it and fires an alert, a brief blip is ignored" src="../cpu-over-time.svg" /></p>
+<p><code>disk IOPS</code>, RAM and load look the same — one series per metric, each with its own threshold. Beszel draws these out of the box; with node_exporter you get them via <code>node_disk_*</code>, <code>node_memory_*</code>, etc.</p>
+<p><a id="dashboards"></a></p>
+<h2 id="dashboards-look-vs-be-told-parallel-to-alerts">Dashboards — look vs be told (parallel to alerts)<a class="headerlink" href="#dashboards-look-vs-be-told-parallel-to-alerts" title="Permanent link">&para;</a></h2>
+<p>Alerting is <em>reactive</em> — it tells you once something has already crossed a line. A <strong>dashboard is <em>proactive</em></strong> — you go <em>look</em> and catch the disk slowly filling, memory creeping up, or IOPS climbing every night, and fix it <em>before</em> it ever trips a threshold. They're two parallel branches off the same store, and the important part: <strong>a dashboard is useful with zero alert rules set.</strong> You don't have to configure a single monitor to benefit from "let me just see CPU/RAM/IOPS over the last week".</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef tool fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef key  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef leaf fill:#717d7e,color:#fff,stroke:#5d6d7e
+    M["metrics store"]:::tool --&gt; D["dashboard&lt;br/&gt;LOOK — spot trends early (proactive)"]:::tool
+    M --&gt; R{"alert rule&lt;br/&gt;(optional, add later)"}:::key
+    R --&gt;|breach| N["notify — BE TOLD (reactive)"]:::leaf</code></pre>
+<p>Which tool gives you a "just go look" dashboard:</p>
+<table>
+<thead>
+<tr>
+<th>Want</th>
+<th>Use</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instant, zero-config, deepest</td>
+<td><strong>Netdata</strong></td>
+<td>every metric at 1-second resolution the moment it's installed (but heavy — see <a href="#avoid">Avoid</a>)</td>
+</tr>
+<tr>
+<td>Lightweight, built-in</td>
+<td><strong>Beszel</strong></td>
+<td>CPU / RAM / disk-I/O / net + SMART per host, with history, in a small hub UI</td>
+</tr>
+<tr>
+<td>Build / customise anything</td>
+<td><strong>Grafana</strong> (over Prometheus or VictoriaMetrics)</td>
+<td>the most flexible dashboards — assemble panels from PromQL, or import community ones</td>
+</tr>
+<tr>
+<td>Up/down + response time</td>
+<td><strong>Uptime Kuma</strong></td>
+<td>service status and latency graphs, not deep host resources</td>
+</tr>
+<tr>
+<td>Logs + metrics + traces together</td>
+<td><strong>Axiom / SigNoz</strong></td>
+<td>query-driven views rather than always-on resource gauges</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Just want to eyeball this box right now, with nothing to run?</strong> <code>btop</code> / <code>htop</code> give a live terminal view (no history); <code>glances</code> adds a quick web/REST view. No storage, so no trends — but they answer "what's happening <em>now</em>" in one command.</p>
+<p>So if your actual itch is "I want to glance at CPU/RAM/IOPS trends", that's a <strong>dashboard need, not an alerting need</strong> — reach for <strong>Beszel</strong> (light) or <strong>Netdata</strong> (deep, on a roomy box), or <strong>Grafana</strong> if you want to build your own. Alert rules can come later, or never; the dashboard stands on its own.</p>
+<p><a id="recipe"></a></p>
+<h2 id="nixos-recipe-shape">NixOS recipe (shape)<a class="headerlink" href="#nixos-recipe-shape" title="Permanent link">&para;</a></h2>
+<div class="language-nix highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Tier 0 — errors + daemon restart -&gt; your notify channel (ntfy shown; swap freely)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>systemd<span class="o">.</span>services<span class="o">.</span><span class="s2">&quot;notify@&quot;</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  <span class="ss">scriptArgs</span> <span class="o">=</span> <span class="s2">&quot;%i&quot;</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  <span class="ss">script</span> <span class="o">=</span> <span class="s s-Multiline">&#39;&#39;curl -fsS -d &quot;$1 failed @ $(hostname)&quot; https://ntfy.sh/your-topic&#39;&#39;</span><span class="p">;</span>  <span class="c1"># or Slack/Discord/email</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">};</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>systemd<span class="o">.</span>services<span class="o">.</span><span class="ss">myjob</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  <span class="ss">serviceConfig</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">WatchdogSec</span> <span class="o">=</span> <span class="s2">&quot;120&quot;</span><span class="p">;</span> <span class="ss">Restart</span> <span class="o">=</span> <span class="s2">&quot;on-watchdog&quot;</span><span class="p">;</span> <span class="p">};</span>  <span class="c1"># daemon: restart on heartbeat loss</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  <span class="ss">onFailure</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;notify@%n.service&quot;</span> <span class="p">];</span>                                <span class="c1"># non-zero exit -&gt; notify</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">};</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Tier 1 — dead-man&#39;s-switch: in the job append   &amp;&amp; curl -fsS https://hc-ping.com/&lt;uuid&gt;</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1">#   (self-host later: services.healthchecks.enable = true;  or  services.uptime-kuma.enable = true;)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># Tier 2 — lightweight metrics</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>services<span class="o">.</span>beszel-agent<span class="o">.</span><span class="ss">enable</span> <span class="o">=</span> <span class="no">true</span><span class="p">;</span>   <span class="c1"># ~10 MB; hub elsewhere; alerts via Shoutrrr</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># Tier 3 — ship logs/metrics, swappable backend</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>services<span class="o">.</span><span class="ss">vector</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  <span class="ss">enable</span> <span class="o">=</span> <span class="no">true</span><span class="p">;</span>                                          <span class="c1"># config validated at build time</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>  settings<span class="o">.</span>sources<span class="o">.</span>journal<span class="o">.</span><span class="ss">type</span> <span class="o">=</span> <span class="s2">&quot;journald&quot;</span><span class="p">;</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>  settings<span class="o">.</span>sinks<span class="o">.</span><span class="ss">axiom</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">type</span> <span class="o">=</span> <span class="s2">&quot;axiom&quot;</span><span class="p">;</span> <span class="ss">inputs</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;journal&quot;</span> <span class="p">];</span> <span class="cm">/* dataset + token */</span> <span class="p">};</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="p">};</span>
+</span></code></pre></div>
+<p><a id="avoid"></a></p>
+<h2 id="avoid-for-this-scale-constraints">Avoid (for this scale + constraints)<a class="headerlink" href="#avoid-for-this-scale-constraints" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Netdata on a constrained box</strong> — its RAM growth is a <em>known, open</em> bug (#16412, recurred on v2.8.2 in Dec 2025); the UI is now proprietary and it was dropped from Debian. Beautiful, but it ate a mini-PC. Use Beszel instead unless you have a roomy box and want the per-second depth.</li>
+<li><strong>Self-hosted Loki alerting</strong> — its Ruler leans on WAL replay (no rules evaluate during replay → alerts silently delayed/missed); the documented "fix" adds complexity. This is the "alerting is ungodly complex" trap.</li>
+<li><strong>A 9-service Grafana/Prometheus stack for one cron job</strong> — the common over-build. Tier 0 + Tier 1 covers it.</li>
+</ul>
+<p><a id="tldr"></a></p>
+<h2 id="tldr-what-should-i-actually-do">TL;DR — what should I actually do?<a class="headerlink" href="#tldr-what-should-i-actually-do" title="Permanent link">&para;</a></h2>
+<p>Pick the lowest row that covers what you need; everything alerts to whatever channel you like.</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Effort + upkeep</th>
+<th>Moving parts</th>
+<th>Dashboard / QoL</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>systemd + Healthchecks</strong> (Tier 0+1)</td>
+<td>tiny</td>
+<td>~1 (a hosted check, or one service)</td>
+<td>none — alert-only</td>
+<td>catches "didn't run / box down"; near-zero maintenance; native to NixOS</td>
+<td>no trends, nothing to <em>look</em> at</td>
+</tr>
+<tr>
+<td><strong>Beszel</strong></td>
+<td>low</td>
+<td>2 (hub + agent)</td>
+<td>good, lightweight built-in</td>
+<td>~10 MB agent; CPU/RAM/IOPS+SMART dashboard <strong>and</strong> alerts in one; won't eat the box</td>
+<td>younger project; fixed metric set; no PromQL</td>
+</tr>
+<tr>
+<td><strong>Netdata</strong></td>
+<td>low</td>
+<td>1 per node</td>
+<td>best instant dashboard (1 s, zero-config)</td>
+<td>gorgeous and deep the moment it's installed</td>
+<td>RAM growth on small boxes (<a href="#avoid">Avoid</a>); UI now proprietary</td>
+</tr>
+<tr>
+<td><strong>Uptime Kuma</strong></td>
+<td>low</td>
+<td>1</td>
+<td>status + response graphs</td>
+<td>dead-simple, pretty status pages, push monitors for cron</td>
+<td>up/down only — not deep host resources</td>
+</tr>
+<tr>
+<td><strong>Prometheus + Grafana + Alertmanager</strong></td>
+<td>high</td>
+<td>4+ (exporters · Prometheus · Grafana · Alertmanager)</td>
+<td>best + most flexible</td>
+<td>the standard; powerful PromQL; huge dashboard + exporter ecosystem</td>
+<td>steepest curve; most parts to run and break</td>
+</tr>
+<tr>
+<td><strong>Vector → Axiom</strong> (SaaS)</td>
+<td>low</td>
+<td>1 agent + a SaaS account</td>
+<td>good — logs+metrics+traces UI</td>
+<td>no infra to run; the UX you already like; 500 GB/mo free</td>
+<td>data leaves the box; vendor dependency</td>
+</tr>
+<tr>
+<td><strong>SigNoz / OpenObserve</strong> (self-host all-in-one)</td>
+<td>medium–high</td>
+<td>OpenObserve ≈ 1 binary · SigNoz = a ClickHouse stack</td>
+<td>good — all signals in one UI</td>
+<td>own your data; logs+metrics+traces together</td>
+<td>SigNoz heavy (ClickHouse); OpenObserve younger</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The honest default for you:</strong> ship <strong>Tier 0 + Tier 1</strong> (systemd + Healthchecks) on every box first — an afternoon, and it catches the failures that matter. Add <strong>Beszel</strong> the moment you want to <em>look</em> at CPU/RAM/IOPS trends (lightweight, dashboard + alerts in one). Reach for <strong>Prometheus + Grafana</strong> only once you've outgrown that and genuinely want PromQL and the ecosystem — not before.</p>
+<p><a id="further-reading"></a></p>
+<h2 id="further-reading">Further reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<p>Real writeups this page is grounded in (fetched 2026-06-18):</p>
+<p>Screenshot sources: Uptime Kuma &amp; Healthchecks GitHub READMEs; beszel.dev; netdata.cloud; grafana.com; the Grafana Labs <em>intro-to-prometheus</em> repo (Prometheus/Alertmanager UI); axiom.co/docs; signoz.io/docs. Tool-specific footprint/licensing claims (Netdata, VictoriaMetrics, Axiom limits) are detailed with sources in <code>scratchpads/research-observability-stack.md</code>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:natsuki">
+<p>Natsuki — <em>End-to-End Monitoring Explained for Homelabs: Prometheus, Grafana &amp; Alertmanager</em> (2026-01-09) — https://blog.natsuki-cloud.dev/posts/homelab-monitoring-prometheus-grafana/&#160;<a class="footnote-backref" href="#fnref:natsuki" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:nxsi">
+<p>Dyllan — <em>Deploy a Complete Homelab Monitoring Stack with Docker Compose</em> (2026-02-21) — https://www.nxsi.io/blog/homelab-monitoring-stack-tutorial&#160;<a class="footnote-backref" href="#fnref:nxsi" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:xda">
+<p>Ayush Pande (XDA) — <em>This free, open-source lightweight server monitor changed how I keep an eye on my homelab (Beszel)</em> (2025-05-20) — https://www.xda-developers.com/beszel-feature/&#160;<a class="footnote-backref" href="#fnref:xda" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:bdr">
+<p>Bassim Lazem (BigData Republic) — <em>Effective Cron Job Monitoring</em> (2023-06-14) — https://bigdatarepublic.nl/articles/effective-cron-job-monitoring/&#160;<a class="footnote-backref" href="#fnref:bdr" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:pecos">
+<p>Daniel Pecos Martínez — <em>Homelab monitoring using Grafana and Prometheus</em> (2024-08-29) — https://danielpecos.com/2024/08/29/homelab-monitoring-using-grafana-and-prometheus/&#160;<a class="footnote-backref" href="#fnref:pecos" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

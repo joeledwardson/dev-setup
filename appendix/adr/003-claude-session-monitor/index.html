@@ -1,0 +1,1830 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../002-robust-docs-review/">
+      
+      
+        <link rel="next" href="../004-pi-box-storage-vs-replace/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ADR-003 Claude Session Monitor - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/mermaid.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-003-claude-session-monitor-event-driven-multi-host-state-tracking" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-003 Claude Session Monitor
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../dev-log/" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-state-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The state model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d7-how-the-pull-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D7 — how the pull works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d8-focus-two-doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D8 — focus, two doors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d9-remote-focus-without-a-remote-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D9 — remote focus without a remote channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d10-the-claude-terminal-title-flag-is-per-server-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D10 — the CLAUDE! terminal-title flag is per-server (open)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-pi-box-storage-vs-replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 pi-box Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-homelab-observability-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 Homelab Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../006-hyprwhspr-dictation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 hyprwhspr Dictation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../007-orchestration-eval-harness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../008-mdx-vs-mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 MDX vs mkdocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-state-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The state model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d7-how-the-pull-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D7 — how the pull works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d8-focus-two-doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D8 — focus, two doors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d9-remote-focus-without-a-remote-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D9 — remote focus without a remote channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d10-the-claude-terminal-title-flag-is-per-server-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D10 — the CLAUDE! terminal-title flag is per-server (open)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adr-003-claude-session-monitor-event-driven-multi-host-state-tracking">ADR-003 — Claude Session Monitor: event-driven, multi-host state tracking<a class="headerlink" href="#adr-003-claude-session-monitor-event-driven-multi-host-state-tracking" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2026-06-14<br />
+<strong>Context</strong>: One at-a-glance view of every Claude Code session across all machines — the local desktop <strong>and</strong> remote boxes reached over SSH (Secure Shell). Each session is <strong>running</strong>, <strong>idle</strong>, or <strong>pending</strong> ("Claude stopped or is asking, and you haven't looked yet"). This records the chosen architecture. (Full feature spec: <code>dev-notes/claude-session-monitor-spec.md</code>.)</p>
+<p><strong>Decision</strong>: One <code>claude-mon</code> daemon on the local desktop. <strong>Events decide <em>when</em> to refresh; a pull decides <em>what's true</em>.</strong> ntfy + Hyprland + tmux hooks are triggers; an SSH-pull of <code>~/.claude/sessions/*.json</code> is the source of truth. Remotes run only a tiny <code>claude-mon collect</code> script — no daemon, no API.</p>
+<div class="admonition warning">
+<p class="admonition-title">Does NOT cover</p>
+<p>Render surface (Waybar vs HTTP vs CLI), state-precedence rules, and the stale-timeout value — those are D1–D5 in the spec, unchanged.</p>
+</div>
+<hr />
+<h2 id="the-state-model">The state model<a class="headerlink" href="#the-state-model" title="Permanent link">&para;</a></h2>
+<p>Two independent questions per session; combine them for the three reportable states:</p>
+<pre class="mermaid"><code>flowchart TD
+    classDef axis  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef state fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef warn  fill:#f0b27a,color:#784212,stroke:#e67e22
+    classDef dec   fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    S["a session"]:::axis --&gt; Q1{"busy?"}:::dec
+    Q1 --&gt;|yes| R["RUNNING&lt;br/&gt;(working — leave it)"]:::state
+    Q1 --&gt;|"no (stopped / asking)"| Q2{"focused?"}:::dec
+    Q2 --&gt;|yes| I["IDLE&lt;br/&gt;(you're already there)"]:::state
+    Q2 --&gt;|no| P["⚠ PENDING&lt;br/&gt;(needs you)"]:::warn</code></pre>
+<p>The <strong>state</strong> axis (busy?) and the <strong>focus</strong> axis (looking at it?) come from different inputs — that's why there are two pipelines below.</p>
+<div class="admonition abstract">
+<p class="admonition-title">The one idea that drives the whole design: edges vs levels</p>
+<p>ntfy is a stream of <strong>transitions</strong> (edges) — "a session just stopped". It can <em>never</em> tell you what's running <em>right now</em> or even what sessions exist (levels). So ntfy is a perfect <strong>trigger</strong>, but the <strong>source of truth</strong> has to be a direct read of the session files. Hence: event triggers a <em>pull</em>, the pull is ground truth.</p>
+</div>
+<hr />
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TD
+    classDef trig fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef ev   fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef mon  fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef src  fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef out  fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    NT["ntfy jollof-claude&lt;br/&gt;(state changed)"]:::trig --&gt; D
+    HY["Hyprland socket2&lt;br/&gt;(window focus)"]:::ev --&gt; D
+    TM["tmux hooks&lt;br/&gt;(pane/window focus)"]:::ev --&gt; D
+
+    D["claude-mon daemon&lt;br/&gt;(local desktop only)"]:::mon
+    D --&gt;|"on any trigger:&lt;br/&gt;reconcile (debounced)"| RD["read local sessions&lt;br/&gt;+ ssh-pull remotes&lt;br/&gt;(host list from tailscale)"]:::src
+    RD --&gt; D
+    D --&gt; OUT["render: Waybar / CLI / HTTP"]:::out</code></pre>
+<p>One daemon, three triggers, one authoritative pull, one render. Remotes are passive — they just hold their <code>~/.claude/sessions/*.json</code> and answer <code>ssh &lt;host&gt; claude-mon collect</code>.</p>
+<hr />
+<h2 id="the-decisions">The decisions<a class="headerlink" href="#the-decisions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Decision</th>
+<th>Chosen</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D6</strong></td>
+<td>Remote-host list</td>
+<td><strong>Tailscale</strong> — <code>tailscale status --json</code>, filter to online peers</td>
+<td>No config to maintain; <strong>read-only, needs no sudo</strong></td>
+</tr>
+<tr>
+<td><strong>D7</strong></td>
+<td>Acquire remote state</td>
+<td><strong>SSH-pull</strong> = source of truth; ntfy = trigger only. No per-host API</td>
+<td>Pull gives complete <em>levels</em>; reuses SSH + Tailscale already in place; no daemon on remotes</td>
+</tr>
+<tr>
+<td><strong>D8</strong></td>
+<td>Focus transport</td>
+<td><strong>Event-driven</strong>: Hyprland <code>socket2</code> + tmux hooks</td>
+<td>Already proven for <code>waybar-focus.sh</code>; no polling</td>
+</tr>
+<tr>
+<td><strong>D9</strong></td>
+<td>Remote (SSH) focus</td>
+<td><strong>Pull on local focus event</strong> — piggyback the SSH-pull</td>
+<td>No remote-push channel, no ntfy side-topic, no key interception</td>
+</tr>
+<tr>
+<td><strong>D10</strong></td>
+<td>The <code>CLAUDE!</code> terminal-title flag across hosts</td>
+<td><strong>Open</strong> — title is a 4th render surface; see below</td>
+<td>Today it's per-tmux-server and misses remote/other-server pending sessions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d7-how-the-pull-works">D7 — how the pull works<a class="headerlink" href="#d7-how-the-pull-works" title="Permanent link">&para;</a></h3>
+<p>Local sessions are a plain file read. Remote sessions: the daemon runs <code>ssh &lt;host&gt; claude-mon collect</code>, which returns the host's session JSON. This is the ground-truth <em>level</em> snapshot and the fallback whenever ntfy is down (ntfy's <code>since=</code> replays missed edges after downtime). Pull only on a trigger, debounced — so it's cheap.</p>
+<h3 id="d8-focus-two-doors">D8 — focus, two doors<a class="headerlink" href="#d8-focus-two-doors" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Hyprland (window focus):</strong> tail <code>socket2</code> with <code>socat</code> for <code>activewindow</code> — the same pattern as <code>configs/hypr/scripts/waybar-focus.sh</code>. Covers groups for free (the active window <em>is</em> the visible group tab).</li>
+<li><strong>tmux (pane/window focus):</strong> no socket, but global hooks — <code>set-hook -g pane-focus-in 'run-shell …'</code> (plus <code>after-select-pane</code> / <code>after-select-window</code>) poke the daemon when you switch panes.</li>
+<li><strong>Matching:</strong> <code>hyprctl activewindow -j \| .pid</code> → the session whose <code>TERMINAL_WINDOW_PID</code> (from <code>/proc/&lt;pid&gt;/environ</code>, no hook needed) matches; if inside tmux, confirm <code>pane_active &amp;&amp; window_active</code>. Logic lifted from <code>notify-if-unfocused.sh</code>.</li>
+</ul>
+<h3 id="d9-remote-focus-without-a-remote-channel">D9 — remote focus without a remote channel<a class="headerlink" href="#d9-remote-focus-without-a-remote-channel" title="Permanent link">&para;</a></h3>
+<p>For an SSH session the tmux that matters runs on the <em>remote</em> host. Rather than have the remote push its focus back (another channel to keep alive), the daemon pulls: <strong>when local Hyprland focus lands on the terminal that's SSH'd into <code>&lt;host&gt;</code>, the same SSH-pull also returns that host's tmux focus bits</strong>, computed where tmux actually lives. Remote focus = <em>local</em> window event → pull. No remote push.</p>
+<h3 id="d10-the-claude-terminal-title-flag-is-per-server-open">D10 — the <code>CLAUDE!</code> terminal-title flag is per-server (open)<a class="headerlink" href="#d10-the-claude-terminal-title-flag-is-per-server-open" title="Permanent link">&para;</a></h3>
+<p>There is a pre-existing affordance, separate from <code>claude-mon</code>: the outer terminal's title gains a <code>CLAUDE!</code> prefix while a Claude session is pending. It's driven by <code>set -g set-titles-string '#{?#{@claude_any},CLAUDE! ,}#H:#S'</code> (<code>configs/tmux/tmux.conf:14</code>), where <code>@claude_any</code> is a tmux <strong>server-global</strong> option set/cleared by <code>configs/tmux/scripts/claude-flag.sh</code> (recomputed from <em>all</em> windows), driven by the notify hook on pending and the focus hooks on view.</p>
+<div class="admonition warning">
+<p class="admonition-title">The gap</p>
+<p><code>@claude_any</code> lives on <strong>one tmux server</strong>. So:</p>
+<ul>
+<li><strong>Within that server</strong> the title already flips for <em>any</em> pending window, focused or not — <code>refresh-client -S</code> pushes it to every client. This part works.</li>
+<li><strong>Across servers / hosts</strong> it can't: a session pending on pi-box (or any remote, or a second local tmux socket) sets <code>@claude_any</code> on <em>that</em> server only. The terminal you're actually looking at never sees it → no <code>CLAUDE!</code>.</li>
+</ul>
+<p>This is precisely the multi-host case the daemon exists for. The title is just an <strong>unrecognised fourth render surface</strong> (alongside Waybar / CLI / HTTP in D2) that was never wired to the daemon's fleet-wide truth.</p>
+</div>
+<p><strong>Honest framing:</strong> this surface partly duplicates the Waybar badge and the ntfy push the daemon already drives. Its only real edge is being glanceable when Waybar is hidden or a window is fullscreen. Record the options; don't assume it's worth building.</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>How</th>
+<th>Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A — daemon owns a global title flag</strong> (recommended if built)</td>
+<td>Daemon writes a separate <code>@claude_remote_pending</code> option into each local tmux server on reconcile; title becomes <code>#{?#{\|\|:#{@claude_any},#{@claude_remote_pending}},CLAUDE! ,}</code>. Local hook fast-path (<code>@claude_any</code>) stays untouched; remote/fleet truth is OR'd in.</td>
+<td>Cleanest separation: local stays instant, remote rides the daemon. Daemon must enumerate local tmux sockets and clear the flag when the fleet goes quiet.</td>
+</tr>
+<tr>
+<td><strong>B — daemon writes a status file, zsh <code>precmd</code> reads it</strong></td>
+<td>Daemon writes e.g. <code>/run/user/$UID/claude-mon/any-pending</code>; a <code>precmd</code> hook prefixes the title from it.</td>
+<td>Works for plain (non-tmux) zsh too. But <code>precmd</code> only fires at prompt redraw → stale until you hit Enter; more moving parts than reusing <code>set-titles</code>.</td>
+</tr>
+<tr>
+<td><strong>C — leave title local, rely on Waybar/ntfy for cross-host</strong> (do-nothing)</td>
+<td>Explicitly decide the title is a <em>local-server</em> affordance; the daemon-driven Waybar badge is the cross-host glanceable surface.</td>
+<td>Zero new code; accepts that a remote-only pending session shows in Waybar/ntfy but not the local title. Likely the right v1 call given the redundancy above.</td>
+</tr>
+</tbody>
+</table>
+<p>Note that <code>@claude_pending</code> (the per-window marker driving <code>claude-next.sh</code>'s "jump to next pending window" and the per-tab label) is inherently local — you can't <code>select-window</code> onto a remote host's window — so only <code>@claude_any</code> (the title flag) is a candidate for going fleet-wide; the per-window marker stays per-server.</p>
+<hr />
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>✓ Remotes stay dumb: one <code>collect</code> script, no daemon, no API, no open ports.</li>
+<li>✓ Reuses what's already working: ntfy hook, Tailscale, SSH, the Hyprland-socket pattern.</li>
+<li>✓ Push latency without trusting push as truth (event-triggered reconciliation).</li>
+<li>✗ A daemon to supervise (start/restart, debounce, missed-event catch-up) — more than a naive 2s poll, but the cost of low latency.</li>
+<li>✗ SSH-pull adds per-trigger latency; if it ever hurts, the escape hatch is a per-host API (D7 Option 3), explicitly deferred until proven necessary.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

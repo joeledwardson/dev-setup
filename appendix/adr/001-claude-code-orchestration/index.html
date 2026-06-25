@@ -1,0 +1,2129 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../002-robust-docs-review/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ADR-001 Claude Orchestration - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/mermaid.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-001-reducing-user-prompts-autonomous-spec-to-pr-loop" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-001 Claude Orchestration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../dev-log/" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool landscape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-1-llm-gateways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 1 — LLM Gateways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-2-orchestrators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 2 — Orchestrators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Layer 2 — Orchestrators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-claude-self-drives-zero-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A — Claude self-drives (zero tooling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-run-spec-skill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B — /run-spec skill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-n8n-visual-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C — n8n (visual orchestrator)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-d-dify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option D — Dify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-e-crewai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option E — CrewAI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-f-claude-print-headless-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option F — claude --print headless pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools-to-skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tools to skip
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-pi-box-storage-vs-replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 pi-box Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-homelab-observability-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 Homelab Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../006-hyprwhspr-dictation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 hyprwhspr Dictation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../007-orchestration-eval-harness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../008-mdx-vs-mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 MDX vs mkdocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool landscape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-1-llm-gateways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 1 — LLM Gateways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layer-2-orchestrators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layer 2 — Orchestrators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Layer 2 — Orchestrators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-claude-self-drives-zero-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A — Claude self-drives (zero tooling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-run-spec-skill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B — /run-spec skill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-n8n-visual-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C — n8n (visual orchestrator)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-d-dify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option D — Dify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-e-crewai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option E — CrewAI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-f-claude-print-headless-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option F — claude --print headless pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools-to-skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tools to skip
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adr-001-reducing-user-prompts-autonomous-spec-to-pr-loop">ADR-001 — Reducing user prompts: autonomous spec-to-PR loop<a class="headerlink" href="#adr-001-reducing-user-prompts-autonomous-spec-to-pr-loop" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Proposed<br />
+<strong>Date</strong>: 2026-05-31<br />
+<strong>Context</strong>: The current workflow requires a human to prompt each step: implement, then manually invoke <code>/review-code</code>, read the output, prompt Claude to fix, re-review. The goal is to reduce that to one trigger — "implement spec.md" — and have Claude handle the rest without further prompting.<br />
+<strong>Decision</strong>: Not yet made — this document captures the options.</p>
+<div class="admonition warning">
+<p class="admonition-title">Does NOT cover</p>
+<p>CI automation (GitHub Actions, webhooks), evaluation frameworks, or RAG (Retrieval-Augmented Generation) pipelines.</p>
+</div>
+<hr />
+<h2 id="the-problem">The problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h2>
+<p>Today's flow requires a human at each arrow:</p>
+<pre class="mermaid"><code>flowchart LR
+    H1["👤 prompt"] --&gt; I["⚙️ implement"]
+    I --&gt; H2["👤 /review-code"]
+    H2 --&gt; R["🔍 review"]
+    R --&gt; H3["👤 fix these"]
+    H3 --&gt; F["🔧 fix"]
+    F --&gt; H4["👤 /review-code"]
+    H4 --&gt; R
+
+    style H1 fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style H2 fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style H3 fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style H4 fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style I fill:#52be80,color:#145a32,stroke:#196f3d
+    style R fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style F fill:#f0b27a,color:#784212,stroke:#e67e22</code></pre>
+<p>The goal: one prompt in, Claude drives all the arrows.</p>
+<hr />
+<h2 id="tool-landscape">Tool landscape<a class="headerlink" href="#tool-landscape" title="Permanent link">&para;</a></h2>
+<p>The tools fall into three layers. You need to understand all three to pick the right combination.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph G["Layer 1 — LLM Gateways · unified API key, model routing"]
+        OR["OpenRouter"]
+        LL["LiteLLM"]
+        PK["Portkey"]
+    end
+
+    subgraph O["Layer 2 — Orchestrators · who drives the loop"]
+        subgraph V["Visual"]
+            N8["n8n"]
+            DF["Dify"]
+            LF["Langflow"]
+        end
+        subgraph C["Code-first"]
+            CR["CrewAI"]
+            MAF["Microsoft Agent\nFramework (AutoGen)"]
+        end
+        subgraph S["Zero-setup"]
+            SD["Claude self-drives"]
+            SK["skills"]
+        end
+    end
+
+    subgraph M["Layer 3 — Model execution · where code actually runs"]
+        CC["claude CLI\n(Claude Code)"]
+    end
+
+    G --&gt; O --&gt; M
+
+    style G fill:transparent,stroke:#c39bd3
+    style O fill:transparent,stroke:#52be80
+    style M fill:transparent,stroke:#f0b27a
+    style V fill:transparent,stroke:#52be80
+    style C fill:transparent,stroke:#52be80
+    style S fill:transparent,stroke:#52be80
+    style OR fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style LL fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style PK fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style N8 fill:#52be80,color:#145a32,stroke:#196f3d
+    style DF fill:#52be80,color:#145a32,stroke:#196f3d
+    style LF fill:#52be80,color:#145a32,stroke:#196f3d
+    style CR fill:#52be80,color:#145a32,stroke:#196f3d
+    style MAF fill:#52be80,color:#145a32,stroke:#196f3d
+    style SD fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style SK fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style CC fill:#f0b27a,color:#784212,stroke:#e67e22</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Key insight</p>
+<p>None of these tools have native Claude Code integration. Every option eventually shells out to <code>claude -p</code> or calls the Anthropic API directly. The loop is always yours to wire — the tools just differ in how much wiring they do for you.</p>
+</div>
+<hr />
+<h2 id="layer-1-llm-gateways">Layer 1 — LLM Gateways<a class="headerlink" href="#layer-1-llm-gateways" title="Permanent link">&para;</a></h2>
+<p>Gateways do one thing: give you a <strong>single API key and endpoint</strong> that routes to any model (GPT-4, Claude, Gemini, Llama, etc.). They are not orchestrators — they don't drive the loop.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Self-host</th>
+<th>Cost</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenRouter</strong></td>
+<td>No</td>
+<td>5.5% fee, ~27 free models</td>
+<td>Zero-infra access to 300+ models</td>
+</tr>
+<tr>
+<td><strong>LiteLLM</strong></td>
+<td>Yes (MIT)</td>
+<td>Free; enterprise ~$250/mo</td>
+<td>Self-hosted routing, spend tracking</td>
+</tr>
+<tr>
+<td><strong>Portkey</strong></td>
+<td>No</td>
+<td>Free 10K logs/mo; $49/mo Pro</td>
+<td>Production observability, cost tracing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>OpenRouter</strong> is the simplest: sign up, add credits, point any tool at <code>openrouter.ai/api/v1</code> with one key. Useful when you want to swap models (e.g. use Gemini Flash for the cheap review pass, Claude Sonnet for implementation) without managing separate credentials.</p>
+<p><strong>LiteLLM</strong> is OpenRouter but self-hosted — you run the proxy, own the routing config, and get per-model spend caps to prevent runaway loops.</p>
+<hr />
+<h2 id="layer-2-orchestrators">Layer 2 — Orchestrators<a class="headerlink" href="#layer-2-orchestrators" title="Permanent link">&para;</a></h2>
+<h3 id="option-a-claude-self-drives-zero-tooling">Option A — Claude self-drives (zero tooling)<a class="headerlink" href="#option-a-claude-self-drives-zero-tooling" title="Permanent link">&para;</a></h3>
+<p>Tell YOLO-mode Claude to run the full loop in one prompt. Claude uses the built-in <code>Agent</code> tool to spawn reviewer subagents.</p>
+<pre class="mermaid"><code>flowchart LR
+    H["👤 one prompt"] --&gt; C["Claude YOLO"]
+    C --&gt;|"Agent tool"| R["reviewer\nsubagent"]
+    R --&gt;|flags| C
+    C --&gt;|fixes + re-spawns| R
+    R --&gt;|clean| D["✅ done"]
+
+    style H fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style C fill:#52be80,color:#145a32,stroke:#196f3d
+    style R fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>implement everything in spec.md, then run /review-code,
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>fix all flags, and repeat until /review-code comes back clean
+</span></code></pre></div>
+<p><strong>Works today. Zero setup.</strong> Weak point: context window is the loop budget; Claude decides when "clean".</p>
+<hr />
+<h3 id="option-b-run-spec-skill">Option B — <code>/run-spec</code> skill<a class="headerlink" href="#option-b-run-spec-skill" title="Permanent link">&para;</a></h3>
+<p>A SKILL.md that encodes the loop explicitly. User types one slash command.</p>
+<pre class="mermaid"><code>flowchart LR
+    H["👤 /run-spec spec.md"] --&gt; SK["run-spec skill"]
+    SK --&gt;|"Agent child"| I["implement"]
+    I --&gt;|"Agent child"| R["review"]
+    R --&gt;|flags| F["fix"]
+    F --&gt; R
+    R --&gt;|clean| D["✅ PR"]
+
+    style H fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style SK fill:#52be80,color:#145a32,stroke:#196f3d
+    style I fill:#52be80,color:#145a32,stroke:#196f3d
+    style R fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style F fill:#f0b27a,color:#784212,stroke:#e67e22
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<p>Write <code>configs/claude/skills/run-spec/SKILL.md</code> with explicit step-by-step instructions. The skill defines the exit condition — no ambiguity about when to stop.</p>
+<p><strong>~1 hour to build. Uses skills already built. Best next step.</strong></p>
+<hr />
+<h3 id="option-c-n8n-visual-orchestrator">Option C — n8n (visual orchestrator)<a class="headerlink" href="#option-c-n8n-visual-orchestrator" title="Permanent link">&para;</a></h3>
+<p>n8n is a self-hostable workflow automation tool (183K GitHub stars) with first-class AI Agent nodes. The key node for this use case: <strong>Execute Command</strong> — lets you shell out to <code>claude -p</code> from within a visual flow.</p>
+<pre class="mermaid"><code>flowchart LR
+    TR["trigger\n(webhook / manual)"] --&gt; CC["Execute Command\nclaude -p 'implement'"]
+    CC --&gt; RV["AI Agent node\n(review model)"]
+    RV --&gt; BR{"flags?"}
+    BR --&gt;|yes| FX["Execute Command\nclaude -p 'fix'"]
+    FX --&gt; RV
+    BR --&gt;|no| D["✅ done"]
+
+    style TR fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style CC fill:#f0b27a,color:#784212,stroke:#e67e22
+    style RV fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style BR fill:#717d7e,color:#fff,stroke:#5d6d7e
+    style FX fill:#f0b27a,color:#784212,stroke:#e67e22
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<p>Pair with OpenRouter/LiteLLM so all model credentials live in one place — n8n just passes through the unified key.</p>
+<p><strong>Best if you want visual debugging of each loop step. ~2 hours to set up. Self-hostable.</strong></p>
+<hr />
+<h3 id="option-d-dify">Option D — Dify<a class="headerlink" href="#option-d-dify" title="Permanent link">&para;</a></h3>
+<p>Dify (138K GitHub stars) is a visual platform for building and <strong>deploying</strong> LLM-powered apps. More app-builder than dev-automation tool — but its workflow canvas can model the loop, and the output can be exposed as an API endpoint.</p>
+<pre class="mermaid"><code>flowchart LR
+    API["POST /workflow/run\n(spec content)"] --&gt; DF["Dify workflow\ncanvas"]
+    DF --&gt; I["implement node\n(Claude Sonnet)"]
+    I --&gt; R["review node\n(Claude Haiku / Gemini)"]
+    R --&gt; BR{"pass?"}
+    BR --&gt;|no| FX["fix node"] --&gt; R
+    BR --&gt;|yes| D["return result"]
+
+    style API fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style DF fill:#52be80,color:#145a32,stroke:#196f3d
+    style I fill:#52be80,color:#145a32,stroke:#196f3d
+    style R fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style BR fill:#717d7e,color:#fff,stroke:#5d6d7e
+    style FX fill:#f0b27a,color:#784212,stroke:#e67e22
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<p>Limitation: Dify operates on text — it can call the Anthropic API to generate code, but it cannot run <code>claude</code> CLI (i.e. Claude Code with filesystem access). Use this when the loop is pure model-to-model, not when Claude Code needs to actually edit files.</p>
+<p><strong>Best if you want a deployable app with a REST API. Overkill for personal dev workflow.</strong></p>
+<hr />
+<h3 id="option-e-crewai">Option E — CrewAI<a class="headerlink" href="#option-e-crewai" title="Permanent link">&para;</a></h3>
+<p>Python library for role-based multi-agent workflows. Lowest boilerplate of the code-first options (~35 lines for a working crew). Uses LiteLLM under the hood, so any model per agent.</p>
+<pre class="mermaid"><code>flowchart LR
+    SC["Python script"] --&gt; CR["CrewAI Flow"]
+    CR --&gt; IA["Implementer agent\n(Claude Sonnet)"]
+    IA --&gt;|"subprocess: claude -p"| FS["filesystem changes"]
+    FS --&gt; RA["Reviewer agent\n(Claude Haiku)"]
+    RA --&gt; BR{"pass?"}
+    BR --&gt;|no| IA
+    BR --&gt;|yes| D["✅ done"]
+
+    style SC fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style CR fill:#52be80,color:#145a32,stroke:#196f3d
+    style IA fill:#52be80,color:#145a32,stroke:#196f3d
+    style FS fill:#717d7e,color:#fff,stroke:#5d6d7e
+    style RA fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style BR fill:#717d7e,color:#fff,stroke:#5d6d7e
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<p>Caveat: the open-source version lacks built-in tracing. When the loop runs unattended and fails on turn 4, debugging is painful without the paid AMP (Agent Management Platform) tier.</p>
+<p><strong>Best code-first option if you want explicit loop control in Python with low ceremony.</strong></p>
+<hr />
+<h3 id="option-f-claude-print-headless-pipeline">Option F — <code>claude --print</code> headless pipeline<a class="headerlink" href="#option-f-claude-print-headless-pipeline" title="Permanent link">&para;</a></h3>
+<p>Claude Code's <code>-p</code> flag runs non-interactively. Shell-script the loop yourself — review output becomes fix input.</p>
+<pre class="mermaid"><code>flowchart LR
+    SC["shell script"] --&gt; C1["claude -p\n'implement'"]
+    C1 --&gt; C2["claude -p\n'review diff'"]
+    C2 --&gt;|flags| C3["claude -p\n'fix: {flags}'"]
+    C3 --&gt; C2
+    C2 --&gt;|clean| D["✅"]
+
+    style SC fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    style C1 fill:#52be80,color:#145a32,stroke:#196f3d
+    style C2 fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    style C3 fill:#f0b27a,color:#784212,stroke:#e67e22
+    style D fill:#52be80,color:#145a32,stroke:#196f3d</code></pre>
+<p>Each <code>claude -p</code> call starts cold — no memory of previous turns. The diff grows with each loop iteration. Works well for overnight unattended runs where you don't need a persistent session.</p>
+<hr />
+<h2 id="tools-to-skip">Tools to skip<a class="headerlink" href="#tools-to-skip" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Langflow / Flowise</strong></td>
+<td>Squeezed between n8n (better automation) and Dify (better app-building). No compelling advantage for this use case.</td>
+</tr>
+<tr>
+<td><strong>Wordware</strong></td>
+<td>Company pivoted in April 2025 to a consumer product ("Sauna"). Workflow product has uncertain future.</td>
+</tr>
+<tr>
+<td><strong>Coze (ByteDance)</strong></td>
+<td>Generous free model access but ByteDance data provenance is a concern; better for chatbots than dev automation.</td>
+</tr>
+<tr>
+<td><strong>Microsoft Agent Framework</strong></td>
+<td>Powerful but .NET/Azure-oriented and heavy ceremony for a personal dev loop.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="full-comparison">Full comparison<a class="headerlink" href="#full-comparison" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>User effort per run</th>
+<th>Drives Claude Code CLI</th>
+<th>Multi-model</th>
+<th>Setup cost</th>
+<th>Self-host</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A — Self-drive</strong></td>
+<td>One prose prompt</td>
+<td>Yes (native)</td>
+<td>No</td>
+<td>None</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>B — /run-spec skill</strong></td>
+<td><code>/run-spec spec.md</code></td>
+<td>Yes (native)</td>
+<td>No</td>
+<td>~1 hour</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>C — n8n</strong></td>
+<td>Trigger button / webhook</td>
+<td>Via Execute Command node</td>
+<td>Via OpenRouter/LiteLLM</td>
+<td>~2–3 hours</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>D — Dify</strong></td>
+<td>API call</td>
+<td>No (API only, no filesystem)</td>
+<td>Yes (built-in)</td>
+<td>~2–3 hours</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>E — CrewAI</strong></td>
+<td><code>python run_spec.py</code></td>
+<td>Via subprocess</td>
+<td>Via LiteLLM</td>
+<td>~2 hours</td>
+<td>Yes (lib)</td>
+</tr>
+<tr>
+<td><strong>F — Headless pipeline</strong></td>
+<td><code>./run-spec.sh</code></td>
+<td>Via <code>claude -p</code></td>
+<td>Via OpenRouter/LiteLLM</td>
+<td>~2 hours</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">Short answer</p>
+<p><strong>B now. C or E when you need unattended runs or multi-model routing.</strong></p>
+</div>
+<p><strong>Start with B</strong> — a <code>/run-spec</code> skill is one SKILL.md file, reuses the review skills already built, stays inside Claude Code's context (so it can actually edit files), and the loop is explicit. An afternoon's work.</p>
+<p><strong>Upgrade to C (n8n) or E (CrewAI)</strong> when you need:</p>
+<ul>
+<li>The loop to run without a terminal session open (overnight jobs)</li>
+<li>A cheaper model for the review pass (use OpenRouter to swap Gemini Flash in without changing the loop logic)</li>
+<li>Visual per-step debugging (n8n) or Python control flow (CrewAI)</li>
+</ul>
+<p><strong>D (Dify)</strong> is only interesting if you want to expose the loop as a REST API that something else calls into — not a personal dev tool.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

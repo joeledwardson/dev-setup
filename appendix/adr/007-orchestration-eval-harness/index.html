@@ -1,0 +1,2162 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../006-hyprwhspr-dictation/">
+      
+      
+        <link rel="next" href="../008-mdx-vs-mkdocs/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ADR-007 Orchestration Eval Harness - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/mermaid.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-007-meta-eval-harness-scoring-the-orchestration-options-from-adr-001" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-007 Orchestration Eval Harness
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../dev-log/" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev-log/2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../004-pi-box-storage-vs-replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 pi-box Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../005-homelab-observability-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 Homelab Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../006-hyprwhspr-dictation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 hyprwhspr Dictation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-were-actually-testing-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we're actually testing: the loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-capability-axes-the-users-questions-made-measurable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The four capability axes (the user's questions, made measurable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-probe-task-ledger-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The probe task: "Ledger service"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The probe task: &#34;Ledger service&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-seeded-defects-engineered-to-need-3-rounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three seeded defects (engineered to need ~3 rounds)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-grading-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring &amp; grading criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring &amp; grading criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branching-made-necessary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branching, made necessary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-tooling-dont-reinvent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing tooling (don't reinvent)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../008-mdx-vs-mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 MDX vs mkdocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-were-actually-testing-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What we're actually testing: the loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-capability-axes-the-users-questions-made-measurable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The four capability axes (the user's questions, made measurable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-probe-task-ledger-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The probe task: "Ledger service"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The probe task: &#34;Ledger service&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-seeded-defects-engineered-to-need-3-rounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three seeded defects (engineered to need ~3 rounds)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-grading-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring &amp; grading criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring &amp; grading criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branching-made-necessary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branching, made necessary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-tooling-dont-reinvent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing tooling (don't reinvent)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adr-007-meta-eval-harness-scoring-the-orchestration-options-from-adr-001">ADR-007 — Meta-eval harness: scoring the orchestration options from ADR-001<a class="headerlink" href="#adr-007-meta-eval-harness-scoring-the-orchestration-options-from-adr-001" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Proposed<br />
+<strong>Date</strong>: 2026-06-24<br />
+<strong>Context</strong>: <a href="../001-claude-code-orchestration/">ADR-001</a> lists six ways to run an autonomous spec→implement→review→fix loop (options A–F) and ranks them on <em>predicted</em> effort and capability. Before committing to one, I want to <strong>measure</strong> them instead of guessing — run a hard, fixed coding task through each tool and score the <em>tool's behaviour</em>, not the LLM's answer. This ADR captures the goal, requirements, the probe-task design, and the grading criteria. It is the spec for a harness, not the harness.<br />
+<strong>Decision</strong>: Not yet made — this records the approach and the open decisions (D1–D5 below).</p>
+<div class="admonition warning">
+<p class="admonition-title">Does NOT cover</p>
+<p>Building the harness, picking the winning orchestrator, CI/scheduled runs, or a model-quality benchmark. This is <strong>not</strong> "which LLM writes better code" — the model is held roughly constant; the <strong>orchestration tool</strong> is what's under test.</p>
+</div>
+<hr />
+<h2 id="the-goal">The goal<a class="headerlink" href="#the-goal" title="Permanent link">&para;</a></h2>
+<p>ADR-001's comparison table is a set of <em>predictions</em> — "n8n: ~2–3 hours setup, visual debugging". The goal here is to replace prediction with <strong>measurement</strong>: one fixed probe task, run through each option, scored by <strong>one grader that every tool feeds into</strong>. The output is a scoreboard that answers "is the answer correct?" <em>and</em> "how good was the process to get there?".</p>
+<p>The trap to avoid is judging tools <strong>by vibes</strong> — "option B <em>felt</em> smoother". A vibe is not a decision input. So the harness is built around objective, machine-computed signals (hidden tests, golden-diff, token counts), with an LLM-judge only as a secondary layer on the parts that genuinely need taste.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef probe fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef tool  fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef grade fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef out   fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    P["fixed probe&lt;br/&gt;(seeded buggy repo&lt;br/&gt;+ hidden tests + golden diff)"]:::probe --&gt; A["A · self-drive"]:::tool
+    P --&gt; B["B · /run-spec skill"]:::tool
+    P --&gt; F["F · headless claude -p"]:::tool
+
+    A --&gt; G["uniform grader&lt;br/&gt;(same JSON contract&lt;br/&gt;for every tool)"]:::grade
+    B --&gt; G
+    F --&gt; G
+    G --&gt; SB["scoreboard:&lt;br/&gt;correctness · process · cost"]:::out</code></pre>
+<div class="admonition abstract">
+<p class="admonition-title">The one idea that drives the design: test the tool, not the model</p>
+<p>Same task, same underlying model, same grader — only the <strong>orchestrator</strong> changes between runs. So any difference in the scoreboard is attributable to the <em>tool's</em> loop control, file-reading strategy, and branching — which is exactly what ADR-001 needs to choose between A–F.</p>
+</div>
+<hr />
+<h2 id="what-were-actually-testing-the-loop">What we're actually testing: the loop<a class="headerlink" href="#what-were-actually-testing-the-loop" title="Permanent link">&para;</a></h2>
+<p>Every ADR-001 option is some wiring of the same shape — a <strong>generator→critic→fix</strong> loop with a stop condition. The harness exercises that shape and measures how each tool runs it.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef gen   fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef sig   fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef crit  fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef dec   fill:#717d7e,color:#fff,stroke:#5d6d7e
+    classDef out   fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    GEN["generator&lt;br/&gt;(implements / fixes)"]:::gen --&gt; SIG["grounded signal&lt;br/&gt;(tests · lint · spec · types)"]:::sig
+    SIG --&gt; CRIT["critic&lt;br/&gt;(different vendor)&lt;br/&gt;reasons → JSON verdict"]:::crit
+    CRIT --&gt; Q{"pass?"}:::dec
+    Q --&gt;|yes| D["✅ done&lt;br/&gt;(return best iteration)"]:::out
+    Q --&gt;|"no · &amp;lt; 3 rounds"| GEN
+    Q --&gt;|"no · hit cap"| FL["⚠ fail loud&lt;br/&gt;(did not converge)"]:::out</code></pre>
+<p>Four findings from the research shape this loop — and the probe is designed so a tool that ignores them visibly loses:</p>
+<ul>
+<li><strong>Ground the critic.</strong> Self-correction without an external signal degrades as often as it helps ("LLMs Cannot Self-Correct Reasoning Yet", DeepMind; Kamoi et al. survey). The bottleneck is <em>feedback generation, not refinement</em> — models fix things well <em>given</em> a reliable signal. So the critic is anchored on tests/lint/spec, not taste.</li>
+<li><strong>Different-vendor critic.</strong> A model judging its own work rates it too highly (self-preference bias) because its errors and its judgment share priors. A critic from a different model family breaks that correlation.</li>
+<li><strong>Critic reasons in prose, then emits a JSON verdict last</strong> (<code>findings[]</code> before the <code>pass</code> boolean). Forcing JSON too early hurts judgment.</li>
+<li><strong>Stop on: critic-pass (early exit) → no-change → max 3.</strong> Gains land in rounds 1–2. Return the <strong>best-scoring</strong> iteration, not the last (loops can regress); <strong>fail loud</strong> if it never converges.</li>
+</ul>
+<hr />
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<h3 id="functional">Functional<a class="headerlink" href="#functional" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>A <strong>fixed probe</strong>: a seeded buggy repo committed at a known starting state, with hidden tests + a golden diff + graders kept in a sibling dir the agent never sees.</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>A <strong>uniform grader</strong> emitting one JSON contract — <code>{passed, files_read, tokens_in, tokens_out, iterations, touched_trap, wall_clock_s, score}</code> — so every option is scored identically.</td>
+</tr>
+<tr>
+<td>R3</td>
+<td><strong>Per-tool adapters</strong> that drive each option (A/B/E natively; C/F via a thin wrapper) and capture the transcript the grader parses.</td>
+</tr>
+<tr>
+<td>R4</td>
+<td><strong>Repeatable runs</strong> — each tool run 3–5× (agent variance is high; single runs mislead) with results aggregated.</td>
+</tr>
+<tr>
+<td>R5</td>
+<td><strong>Reproducible probe</strong> — <code>git reset</code> back to the seed state between runs; graders are deterministic.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-four-capability-axes-the-users-questions-made-measurable">The four capability axes (the user's questions, made measurable)<a class="headerlink" href="#the-four-capability-axes-the-users-questions-made-measurable" title="Permanent link">&para;</a></h3>
+<p>These are the things ADR-001 can't answer by prediction. The probe is engineered so each becomes a number.</p>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>The question</th>
+<th>How the probe forces it</th>
+<th>Metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Process efficiency</strong></td>
+<td>"How efficient is this process?"</td>
+<td>Same correctness bar for all tools; measure cost to converge.</td>
+<td>tokens, wall-clock, iterations to pass</td>
+</tr>
+<tr>
+<td><strong>Bounded loop</strong></td>
+<td>"Can I have a stop loop (max 3)?"</td>
+<td>Probe is <strong>not 1-shot solvable</strong> — needs ~2–3 critic rounds (see below).</td>
+<td>did it stop cleanly at ≤3? returned best iteration?</td>
+</tr>
+<tr>
+<td><strong>Smart file reading</strong></td>
+<td>"Can it read files efficiently like Claude Code?"</td>
+<td>~45-file repo, scattered signal, one 1.5k-line file where 30 lines matter, plus a <strong>trap file</strong>.</td>
+<td>files read, tokens spent reading, trap touched?</td>
+</tr>
+<tr>
+<td><strong>Conditional branching</strong></td>
+<td>"Can I configure trees to act on conditions?"</td>
+<td>Distinct failure classes each demand a <em>different</em> response.</td>
+<td>did it route the right fix to the right failure?</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-probe-task-ledger-service">The probe task: "Ledger service"<a class="headerlink" href="#the-probe-task-ledger-service" title="Permanent link">&para;</a></h2>
+<p>A small HTTP service maintaining account balances, shipped in a <strong>deliberately buggy</strong> state. The naive fix turns the <em>visible</em> tests green but fails the <em>hidden</em> ones — that's the engine that forces multiple rounds.</p>
+<pre class="mermaid"><code>flowchart TD
+    classDef real fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef sig  fill:#85c1e9,color:#1a252f,stroke:#2471a3
+    classDef trap fill:#cd6155,color:#fff,stroke:#922b21
+    classDef hid  fill:#717d7e,color:#fff,stroke:#5d6d7e
+
+    subgraph RP["seeded repo (~45 files, agent sees this)"]
+        H["api/handlers.py&lt;br/&gt;(symptom shows here)"]:::sig
+        L["service/ledger.py&lt;br/&gt;(root cause — defect 1)"]:::real
+        M["domain/money.py&lt;br/&gt;(integer-cents convention — defect 2)"]:::real
+        MIG["store/migrations.py&lt;br/&gt;(1.5k lines, 1 fn matters)"]:::sig
+        SP["SPEC.md&lt;br/&gt;(edge-clause — defect 3)"]:::sig
+        LEG["service/ledger_legacy.py&lt;br/&gt;(dead copy — TRAP)"]:::trap
+        QF["utils/quickfix.py&lt;br/&gt;(plausible-wrong — TRAP)"]:::trap
+    end
+
+    subgraph GR["grader dir (agent never sees)"]
+        HT["hidden_tests/"]:::hid
+        GD["golden.diff"]:::hid
+        PT["property tests"]:::hid
+    end</code></pre>
+<h3 id="the-three-seeded-defects-engineered-to-need-3-rounds">The three seeded defects (engineered to need ~3 rounds)<a class="headerlink" href="#the-three-seeded-defects-engineered-to-need-3-rounds" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Defect</th>
+<th>Visible test</th>
+<th>Why it forces a round</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Concurrency — lost update</strong>: <code>apply_transaction</code> does read-modify-write with no lock.</td>
+<td>Passes (single-threaded).</td>
+<td>Hidden <strong>property test</strong> runs N concurrent transfers, asserts total money is conserved. The trap <code>quickfix.py</code> suggests retry-on-conflict — plausible, still races.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Off-by-one + convention</strong>: a statement endpoint has an inclusive/exclusive boundary bug; balances are <strong>integer cents</strong> (convention in <code>money.py</code>, enforced nowhere obvious).</td>
+<td>Passes (happy path).</td>
+<td>Naive fix is tempting to write in float dollars → fails the convention linter and golden-diff.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Spec edge-clause</strong>: <code>SPEC.md</code> §6 — "reject transfers to a closed account, <strong>except</strong> reversals, which are always allowed."</td>
+<td>Passes (never closes an account).</td>
+<td>Hidden test closes an account and posts a reversal.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Why this can't be one-shotted</p>
+<p>Round 1 typically fixes the obvious off-by-one → visible tests green → critic runs hidden + property suite → concurrency and edge-clause fail → round 2 fixes one, often misses the race → round 3 converges. One shot is <em>structurally</em> blocked because the visible tests don't cover defects 1 and 3. Tune the round count by how many independent defects you seed.</p>
+</div>
+<p>A lighter alternative if seeding a concurrency store is too much: a <strong>sliding-window rate-limiter from spec</strong> (naive fixed-window allows 2× burst at the boundary; property test catches it; same scoring shape). Weaker on the concurrency axis — pick the Ledger task if you want that axis, which is the strongest single discriminator.</p>
+<hr />
+<h2 id="scoring-grading-criteria">Scoring &amp; grading criteria<a class="headerlink" href="#scoring-grading-criteria" title="Permanent link">&para;</a></h2>
+<p>Grade <strong>process + quality</strong>, mostly machine-computed. The objective spine carries ~85% of the score; the LLM-judge only adjudicates what taste is actually needed for.</p>
+<pre class="mermaid"><code>flowchart LR
+    classDef obj fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef jud fill:#c39bd3,color:#4a235a,stroke:#7d3c98
+    classDef out fill:#f0b27a,color:#784212,stroke:#e67e22
+
+    HT["hidden tests"]:::obj --&gt; SC
+    PT["property checks"]:::obj --&gt; SC
+    GD["golden-diff&lt;br/&gt;(right files? trap touched?)"]:::obj --&gt; SC
+    CL["convention linter"]:::obj --&gt; SC
+    PR["process metrics&lt;br/&gt;(tokens · iters · time)"]:::obj --&gt; SC
+    LJ["LLM judge&lt;br/&gt;(diff quality rubric)"]:::jud --&gt; SC
+    SC["weighted score / 100"]:::out</code></pre>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th style="text-align: right;">Pts</th>
+<th>How it's computed</th>
+<th style="text-align: center;">Vibes-free?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hidden test suite (incl. closed-account reversal)</td>
+<td style="text-align: right;">30</td>
+<td>run hidden tests, count pass</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Property test — money conservation under concurrency</td>
+<td style="text-align: right;">15</td>
+<td>Hypothesis-style invariant under N threads</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Golden-diff file-targeting + <strong>no trap touched</strong></td>
+<td style="text-align: right;">20</td>
+<td>diff touches <code>ledger.py</code>/<code>money.py</code>, not <code>ledger_legacy.py</code>/<code>quickfix.py</code></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Convention linter (integer-cents, no float in money paths)</td>
+<td style="text-align: right;">10</td>
+<td>regex/AST check</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>Security (no unsafe construct introduced by the "fix")</td>
+<td style="text-align: right;">5</td>
+<td>static check</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>Process</strong> — tokens / iterations / wall-clock, ranked across tools</td>
+<td style="text-align: right;">20</td>
+<td>parse transcript, rank</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><em>(tie-break)</em> LLM-judge diff-quality rubric</td>
+<td style="text-align: right;">—</td>
+<td>only when objective scores tie</td>
+<td style="text-align: center;">judge</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>process</strong> block (20 pts) is where tools differ even when the answer is identical — "right answer in 40k tokens / 2 rounds" beats "right answer in 300k / 3 rounds". That delta is the whole reason the harness exists.</p>
+<h3 id="branching-made-necessary">Branching, made necessary<a class="headerlink" href="#branching-made-necessary" title="Permanent link">&para;</a></h3>
+<p>The probe's distinct failure classes each demand a <em>different</em> action, so a tool's routing logic is exercised rather than assumed:</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Correct route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unit tests fail</td>
+<td>fix-logic (re-implement the diff)</td>
+</tr>
+<tr>
+<td>lint / convention fails</td>
+<td>conform-to-convention (narrow, don't touch logic)</td>
+</tr>
+<tr>
+<td>property fails but units pass</td>
+<td>concurrency-hardening</td>
+</tr>
+<tr>
+<td>security/review flag</td>
+<td>security action</td>
+</tr>
+</tbody>
+</table>
+<p>A self-driving Claude (A) does this branching in prose; n8n (C) as explicit <code>IF</code> nodes; CrewAI (E) as a Flow <code>@router</code>. A tool that can't branch cleanly will misroute and lose points objectively.</p>
+<hr />
+<h2 id="existing-tooling-dont-reinvent">Existing tooling (don't reinvent)<a class="headerlink" href="#existing-tooling-dont-reinvent" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Role</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inspect</strong> (<code>inspect_ai</code>, UK AISI)</td>
+<td>Eval runner for options it can drive (A/B/E)</td>
+<td>Built for tool-calling multi-step agents; transcript of every step; <strong>automatic token/cost tracking</strong>; <code>model_graded_qa</code> for the critic-as-judge. Pure OSS Python, no SaaS.</td>
+</tr>
+<tr>
+<td><strong>Arize Phoenix</strong></td>
+<td>Live tracing</td>
+<td>Local, OpenTelemetry; per-step token/cost/tool-call/latency for free.</td>
+</tr>
+<tr>
+<td><strong>Uniform JSON grader</strong> (ours)</td>
+<td>The fair-comparison layer</td>
+<td>Inspect only scores agents <em>it</em> drives; n8n (C) and headless <code>claude -p</code> (F) run outside it. One JSON contract every adapter emits into is what makes A–F comparable.</td>
+</tr>
+</tbody>
+</table>
+<p>Skip LangSmith/Braintrust (SaaS lock-in for a personal setup) and the public benchmarks (SWE-bench, terminal-bench — run <em>against</em> later, not the engine here).</p>
+<hr />
+<h2 id="open-decisions">Open decisions<a class="headerlink" href="#open-decisions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Decision</th>
+<th>Options</th>
+<th>Lean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D1</strong></td>
+<td>Which options to wire first</td>
+<td>All six / a contrasting pair</td>
+<td><strong>B (skill) vs F (headless)</strong> — prove the harness discriminates before scaling</td>
+</tr>
+<tr>
+<td><strong>D2</strong></td>
+<td>Critic model</td>
+<td>same vendor / different vendor</td>
+<td><strong>Different vendor</strong> (self-preference bias) — pending gateway choice in ADR-001 Layer 1</td>
+</tr>
+<tr>
+<td><strong>D3</strong></td>
+<td>Probe language</td>
+<td>Python / TypeScript</td>
+<td><strong>Python</strong> (Hypothesis for property tests, fastest to seed)</td>
+</tr>
+<tr>
+<td><strong>D4</strong></td>
+<td>Probe task</td>
+<td>Ledger / rate-limiter</td>
+<td><strong>Ledger</strong> (concurrency axis is the strongest discriminator)</td>
+</tr>
+<tr>
+<td><strong>D5</strong></td>
+<td>Run count for significance</td>
+<td>1 / 3 / 5</td>
+<td><strong>3–5</strong> (agent variance) — start at 3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>✓ Turns ADR-001's predicted comparison into a measured one — A–F scored on the same probe by the same grader.</li>
+<li>✓ Kills "by vibes" tool selection: ~85% of the score is machine-computed.</li>
+<li>✓ Reuses existing OSS (Inspect, Phoenix); the only bespoke piece is the uniform grader + probe repo.</li>
+<li>✓ The probe doubles as a regression test for whichever loop we eventually adopt.</li>
+<li>✗ Seeding a genuinely-hard-but-objectively-gradable probe is real work — the three defects must be tuned so it needs ~3 rounds without being unsolvable.</li>
+<li>✗ Cross-tool fairness is fiddly: the JSON grader has to normalise transcripts from very different tools (native Inspect vs n8n node logs vs a shell wrapper).</li>
+<li>✗ Multi-vendor critic (D2) depends on a gateway decision still open in ADR-001.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

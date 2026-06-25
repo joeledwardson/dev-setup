@@ -1,0 +1,3579 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Development notes, NixOS config and tooling reference">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../linux/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Vim & Neovim - Joel's Dev Setup</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/mermaid.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#command-cheat-sheet-get-set" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-header__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Joel's Dev Setup
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Vim & Neovim
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../dev-log/" class="md-tabs__link">
+          
+  
+  
+  Dev Log
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../nix/notes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  NixOS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../appendix/adr/" class="md-tabs__link">
+          
+  
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Joel&#39;s Dev Setup" class="md-nav__button md-logo" aria-label="Joel's Dev Setup" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Joel's Dev Setup
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joeledwardson/dev-setup" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    joeledwardson/dev-setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Log
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    September 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    October 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2025-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    December 2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    January 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    February 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    March 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    April 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    May 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev-log/2026-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    June 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../nix/notes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NixOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vim & Neovim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-cheat-sheet-get-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Cheat Sheet (Get &amp; Set)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-globals-_g-vs-vim-globals-vimg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Globals (_G) vs. Vim Globals (vim.g)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vimscript-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vimscript functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wincmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wincmd?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-redirect-command-output-to-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim: Redirect command output to register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-registers-and-the-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim registers and the " prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-variable-scopes-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim variable scopes cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-escape-sequences-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal escape sequences cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revisiting-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revisiting folding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Revisiting folding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foldlevel-foldlevelstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        foldlevel / foldlevelstart
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treesitter-and-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treesitter and folding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treesitter-folding-quirk-with-multi-line-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treesitter folding quirk with multi-line signatures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neovim-misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neovim misc
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Neovim misc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-redirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command redirection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lsps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-the-docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the docs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regexps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regexps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mappings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-combinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special Combinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-vs-noremap-the-key-difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :map vs :noremap — The Key Difference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-allows-remapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :map (allows remapping)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":map (allows remapping)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#noremap-disables-remapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :noremap (disables remapping)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-the-noremap-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All the noremap variants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ascii-table-in-two-halves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ASCII table in two halves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rule-ctrl-clears-bits-6-and-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rule: Ctrl clears bits 6 and 7
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-surprising-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference: surprising aliases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-c-edge-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The C-/ edge case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-what-your-terminal-actually-sends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify what your terminal actually sends
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux & System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell & Bash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architectural Decision Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/001-claude-code-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Claude Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/002-robust-docs-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002 Robust Docs Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/003-claude-session-monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003 Claude Session Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/004-pi-box-storage-vs-replace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004 pi-box Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/005-homelab-observability-stack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005 Homelab Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/006-hyprwhspr-dictation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006 hyprwhspr Dictation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/007-orchestration-eval-harness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007 Orchestration Eval Harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/adr/008-mdx-vs-mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008 MDX vs mkdocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-cheat-sheet-get-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Cheat Sheet (Get &amp; Set)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-globals-_g-vs-vim-globals-vimg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Globals (_G) vs. Vim Globals (vim.g)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vimscript-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vimscript functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wincmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wincmd?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-redirect-command-output-to-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim: Redirect command output to register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-registers-and-the-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim registers and the " prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vim-variable-scopes-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vim variable scopes cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminal-escape-sequences-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal escape sequences cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revisiting-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revisiting folding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Revisiting folding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foldlevel-foldlevelstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        foldlevel / foldlevelstart
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treesitter-and-folding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treesitter and folding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#treesitter-folding-quirk-with-multi-line-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treesitter folding quirk with multi-line signatures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neovim-misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neovim misc
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Neovim misc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#buffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-redirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command redirection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lsps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-the-docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the docs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regexps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regexps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mappings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-combinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special Combinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-vs-noremap-the-key-difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :map vs :noremap — The Key Difference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-allows-remapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :map (allows remapping)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":map (allows remapping)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#noremap-disables-remapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :noremap (disables remapping)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-the-noremap-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All the noremap variants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-ascii-table-in-two-halves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ASCII table in two halves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-rule-ctrl-clears-bits-6-and-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rule: Ctrl clears bits 6 and 7
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-surprising-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference: surprising aliases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-c-edge-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The C-/ edge case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-what-your-terminal-actually-sends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify what your terminal actually sends
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Vim & Neovim</h1>
+
+<h3 id="command-cheat-sheet-get-set">Command Cheat Sheet (Get &amp; Set)<a class="headerlink" href="#command-cheat-sheet-get-set" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;"><strong>Global Variable</strong> (Example: <code>colors_name</code>)</th>
+<th style="text-align: left;"><strong>Editor Option</strong> (Example: <code>number</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Lua (Set)</strong></td>
+<td style="text-align: left;"><code>vim.g.colors_name = "gruvbox"</code></td>
+<td style="text-align: left;"><code>vim.opt.number = true</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Lua (Get)</strong></td>
+<td style="text-align: left;"><code>print(vim.g.colors_name)</code></td>
+<td style="text-align: left;"><code>print(vim.opt.number:get())</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vimscript (Set)</strong></td>
+<td style="text-align: left;"><code>let g:colors_name = "gruvbox"</code></td>
+<td style="text-align: left;"><code>set number</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vimscript (Get)</strong></td>
+<td style="text-align: left;"><code>echo g:colors_name</code></td>
+<td style="text-align: left;"><code>set number?</code></td>
+</tr>
+</tbody>
+</table>
+<p>And now for buffers etc</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;"><strong>Global Scope</strong> (Everywhere)</th>
+<th style="text-align: left;"><strong>Buffer Scope</strong> (Current File Only)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Concept</strong></td>
+<td style="text-align: left;">Applies to the entire editor session.</td>
+<td style="text-align: left;">Applies <strong>only</strong> to the currently open file/tab.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Variable Prefix</strong></td>
+<td style="text-align: left;"><code>g:</code> (Vim) / <code>vim.g</code> (Lua)</td>
+<td style="text-align: left;"><code>b:</code> (Vim) / <code>vim.b</code> (Lua)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Option Object</strong></td>
+<td style="text-align: left;"><code>vim.opt</code></td>
+<td style="text-align: left;"><code>vim.bo</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Lua Set Variable</strong></td>
+<td style="text-align: left;"><code>vim.g.my_var = 1</code></td>
+<td style="text-align: left;"><code>vim.b.my_var = 1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Lua Set Option</strong></td>
+<td style="text-align: left;"><code>vim.opt.scrolloff = 8</code></td>
+<td style="text-align: left;"><code>vim.bo.shiftwidth = 2</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vim Set Variable</strong></td>
+<td style="text-align: left;"><code>let g:my_var = 1</code></td>
+<td style="text-align: left;"><code>let b:my_var = 1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vim Set Option</strong></td>
+<td style="text-align: left;"><code>set scrolloff=8</code></td>
+<td style="text-align: left;"><code>setlocal shiftwidth=2</code></td>
+</tr>
+</tbody>
+</table>
+<p>And globals</p>
+<hr />
+<h3 id="lua-globals-_g-vs-vim-globals-vimg">Lua Globals (<code>_G</code>) vs. Vim Globals (<code>vim.g</code>)<a class="headerlink" href="#lua-globals-_g-vs-vim-globals-vimg" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;"><strong>Vim Global (<code>vim.g</code>)</strong></th>
+<th style="text-align: left;"><strong>Lua Global (<code>_G</code>)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>What it is</strong></td>
+<td style="text-align: left;">A bridge to the <strong>Vimscript</strong> engine.</td>
+<td style="text-align: left;">The global namespace for the <strong>Lua</strong> language.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Primary Use</strong></td>
+<td style="text-align: left;">Configuring plugins (e.g., <code>markdown-preview</code>).</td>
+<td style="text-align: left;">defining functions callable from Vimscript (<code>v:lua</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Visibility</strong></td>
+<td style="text-align: left;">Seen by <code>.vim</code> files and older plugins.</td>
+<td style="text-align: left;">Seen by all <code>.lua</code> files and the <code>v:lua</code> bridge.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Set Command</strong></td>
+<td style="text-align: left;"><code>vim.g.my_var = 1</code></td>
+<td style="text-align: left;"><code>_G.my_func = function() ... end</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Get Command</strong></td>
+<td style="text-align: left;"><code>print(vim.g.my_var)</code></td>
+<td style="text-align: left;"><code>_G.my_func()</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vimscript Access</strong></td>
+<td style="text-align: left;"><code>echo g:my_var</code></td>
+<td style="text-align: left;"><code>call v:lua.my_func()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Summary of the "Big Three"
+- vim.opt: Switches/knobs for the Editor (Line numbers, tabs).
+- vim.g: Settings for Plugins (Theme names, enable/disable flags).
+- _G: Logic for Functions (Your custom code that needs to run everywhere).</p>
+<p>Ok so....
+In a lua console
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">_G</span><span class="p">.</span><span class="nv">pls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello?&quot;</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="s2">&quot;no output :(&quot;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kr">end</span>
+</span></code></pre></div></p>
+<p>Then can do EITHER <code>:lua print(pls())</code> or <code>:lua print(_G.pls())</code> as <code>_G</code> is the global namespace!</p>
+<p>Then, the equivalent in vim is </p>
+<blockquote>
+<p>notice that <code>print()</code> does not appear, as it goes to message history?
+<code>vim.notify</code> WILL print however</p>
+</blockquote>
+<p>This STILL doesn't make sense to me - but I guess that the lua print() is only really for debugging? In general an API show either log to a file or notify?</p>
+<p>I found the docs <a href="https://neovim.io/doc/user/lua.html#lua-commands">here</a> where it says lua <code>print()</code> redirects its output to the nvim message area?</p>
+<p>Ok well the various types of printing in vim and lua are frying my brain a bit - especially since <code>print()</code> in lua claims to print to the message area but... does not? well gemini (tried) to explain
+| Method | Command | Behavior | Persistence |
+| :--- | :--- | :--- | :--- |
+| <strong>Lua Print</strong> | <code>print("msg")</code> | Sends to msg-layer | Often overwritten instantly |
+| <strong>Vim Cmd</strong> | <code>vim.cmd('echo "msg"')</code> | Standard Vim echo | Stays until next keypress |
+| <strong>Vim API</strong> | <code>vim.api.nvim_echo(...)</code> | Chunked &amp; Highlighted | High (configured via args) |
+| <strong>Notify</strong> | <code>vim.notify("msg")</code> | General notification | Depends on UI (popup or cmd) |</p>
+<p><code>vim.notify()</code> is fairly modern so that does make sense honestly. its the others</p>
+<p>Ok NEVER MIND - it was because i was in the lua console - i assume <code>print()</code> is found to a different messages area or something</p>
+<hr />
+<h3 id="vimscript-functions">Vimscript functions<a class="headerlink" href="#vimscript-functions" title="Permanent link">&para;</a></h3>
+<p>So weird weird details of how functions work in vim
+- <code>system()</code> is a FUNCTION
+- <code>:echo</code> is a COMMAND</p>
+<p>and functions CANNOT be called directly from the command line!</p>
+<p>Hence why <code>:system(...)</code> does not work! need <code>:echo</code> or <code>:call</code> to invoke it</p>
+<p>Even weirder... even inside a vimscript function this still applies? which seems strange to me but oh well... So like doing <code>:</code> to invoke a command the same applies in vimscript in will complain if you try and do
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">function</span><span class="p">!</span> OpenMarkdownPreview<span class="p">(</span>url<span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  system<span class="p">(</span><span class="s1">&#39;echo hi&#39;</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">end</span>
+</span></code></pre></div>
+will yield
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>E492: Not an editor command: system(&#39;echo hi&#39;)
+</span></code></pre></div></p>
+<p>as you need echo or call!</p>
+<hr />
+<h3 id="wincmd">Wincmd?<a class="headerlink" href="#wincmd" title="Permanent link">&para;</a></h3>
+<p>So apparently <code>:tabdo</code> executes for each tab?</p>
+<p>Nice! so like
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">:</span><span class="nv">tabdo</span><span class="w"> </span><span class="p">:</span><span class="py">echo</span><span class="w"> </span><span class="nf">bufname</span><span class="p">()</span>
+</span></code></pre></div></p>
+<p>Goes and prints bufname for each tab (active buffer)</p>
+<p>Ahhhh
+<code>:wincmd =</code> is the same as <code>C-W =</code> a window command...</p>
+<p>Interestingly, the reason the the <code>outline</code> escapes from this when its called (and graciously so, wouldn't want the outline taking up half the page horizontally...)</p>
+<p>It is the <code>winfixwidth</code> property that forces the win to stay constant (when <code>C-w =</code> is called)</p>
+<hr />
+<h3 id="vim-redirect-command-output-to-register">Vim: Redirect command output to register<a class="headerlink" href="#vim-redirect-command-output-to-register" title="Permanent link">&para;</a></h3>
+<p><code>:new | put =execute('SomeCommand')</code> — this opens a new scratch buffer and pastes the output of any ex command into it. Breakdown:
+- <code>:new</code> — opens a new empty split
+- <code>put =</code> — puts the result of an expression into the buffer
+- <code>execute('...')</code> — runs an ex command and captures its output as a string</p>
+<p>So <code>execute('Fidget history')</code> runs <code>:Fidget history</code> and returns the output text, then <code>put =</code> pastes it into the buffer where you can search with <code>/</code>.</p>
+<p>Works with any command, e.g. <code>:new | put =execute('messages')</code>, <code>:new | put =execute('map')</code></p>
+<p>Ok so (ME not claude as of now...)</p>
+<p><code>|</code> is not actually what i thought like a pipe in bash, it is actually just like <code>;</code> in bash (see <code>:h :bar</code> in vim)</p>
+<p>So in this case we are just saying <code>:new</code> to open a new buffer and THEN <code>:put</code> to dump the output of the register</p>
+<p><strong>Gotcha: <code>|</code> doesn't work with all commands.</strong> Some commands treat <code>|</code> as part of their own arguments instead of as a command separator. User-defined commands (from plugins) do this by default unless the plugin author explicitly opted in to <code>|</code> separation with <code>-bar</code> (see <code>:h command-bar</code>). So:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">:</span>OutlineFocus <span class="p">|</span> OutlineClose   <span class="c">&quot; BROKEN — OutlineClose is passed as an arg to OutlineFocus</span>
+</span></code></pre></div>
+Fix: use <code>&lt;cmd&gt;...&lt;cr&gt;</code> chaining in a keymap, or just use separate commands. In ex mode, there's no clean workaround — run them separately:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">:</span>OutlineFocus
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="p">:</span>OutlineClose
+</span></code></pre></div>
+Or in a keymap:
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&lt;leader&gt;X&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="nf">cmd</span><span class="p">(</span><span class="s2">&quot;OutlineFocus&quot;</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="nf">cmd</span><span class="p">(</span><span class="s2">&quot;OutlineClose&quot;</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kr">end</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>e.g.
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">let</span> @<span class="k">b</span><span class="p">=</span><span class="s1">&#39;pls&#39;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">:</span><span class="k">put</span> <span class="k">b</span>
+</span></code></pre></div>
+dumps 'pls' into current buffer</p>
+<p>i did try this
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> execute<span class="p">(</span><span class="s1">&#39;echo &quot;hi there&quot;&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+BUT echo doesn't return to a buffer so it wouldn't work. WAIT IGNORE. just needed to escape the " with
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> execute<span class="p">(</span><span class="s1">&#39;echo \&quot;hi there\&quot;&#39;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>....or...
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">:</span><span class="k">put</span> <span class="p">=</span> <span class="s1">&#39;hi there&#39;</span>
+</span></code></pre></div></p>
+<hr />
+<h3 id="vim-registers-and-the-prefix">Vim registers and the <code>"</code> prefix<a class="headerlink" href="#vim-registers-and-the-prefix" title="Permanent link">&para;</a></h3>
+<p>Registers in vim are accessed with <code>"</code> (double quote) in normal mode.</p>
+<p><strong>Special registers:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Register</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"+</code></td>
+<td style="text-align: left;">System clipboard</td>
+<td style="text-align: left;"><code>"+y</code> yank to clipboard, <code>let @+=expand('%:p')</code> copy file path to clipboard</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"=</code></td>
+<td style="text-align: left;">Expression register — evaluates vimscript</td>
+<td style="text-align: left;"><code>put =execute('Fidget history')</code> dumps command output into buffer</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"0</code></td>
+<td style="text-align: left;">Last yank</td>
+<td style="text-align: left;"><code>"0p</code> paste what you last yanked (not deleted)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>""</code></td>
+<td style="text-align: left;">Default (unnamed)</td>
+<td style="text-align: left;"><code>p</code> pastes from here by default</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>to see help can use vims special 'quote' like <code>:h quote=</code> is equivalent to <code>:h "=</code></p>
+</blockquote>
+<p><strong>Accessing registers — <code>"</code> vs <code>@</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Context</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"</code></td>
+<td style="text-align: left;">Normal mode — select register before an operator</td>
+<td style="text-align: left;"><code>"ay</code> yank into <code>a</code>, <code>"+p</code> paste from clipboard</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>@</code></td>
+<td style="text-align: left;">Ex commands / vimscript — read/write registers</td>
+<td style="text-align: left;"><code>let @+ = expand('%:p')</code>, <code>@a</code> execute macro</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why <code>quote=</code> in vim help?</strong>
+Vim help spells <code>"</code> as <code>quote</code> in its help tags, so <code>:h quote=</code> means "help for the <code>"=</code> register", <code>:h quotea</code> for <code>"a</code>, etc.</p>
+<hr />
+<h3 id="vim-variable-scopes-cheat-sheet">Vim variable scopes cheat sheet<a class="headerlink" href="#vim-variable-scopes-cheat-sheet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What</th>
+<th>Vim get</th>
+<th>Vim set</th>
+<th>Lua get</th>
+<th>Lua set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g:</code></td>
+<td>global variables</td>
+<td><code>:echo g:foo</code></td>
+<td><code>:let g:foo = 1</code></td>
+<td><code>vim.g.foo</code></td>
+<td><code>vim.g.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>b:</code></td>
+<td>buffer-local variables</td>
+<td><code>:echo b:foo</code></td>
+<td><code>:let b:foo = 1</code></td>
+<td><code>vim.b.foo</code> or <code>vim.b[bufnr].foo</code></td>
+<td><code>vim.b.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>w:</code></td>
+<td>window-local variables</td>
+<td><code>:echo w:foo</code></td>
+<td><code>:let w:foo = 1</code></td>
+<td><code>vim.w.foo</code> or <code>vim.w[winid].foo</code></td>
+<td><code>vim.w.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>t:</code></td>
+<td>tab-local variables</td>
+<td><code>:echo t:foo</code></td>
+<td><code>:let t:foo = 1</code></td>
+<td><code>vim.t.foo</code> or <code>vim.t[tabnr].foo</code></td>
+<td><code>vim.t.foo = 1</code></td>
+</tr>
+<tr>
+<td><code>v:</code></td>
+<td>vim predefined variables</td>
+<td><code>:echo v:count</code></td>
+<td>(read-only mostly)</td>
+<td><code>vim.v.count</code></td>
+<td>(read-only mostly)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Options</strong> (settings like <code>number</code>, <code>expandtab</code>) use <code>vim.opt</code> / <code>vim.o</code> / <code>vim.bo</code> / <code>vim.wo</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What</th>
+<th>Vim get</th>
+<th>Vim set</th>
+<th>Lua get</th>
+<th>Lua set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>global option</td>
+<td><code>:set foo</code></td>
+<td><code>:echo &amp;foo</code></td>
+<td><code>:set foo=1</code></td>
+<td><code>vim.o.foo</code> or <code>vim.opt.foo:get()</code></td>
+<td><code>vim.o.foo = 1</code> or <code>vim.opt.foo = 1</code></td>
+</tr>
+<tr>
+<td>buffer option</td>
+<td><code>:setlocal foo</code> (buffer)</td>
+<td><code>:echo &amp;l:foo</code></td>
+<td><code>:setlocal foo=1</code></td>
+<td><code>vim.bo.foo</code> or <code>vim.bo[bufnr].foo</code></td>
+<td><code>vim.bo.foo = 1</code></td>
+</tr>
+<tr>
+<td>window option</td>
+<td><code>:setlocal foo</code> (window)</td>
+<td><code>:echo &amp;l:foo</code></td>
+<td><code>:setlocal foo=1</code></td>
+<td><code>vim.wo.foo</code> or <code>vim.wo[winid].foo</code></td>
+<td><code>vim.wo.foo = 1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vim.g.mapleader</code></td>
+<td><code>vim.g.mapleader = ' '</code></td>
+<td>global var, set leader key</td>
+</tr>
+<tr>
+<td><code>vim.g.clipboard</code></td>
+<td><code>vim.g.clipboard = {...}</code></td>
+<td>global var, clipboard provider config</td>
+</tr>
+<tr>
+<td><code>vim.b.disable_autoformat</code></td>
+<td><code>vim.b.disable_autoformat = true</code></td>
+<td>buffer var, custom flag for conform.nvim</td>
+</tr>
+<tr>
+<td><code>vim.opt.number</code></td>
+<td><code>vim.opt.number = true</code></td>
+<td>option, show line numbers</td>
+</tr>
+<tr>
+<td><code>vim.bo.filetype</code></td>
+<td><code>vim.bo.filetype</code></td>
+<td>buffer option, get current filetype</td>
+</tr>
+<tr>
+<td><code>vim.wo.wrap</code></td>
+<td><code>vim.wo.wrap = false</code></td>
+<td>window option, disable line wrap</td>
+</tr>
+<tr>
+<td><code>vim.v.event</code></td>
+<td><code>vim.v.event.regcontents</code></td>
+<td>vim predefined, yank event data</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>vim.opt</code> vs <code>vim.o</code>: <code>vim.opt</code> returns a special object with <code>:get()</code>, <code>:append()</code>, <code>:prepend()</code>, <code>:remove()</code>. <code>vim.o</code> is simpler direct access. For setting simple values they're interchangeable.</p>
+</blockquote>
+<hr />
+<h3 id="terminal-escape-sequences-cheat-sheet">Terminal escape sequences cheat sheet<a class="headerlink" href="#terminal-escape-sequences-cheat-sheet" title="Permanent link">&para;</a></h3>
+<p>Escape sequences control terminal behavior. Two main types: <strong>CSI</strong> (Control Sequence Introducer) for cursor/display and <strong>OSC</strong> (Operating System Command) for terminal features.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Command</th>
+<th>Breakdown</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[2J'</code></td>
+<td><code>\e[</code> + <code>2</code> + <code>J</code></td>
+<td>clear entire screen (<code>J</code>=erase, <code>2</code>=all)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[10;5H'</code></td>
+<td><code>\e[</code> + <code>10;5</code> + <code>H</code></td>
+<td>move cursor to row 10, col 5 (<code>H</code>=position)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[31mRed\e[0m'</code></td>
+<td><code>\e[</code> + <code>31</code> + <code>m</code></td>
+<td>set text red (<code>m</code>=SGR, <code>31</code>=red fg)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[0m'</code></td>
+<td><code>\e[</code> + <code>0</code> + <code>m</code></td>
+<td>reset all attributes (<code>0</code>=reset)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[2 q'</code></td>
+<td><code>\e[</code> + <code>2</code> + <code>q</code></td>
+<td>set cursor to block (<code>q</code>=cursor shape)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[5 q'</code></td>
+<td><code>\e[</code> + <code>5</code> + <code>q</code></td>
+<td>set cursor to bar/beam</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[?25l'</code></td>
+<td><code>\e[</code> + <code>?25</code> + <code>l</code></td>
+<td>hide cursor (<code>l</code>=low/off)</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td><code>printf '\e[?25h'</code></td>
+<td><code>\e[</code> + <code>?25</code> + <code>h</code></td>
+<td>show cursor (<code>h</code>=high/on)</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]0;My Title\a'</code></td>
+<td><code>\e]</code> + <code>0;</code> + <code>title</code> + <code>\a</code></td>
+<td>set window title</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]9;%s\e\\' "msg"</code></td>
+<td><code>\e]</code> + <code>9;</code> + <code>msg</code> + <code>\e\\</code></td>
+<td>desktop notification (works over SSH)</td>
+</tr>
+<tr>
+<td>OSC</td>
+<td><code>printf '\e]52;c;%s\a' "$(echo -n 'hello' \| base64)"</code></td>
+<td><code>\e]</code> + <code>52;c;</code> + <code>BASE64</code> + <code>\a</code></td>
+<td>copy to clipboard</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key:</strong>
+- <code>\e</code> or <code>\033</code> = ESC (0x1B)
+- <code>\a</code> or <code>\007</code> = BEL (terminates OSC)
+- CSI ends with a letter (<code>J</code>, <code>H</code>, <code>m</code>, <code>q</code>, <code>l</code>, <code>h</code>)
+- OSC ends with BEL (<code>\a</code>) or ST (<code>\e\\</code>)</p>
+<p><strong>SGR (Select Graphic Rendition) codes for <code>\e[...m</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Effect</th>
+<th>Code</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>reset all</td>
+<td><code>1</code></td>
+<td>bold</td>
+</tr>
+<tr>
+<td><code>30-37</code></td>
+<td>fg colors</td>
+<td><code>40-47</code></td>
+<td>bg colors</td>
+</tr>
+<tr>
+<td><code>38;5;N</code></td>
+<td>256-color fg</td>
+<td><code>48;5;N</code></td>
+<td>256-color bg</td>
+</tr>
+<tr>
+<td><code>38;2;R;G;B</code></td>
+<td>truecolor fg</td>
+<td><code>48;2;R;G;B</code></td>
+<td>truecolor bg</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example combining:</strong> <code>\e[1;31m</code> = bold + red, <code>\e[38;2;255;100;0mOrange\e[0m</code> = truecolor orange then reset</p>
+<p><strong>OSC 52 clipboard breakdown:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>printf &#39;\e]52;c;%s\a&#39; &quot;$(echo -n &#39;hello&#39; | base64)&quot;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>        │ │  │ │       │                   │
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>        │ │  │ │       │                   └─ base64 encode (required by spec)
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>        │ │  │ │       └─ substituted into %s
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        │ │  │ └───────── \a = BEL, &quot;end of message&quot;
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        │ │  └─────────── c = clipboard target (c=clipboard, p=primary, s=select)
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>        │ └────────────── 52 = clipboard operation (xterm assigned number)
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>        └──────────────── \e] = OSC introducer (&quot;hey terminal, incoming command&quot;)
+</span></code></pre></div>
+<p>Why base64? The clipboard content might contain special characters that would break the escape sequence. Base64 ensures it's safe ASCII.</p>
+<p>Works over SSH because the escape sequence travels through the terminal stream back to your <em>local</em> terminal (kitty/wezterm/etc) which handles the actual clipboard.</p>
+<p>Ref: https://terminalguide.namepad.de/seq/osc-52/</p>
+<hr />
+<h3 id="revisiting-folding">Revisiting folding<a class="headerlink" href="#revisiting-folding" title="Permanent link">&para;</a></h3>
+<p>So can do it like this (with LSP)
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">o</span><span class="p">.</span><span class="py">foldmethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;expr&#39;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">vim</span><span class="p">.</span><span class="py">o</span><span class="p">.</span><span class="py">foldexpr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;v:lua.vim.lsp.foldexpr()&#39;</span>
+</span></code></pre></div></p>
+<p>See <code>:h vim.lsp.foldexpr()</code> for more details on how it works</p>
+<p>An interactive way to see it for current line is
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">:</span><span class="nv">echo</span><span class="w"> </span><span class="nv">v</span><span class="p">:</span><span class="py">lua</span><span class="p">.</span><span class="py">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="nf">foldexpr</span><span class="p">(</span><span class="nf">line</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</span></code></pre></div></p>
+<p>Whereby <code>line('.')</code> is current line (see <code>:h :line()</code>) and the <code>vim.lsp.foldexpr()</code> takes an arg of the current line number</p>
+<p>To use treesitter it must be
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldmethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;expr&quot;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldexpr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;v:lua.vim.treesitter.foldexpr()&quot;</span>
+</span></code></pre></div>
+see https://neovim.io/doc/user/treesitter.html#vim.treesitter.foldexpr()</p>
+<p>Similarly, can test it with 
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nv">echo</span><span class="w"> </span><span class="nv">v</span><span class="p">:</span><span class="py">lua</span><span class="p">.</span><span class="py">vim</span><span class="p">.</span><span class="py">treesitter</span><span class="p">.</span><span class="nf">foldexpr</span><span class="p">(</span><span class="nf">line</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</span></code></pre></div></p>
+<h4 id="foldlevel-foldlevelstart">foldlevel / foldlevelstart<a class="headerlink" href="#foldlevel-foldlevelstart" title="Permanent link">&para;</a></h4>
+<p><code>foldlevel</code> is the <strong>active threshold</strong> for a buffer — folds deeper than N are closed.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>foldlevel=0   → all folds closed
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>foldlevel=1   → only level-1 folds open
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>foldlevel=99  → everything open
+</span></code></pre></div>
+<p><code>foldlevelstart</code> sets the initial <code>foldlevel</code> when a buffer opens. Default is 0 (all closed).</p>
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldlevelstart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="w">  </span><span class="c1">-- start with all folds open</span>
+</span></code></pre></div>
+<hr />
+<h3 id="treesitter-and-folding">Treesitter and folding<a class="headerlink" href="#treesitter-and-folding" title="Permanent link">&para;</a></h3>
+<p>Ok so claude came up with a very interesting note about treesitter and how it supports folding.</p>
+<p>Treesitter has flags for types of treesitter (nodes?) on which to do folds. For SQL this is https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/sql/folds.scm here where it is JUST <code>statement</code> notes. (<code>WITH</code>, <code>SELECT</code>) i believe but not including union selects?</p>
+<p>So if i go into a <code>sql</code> file with <code>select * .... union all select</code> the second <code>select</code> is NOT a statement hence can't fold on it!</p>
+<p>So have some options:
+- use LSP for SQL?
+- override treesitter to add fold commands for union/select?</p>
+<blockquote>
+<p>also need to add fallback to indent for <code>:LspInfo</code> which is of filetype <code>checkhealth</code> no supported by treesitter or LSP (i assume)</p>
+</blockquote>
+<p>Also.... trying out the <code>sqls</code> and <code>sqlls</code> couldnt get folding to work?</p>
+<p>Well.... checking out https://neovim.io/doc/user/lsp.html it says you need "textDocument/foldingRange" to support folding?</p>
+<p>And with <code>sqlls</code> I tried:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">:</span><span class="k">redir</span> <span class="p">&gt;</span>pls.txt
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="p">:</span><span class="k">lua</span> <span class="p">=</span><span class="k">vim</span>.<span class="nb">lsp</span>.get_active_clients<span class="p">()</span>[<span class="m">1</span>].server_capabilities
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="p">:</span><span class="k">redir</span> END
+</span></code></pre></div>
+And couldnt see it there....</p>
+<p>Claude wrote me this a custom fallback function for folding myself?
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kr">function</span><span class="w"> </span><span class="nf">CustomFoldExpr</span><span class="p">()</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">lnum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">v</span><span class="p">.</span><span class="py">lnum</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">api</span><span class="p">.</span><span class="nf">nvim_get_current_buf</span><span class="p">()</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">ts_ok</span><span class="p">,</span><span class="w"> </span><span class="nv">ts_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="nv">vim</span><span class="p">.</span><span class="py">treesitter</span><span class="p">.</span><span class="py">foldexpr</span><span class="p">)</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">ts_ok</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">ts_result</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="s1">&#39;0&#39;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">ts_result</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">b</span><span class="p">[</span><span class="nv">buf</span><span class="p">].</span><span class="nv">fold_provider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;treesitter&#39;</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nv">ts_result</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">  </span><span class="kr">end</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="py">b</span><span class="p">[</span><span class="nv">buf</span><span class="p">].</span><span class="nv">fold_provider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;indent&#39;</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">indent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">fn</span><span class="p">.</span><span class="nf">indent</span><span class="p">(</span><span class="nv">lnum</span><span class="p">)</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">sw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">bo</span><span class="p">[</span><span class="nv">buf</span><span class="p">].</span><span class="nv">shiftwidth</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">sw</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">    </span><span class="nv">sw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">bo</span><span class="p">[</span><span class="nv">buf</span><span class="p">].</span><span class="nv">tabstop</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">  </span><span class="kr">end</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nb">math.floor</span><span class="p">(</span><span class="nv">indent</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nv">sw</span><span class="p">)</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="kr">end</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="kr">function</span><span class="w"> </span><span class="nf">ShowFoldProvider</span><span class="p">()</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">provider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">b</span><span class="p">.</span><span class="py">fold_provider</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;unknown&#39;</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">  </span><span class="nv">vim</span><span class="p">.</span><span class="nf">notify</span><span class="p">(</span><span class="s1">&#39;fold provider: &#39;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">provider</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">log</span><span class="p">.</span><span class="py">levels</span><span class="p">.</span><span class="py">INFO</span><span class="p">)</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">provider</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="kr">end</span>
+</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>
+</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldmethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;expr&#39;</span>
+</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a><span class="nv">vim</span><span class="p">.</span><span class="py">opt</span><span class="p">.</span><span class="py">foldexpr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;v:lua.CustomFoldExpr()&#39;</span>
+</span></code></pre></div></p>
+<hr />
+<h3 id="treesitter-folding-quirk-with-multi-line-signatures">Treesitter folding quirk with multi-line signatures<a class="headerlink" href="#treesitter-folding-quirk-with-multi-line-signatures" title="Permanent link">&para;</a></h3>
+<p><code>vim.treesitter.foldexpr()</code> breaks fold hierarchy when a function has a multi-line signature. Example:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_st8_bet_data</span><span class="p">(</span>   <span class="c1"># foldexpr: &gt;3 (starts level 3 fold)</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>        <span class="bp">self</span><span class="p">,</span>                  <span class="c1"># foldexpr: 3</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>        <span class="n">record</span><span class="p">:</span> <span class="n">ArchiveRecord</span><span class="p">,</span> <span class="c1"># foldexpr: 3</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParseResult</span><span class="p">:</span>          <span class="c1"># foldexpr: 3</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>        <span class="k">try</span><span class="p">:</span>                   <span class="c1"># foldexpr: &gt;3 (starts NEW level 3 fold)</span>
+</span></code></pre></div></p>
+<p>The <code>parameters</code> treesitter node spans multiple lines, inflating the fold level to 3 (class &gt; func &gt; parameters). When <code>parameters</code> ends, the foldexpr never drops back to level 2 before <code>try_statement</code> starts its own <code>&gt;3</code>. Vim sees two separate level-3 folds rather than a level-2 fold containing a level-3 fold.</p>
+<p>Result: closing the function fold only collapses the signature (lines 108-111), not the body. The <code>try</code> block is a separate fold at the same level.</p>
+<p>Key foldexpr syntax (<code>:h fold-expr</code>):
+- <code>&gt;N</code> = <strong>start</strong> a new fold at level N
+- <code>N</code> = continue at level N
+- <code>&lt;N</code> = end a fold at level N</p>
+<p>Useful built-in level commands:
+- <code>zm</code>/<code>zr</code> = increment/decrement foldlevel by 1
+- <code>zM</code>/<code>zR</code> = close/open all folds
+- <code>:set foldlevel=N</code> = close all folds deeper than N</p>
+<p>Single-line signatures fold correctly. This is <strong>not</strong> a treesitter parser bug - the parser correctly nests <code>try_statement</code> inside <code>function_definition</code>. The bug is in <strong>neovim's <code>vim.treesitter.foldexpr()</code></strong> which translates the tree into fold levels. It counts <code>parameters</code> as a foldable multi-line node at the same depth as <code>try_statement</code> (both direct children of <code>function_definition</code>), so it assigns them the same level instead of treating the function body as deeper than the signature. LSP folding (<code>vim.lsp.foldexpr()</code>) may handle it better but LSP fold support varies by server.</p>
+<hr />
+<h2 id="neovim-misc">Neovim misc<a class="headerlink" href="#neovim-misc" title="Permanent link">&para;</a></h2>
+<h3 id="buffers">Buffers<a class="headerlink" href="#buffers" title="Permanent link">&para;</a></h3>
+<p>Ok, time to start making some notes on neovim, will be a long journey I'm sure</p>
+<p>To start with buffers
+- telescope has <code>space space</code> to view buffers
+- <code>echo bufnr()</code> (or <code>echo bufname()</code> to view buffer name)
+- view <code>help buffers</code> to view vim's help
+- according to claude, <code>ctrl-g</code> is also view buffer number?</p>
+<p>This is however false, as i found out!</p>
+<blockquote>
+<p>to view vim's list of all commands do <code>:help index</code>. then can search for <code>ctrl-g</code> and see the following line
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>|CTRL-G|    CTRL-G         display current file name and position
+</span></code></pre></div></p>
+</blockquote>
+<p>Right I FINALLY know what the buffer things mean in vim</p>
+<blockquote>
+<p>(yes i know i could have just done <code>:h buffers</code> all this time...)</p>
+</blockquote>
+<p>But, <code>h</code> is hidden, <code>a</code> is active and </p>
+<p>Ahhh and unlisted buffers! that's where help, outline, aerial lazy etc put their buffers! makes sense now.</p>
+<p>To view just to <code>:buffers!</code> with the exclamation mark</p>
+<h3 id="command-redirection">Command redirection<a class="headerlink" href="#command-redirection" title="Permanent link">&para;</a></h3>
+<p>see <code>:help redir</code>
+e.g.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>:redir &gt;pls.txt
+</span></code></pre></div>
+then
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>:registers
+</span></code></pre></div>
+then
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>:redir END
+</span></code></pre></div></p>
+<h3 id="type-hints">Type hints<a class="headerlink" href="#type-hints" title="Permanent link">&para;</a></h3>
+<p>So... type hints in lua are.. interesting, why they couldnt just use typescripts way? 😠</p>
+<p>Turns out i can configure the lua language server DIRECTLY.</p>
+<p>TODO
+I need to research this more, but can configure <code>workspace.library</code>?
+e.g. from claude? if i wanted to set some types file for a lib?
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>{
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>  &quot;workspace.library&quot;: [&quot;./yazi_types.lua&quot;]
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>}
+</span></code></pre></div></p>
+<p>But i actually already have lazydev installed, which according to claude helps as it can
+- adds nvim library stuffs to lua (guess would be nightmare trying to do myself)</p>
+<blockquote>
+<p>already added wezterm types in there</p>
+</blockquote>
+<h3 id="finding-commands">Finding commands<a class="headerlink" href="#finding-commands" title="Permanent link">&para;</a></h3>
+<p>With my neovim setup based on kickstart, i have <code>leader(space)-s-k</code> to search commands</p>
+<p>But in general (from claude 😆)</p>
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>  :help index           <span class="c">&quot; All commands overview</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>  :help normal<span class="p">-</span>index    <span class="c">&quot; Normal mode commands</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>  :help insert<span class="p">-</span>index    <span class="c">&quot; Insert mode commands</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>  :help visual<span class="p">-</span>index    <span class="c">&quot; Visual mode commands</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>  :help <span class="k">ex</span><span class="p">-</span>cmd<span class="p">-</span>index    <span class="c">&quot; Ex commands (:commands)</span>
+</span></code></pre></div>
+<p>:help index is the closest to "view all keybindings" - it shows built-in Vim commands organized by mode.</p>
+<p>For your custom mappings, use:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="p">:</span>nmap    <span class="c">&quot; normal mode</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="p">:</span>imap    <span class="c">&quot; insert mode</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="p">:</span>vmap    <span class="c">&quot; visual mode</span>
+</span></code></pre></div></p>
+<p>nice, <code>cat pls.txt</code> gives:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>Type<span class="w"> </span>Name<span class="w"> </span>Content
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="w">  </span>l<span class="w">  </span><span class="s2">&quot;&quot;</span><span class="w">   </span><span class="p">|</span>CTRL-G<span class="p">|</span>^ICTRL-G^I^I<span class="w">   </span>display<span class="w"> </span>current<span class="w"> </span>file<span class="w"> </span>name<span class="w"> </span>and<span class="w"> </span>position^J
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="w">  </span>l<span class="w">  </span><span class="s2">&quot;0   |CTRL-G|^ICTRL-G^I^I   display current file name and position^J</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="s2">  l  &quot;</span><span class="m">1</span><span class="w">     </span><span class="s2">&quot;</span><span class="nv">$schema</span><span class="s2">&quot;</span>:<span class="w"> </span><span class="s2">&quot;/etc/xdg/swaync/configSchema.json&quot;</span>,^J
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>.................
+</span></code></pre></div></p>
+<h3 id="lua">Lua<a class="headerlink" href="#lua" title="Permanent link">&para;</a></h3>
+<p>so lua in neovim has alot of ways to interact with vim itself, here some of the main ones
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="k">vim</span>.api        <span class="p">--</span> Low<span class="p">-</span>level Neovim API <span class="p">(</span><span class="k">buffers</span><span class="p">,</span> windows<span class="p">,</span> keymaps<span class="p">)</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="k">vim</span>.<span class="nb">lsp</span>        <span class="p">--</span> LSP client functions
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="k">vim</span>.diagnostic <span class="p">--</span> Diagnostics <span class="p">(</span>errors<span class="p">,</span> warnings<span class="p">)</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="k">vim</span>.fn         <span class="p">--</span> Call Vimscript functions from Lua
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="k">vim</span>.<span class="nb">keymap</span>     <span class="p">--</span> Set keymaps <span class="p">(</span>nicer than <span class="k">vim</span>.api.nvim_set_keymap<span class="p">)</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="k">vim</span>.<span class="k">opt</span>        <span class="p">--</span> Set <span class="k">options</span> <span class="p">(</span>like <span class="k">set</span> <span class="k">number</span><span class="p">,</span> <span class="k">set</span> <span class="nb">mouse</span><span class="p">=</span><span class="k">a</span><span class="p">)</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="k">vim</span>.cmd        <span class="p">--</span> <span class="k">vim</span> commands?
+</span></code></pre></div></p>
+<p>but also, given that extensions/plugins must register commands with vim itself to be able to call</p>
+<p>e.g.
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>  <span class="k">vim</span>.api.nvim_create_user_command<span class="p">(</span><span class="s1">&#39;HelloWorld&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>    print<span class="p">(</span><span class="s1">&#39;Hello from Lua!&#39;</span><span class="p">)</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>  <span class="k">end</span><span class="p">,</span> {}
+</span></code></pre></div></p>
+<p>registers <code>HelloWorld</code> with vim itself (but defined in lua)? so we can call <code>:HelloWorld</code></p>
+<p>One useful link for documentation on <a href="https://luals.github.io/wiki/annotations/">lua type hints is here</a></p>
+<h3 id="lsps">Lsps<a class="headerlink" href="#lsps" title="Permanent link">&para;</a></h3>
+<p>It seems that most lsp configs are NOT typed. i guess that calling
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nb">require</span><span class="p">(</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">)[</span><span class="nv">server_name</span><span class="p">].</span><span class="nf">setup</span><span class="p">(</span><span class="nv">server</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>would be difficult to type all of them?</p>
+<p>BUT all the configurations can be found <a href="https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls">here</a>, just have to dig through the docs normally</p>
+<p>Now i couldn't get luals to give type hints to work, and <code>lazydev</code> docs are about as useful as a sack of potatoes, so I'm digging through myself. (with some help from claude)</p>
+<p>Now
+- neovim's state is installed to <code>~/.local/share/nvim</code>
+- once again 0 documentation about this very helpfully, found out the <code>lua ls</code> from mason is at <code>~/.local/share/nvim/mason/bin/lua-language-server</code>
+- soooo, running <code>`~/.local/share/nvim/mason/bin/lua-language-server --help</code>, found out can add <code>--loglevel=debug</code> to cmd args!</p>
+<p>I've yet to figure out how to put this into my own "standard" lib, but having a utility to deep print all lua object  properties.... welllll turns out thats <code>vim.inspect</code> 😆. but will put it here for my own learnings
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">printer_util</span><span class="p">(</span><span class="nv">entry</span><span class="p">)</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">inner</span><span class="p">(</span><span class="nv">key</span><span class="p">,</span><span class="w"> </span><span class="nv">value</span><span class="p">,</span><span class="w"> </span><span class="nv">indent</span><span class="p">)</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">value</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;table&quot;</span><span class="w"> </span><span class="kr">then</span>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="w">            </span><span class="nb">print</span><span class="p">(</span><span class="nb">string.rep</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">indent</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">key</span><span class="p">))</span>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="w">            </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">value</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w">                </span><span class="nf">inner</span><span class="p">(</span><span class="nv">k</span><span class="p">,</span><span class="w"> </span><span class="nv">v</span><span class="p">,</span><span class="w"> </span><span class="nv">indent</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-32-7"><a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a><span class="w">            </span><span class="kr">end</span>
+</span><span id="__span-32-8"><a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a><span class="w">        </span><span class="kr">else</span>
+</span><span id="__span-32-9"><a id="__codelineno-32-9" name="__codelineno-32-9" href="#__codelineno-32-9"></a><span class="w">            </span><span class="nb">print</span><span class="p">(</span><span class="nb">string.rep</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">indent</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">key</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;: &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">value</span><span class="p">))</span>
+</span><span id="__span-32-10"><a id="__codelineno-32-10" name="__codelineno-32-10" href="#__codelineno-32-10"></a><span class="w">        </span><span class="kr">end</span>
+</span><span id="__span-32-11"><a id="__codelineno-32-11" name="__codelineno-32-11" href="#__codelineno-32-11"></a><span class="w">    </span><span class="kr">end</span>
+</span><span id="__span-32-12"><a id="__codelineno-32-12" name="__codelineno-32-12" href="#__codelineno-32-12"></a><span class="w">    </span><span class="nf">inner</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">entry</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-32-13"><a id="__codelineno-32-13" name="__codelineno-32-13" href="#__codelineno-32-13"></a><span class="kr">end</span>
+</span></code></pre></div></p>
+<h3 id="understanding-the-docs">Understanding the docs<a class="headerlink" href="#understanding-the-docs" title="Permanent link">&para;</a></h3>
+<p>Can use <code>:h notation</code> to see how the neovim documentation refers to stuff like option chars in <code>[]</code> (e.g. <code>:mes[sages]</code> could be <code>:mes</code> or <code>:messages</code>)</p>
+<p>Another good one is <code>:helpgrep</code> for searching through the help. Although finding help (sections NOT searching) is provided by telescope via <code>&lt;LEADER&gt;-s-h</code></p>
+<p>Another one is <code>:h key-notation</code>.</p>
+<blockquote>
+<p>something to note is its not mentioned anywhere epxlicitly that sometimes in the docs they use <code>caret notation</code>, like <code>^V</code> for <code>ctrl-v</code></p>
+</blockquote>
+<p>Didn't know  about execution mode <code>gQ</code> either, pretty cool for re-running commands</p>
+<h3 id="tags">Tags<a class="headerlink" href="#tags" title="Permanent link">&para;</a></h3>
+<p>Just do <code>:h tagsrch</code> honestly (short for tag and special search)
+Apparently calling <code>:ta[g]</code> is the same as <code>C-]</code></p>
+<p>soooo
+<code>C-]</code> = <code>:tag</code> = <code>:ta</code></p>
+<p>Also can name tag to go to? like <code>:tag help</code> to go to help tag</p>
+<p>So tags are not that fancy after all, just <code>*tag_here*</code>. like in the outline help can use <code>c-]</code> on <code>outline-prerequisites</code> to jump to the tag, but unformatted text is just like this!</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>➜ jollof ~ cat /home/jollof/.local/share/nvim/lazy/outline.nvim/doc/outline.txt
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>*outline.txt*             For NVIM v0.7.0
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>==============================================================================
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>Table of Contents                                  *outline-table-of-contents*
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>  - Prerequisites                                      |outline-prerequisites|
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a>  - Installation                                        |outline-installation|
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a>  - Setup                                                      |outline-setup|
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a>  - Configuration                                      |outline-configuration|
+</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a>  - Providers                                              |outline-providers|
+</span><span id="__span-33-13"><a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a>  - Commands                                                |outline-commands|
+</span><span id="__span-33-14"><a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a>  - Default keymaps                                  |outline-default-keymaps|
+</span><span id="__span-33-15"><a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a>  - Highlights                                            |outline-highlights|
+</span><span id="__span-33-16"><a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a>  - Lua API                                                  |outline-lua-api|
+</span><span id="__span-33-17"><a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a>  - Tips                                                        |outline-tips|
+</span><span id="__span-33-18"><a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a>  - Recipes                                                  |outline-recipes|
+</span><span id="__span-33-19"><a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a>  - Neovim 0.7                                            |outline-neovim-0.7|
+</span><span id="__span-33-20"><a id="__codelineno-33-20" name="__codelineno-33-20" href="#__codelineno-33-20"></a>  - Limitations                                          |outline-limitations|
+</span><span id="__span-33-21"><a id="__codelineno-33-21" name="__codelineno-33-21" href="#__codelineno-33-21"></a>  - Related plugins                                  |outline-related-plugins|
+</span><span id="__span-33-22"><a id="__codelineno-33-22" name="__codelineno-33-22" href="#__codelineno-33-22"></a>------------------------------------------------------------------------------
+</span><span id="__span-33-23"><a id="__codelineno-33-23" name="__codelineno-33-23" href="#__codelineno-33-23"></a>
+</span><span id="__span-33-24"><a id="__codelineno-33-24" name="__codelineno-33-24" href="#__codelineno-33-24"></a>PREREQUISITES                                          *outline-prerequisites*
+</span></code></pre></div>
+<p>Vim stores these in files (somewhere) to keep an index of tags so can jump between files</p>
+<h3 id="registers">Registers<a class="headerlink" href="#registers" title="Permanent link">&para;</a></h3>
+<p><code>stressed-boomer</code></p>
+<p>Ahhhh finally, i should have googled this a LONG time ago.</p>
+<p>The black hole register means the data dies, so can delete without putting it into the register!.</p>
+<p>e.g. <code>"_d</code> to delete to black hole register</p>
+<p>oh this is cool!
+<div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>:let @{reg-name} = {expr1}          *:let-register* *:let-@*
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>            Write the result of the expression {expr1} in register
+</span></code></pre></div></p>
+<p>Like.... erm?
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="p">:</span><span class="k">let</span> @<span class="k">a</span> <span class="p">=</span> bufnr<span class="p">()</span>
+</span></code></pre></div></p>
+<p>to set buffer <code>a</code> to buffer number? couldn't think of a better example ‍‍🤷</p>
+<p>Like.... erm?
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="p">:</span><span class="k">let</span> @<span class="k">a</span> <span class="p">=</span> bufnr<span class="p">()</span>
+</span></code></pre></div></p>
+<p>to set buffer <code>a</code> to buffer number? couldn't think of a better example ‍‍🤷</p>
+<p>The <code>+</code> register is <code>quoteplus</code> which apparently is the system clipboard?
+So can do
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="k">let</span> @<span class="p">+</span> <span class="p">=</span> <span class="s2">&quot;hello there pls&quot;</span>
+</span></code></pre></div></p>
+<p>To set a string to clipboard</p>
+<h3 id="tabs">Tabs<a class="headerlink" href="#tabs" title="Permanent link">&para;</a></h3>
+<p>Didn't realise this b ut I can use <code>:1tabn</code> to go to tab 1 and <code>:4tabn</code> to go to tab 4 etc
+This is also equiv to <code>1gt</code></p>
+<p>Also I can stop doing <code>:tabnew</code> and then <code>:help ...</code></p>
+<p>And just (if I'd bothered to do this before lol 🤣 <code>:h :tab</code>)
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="p">:</span><span class="k">tab</span> :help ...
+</span></code></pre></div></p>
+<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<p><strong>Pipe</strong></p>
+<p>So <code>:help :bar</code> will explain but can show an example that makes more sense:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="p">:</span><span class="k">tabnew</span> <span class="p">|</span> :<span class="k">h</span> <span class="k">buffers</span>
+</span></code></pre></div></p>
+<p>Will notice above that the help is in the bottom half of the window if this is called. I.e. the commands are chained NOT piped. My interpretation of this is
+1. open a new tab
+2. open help for buffers</p>
+<p>Ok wow this example taught me alot:
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="p">:</span>execute <span class="s1">&#39;r !ls&#39;</span> <span class="p">|</span> &#39;[
+</span></code></pre></div></p>
+<p>read i guess takes not file file name but also bash commands to read in?</p>
+<p>And then (remember <code>|</code> is NOT pipe but chaining commands), go to mark <code>[</code> which is beginning of yank or previously unchanged text (i.e. top of output in english)</p>
+<blockquote>
+<p>remember that ' is for marks</p>
+</blockquote>
+<p><strong>Set</strong></p>
+<p>So set sets an option but would be interesting to see a test.</p>
+<p>I actually have <code>relativenumber</code> set in my <code>init.lua</code> but I think some plugins must be overriding because when i call <code>set relativenumber?</code> to retrieve its blank!</p>
+<p>Something more simple is the <code>:set timeoutlen?</code> gets me the <code>timeoutlen = 300</code> value</p>
+<p><strong>Messages</strong></p>
+<p>Really need to read into this more, but <code>:NoiceAll</code> has more messages.
+According to claude <code>:redraw</code> can help flush messages? although that doesn't make sense to me as this is Noice and NOT vim internally</p>
+<p><strong>Delete Command</strong>
+FML..... I was reading the wrong command
+<code>:[range]d register</code>
+wondering why it wasn't working.</p>
+<p>but this, <code>:d</code> is DIFFERENT to <code>d</code>, as it is an execution/command</p>
+<p>TODO
+- read <a href="https://github.com/folke/noice.nvim/wiki/A-Guide-to-Messages">this</a>, noice guide on msgs
+- have a read through <code>:help ui-messages</code></p>
+<p><strong>Execute</strong>
+Thanks clude, i didn't understand this myself...</p>
+<p>Literally just executing stringified expressions, but vim expressions (not terminal).</p>
+<p>Like, lets combine a register?</p>
+<p>So earlier I was playing around with setting registers. <code>:echo getreg('a')</code> prints 3, the buffer name I set earlier.</p>
+<p>So then to open the tab with a buffer from register <code>a</code> can do
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="p">:</span>execute <span class="s2">&quot;buffer&quot;</span> getreg<span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>`
+</span></code></pre></div></p>
+<p>Or another one(I suppose as we are technically in cmd mode <code>gg</code> wouldn't work without the <code>normal</code> prefix)
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p">:</span>execute <span class="s2">&quot;normal! gg&quot;</span>              <span class="c">&quot; Runs normal mode commands</span>
+</span></code></pre></div></p>
+<p><strong>Commands vs functions vs expressions</strong>
+An important distinction here is that <code>getreg</code> is a vim <strong>function</strong>, NOT a command</p>
+<ul>
+<li>functions cannot be called like <code>:</code> as commands are</li>
+<li>functions can return values</li>
+<li>functions must be invoked like <code>run_function()</code> with parenthesis</li>
+</ul>
+<p>Or wait, I (think) command is a bit ambiguous here? A command being like <code>:e</code> or <code>:reg</code> etc etc.</p>
+<p>Ok doing <code>:h vimeval.txt</code> would be a good read as it covers vim expressions and its syntax which is pretty key to understanding all of this long term</p>
+<p>This table is a super useful reference point from <code>:help expression</code> to see how to access different types of vars/registers etc
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="p">|</span>expr9<span class="p">|</span> <span class="k">number</span>          <span class="k">number</span> constant
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="c">    &quot;string&quot;        string constant, backslash is special</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>    `<span class="s1">&#39;string&#39;</span>`      string constant<span class="p">,</span> &#39; <span class="k">is</span> doubled
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>    [expr1<span class="p">,</span> ...]        <span class="p">|</span>List<span class="p">|</span>
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a>    `{expr1: expr1<span class="p">,</span> ...}`   <span class="p">|</span>Dictionary<span class="p">|</span>
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a>    #{<span class="nb">key</span>: expr1<span class="p">,</span> ...}  <span class="p">|</span>Dictionary<span class="p">|</span>
+</span><span id="__span-43-7"><a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>    &amp;<span class="k">option</span>         <span class="k">option</span> value
+</span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>    <span class="p">(</span>expr1<span class="p">)</span>         nested expression
+</span><span id="__span-43-9"><a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a>    variable        internal variable
+</span><span id="__span-43-10"><a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a>    va{ria}ble      internal variable with curly braces
+</span><span id="__span-43-11"><a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a>    $VAR            environment variable
+</span><span id="__span-43-12"><a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a>    @<span class="k">r</span>          contents of <span class="k">register</span> <span class="s2">&quot;r&quot;</span>
+</span><span id="__span-43-13"><a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a>    <span class="k">function</span><span class="p">(</span>expr1<span class="p">,</span> ...<span class="p">)</span>    <span class="k">function</span> <span class="k">call</span>
+</span><span id="__span-43-14"><a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a>    func{ti}<span class="k">on</span><span class="p">(</span>expr1<span class="p">,</span> ...<span class="p">)</span>  <span class="k">function</span> <span class="k">call</span> with curly braces
+</span><span id="__span-43-15"><a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a>    `{args <span class="p">-&gt;</span> expr1}`   lambda expression
+</span></code></pre></div></p>
+<p><strong>Eval</strong>
+To show here a good usecase, it clearly says in the docs that <code>:h :echo</code> that you <code>:echo {expr}</code> i.e. echo and expression
+So <code>:echo 4+5</code> is 9. where 4+5 is the expression</p>
+<p>Or, could have done <code>:echo eval("4+5")</code> to achieve the same thing</p>
+<p>So...
+- <code>:execute</code> executes a string (command written as text). e.g <code>:execute 'normal gg'</code>
+- <code>:echo</code> executes an expression and prints the result e.g. <code>:echo x</code> to print variable <code>x</code>
+- <code>eval</code> executes a string (expression written as text). e.g. <code>eval("x")</code> would retrieve variable <code>x</code> </p>
+<p><strong>History</strong>
+Wow must NOT forget these, command line history and search history respectively!
+- <code>q:</code>
+- <code>g/</code></p>
+<h3 id="regexps">Regexps<a class="headerlink" href="#regexps" title="Permanent link">&para;</a></h3>
+<p>Ok so I (roughly) understand what this magic stuff is about in regexp</p>
+<p>Can see from <code>:set magic?</code> that its <code>magic</code> (and NOT <code>nomagic</code>, strange syntax choice here from vim that <code>true</code> is <code>:set magic</code> and false is <code>:set nomagic</code>)... so the <code>no</code> is the invert bit?</p>
+<p>So the default behaviour is to take everything literally, like brackets (), pipe | etc...</p>
+<p>The only exception I have see is <code>/</code> which is the last pattern (ok this is much quicker than doing <code>/</code> and then up to find last pattern tbf). also backslash <code>\</code> must always be escaped</p>
+<p>Ok so default is 'magic':</p>
+<ul>
+<li>in magic, in general stuff must be escaped (like <code>\.</code> for literal dot)</li>
+<li><code>\m</code> forces magic mode (e.g. <code>\m\.</code> forces magic modes and searches for literal dot)</li>
+<li>in "no magic" (NOT default), magic characters are generally off (just <code>.</code> for literal dot)</li>
+<li><code>\M</code> forces no magic mode (e.g. <code>\M.</code> forces no magic mode and searches for literal dot)</li>
+</ul>
+<p>Additional modes
+- "very" magic, even <code>(</code> and <code>)</code> literals must be escaped</p>
+<blockquote>
+<p>this one is SO annoying. given the default is sort od regexp EXCEPT for braces 👿
+- <code>\v</code> triggers "very" magic, e.g. <code>\v\(</code> to search for <code>(</code> char
+- the default is <code>(</code> just to search for <code>(</code> char</p>
+</blockquote>
+<ul>
+<li>"very" not magic, even <code>\$</code> is required</li>
+<li><code>\V</code> to trigger "very" not magic</li>
+</ul>
+<h3 id="mappings">Mappings<a class="headerlink" href="#mappings" title="Permanent link">&para;</a></h3>
+<p>I ALWAYS get lost looking at the strange mapping syntax in vim <code>nnnoommapremap</code> shite. So i got claude to write me a diagram of the <code>i</code> (for insert), vs <code>no</code> for no remapping and various combinations....</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nmap</code></td>
+<td><strong>n</strong>ormal</td>
+<td>When you're just moving around</td>
+</tr>
+<tr>
+<td><code>imap</code></td>
+<td><strong>i</strong>nsert</td>
+<td>When you're typing text</td>
+</tr>
+<tr>
+<td><code>vmap</code></td>
+<td><strong>v</strong>isual</td>
+<td>When you've selected text</td>
+</tr>
+<tr>
+<td><code>xmap</code></td>
+<td>e<strong>x</strong>tended visual</td>
+<td>Visual block mode (strict visual)</td>
+</tr>
+<tr>
+<td><code>omap</code></td>
+<td><strong>o</strong>perator-pending</td>
+<td>After d, c, y, etc</td>
+</tr>
+<tr>
+<td><code>smap</code></td>
+<td><strong>s</strong>elect</td>
+<td>Select mode (like visual but different)</td>
+</tr>
+<tr>
+<td><code>cmap</code></td>
+<td><strong>c</strong>ommand-line</td>
+<td>When typing <code>:commands</code></td>
+</tr>
+<tr>
+<td><code>tmap</code></td>
+<td><strong>t</strong>erminal</td>
+<td>In terminal buffer</td>
+</tr>
+</tbody>
+</table>
+<h4 id="special-combinations">Special Combinations<a class="headerlink" href="#special-combinations" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Modes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:map</code></td>
+<td>n, v, o</td>
+<td>Works in normal, visual, and operator-pending</td>
+</tr>
+<tr>
+<td><code>:map!</code></td>
+<td>i, c</td>
+<td>Works in insert and command-line modes</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The <code>no</code> in <code>noremap</code></p>
+</blockquote>
+<p><strong>"no" = "NO remap"</strong> — it means <strong>disable remapping</strong> of the right-hand side. The "no" is a prefix meaning "don't allow remapping".</p>
+<h4 id="map-vs-noremap-the-key-difference">:map vs :noremap — The Key Difference<a class="headerlink" href="#map-vs-noremap-the-key-difference" title="Permanent link">&para;</a></h4>
+<h3 id="map-allows-remapping">:map (allows remapping)<a class="headerlink" href="#map-allows-remapping" title="Permanent link">&para;</a></h3>
+<p><div class="language-vim highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="p">:</span>map <span class="k">a</span> <span class="k">b</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="p">:</span>map <span class="k">b</span> <span class="k">c</span>
+</span></code></pre></div>
+<strong>You press:</strong> <code>a</code>
+- → remapped to <code>b</code>
+- → remapped again to <code>c</code>
+- <strong>Result:</strong> <code>c</code> executes</p>
+<p>⚠️ Can cause chains and loops!</p>
+<h4 id="noremap-disables-remapping">:noremap (disables remapping)<a class="headerlink" href="#noremap-disables-remapping" title="Permanent link">&para;</a></h4>
+<p><div class="language-vim highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="p">:</span><span class="nb">noremap</span> <span class="k">a</span> <span class="k">b</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="p">:</span>map <span class="k">b</span> <span class="k">c</span>
+</span></code></pre></div>
+<strong>You press:</strong> <code>a</code>
+- → mapped to <code>b</code> (literal, won't scan again)
+- <strong>Result:</strong> <code>b</code> executes</p>
+<p>✓ Safe and predictable!</p>
+<h4 id="all-the-noremap-variants">All the <code>noremap</code> variants<a class="headerlink" href="#all-the-noremap-variants" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nnoremap</code></td>
+<td>normal</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>inoremap</code></td>
+<td>insert</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>vnoremap</code></td>
+<td>visual</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>xnoremap</code></td>
+<td>visual block</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>onoremap</code></td>
+<td>operator-pending</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>snoremap</code></td>
+<td>select</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>cnoremap</code></td>
+<td>command-line</td>
+<td>No remap</td>
+</tr>
+<tr>
+<td><code>tnoremap</code></td>
+<td>terminal</td>
+<td>No remap</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why this matters:</strong> when a Vim mapping like <code>['&lt;C-/&gt;']</code> silently does nothing, or <code>&lt;C-[&gt;</code> behaves identically to <code>&lt;Esc&gt;</code>, the cause is almost always a mismatch between what <em>you think</em> the keypress sends and what the terminal <em>actually</em> sends.</p>
+<h3 id="the-ascii-table-in-two-halves">The ASCII table in two halves<a class="headerlink" href="#the-ascii-table-in-two-halves" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a> Dec  Hex  Char          Dec  Hex  Char
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>────────────────────    ────────────────────
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>  0   0x00  NUL    ◄──    64  0x40  @
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>  1   0x01  SOH    ◄──    65  0x41  A
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>  2   0x02  STX    ◄──    66  0x42  B
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>  ...                     ...
+</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a>  8   0x08  BS     ◄──    72  0x48  H     (Ctrl+H = Backspace)
+</span><span id="__span-46-8"><a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>  9   0x09  TAB    ◄──    73  0x49  I     (Ctrl+I = Tab)
+</span><span id="__span-46-9"><a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a>  10  0x0A  LF     ◄──    74  0x4A  J     (Ctrl+J = Enter/newline)
+</span><span id="__span-46-10"><a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a>  13  0x0D  CR     ◄──    77  0x4D  M     (Ctrl+M = Enter)
+</span><span id="__span-46-11"><a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a>  ...                     ...
+</span><span id="__span-46-12"><a id="__codelineno-46-12" name="__codelineno-46-12" href="#__codelineno-46-12"></a>  27  0x1B  ESC    ◄──    91  0x5B  [     (Ctrl+[ = Escape !)
+</span><span id="__span-46-13"><a id="__codelineno-46-13" name="__codelineno-46-13" href="#__codelineno-46-13"></a>  28  0x1C  FS     ◄──    92  0x5C  \
+</span><span id="__span-46-14"><a id="__codelineno-46-14" name="__codelineno-46-14" href="#__codelineno-46-14"></a>  29  0x1D  GS     ◄──    93  0x5D  ]
+</span><span id="__span-46-15"><a id="__codelineno-46-15" name="__codelineno-46-15" href="#__codelineno-46-15"></a>  30  0x1E  RS     ◄──    94  0x5E  ^
+</span><span id="__span-46-16"><a id="__codelineno-46-16" name="__codelineno-46-16" href="#__codelineno-46-16"></a>  31  0x1F  US     ◄──    95  0x5F  _     (Ctrl+_ = 0x1F)
+</span><span id="__span-46-17"><a id="__codelineno-46-17" name="__codelineno-46-17" href="#__codelineno-46-17"></a>────────────────────
+</span><span id="__span-46-18"><a id="__codelineno-46-18" name="__codelineno-46-18" href="#__codelineno-46-18"></a> 0-31: CONTROL codes      32-126: printable text
+</span></code></pre></div>
+<p>The <strong>left column (0–31)</strong> is not printable — these are control signals (move cursor, ring bell, etc). The <strong>right column (64–95)</strong> is the <code>@A-Z[\]^_</code> block of printable ASCII.</p>
+<h3 id="the-rule-ctrl-clears-bits-6-and-7">The rule: Ctrl clears bits 6 and 7<a class="headerlink" href="#the-rule-ctrl-clears-bits-6-and-7" title="Permanent link">&para;</a></h3>
+<p>Pressing <code>Ctrl</code> with a character in the <code>@</code>–<code>_</code> range (ASCII 64–95) <strong>masks off the top 2 bits</strong>, leaving only the bottom 5:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>  Ctrl + [   =   &#39;[&#39; AND 0b00011111
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>                   │
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>  &#39;[&#39; = 91 = 0b 0 1 0 1 1 0 1 1
+</span><span id="__span-47-4"><a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>                   │
+</span><span id="__span-47-5"><a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>  mask  =    0b 0 0 0 1 1 1 1 1   ← keep only bottom 5 bits
+</span><span id="__span-47-6"><a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>                   │
+</span><span id="__span-47-7"><a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a>  result =   0b 0 0 0 1 1 0 1 1  =  27  =  0x1B  =  ESC  ✓
+</span></code></pre></div>
+<p>The pattern is symmetric: each letter in <code>@</code>…<code>_</code> is <strong>exactly 64 higher</strong> than its control code, and 64 = <code>0b01000000</code> — bit 6. Masking it off is the same as subtracting 64.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>  Ctrl + _   =   &#39;_&#39; AND 0b00011111
+</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>
+</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>  &#39;_&#39; = 95 = 0b 0 1 0 1 1 1 1 1
+</span><span id="__span-48-4"><a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>  mask  =    0b 0 0 0 1 1 1 1 1
+</span><span id="__span-48-5"><a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>  result =   0b 0 0 0 1 1 1 1 1  =  31  =  0x1F  =  US  (Unit Separator)
+</span></code></pre></div>
+<h3 id="quick-reference-surprising-aliases">Quick reference: surprising aliases<a class="headerlink" href="#quick-reference-surprising-aliases" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>You press</th>
+<th>ASCII of key</th>
+<th>AND 0x1F</th>
+<th>Byte sent</th>
+<th>Vim name</th>
+<th>Common name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+@</code></td>
+<td>64 (<code>@</code>)</td>
+<td>0</td>
+<td><code>0x00</code></td>
+<td><code>&lt;C-@&gt;</code></td>
+<td>NUL</td>
+</tr>
+<tr>
+<td><code>Ctrl+H</code></td>
+<td>72 (<code>H</code>)</td>
+<td>8</td>
+<td><code>0x08</code></td>
+<td><code>&lt;C-H&gt;</code></td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td><code>Ctrl+I</code></td>
+<td>73 (<code>I</code>)</td>
+<td>9</td>
+<td><code>0x09</code></td>
+<td><code>&lt;C-I&gt;</code></td>
+<td>Tab</td>
+</tr>
+<tr>
+<td><code>Ctrl+J</code></td>
+<td>74 (<code>J</code>)</td>
+<td>10</td>
+<td><code>0x0A</code></td>
+<td><code>&lt;C-J&gt;</code></td>
+<td>Newline</td>
+</tr>
+<tr>
+<td><code>Ctrl+M</code></td>
+<td>77 (<code>M</code>)</td>
+<td>13</td>
+<td><code>0x0D</code></td>
+<td><code>&lt;C-M&gt;</code></td>
+<td>Enter/CR</td>
+</tr>
+<tr>
+<td><strong><code>Ctrl+[</code></strong></td>
+<td><strong>91 (<code>[</code>)</strong></td>
+<td><strong>27</strong></td>
+<td><strong><code>0x1B</code></strong></td>
+<td><strong><code>&lt;C-[&gt;</code></strong></td>
+<td><strong>Escape ← !!</strong></td>
+</tr>
+<tr>
+<td><code>Ctrl+\</code></td>
+<td>92 (<code>\</code>)</td>
+<td>28</td>
+<td><code>0x1C</code></td>
+<td><code>&lt;C-\&gt;</code></td>
+<td>FS</td>
+</tr>
+<tr>
+<td><code>Ctrl+_</code></td>
+<td>95 (<code>_</code>)</td>
+<td>31</td>
+<td><code>0x1F</code></td>
+<td><code>&lt;C-_&gt;</code></td>
+<td>US</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">This means <code>&lt;C-[&gt;</code> IS <code>&lt;Esc&gt;</code> — always</p>
+<p>They produce the exact same byte (<code>0x1B</code>). You cannot map <code>&lt;C-[&gt;</code> to do something different from <code>&lt;Esc&gt;</code> in a legacy terminal — they are identical. Kitty's extended keyboard protocol <em>can</em> distinguish them, but only if both the terminal and the application (Neovim, Telescope) opt in.</p>
+</div>
+<h3 id="the-c-edge-case">The <code>C-/</code> edge case<a class="headerlink" href="#the-c-edge-case" title="Permanent link">&para;</a></h3>
+<p><code>/</code> is ASCII 47, which is <strong>below 64</strong> — outside the clean <code>@</code>–<code>_</code> range. The AND rule gives <code>47 &amp; 31 = 15</code> (<code>0x0F</code>), not <code>0x1F</code>. So why do most terminals send <code>0x1F</code> for <code>Ctrl+/</code>?</p>
+<p>On a US keyboard, <code>/</code> and <code>?</code> share the same physical key. When applying a Ctrl modifier to a key outside the normal range, many terminals use the <strong>shifted</strong> variant of that key instead:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>  &#39;?&#39; = 63 = 0b 0 0 1 1 1 1 1 1   ← shifted &#39;/&#39; on US keyboard
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>  mask  =    0b 0 0 0 1 1 1 1 1
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>  result =   0b 0 0 0 1 1 1 1 1  =  31  =  0x1F
+</span></code></pre></div>
+<p><code>0x1F</code> is the same byte as <code>Ctrl+_</code>. So <code>Ctrl+/</code> and <code>Ctrl+_</code> arrive at Neovim <strong>as the same byte</strong>, and Neovim represents it as <code>&lt;C-_&gt;</code>.</p>
+<div class="admonition danger">
+<p class="admonition-title">This is why <code>['&lt;C-/&gt;'] = 'to_fuzzy_refine'</code> silently failed in Telescope</p>
+<p>The mapping was registered under the name <code>&lt;C-/&gt;</code>, but the terminal sent byte <code>0x1F</code> which Neovim labels <code>&lt;C-_&gt;</code>. Two different names, same physical key, no match → fell through to Telescope's default <code>&lt;C-/&gt;</code> handler (which_key).</p>
+<p>Fix: map <strong>both</strong> names:
+<div class="language-lua highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="p">[</span><span class="s1">&#39;&lt;C-/&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span><span class="p">,</span>
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="p">[</span><span class="s1">&#39;&lt;C-_&gt;&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;to_fuzzy_refine&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1">-- what the terminal actually sends</span>
+</span></code></pre></div></p>
+</div>
+<h3 id="verify-what-your-terminal-actually-sends">Verify what your terminal actually sends<a class="headerlink" href="#verify-what-your-terminal-actually-sends" title="Permanent link">&para;</a></h3>
+<p>Press a key in insert mode and insert the raw byte with <code>Ctrl+V</code>:</p>
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="c">&quot; In insert mode, press Ctrl+V then your key — shows the literal char</span>
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="c">&quot; e.g. Ctrl+V then Ctrl+[ inserts a literal ESC glyph (^[)</span>
+</span></code></pre></div>
+<p>Or check with <code>cat</code> in a shell — it prints the raw bytes:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>cat<span class="w">          </span><span class="c1"># start cat</span>
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>^/<span class="w">           </span><span class="c1"># press Ctrl+/, see what appears — likely shows as &#39;^_&#39; (0x1F)</span>
+</span><span id="__span-52-3"><a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>^<span class="o">[</span><span class="w">           </span><span class="c1"># press Ctrl+[, shows as &#39;^[&#39; (0x1B = ESC)</span>
+</span><span id="__span-52-4"><a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a>^C<span class="w">           </span><span class="c1"># Ctrl+C to quit</span>
+</span></code></pre></div>
+<p>Or inspect the actual hex:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Type the key, press Enter, Ctrl+D</span>
+</span><span id="__span-53-2"><a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>xxd<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1
+</span><span id="__span-53-3"><a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a><span class="c1"># e.g. Ctrl+[ + Enter shows:  0000000: 1b0a  ..</span>
+</span><span id="__span-53-4"><a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1">#                                       ↑↑</span>
+</span><span id="__span-53-5"><a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a><span class="c1">#                                       1b = ESC = Ctrl+[</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
