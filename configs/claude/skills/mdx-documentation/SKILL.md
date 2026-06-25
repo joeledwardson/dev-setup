@@ -5,27 +5,21 @@ description: Scaffolding, configuring and maintaining an MDX docs site. Use when
 
 # mdx-documentation
 
-**What**: How to stand up and maintain an MDX docs site, and the gotchas that bite.
-**Why**: MDX buys exactly one thing over mkdocs — **interactive React components inline in docs**. Everything else is equal-or-worse. This skill captures the validated setup so you don't rediscover it. See ADR-008 for the full evaluation.
+**What**: How to stand up and maintain an MDX docs site with **Rspress** (the adopted MDX engine — ADR-008), and the gotchas that bite.
+**Why**: MDX buys one thing over mkdocs — **interactive React components inline in docs**. Rspress is the chosen engine because, among MDX frameworks, only it keeps a good authoring loop (live dev search). This skill captures the validated setup so you don't rediscover it.
 
 ---
 
-## First: which docs system is this repo using?
+## Route by config file — which skill applies
 
-- **`rspress.config.ts/js`** → an existing Rspress (MDX) site. This skill.
-- **`mkdocs.yml` at repo root** → plain-Markdown mkdocs-material. Use the `documentation` skill.
-- A repo can have **both** (mkdocs published + an MDX experiment) — check which the deploy workflow targets before editing.
+mkdocs and Rspress **coexist** (existing projects stay on mkdocs for backwards-compat; new MDX docs use Rspress). Detect the engine from the repo and use the matching skill — don't guess or force a migration:
 
-## Which skill — do NOT guess; the user decides
+- **`rspress.config.ts/js` present** → Rspress (MDX) → **this skill**.
+- **`mkdocs.yml` at repo root** → mkdocs-material → the **`documentation`** skill.
+- **Both present** → follow whichever the deploy workflow targets.
+- **Neither (greenfield docs)** → it's the user's call: **MDX/Rspress** (interactive React components, JS toolchain) or **plain Markdown/mkdocs** (simpler, lighter). If they haven't said, **ask** — don't default silently.
 
-The choice between MDX and plain-Markdown docs is the **user's**, not something to infer from vibes:
-
-- **User explicitly asked for MDX / interactive doc components / Rspress** → use this skill.
-- **User explicitly asked for plain docs / mkdocs** → use the `documentation` skill.
-- **A docs system already exists in the repo** → follow it (the markers above).
-- **New docs, unspecified** → **ask the user** which they want: an **MDX site** (Rspress — interactive React components, JS toolchain) or **plain Markdown** (mkdocs-material — simpler, lighter). Don't default to one silently.
-
-If MDX is chosen, use **Rspress** specifically. ADR-008 evaluated mkdocs / Rspress / Astro Starlight / Docusaurus on real content: among MDX engines only Rspress keeps **search in the dev server**, resolves `.md` links, and needs no custom CSS — so prefer it over Starlight (no dev search, most custom CSS) and Docusaurus (heaviest, also no dev search). Surface ADR-008's trade-offs if the user wants them, but let them pick.
+When MDX is the answer, the engine is **Rspress** (not Astro Starlight, not Docusaurus). ADR-008 has the full evaluation: among MDX frameworks only Rspress keeps **search in the dev server**, resolves `.md` links, and needs no custom CSS; Starlight (no dev search, most CSS) and Docusaurus (heaviest, also no dev search) were rejected.
 
 ---
 

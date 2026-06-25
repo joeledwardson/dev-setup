@@ -8,6 +8,8 @@ description: Writing, structuring, and maintaining project documentation. Auto-l
 **What**: Rules for writing docs and code comments that a human can actually use.
 **Why**: AI-generated documentation defaults to technically correct but reader-hostile — acronyms without explanation, prose where diagrams should be, no visual hierarchy.
 
+> **Engine routing:** these rules apply to **mkdocs-material / plain-Markdown** docs. If the repo is an **MDX (Rspress)** project — a `rspress.config.*` is present — use the **`mdx-documentation`** skill instead. The writing/quality rules below still apply; that skill adds the MDX-specific setup. (ADR-008: Rspress adopted for MDX, mkdocs retained for existing projects.)
+
 ---
 
 ## Rule 1 — pass the user test
