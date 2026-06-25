@@ -1,0 +1,8 @@
+[
+  { "text": "Dev Log", "link": "/dev-log/", "activeMatch": "/dev-log/" },
+  { "text": "NixOS", "link": "/nix/notes", "activeMatch": "/nix/" },
+  { "text": "Reference", "link": "/reference/", "activeMatch": "/reference/" },
+  { "text": "ADRs", "link": "/appendix/adr/", "activeMatch": "/appendix/adr/" },
+  { "text": "Reviews", "link": "/appendix/reviews/", "activeMatch": "/appendix/reviews/" },
+  { "text": "Repo", "link": "https://github.com/joeledwardson/dev-setup" }
+]

@@ -203,6 +203,13 @@ tasks:
     cmds:
       - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --livereload -a 0.0.0.0:9653
 
+  mdx-docs:serve:
+    desc: Serve the Rspress (MDX) docs locally on port 9043 (live reload + search)
+    dir: mdx-docs
+    cmds:
+      - test -d node_modules || npm install
+      - npx rspress dev --host 0.0.0.0 --port 9043
+
   port-dash:serve:
     desc: Run port-dash — service status dashboard on port 9999
     # Launch via `task` (not the bare binary) so tmux-resurrect — which whitelists
