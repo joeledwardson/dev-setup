@@ -12,4 +12,4 @@
 | [ADR-005](005-homelab-observability-stack.md) | Homelab observability: Beszel vs Prometheus/Grafana/Alertmanager | Proposed | 2026-06-20 |
 | [ADR-006](006-hyprwhspr-dictation.md) | Voice dictation: one daemon (`hyprwhspr-rs`) over hand-wired glue | Accepted | 2026-06-20 |
 | [ADR-007](007-orchestration-eval-harness.md) | Meta-eval harness: scoring the ADR-001 orchestration options | Proposed | 2026-06-24 |
-| [ADR-008](008-mdx-vs-mkdocs.md) | Docs engine: MDX (Astro Starlight) vs mkdocs-material | Rejected | 2026-06-25 |
+| [ADR-008](008-mdx-vs-mkdocs.md) | Docs engine: MDX frameworks (Rspress/Starlight/Docusaurus) vs mkdocs-material | Rejected | 2026-06-25 |
