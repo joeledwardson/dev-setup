@@ -99,7 +99,7 @@
       default_session = {
         # UWSM removed — was causing NVIDIA driver MCEs on desktop-work (Bank 5 UMC errors).
         # UWSM is only needed on streaming-server for wayvnc session management.
-        # See: docs/dev-log/2026-05.md — NixOS boot investigation
+        # See: mdx-docs/docs/dev-log/2026-05.md — NixOS boot investigation
         command =
           "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         user = "greeter";

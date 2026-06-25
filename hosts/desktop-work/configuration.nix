@@ -126,7 +126,7 @@
     nvidiaPersistenced = true;
 
     # Disabled: nvidia-powerd is a documented contributor to hard Wayland freezes
-    # on driver 580.x–595.x. See docs/dev-log/2026-05.md — NixOS boot investigation.
+    # on driver 580.x–595.x. See mdx-docs/docs/dev-log/2026-05.md — NixOS boot investigation.
     powerManagement.enable = false;
     powerManagement.finegrained = false;
   };

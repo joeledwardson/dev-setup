@@ -1,27 +1,29 @@
----
-title: "ADR-008 — Mdx Vs Mkdocs"
----
-
 # ADR-008 — Docs engine: MDX frameworks vs mkdocs-material
 
-**Status:** Rejected for general docs — mkdocs-material retained. **Rspress** designated as the MDX engine if interactive components are ever needed (not Astro Starlight, not Docusaurus).
+**Status:** **Accepted** — adopt **Rspress** as the MDX docs engine going forward; retain **mkdocs-material** for existing projects (backwards-compatible, not worth porting). Two skills route by config file.
 
 **Date:** 2026-06-25
 
 **Context:**
 
-The docs site runs on **mkdocs-material** (Python, plain Markdown, deployed to GitHub Pages). The question: is it worth moving to **MDX** — Markdown plus JSX, so you can render interactive components inline — which means replacing mkdocs with a JavaScript static-site generator?
+Existing docs (this repo included) run on **mkdocs-material** (Python, plain Markdown, GitHub Pages). The goal: gain **MDX** — Markdown plus JSX, so docs can render interactive React components inline — without a forced migration of every existing project. MDX requires a JavaScript static-site generator, so this is a choice of *engine going forward*, not a rip-and-replace.
 
-The only thing MDX buys over mkdocs is **interactive React components**; everything else is equal-or-worse. We evaluated it on *real content*, not in the abstract.
+**Decision:**
 
-**Decision**: **Stay on mkdocs-material.** If interactive components are ever genuinely needed, use **Rspress** — of the MDX frameworks it was the only one that keeps a good authoring loop. Astro Starlight and Docusaurus are both dominated by Rspress for our priorities.
+**Adopt Rspress as the MDX docs engine.** New docs (or any project that wants interactive components) use **Rspress**; existing mkdocs sites stay on mkdocs — there's no value in porting them, and both coexist happily. Which engine a given repo uses is detected from its config files, and the two Claude skills route accordingly:
+
+- `mkdocs.yml` present → **`documentation`** skill (mkdocs-material).
+- `rspress.config.*` present → **`mdx-documentation`** skill (Rspress).
+- New/greenfield docs → pick Rspress for MDX, mkdocs for plain Markdown (ask the user if unspecified).
+
+Of the MDX frameworks, Rspress was the clear pick: it's the only one that keeps a good authoring loop (see below). Astro Starlight and Docusaurus were both rejected.
 
 ## What we did (concise)
 
 1. Built a full **Astro Starlight** spike — ported all 33 pages, Mermaid, a real React component (`mdx-site/`, parked on the `mdx` branch).
 2. Hit a string of friction (below), the worst being **no search in the dev server**.
 3. Ran head-to-head spikes of **Rspress** and **Docusaurus**, porting the same real pages, scored on the axis that actually matters for an authoring workflow: *does search work while you edit?*
-4. Concluded mkdocs already wins for plain docs; Rspress is the best MDX option if components are wanted.
+4. Concluded: Rspress is the best MDX engine (adopt it); mkdocs stays the no-fuss option for plain docs and all existing projects.
 
 ## The four-way comparison
 
@@ -54,4 +56,4 @@ An earlier version of this ADR treated Mermaid as a Starlight dealbreaker. That 
 
 ## So what
 
-Stay on mkdocs-material — it wins on friction for plain docs on every axis except interactive components: one install, live dev search, native link resolution and Mermaid, deep TOC, near-zero version coupling. **If** a concrete interactive-component need ever appears, reach for **Rspress** (it uniquely keeps live dev search, resolves `.md` links, and needed the least custom CSS) — and see the `mdx-documentation` skill for the validated setup and the migration transform. Do not reach for Starlight (no dev search, most CSS) or Docusaurus (heaviest, also no dev search).
+**Rspress is adopted for MDX docs; mkdocs-material is retained for existing projects.** No big-bang migration — the two coexist and the right skill is chosen per-repo from its config files (`rspress.config.*` → `mdx-documentation`; `mkdocs.yml` → `documentation`). Reach for Rspress when you want interactive React components (it uniquely keeps live dev search among MDX engines, resolves `.md` links, and needs the least custom CSS); reach for mkdocs for plain Markdown and anything already on it (lowest friction, nothing to port). Do **not** use Starlight (no dev search, most CSS) or Docusaurus (heaviest, also no dev search). The `mdx-documentation` skill carries the validated Rspress setup and the one-off migration transform.

@@ -42,8 +42,6 @@ devenv.local.yaml
 # nix result files
 result
 
-# docs
-site
 
 # port registry — machine-local
 .registered-ports.toml

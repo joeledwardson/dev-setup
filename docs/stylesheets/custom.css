@@ -1,5 +1,0 @@
-/* Widen the content column. mkdocs-material defaults to a narrow ~61rem,
-   which leaves a lot of empty margin on wide screens and cramps tables/code. */
-.md-grid {
-  max-width: 72rem;
-}

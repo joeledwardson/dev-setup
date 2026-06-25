@@ -143,7 +143,7 @@
   # Docker depends on network-online.target (upstream default), so it drags
   # the entire graphical.target chain behind it. On a desktop we don't need
   # the network fully online before the session starts.
-  # See: docs/dev-log/2026-05.md — NixOS boot investigation
+  # See: mdx-docs/docs/dev-log/2026-05.md — NixOS boot investigation
   systemd.services.NetworkManager-wait-online.enable = false;
 
   # Add memtest86+ to GRUB menu — useful for diagnosing RAM/hardware faults

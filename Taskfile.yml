@@ -199,12 +199,7 @@ tasks:
       < tailscale/acl.hujson
 
   docs:serve:
-    desc: Serve mkdocs docs locally on port 9653
-    cmds:
-      - WATCHDOG_USE_POLLING_OBSERVER=true uvx --from mkdocs --with mkdocs-material mkdocs serve --livereload -a 0.0.0.0:9653
-
-  mdx-docs:serve:
-    desc: Serve the Rspress (MDX) docs locally on port 9043 (live reload + search)
+    desc: Serve the Rspress (MDX) docs locally on port 9653 (live reload + search)
     dir: mdx-docs
     cmds:
       - test -d node_modules || npm install
