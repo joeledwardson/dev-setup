@@ -4,7 +4,9 @@ import pluginMermaid from 'rspress-plugin-mermaid';
 
 export default defineConfig({
   root: path.join(__dirname, 'docs'),
-  // base: '/dev-setup/',   // <-- GH Pages knob: set to '/<repo>/' when deploying to a project page
+  // GH Pages serves at /<repo>/. The deploy workflow sets DOCS_BASE=/dev-setup/;
+  // local `task docs:serve` leaves it unset so dev stays at '/'.
+  base: process.env.DOCS_BASE ?? '/',
   lang: 'en',
   title: "Joel's Dev Setup",
   description: 'NixOS workstation notes, configs and references',
