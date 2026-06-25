@@ -51,5 +51,3 @@ site
 # agent-native visual-plan scratch (local, has bridge tokens)
 plans/
 
-# MDX docs experiment lives on the `mdx` branch, not main
-mdx-site/

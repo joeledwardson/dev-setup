@@ -12,19 +12,20 @@ description: Scaffolding, configuring and maintaining an MDX docs site. Use when
 
 ## First: which docs system is this repo using?
 
-- **`mkdocs.yml` at repo root** → plain-Markdown mkdocs-material. Use the `documentation` skill. **This is the default and the right choice unless interactive components are needed.**
-- **`rspress.config.ts/js`** → Rspress (the recommended MDX engine). This skill.
-- **`mdx-site/` (an `astro.config.mjs` + `src/content/docs/`)** → an older Astro Starlight experiment (parked on the `mdx` branch). This skill, but prefer Rspress for anything new (see below).
+- **`rspress.config.ts/js`** → an existing Rspress (MDX) site. This skill.
+- **`mkdocs.yml` at repo root** → plain-Markdown mkdocs-material. Use the `documentation` skill.
+- A repo can have **both** (mkdocs published + an MDX experiment) — check which the deploy workflow targets before editing.
 
-A repo can have **both** mkdocs (published) and an MDX experiment. Check which the deploy workflow targets before editing.
+## Which skill — do NOT guess; the user decides
 
-## Decision guide (be honest with the user)
+The choice between MDX and plain-Markdown docs is the **user's**, not something to infer from vibes:
 
-**Default to mkdocs.** Lowest-friction for almost every docs need: one `pip install`, live-reload **with** search in dev, native `.md` link resolution, deep TOC, admonitions/tabs/collapsibles, near-zero version coupling.
+- **User explicitly asked for MDX / interactive doc components / Rspress** → use this skill.
+- **User explicitly asked for plain docs / mkdocs** → use the `documentation` skill.
+- **A docs system already exists in the repo** → follow it (the markers above).
+- **New docs, unspecified** → **ask the user** which they want: an **MDX site** (Rspress — interactive React components, JS toolchain) or **plain Markdown** (mkdocs-material — simpler, lighter). Don't default to one silently.
 
-**Reach for MDX only for interactive React components** — that's the entire upside.
-
-**If MDX is warranted, use Rspress.** ADR-008 compared mkdocs / Rspress / Astro Starlight / Docusaurus on real content. The deciding axis was **search in the dev server** (the authoring loop): only mkdocs and **Rspress** have it. Starlight and Docusaurus only build the search index at `build` time → no search while editing. Rspress also resolves `.md` links, needs no custom CSS, and was the lightest MDX option. **Don't pick Starlight (no dev search, most custom CSS) or Docusaurus (heaviest — 1.2 GB node_modules — and also no dev search).**
+If MDX is chosen, use **Rspress** specifically. ADR-008 evaluated mkdocs / Rspress / Astro Starlight / Docusaurus on real content: among MDX engines only Rspress keeps **search in the dev server**, resolves `.md` links, and needs no custom CSS — so prefer it over Starlight (no dev search, most custom CSS) and Docusaurus (heaviest, also no dev search). Surface ADR-008's trade-offs if the user wants them, but let them pick.
 
 ---
 
