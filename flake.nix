@@ -116,6 +116,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/pi-box/configuration.nix
+            ./hosts/pi-box/sparkyfitness.nix
           ];
         };
 

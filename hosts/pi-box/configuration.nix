@@ -11,13 +11,17 @@
     #   nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
 
-    # SparkyFitness production stack (docker compose via systemd + Tailscale Serve)
-    ./sparkyfitness.nix
+    # Shared secrets, owned by `claude` + group `users` (0440) so the login user
+    # can read them (e.g. `llm keys set`). SparkyFitness declares its OWN root-only
+    # copies under different names (see sparkyfitness.nix) — these are the general,
+    # queryable set, matching the other hosts.
+    (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 
   # Root lives on a USB-attached SSD in a UASP caddy, so the initrd needs the
   # USB-storage drivers to find the root filesystem at boot.
-  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "usb_storage" "uas" ];
+  boot.initrd.availableKernelModules =
+    [ "xhci_pci" "usbhid" "usb_storage" "uas" ];
 
   # =======================================
   # Swap: zram instead of an SD-card swapfile
