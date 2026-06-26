@@ -8,6 +8,7 @@
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
+    ./matrix.nix # self-hosted Matrix homeserver + Telegram bridge (test cut)
   ];
 
   # Stream kernel log to degen-bot over UDP in real time.

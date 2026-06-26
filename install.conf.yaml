@@ -63,3 +63,4 @@
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/tig/config: ./configs/tig/config
+      ~/.config/iamb/config.toml: ./configs/iamb/config.toml

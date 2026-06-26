@@ -29,6 +29,7 @@ pretty-path() {
     echo "${1:-$PATH}" | sed "s/:/\n/g"
 }
 
+# reload tmux configuration
 function reload-tmux {
     tmux source-file ~/.config/tmux/tmux.conf
 }
@@ -216,6 +217,17 @@ function encode-uri {
     fi
     # pass $pwd as a raw string to avoid any escaping to jq, then apply the @uri encoding
     jq -rn --arg pwd "$1" '$pwd | @uri'
+}
+
+# edit an existing agenix secrets
+function edit-secret {
+    if [[ -z "$1" ]]; then
+        printf "Error: argument must be supplied\n" >&2
+        return 1
+    fi
+    # no editor default in agenix apparently? so must be set
+    # root nix key must be specified as well
+    sudo EDITOR=nvim agenix -i /etc/ssh/ssh_host_ed25519_key -e "$1"
 }
 
 # some weird command prompt thing i never use (remove it)

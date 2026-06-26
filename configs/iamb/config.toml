@@ -1,0 +1,13 @@
+[profiles."jollof-example"]
+url = "http://localhost:8008/"
+user_id = "@jollof:jollof.chat"
+
+[settings.notifications]
+enabled = true
+
+
+[settings.image_preview]
+protocol.type = "kitty"
+
+[settings.sort]
+chats = ["unread", "recent"]

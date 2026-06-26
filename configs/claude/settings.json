@@ -85,5 +85,6 @@
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false
+  "viMode": false,
+  "tui": "fullscreen"
 }

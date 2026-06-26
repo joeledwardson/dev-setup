@@ -1,5 +1,6 @@
 let
   # host public keys (from /etc/ssh/ssh_host_ed25519_key.pub on each machine)
+  # editing secrets after build is a right faff - juse use `edit-secret` zsh function (from within secrets dir)
   desktop-work =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOUujKLUo4lCJuepHQ7KGfsy1xQFjkfWNazCq6wTmxy root@desktop-work";
 
@@ -24,10 +25,22 @@ let
   trustedHosts = [ desktop-work jollof-home degen-work degen-home ];
   allHosts = trustedHosts ++ [ streaming-server degen-bot pi-box ];
 in {
+  # gemini LLM API - grabbed from here https://aistudio.google.com/app/api-keys?project=heb7-287610
   "llm-gemini-key.age".publicKeys = allHosts;
+  # my access token for `ntfy.sh` - grabbed from here https://ntfy.sh/account
   "ntfy-token.age".publicKeys = allHosts;
+  # USDA food central API key - grabbed from here https://fdc.nal.usda.gov/api-key-signup/
   "usda.age".publicKeys = allHosts;
+
   "fatsecret-client-id.age".publicKeys = allHosts;
   "fatsecret-client-secret.age".publicKeys = allHosts;
   "sparkyfitness-secrets.age".publicKeys = allHosts;
+
+  # matrix registration secret key - just a generated random string
+  "matrix-registration.age".publicKeys = allHosts;
+  # telegram app secrets
+  # 1. telegram app must be created via https://my.telegram.org/apps
+  # 2. review docs of nixos - secret file MUST match the env specification in services.mautrix-telegram.environmentFile
+  # 3. currently the format is `MAUTRIX_TELEGRAM_TELEGRAM_API_ID` and `MAUTRIX_TELEGRAM_TELEGRAM_API_HASH` keys
+  "mautrix-telegram-env.age".publicKeys = allHosts;
 }

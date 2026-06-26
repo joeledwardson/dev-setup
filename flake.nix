@@ -22,7 +22,7 @@
           config = {
             allowUnfree = true;
             # this is required for stremio (some nixos nonsense IDK)
-            permittedInsecurePackages = [ "qtwebengine-5.15.19" ];
+            permittedInsecurePackages = [ "qtwebengine-5.15.19" "olm-3.2.16" ];
           };
         };
       commonGroups = [
