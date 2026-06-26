@@ -7,10 +7,14 @@
 #   requires = docker.service                            (hard dep — stop us if docker dies)
 #   wants    = network-online.target                     (pull it into the boot, soft)
 #
-# Secrets are declarative via agenix: the 4 app secrets + the Gemini API key live encrypted in
-# secrets/*.age, decrypted at runtime to root-only files. App secrets go to compose via
-# `--env-file`; the Gemini key is used by the AI-seed unit below. Non-secret config (DB name/user,
-# data paths, public URL) stays visible in the Nix `environment` — nothing sensitive in the store.
+# Secrets are declarative via agenix: the app secrets live encrypted in secrets/*.age, decrypted at
+# runtime to a root-only file and passed to compose via `--env-file`. Non-secret config (DB
+# name/user, data paths, public URL) stays visible in the Nix `environment` — nothing sensitive in
+# the store.
+#
+# NOT declarative (manual, one-time, via the web UI): SparkyAI (the Gemini key) and the external
+# food-data providers (USDA, FatSecret). SparkyFitness has no env/config knob for these — they are
+# AES-GCM-encrypted DB rows set through Settings. See the "Manual setup" note at the bottom.
 { pkgs, config, ... }:
 
 let
@@ -18,8 +22,7 @@ let
   repoUrl = "https://github.com/CodeWithCJ/SparkyFitness";
   repoDir = "${stateDir}/repo";
   composeDir = "${repoDir}/docker";
-  secretsEnv = config.age.secrets.sparkyfitness-secrets.path;
-  geminiKeyFile = config.age.secrets.llm-gemini-key.path;
+  secretsEnv = config.age.secrets.sparkyfitness-env.path;
 
   # Override layered on the upstream prod compose. The published :latest server image still uses
   # the MCP "stdio" transport (spawns a binary that isn't in the image) UNLESS
@@ -35,11 +38,12 @@ let
 
   # The frontend nginx is published on 3004 by the upstream compose (`3004:80`).
   frontendPort = 3004;
-in
-{
-  # Runtime-decrypted secrets (root-only). App secrets → compose; Gemini key → AI-seed unit.
-  age.secrets.sparkyfitness-secrets.file = ../../secrets/sparkyfitness-secrets.age;
-  age.secrets.llm-gemini-key.file = ../../secrets/llm-gemini-key.age;
+in {
+  # SparkyFitness's OWN root-only copy of the compose env-file (DB passwords, BETTER_AUTH_SECRET,
+  # the app's master encryption key). Declared under a sparkyfitness-* name (distinct from the
+  # shared `nixos-secrets.nix` set this host also imports) so the two never collide: the shared
+  # copies are group-readable for `llm`/querying, this one stays locked to root.
+  age.secrets.sparkyfitness-env.file = ../../secrets/sparkyfitness-secrets.age;
 
   # MCP sidecar + server wiring (see overrideFile note above). docker compose merges this onto the
   # upstream prod compose. `''${VAR}` is an escaped literal `${VAR}` for compose interpolation
@@ -49,6 +53,10 @@ in
       sparkyfitness-server:
         environment:
           SPARKY_FITNESS_MCP_URL: http://sparkyfitness-mcp:3001
+          # Server-level Better Auth API key. The chat→MCP internal call forwards THIS (as x-api-key)
+          # to the MCP sidecar, so non-browser callers (the Telegram bot, n8n) can drive the agentic
+          # tools without a session cookie. Value lives in the agenix --env-file. See ADR-003.
+          SPARKY_FITNESS_API_KEY: ''${SPARKY_FITNESS_API_KEY}
       sparkyfitness-mcp:
         image: codewithcj/sparkyfitness_mcp:latest
         container_name: sparkyfitness-mcp
@@ -105,9 +113,11 @@ in
     '';
 
     serviceConfig = {
-      Type = "simple"; # `compose up` (no -d) stays in the foreground → systemd manages it
+      Type =
+        "simple"; # `compose up` (no -d) stays in the foreground → systemd manages it
       StateDirectory = "sparkyfitness"; # creates/owns /var/lib/sparkyfitness
-      WorkingDirectory = stateDir; # always exists (StateDirectory); the clone lives under it
+      WorkingDirectory =
+        stateDir; # always exists (StateDirectory); the clone lives under it
       ExecStart = "${compose} up";
       ExecStop = "${compose} down";
       Restart = "on-failure";
@@ -116,49 +126,6 @@ in
       # Don't let the start timeout kill the clone in ExecStartPre.
       TimeoutStartSec = "infinity";
     };
-  };
-
-  # Declaratively seed the GLOBAL Gemini AI service so SparkyAI works for every account out of the
-  # box (a global is_public row, user_id NULL — no account needed). Idempotent reconcile: runs the
-  # app's OWN encryption + upsert (via tsx in the server container) so the key is encrypted exactly
-  # how the app expects; updates the existing google row or inserts one. Re-runs each boot, so
-  # rotating the agenix key re-applies it.
-  systemd.services.sparkyfitness-ai-seed = {
-    description = "Seed global Gemini AI service config (idempotent)";
-    after = [ "sparkyfitness.service" ];
-    requires = [ "sparkyfitness.service" ];
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.docker pkgs.curl pkgs.coreutils ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      set -euo pipefail
-      # Wait for the server API to be healthy (DB migrated) before seeding — up to ~5 min.
-      for _ in $(seq 1 60); do
-        if curl -fsS "http://localhost:${toString frontendPort}/api/health" >/dev/null 2>&1; then break; fi
-        sleep 5
-      done
-      container=$(docker ps --filter name=sparkyfitness-server --format '{{.Names}}' | head -1)
-      if [ -z "$container" ]; then echo "ai-seed: server container not found"; exit 1; fi
-      # Pipe the key in via stdin (NOT -e/argv) so it never shows up in host `ps` output.
-      docker exec -i "$container" ./node_modules/.bin/tsx -e '
-        let buf = "";
-        process.stdin.on("data", (c) => { buf += c; });
-        process.stdin.on("end", async () => {
-          try {
-            const key = buf.trim();
-            const m = await import("./models/chatRepository.ts");
-            const existing = (await m.getGlobalAiServiceSettings()).find((s) => s.service_type === "google");
-            const cfg = { service_name: "Gemini (declarative)", service_type: "google", model_name: "gemini-2.5-flash", api_key: key, is_active: true };
-            await m.upsertGlobalAiServiceSetting(existing ? { ...cfg, id: existing.id } : cfg);
-            console.log(existing ? "ai-seed: updated global gemini" : "ai-seed: inserted global gemini");
-            process.exit(0);
-          } catch (e) { console.error("ai-seed ERR", e.message); process.exit(1); }
-        });
-      ' < ${geminiKeyFile}
-    '';
   };
 
   # Tailscale Serve — FOREGROUND (no --bg) so systemd owns the process: journal logs + crash
@@ -172,9 +139,32 @@ in
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=443 http://localhost:${toString frontendPort}";
+      ExecStart =
+        "${pkgs.tailscale}/bin/tailscale serve --https=443 http://localhost:${
+          toString frontendPort
+        }";
       Restart = "on-failure";
       RestartSec = 10;
     };
   };
+
+  # ── Manual setup (one-time, via the web UI) ───────────────────────────────────────────────────
+  # SparkyFitness stores AI + external-provider credentials only as AES-GCM-encrypted DB rows set
+  # through Settings — there is no env/config knob (the only key-ish env var, the app's master
+  # encryption key, lives in the --env-file above). So these are deliberately NOT declarative:
+  #
+  #   SparkyAI (Gemini):   Settings → AI Service → add Google / gemini-2.5-flash, paste the key from
+  #                        `sudo cat /run/agenix/llm-gemini-key`. (Requires the MCP sidecar above.)
+  #   USDA provider:       Settings → Integrations → USDA, paste `sudo cat /run/agenix/usda`.
+  #   FatSecret provider:  Settings → Integrations → FatSecret, client id/secret from
+  #                        `sudo cat /run/agenix/fatsecret-client-id` / `…-fatsecret-client-secret`.
+  #
+  # FatSecret extra step: its REST API rejects non-allowlisted IPs (error 21 "Invalid IP"). Whitelist
+  # the box's *IPv4* (the Docker container egresses v4-only — your host IPv6 is irrelevant) in the
+  # FatSecret console → IP Restrictions. Get it with `curl -4 https://api.ipify.org`; free tier =
+  # specific IP, no CIDR; re-add if your ISP rotates the v4.
+  #
+  # The keys are decrypted on this host (agenix, group `users`) purely for convenient copy-paste.
+  # Fuller reference (UI paths, provider coverage, FatSecret IP gotcha): calories-app docs →
+  # "Manual Setup" (docs/manual-setup.md).
 }

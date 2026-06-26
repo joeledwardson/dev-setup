@@ -1,3 +1,9 @@
+# ##
+### To add a new secret:
+### 1. add it to the list at the bottom of this file
+### 2. cd into this `secrets` dir and run `agenix -e <SECRET_NAME>.age` to insert its value
+### 3. run task secrets:update to re-key all secrets
+### 4. add it to the list in ../modules/nixos-secrets.nix and add it to the list of names to be automatically added to each host
 let
   # host public keys (from /etc/ssh/ssh_host_ed25519_key.pub on each machine)
   # editing secrets after build is a right faff - juse use `edit-secret` zsh function (from within secrets dir)
