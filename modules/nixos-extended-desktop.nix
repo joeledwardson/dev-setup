@@ -46,13 +46,14 @@
     nomachine-client
     wifi-qr
 
-    # NOTE: voice dictation (hyprwhspr-rs + sox) moved to modules/nixos-dictation.nix,
-    # imported by jollof-home only (needs the GGML model + a working systemd service).
-
     ### work (rarely used so don't put in base)
     terraform
     cloud-init
     vault
+
+    # matrix clients
+    iamb
+    element-desktop
 
   ];
 

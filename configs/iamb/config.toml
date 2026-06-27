@@ -11,3 +11,7 @@ protocol.type = "kitty"
 
 [settings.sort]
 chats = ["unread", "recent"]
+
+[settings]
+username_display = "displayname"
+

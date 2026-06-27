@@ -86,5 +86,5 @@
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
   "viMode": false,
-  "tui": "fullscreen"
+  "tui": "default"
 }
