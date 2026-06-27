@@ -7,8 +7,8 @@
 let
   serverName = "jollof.chat";
   # this node's tailnet name = the url clients point at. sparkyfitness already owns :443,
-  # so matrix gets :8448 (the usual matrix port).
-  fqdn = "pi-box.rove-lydian.ts.net";
+  # so matrix gets :8448 (the usual matrix port). tailnet domain lives in modules/tailnet.nix.
+  fqdn = (import ../../modules/tailnet.nix).fqdnFor config.networking.hostName;
   matrixPort = 8448;
 in {
   # nixos doesnt like libolm "insecure" apparently... ignore!! 🤣
