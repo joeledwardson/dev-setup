@@ -53,7 +53,18 @@
 
     # matrix clients
     iamb
-    element-desktop
+    # Hyprland isn't a desktop Electron recognises, so it can't auto-detect the
+    # gnome-keyring secret service and refuses to start ("unsupported keyring").
+    # Force the libsecret backend so it uses the keyring that's already running.
+    (symlinkJoin {
+      name = "element-desktop";
+      paths = [ element-desktop ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/element-desktop \
+          --add-flags "--password-store=gnome-libsecret"
+      '';
+    })
 
   ];
 
