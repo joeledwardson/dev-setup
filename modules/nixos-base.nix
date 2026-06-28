@@ -263,6 +263,7 @@
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
     pkgs-unstable.claude-code # pinned to nixpkgs master for latest version
     pkgs-unstable.gemini-cli # latest gemini
+    pkgs-unstable.codex
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
