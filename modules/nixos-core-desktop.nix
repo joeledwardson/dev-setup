@@ -20,6 +20,7 @@
     wl-clipboard # Command-line copy/paste utilities
     brightnessctl # backlight control (used in hyprland.conf keybinds)
     swayosd # OSD popups for volume/brightness/caps (used in hyprland.conf keybinds)
+    playerctl # MPRIS media control (XF86AudioPlay/Pause/Next/Prev keybinds → Brave/Chromium etc.)
     hyprsunset # blue light filter
     wev # debug hyprland key events (equivalent of xev on X11)
     swaynotificationcenter # notifications

@@ -12,6 +12,7 @@ let
 in {
   age.secrets = {
     llm-gemini-key = mkSecret ../secrets/llm-gemini-key.age;
+    hermes-env = mkSecret ../secrets/hermes-env.age;
     ntfy-token = mkSecret ../secrets/ntfy-token.age;
     usda = mkSecret ../secrets/usda.age;
     fatsecret-client-id = mkSecret ../secrets/fatsecret-client-id.age;

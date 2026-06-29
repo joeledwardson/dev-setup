@@ -132,6 +132,12 @@ tasks:
         msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
       - |
+        # jq can't parse JSONC comments, so blank out whole-line // comments into
+        # a plain-JSON temp file first. Only leading-// lines are stripped, so
+        # mid-string // (e.g. https:// in favicon URLs) is left intact.
+        custom_json=$(mktemp)
+        sed 's|^[[:space:]]*//.*||g' ./configs/brave/custom.jsonc > "$custom_json"
+
         # Brave persists profile dir names (e.g. "Default", "Profile 1") under
         # profile.info_cache in Local State. Iterate those rather than guessing
         # names like "Work-Profile" — profile dir != display name.
@@ -142,10 +148,12 @@ tasks:
             continue
           fi
           tmpfile=$(mktemp)
-          jq -s '.[0] * .[1]' "$prefs" ./configs/brave/custom.jsonc > "$tmpfile"
+          echo "using tmp file for brave: $tmpfile"
+          jq -s '.[0] * .[1]' "$prefs" "$custom_json" > "$tmpfile"
           mv "$tmpfile" "$prefs"
           echo "OK:   $profile_dir"
         done
+        rm -f "$custom_json"
 
   remmina:configure:
     desc: Apply Remmina preferences via crudini (skips if the pref file doesn't exist yet)

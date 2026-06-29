@@ -11,6 +11,8 @@ protocol.type = "kitty"
 
 [settings.sort]
 chats = ["unread", "recent"]
+rooms = ["unread", "recent"]
+dms = ["invite", "unread", "recent"]
 
 [settings]
 username_display = "displayname"

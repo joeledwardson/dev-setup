@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
     ../../modules/nixos-dictation.nix # local voice dictation (hyprwhspr-rs)
+    ../../modules/nixos-netbird.nix # netbird mesh VPN client (wt0) — manual connect/disconnect
   ];
 
   # =======================================
@@ -34,6 +35,7 @@
   environment.systemPackages = with pkgs; [
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI
+    trayscale # Tailscale tray GUI — coloured connected/disconnected icon
   ];
 
   # =======================================
@@ -74,6 +76,24 @@
   # Define your hostname.
   networking.hostName = "jollof-home";
 
+  # Tailscale tray: tailscale itself is enabled in nixos-base.nix. Here we let
+  # `jollof` drive tailscaled without sudo (operator — same pattern as the
+  # claude operator on streaming-server), and autostart trayscale as a user
+  # service so its coloured connected/disconnected icon shows in Waybar on
+  # login. `--hide-window` starts it minimised to the tray.
+  services.tailscale.extraSetFlags = [ "--operator=jollof" ];
+  systemd.user.services.trayscale = {
+    description = "Trayscale (Tailscale tray UI)";
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "/run/current-system/sw/bin/trayscale --hide-window";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+
   # =======================================
   # NVIDIA Configuration
   # =======================================
@@ -108,7 +128,9 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    extraGroups = commonGroups;
+    # "hermes" lets the interactive `hermes` CLI read the service's shared
+    # HERMES_HOME (/var/lib/hermes/.hermes) — config.yaml is 0660 hermes:hermes.
+    extraGroups = commonGroups ++ [ "hermes" ];
     packages = [ pkgs.recyclarr ];
   };
   # this stops devenv complaing every time we enter into a shell
@@ -123,5 +145,12 @@
 
     # optional Nvidia hardware acceleration
     package = (pkgs.obs-studio.override { cudaSupport = true; });
+  };
+
+  services.hermes-agent = {
+    enable = true;
+    settings.model = "google/gemini-3-flash";
+    environmentFiles = [ config.age.secrets."hermes-env".path ];
+    addToSystemPackages = true;
   };
 }

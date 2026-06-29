@@ -8,11 +8,11 @@
       "github:NixOS/nixpkgs/nixos-25.11"; # nvim 0.11.7 — latest stable before 0.12 broke plugin APIs
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
-
+    hermes-agent.url = "github:NousResearch/hermes-agent";
   };
 
   # inputs are resolved to flakes. 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, hermes-agent, ... }:
     let
       x86System = "x86_64-linux";
       archSystem = "aarch64-linux";
@@ -31,6 +31,7 @@
         "video" # legacy? not sure if needed for capture devices (https://wiki.archlinux.org/title/Users_and_groups#Pre-systemd_groups)
         "plugdev" # this is required (I think) for udiskie
         "docker" # non root access to docker
+        "netbird-wt0" # netbird daemon socket access for the tray UI. NB: this group only exists on the host running the netbird client; other hosts log a harmless "unknown group" warning on activation and skip it.
       ];
       mkArgs = sys: {
         pkgs-unstable = mkPkgs sys;
@@ -90,6 +91,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
+            hermes-agent.nixosModules.default
             ./hosts/jollof-home/configuration.nix
           ];
         };

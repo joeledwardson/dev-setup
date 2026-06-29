@@ -33,6 +33,8 @@ let
 in {
   # gemini LLM API - grabbed from here https://aistudio.google.com/app/api-keys?project=heb7-287610
   "llm-gemini-key.age".publicKeys = allHosts;
+  # hermes-agent env file - MUST be KEY=value lines (systemd EnvironmentFile syntax),
+  "hermes-env.age".publicKeys = allHosts;
   # my access token for `ntfy.sh` - grabbed from here https://ntfy.sh/account
   "ntfy-token.age".publicKeys = allHosts;
   # USDA food central API key - grabbed from here https://fdc.nal.usda.gov/api-key-signup/
