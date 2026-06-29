@@ -8,7 +8,12 @@
     openFirewall = true;
     openInternalFirewall = true;
 
-    # NO `login` block — that's what forces auto-connect on boot.
+    # Daemon still runs at boot (so the tray can connect/disconnect), but it
+    # won't connect automatically. This writes `DisableAutoConnect = true` into
+    # config.json on every start, overriding any stored auto-connect state.
+    # (The `login` block only automates setup-key login — it never controlled
+    # daemon auto-connect, which is why removing it had no effect.)
+    autoStart = false;
   };
 
   # system tray service to run the netbird binary 

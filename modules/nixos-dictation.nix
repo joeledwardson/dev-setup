@@ -49,7 +49,10 @@ in
     description = "hyprwhspr-rs voice dictation";
     after = [ "graphical-session.target" "pipewire.service" ];
     wants = [ "pipewire.service" ];
-    wantedBy = [ "default.target" ];
+    # Bound to the graphical session (not default.target) so it cycles with the
+    # compositor and picks up the freshly-finalized Wayland env on each restart.
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
     # whisper-cli is already baked into the wrapper's PATH; wtype is here for the injection fallback.
     path = [ pkgs.wtype ];
     environment.RUST_LOG = "info";

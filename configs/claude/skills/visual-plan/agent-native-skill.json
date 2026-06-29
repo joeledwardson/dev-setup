@@ -4,9 +4,9 @@
   "appSkillId": "visual-plans",
   "displayName": "Agent-Native Plan",
   "skillName": "visual-plan",
-  "contentHash": "c99dd919b61d7b7e",
+  "contentHash": "f199ff63f15efe30",
   "mcpUrl": "",
-  "installedAt": "2026-06-24T12:10:06.065Z",
+  "installedAt": "2026-06-29T15:41:28.366Z",
   "updateCommand": "npx @agent-native/core@latest skills update visual-plan",
   "planMode": "local-files"
 }

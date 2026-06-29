@@ -400,6 +400,12 @@ end)
 --## AUTOSTART ##
 
 hl.on('hyprland.start', function()
+  -- Export WAYLAND_DISPLAY/HYPRLAND_INSTANCE_SIGNATURE into the systemd user
+  -- manager + D-Bus and signal session readiness. This is what activates
+  -- graphical-session.target under uwsm, so its services (cliphist, swayosd,
+  -- hyprpaper, hyprwhspr-rs) start with THIS session's Wayland env. Without it
+  -- they inherit stale vars from a previous compositor and fail to connect.
+  hl.exec_cmd 'uwsm finalize HYPRLAND_INSTANCE_SIGNATURE'
   hl.exec_cmd 'dconf write /org/gnome/desktop/interface/color-scheme "\'prefer-dark\'"'
   hl.exec_cmd 'dconf write /org/gnome/desktop/interface/gtk-theme "\'Tokyonight-Dark\'"'
   hl.exec_cmd 'dconf write /org/gnome/desktop/interface/icon-theme "\'Flat-Remix-Blue-Dark\'"'
@@ -409,10 +415,9 @@ hl.on('hyprland.start', function()
 end)
 
 hl.on('config.reloaded', function()
-  -- Activate graphical-session.target so waybar/hypridle/nm-applet systemd
-  -- user services start. Without UWSM this target is never activated otherwise.
-  hl.exec_cmd 'systemctl --user start graphical-session.target'
-  -- udiskie, hyprpaper, swayosd-server, cliphist managed by systemd user services
+  -- graphical-session.target is activated by `uwsm finalize` (see hyprland.start);
+  -- user services (udiskie, hyprpaper, swayosd-server, cliphist) are bound to it
+  -- via partOf and cycle with the session — no manual target start needed here.
   hl.exec_cmd('sleep 1 && ' .. HOME .. '/.config/hypr/scripts/randomise-wallpaper.sh')
 end)
 

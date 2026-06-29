@@ -45,6 +45,7 @@
   systemd.user.services.hyprpaper = {
     description = "Hyprland wallpaper daemon";
     after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
@@ -55,6 +56,7 @@
   systemd.user.services.swayosd-server = {
     description = "SwayOSD — OSD popups for volume/brightness";
     after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.swayosd}/bin/swayosd-server";
@@ -77,6 +79,7 @@
   systemd.user.services.cliphist = {
     description = "Clipboard history daemon";
     after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store'";
