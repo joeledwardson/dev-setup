@@ -392,12 +392,17 @@ if [[ "$IS_SANDBOX_MACHINE" == "1" ]]; then
     alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
     # gemini in YOLO mode
     alias yolo-gemini='GEMINI_CLI_TRUST_WORKSPACE=true gemini --approval-mode yolo'
+    # codex in yolo mode
+    alias yolo-codex='IS_SANDBOX=1 codex --dangerously-bypass-approvals-and-sandbox'
 
-    echo ""
-    echo -e "\e[1;35m  Welcome to jollof's sandbox container!\e[0m"
-    echo -e "  To give agents god tier permissions, run: \e[1;96myolo-claude\e[0m or \e[1;96myolo-gemini\e[0m"
-    echo -e "  \e[2;32menjoy ✨\e[0m"
-    echo ""
+    # readable colours via zsh's $fg / $fg_bold arrays instead of raw \e[...m codes
+    # (stock zsh `colors` has no $fx; $fg_bold gives bold + colour in one var)
+    autoload -U colors && colors
+    print
+    print "$fg_bold[magenta]  Welcome to jollof's sandbox container!$reset_color"
+    print "  To give agents god tier permissions, run: $fg_bold[cyan]yolo-claude$reset_color, $fg_bold[cyan]yolo-gemini$reset_color or $fg_bold[cyan]yolo-codex$reset_color"
+    print "  $fg[green]enjoy ✨$reset_color"
+    print
 fi
 
 if [[ -n "$ZSH_DEBUGRC" ]]; then

@@ -1,5 +1,5 @@
 ---
-title: "Personal multi-network chat via Matrix"
+title: "ADR-009 Matrix Chat"
 ---
 
 # ADR-009 — Unifying personal chats (WhatsApp/Telegram/Signal/…) via Matrix: self-host vs Beeper
