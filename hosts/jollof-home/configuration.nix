@@ -128,9 +128,7 @@
     isNormalUser = true;
     description = "jollof";
     initialPassword = "password";
-    # "hermes" lets the interactive `hermes` CLI read the service's shared
-    # HERMES_HOME (/var/lib/hermes/.hermes) — config.yaml is 0660 hermes:hermes.
-    extraGroups = commonGroups ++ [ "hermes" ];
+    extraGroups = commonGroups;
     packages = [ pkgs.recyclarr ];
   };
   # this stops devenv complaing every time we enter into a shell
@@ -145,12 +143,5 @@
 
     # optional Nvidia hardware acceleration
     package = (pkgs.obs-studio.override { cudaSupport = true; });
-  };
-
-  services.hermes-agent = {
-    enable = true;
-    settings.model = "google/gemini-3-flash";
-    environmentFiles = [ config.age.secrets."hermes-env".path ];
-    addToSystemPackages = true;
   };
 }

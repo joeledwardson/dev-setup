@@ -12,7 +12,7 @@
   };
 
   # inputs are resolved to flakes. 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, hermes-agent, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, ... }:
     let
       x86System = "x86_64-linux";
       archSystem = "aarch64-linux";
@@ -32,6 +32,7 @@
         "plugdev" # this is required (I think) for udiskie
         "docker" # non root access to docker
         "netbird-wt0" # netbird daemon socket access for the tray UI. NB: this group only exists on the host running the netbird client; other hosts log a harmless "unknown group" warning on activation and skip it.
+        "hermes" # lets the interactive `hermes` CLI read the hermes-agent service's shared HERMES_HOME. Same deal as netbird-wt0: only exists on hosts importing nixos-hermes.nix; harmless "unknown group" warning elsewhere.
       ];
       mkArgs = sys: {
         pkgs-unstable = mkPkgs sys;
@@ -91,7 +92,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
-            hermes-agent.nixosModules.default
+            ./modules/nixos-hermes.nix
             ./hosts/jollof-home/configuration.nix
           ];
         };
@@ -144,6 +145,7 @@
             inputs.agenix.nixosModules.default
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
+            ./modules/nixos-hermes.nix
             ./hosts/degen-bot/configuration.nix
           ];
         };
