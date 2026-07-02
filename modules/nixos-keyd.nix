@@ -14,8 +14,8 @@
         settings = {
           # The main layer, if you choose to declare it in Nix
           main = {
-            # remap caps to combination of ctrl and escape
-            capslock = "overload(control, esc)";
+            # remap caps to escape
+            capslock = "esc";
             # remap space to custom layer function
             rightalt = "overload(custom, rightalt)";
           };
