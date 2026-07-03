@@ -358,3 +358,40 @@ So the corrections to "in my network = cooked":
 - Synapse strains pi-box → switch that host to **continuwuity** (Rust, ~20 MB) or move to **streaming-server** (Beelink N100).
 - Want to message other Matrix users (federation) → `server_name` must become a real owned domain + a public ingress.
 :::
+
+## cleaning up desktop-work
+tearing down the testing desktop-work links to chats for security given this machines matrix is no longer needed (going to use `pi-box`.
+
+1. go to linked devices in whatsapp and remove the "other device"
+2. unfortunately i  used incognito for meta (wrong choice) so i can't explicitly remove those cookies (closed the tab)... but FB will probably revoke it before long
+3. signal, like whatsapp has linked devices - just go to linked devices and unlink `mautrix-signal`
+4. telegram CAN use logout from the bridge bot (or apparently go into telegram linked devices)
+
+## summary of steps taken
+
+**one-off steps taken**
+
+once done, these do not need to be repeated
+
+1. create app at <https://my.telegram.org> in API developmen tools
+2. in `secrets` dir create `matrix-registration.age` with a random 32 char hash secret
+3. in `secrets` dir add the telegram API ID and hash to `matrix-telegram-env.age` (see `secrets.nix` for format spec)
+4. (remember to update secrets with `task secrets:update` then rebuild with `task os:build`
+
+
+**hosting specific steps**
+
+These steps must be re-done if I were ever to change deployment machine (unless i ported data over)
+
+5. add the "jollof" user to matrix with: `sudo matrix-synapse-register_new_matrix_user -u jollof -a`
+> the `-a` specifies it's an admin account
+
+6. launch element desktop and login with user `jollof` and the password used in previous step, using `https://pi-box.rove-lydian.ts.net:8448` as the URL
+> element desktop should be installed - I have added it in `extended-desktop.nix`
+7. message `@telegrambot:jollof.chat` and login with phone number
+> `jollof.chat` is my matrix server name and `telegrambot` is the default username in `mautrix-telegram` for the bridge
+8. message `@whatsappbot:jollof.chat` and type `login qr` to login with the QR code - scanning from phone
+> can use `login phone` but it didnt work when i tried whatsapp kept erroring - hence using element as rendering the QR code doesn't work with iamb
+9. message `@signalbot:jollof.chat` and type login - same as whatsapp, use the QR code from phone to link the device
+10. message `@facebookboot:jollof.chat` and type login - have to do some shenanigans with copying `fetch` request named `graphql` as cUrl and pasting
+> facebook didnt auto register at first - had to remove the registration file and restart services

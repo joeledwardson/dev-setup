@@ -17,3 +17,6 @@ dms = ["invite", "unread", "recent"]
 [settings]
 username_display = "displayname"
 
+
+[macros.normal]
+"ge" = ":editor<Enter>"

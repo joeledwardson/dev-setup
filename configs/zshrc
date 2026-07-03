@@ -156,6 +156,25 @@ function bw-view() {
 
 # find and edit a bitwarden entry
 function bw-edit() {
+
+    edit_note=false
+    while (($# > 0)); do
+        case "$1" in
+        -h | --help)
+            echo "Usage: bw-edit [--edit-note]"
+            return 0
+            ;;
+        "--edit-note")
+            edit_note=true
+            shift
+            ;;
+        *)
+            echo "Error: Unexpected argument you donkey! $1" >&2
+            return 1
+            ;;
+        esac
+    done
+
     # get all items from bitwarden
     bw_items=$(bw list items)
 
@@ -173,33 +192,46 @@ function bw-edit() {
     fi
     echo "retrieved ID $selected_id"
 
-    # create temp file
-    tmpfile=$(mktemp)
+    # temp file to hold item
+    tmpitem=$(mktemp)
 
-    # write JSON to temp file
-    jq -r ".[] | select(.id == \"$selected_id\")" <<<"$bw_items" >"$tmpfile"
-
+    # query selected
+    jq --arg sel_id "$selected_id" -r '.[] | select(.id == $sel_id)' <<<"$bw_items" >"$tmpitem"
     # check file not empty
-    if test -z "$(cat -A "$tmpfile")"; then
+    if test -z "$(cat -A "$tmpitem")"; then
         echo "error, json is empty!"
         return 1
     fi
 
-    # open in editor (this blocks until editor closes)
-    $EDITOR "$tmpfile"
+    if $edit_note; then
+        # temp file for notes
+        tmpnotes=$(mktemp)
 
-    if test "$(cat "$tmpfile")" = "$item_json"; then
-        echo "no changes made, exiting..."
-        rm -f "$tmpfile"
-        return 0
+        # write notes to a file
+        jq -r '.notes // ""' <"$tmpitem" >"$tmpnotes"
+
+        # open in editor (this blocks until editor closes)
+        $EDITOR "$tmpnotes"
+
+        # update bitwarden with edited JSON
+        echo "sending updated JSON to bitwarden..."
+
+        jq --arg notes_file "$(<"$tmpnotes")" '.notes = $notes_file' "$tmpitem" | bw encode | bw edit item "$selected_id"
+
+        # cleanup notes
+        rm -f "$tmpnotes"
+    else
+        # open in editor (this blocks until editor closes)
+        $EDITOR "$tmpitem"
+
+        # update bitwarden with edited JSON
+        echo "sending updated JSON to bitwarden..."
+        cat "$tmpitem" | bw encode | bw edit item "$selected_id"
+
     fi
 
-    # update bitwarden with edited JSON
-    echo "sending updated JSON to bitwarden..."
-    cat "$tmpfile" | bw encode | bw edit item "$selected_id"
-
     # cleanup
-    rm -f "$tmpfile"
+    rm -f "$tmpitem"
 
     echo "Item $selected_id updated successfully"
 }
