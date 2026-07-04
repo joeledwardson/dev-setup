@@ -229,7 +229,7 @@ hl.bind(mainMod .. '+C', hl.dsp.exec_cmd 'swaync-client --close-all')
 hl.bind(mainMod .. '+TAB', hl.dsp.window.cycle_next())
 hl.bind(mainMod .. '+ALT+m', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/window-menu.sh'))
 hl.bind(mainMod .. '+slash', hl.dsp.exec_cmd 'rofimoji --action clipboard')
-hl.bind(mainMod .. '+u', hl.dsp.exec_cmd 'hyprwhspr-rs record toggle')
+hl.bind(mainMod .. '+u', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/toggle_hyprwhspr.sh'))
 
 -- Move focus
 hl.bind(mainMod .. '+h', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/move-focus.sh l'))
