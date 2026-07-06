@@ -244,7 +244,8 @@ hl.bind(mainMod .. '+ALT+k', hl.dsp.window.move { direction = 'u' })
 hl.bind(mainMod .. '+ALT+j', hl.dsp.window.move { direction = 'd' })
 
 -- Groups
-hl.bind(mainMod .. '+G', hl.dsp.group.toggle())
+hl.bind(mainMod .. '+g', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/group.sh'))
+-- hl.bind(mainMod .. '+G', hl.dsp.group.toggle())
 hl.bind(mainMod .. '+SHIFT+G', hl.dsp.group.lock_active())
 hl.bind(mainMod .. '+P', hl.dsp.group.prev())
 hl.bind(mainMod .. '+N', hl.dsp.group.next())
