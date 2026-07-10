@@ -62,7 +62,6 @@ RUN npm install -g typescript
 RUN pacman -Scc --noconfirm
 
 ENV SHELL=/bin/zsh
-ENV ZDOTDIR=$HOME/.config/zsh
 ENV PATH="$HOME/.local/bin:$PATH"
 ENV EDITOR=vim
 

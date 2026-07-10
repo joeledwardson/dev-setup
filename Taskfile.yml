@@ -225,6 +225,15 @@ tasks:
     cmds:
       - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
 
+  secrets:edit:
+    desc: |
+      Edit an existing agenix secret. Usage: task secrets:edit -- <secret.age>
+    # agenix has no default editor, so EDITOR must be set. root nix key required too.
+    requires:
+      vars: [CLI_ARGS]
+    dir: ./secrets
+    cmd: sudo EDITOR=nvim agenix -i /etc/ssh/ssh_host_ed25519_key -e {{.CLI_ARGS}}
+
   secrets:update:
     desc: update secrets with recipients list
     dir: ./secrets

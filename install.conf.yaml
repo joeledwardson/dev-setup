@@ -13,10 +13,12 @@
           recursive: true
 
 - link:
+      # root dotfiles (either not available or a pain in the ass to move to a subdir)
       ~/.vim/vimrc: ./configs/vimrc
+      ~/.zshrc: ./configs/zshrc
+      ~/.npmrc: ./configs/npmrc
       ~/.config/waybar: ./configs/waybar
       ~/.config/swaync: ./configs/swaync
-      ~/.config/zsh/.zshrc: ./configs/zshrc
       ~/.config/nvim: ./configs/nvim
       ~/.config/tmux/tmux.conf: ./configs/tmux/tmux.conf
       ~/.config/tmux/scripts: ./configs/tmux/scripts
@@ -44,7 +46,6 @@
       ~/.config/yazi: ./configs/yazi
       ~/.config/mimeapps.list: ./configs/mimeapps.list
       ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
-      ~/.npmrc: ./configs/npmrc
       ~/.claude/CLAUDE.md: ./configs/claude/claude.md
       ~/.claude/lessons.md: ./configs/claude/lessons.md
       ~/.claude/settings.json: ./configs/claude/settings.json

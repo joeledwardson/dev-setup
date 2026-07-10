@@ -10,15 +10,15 @@
 
   i18n.defaultLocale = "en_GB.UTF-8";
   i18n.extraLocaleSettings = {
-    LC_ADDRESS        = "en_GB.UTF-8";
+    LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
-    LC_MEASUREMENT    = "en_GB.UTF-8";
-    LC_MONETARY       = "en_GB.UTF-8";
-    LC_NAME           = "en_GB.UTF-8";
-    LC_NUMERIC        = "en_GB.UTF-8";
-    LC_PAPER          = "en_GB.UTF-8";
-    LC_TELEPHONE      = "en_GB.UTF-8";
-    LC_TIME           = "en_GB.UTF-8";
+    LC_MEASUREMENT = "en_GB.UTF-8";
+    LC_MONETARY = "en_GB.UTF-8";
+    LC_NAME = "en_GB.UTF-8";
+    LC_NUMERIC = "en_GB.UTF-8";
+    LC_PAPER = "en_GB.UTF-8";
+    LC_TELEPHONE = "en_GB.UTF-8";
+    LC_TIME = "en_GB.UTF-8";
   };
   console.keyMap = "uk";
 
@@ -26,26 +26,25 @@
   services.envfs.enable = true;
 
   services.openssh = {
-    enable   = true;
+    enable = true;
     settings.StreamLocalBindUnlink = "yes";
   };
 
   services.tailscale.enable = true;
 
-  programs.zsh.enable    = true;
+  programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
   environment.variables.EDITOR = "nvim";
   environment.sessionVariables = {
-    XDG_CACHE_HOME  = "$HOME/.cache";
+    XDG_CACHE_HOME = "$HOME/.cache";
     XDG_CONFIG_HOME = "$HOME/.config";
-    XDG_DATA_HOME   = "$HOME/.local/share";
-    XDG_STATE_HOME  = "$HOME/.local/state";
-    ZDOTDIR         = "$HOME/.config/zsh";
+    XDG_DATA_HOME = "$HOME/.local/share";
+    XDG_STATE_HOME = "$HOME/.local/state";
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree          = true;
+  nixpkgs.config.allowUnfree = true;
 
   services.dbus.enable = true;
 
@@ -94,7 +93,7 @@
 
     ### network diag
     nettools # ifconfig, netstat
-    dig      # nslookup
+    dig # nslookup
 
     ### nix tooling
     nix-search-cli
@@ -106,7 +105,7 @@
     htop
     btop
 
-    gcc      # treesitter compiles parsers at runtime
+    gcc # treesitter compiles parsers at runtime
     go-task
   ];
 

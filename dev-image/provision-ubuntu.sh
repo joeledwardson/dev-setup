@@ -39,11 +39,6 @@ sudo tee /etc/zsh/zprofile >/dev/null <<'EOF'
 emulate sh -c 'source /etc/profile'
 EOF
 
-# === 0f. ZDOTDIR — system-wide so zsh looks in ~/.config/zsh for config ===
-sudo tee /etc/zsh/zshenv >/dev/null <<'EOF'
-export ZDOTDIR="$HOME/.config/zsh"
-EOF
-
 # === 1. Base apt packages ===
 sudo apt update
 sudo apt install -y \
@@ -158,7 +153,7 @@ sheldon lock
 
 echo ""
 echo "=== DONE ==="
-echo "Log out and back in (zsh + ZDOTDIR + PATH take effect on next login)"
+echo "Log out and back in (zsh + PATH take effect on next login)"
 echo ""
 echo "Public key for adding to GitHub/GitLab:"
 cat ~/.ssh/id_ed25519.pub

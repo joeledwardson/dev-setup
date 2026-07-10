@@ -251,17 +251,6 @@ function encode-uri {
     jq -rn --arg pwd "$1" '$pwd | @uri'
 }
 
-# edit an existing agenix secrets
-function edit-secret {
-    if [[ -z "$1" ]]; then
-        printf "Error: argument must be supplied\n" >&2
-        return 1
-    fi
-    # no editor default in agenix apparently? so must be set
-    # root nix key must be specified as well
-    sudo EDITOR=nvim agenix -i /etc/ssh/ssh_host_ed25519_key -e "$1"
-}
-
 # some weird command prompt thing i never use (remove it)
 bindkey -M vicmd -r ':'
 

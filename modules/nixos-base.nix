@@ -171,7 +171,7 @@
     gdu # replacement for ncdu
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
-    caligula # TUI for disk imaging
+    caligula # TUI for disk imaging ISO burning to USB etc
     tig # helpful git tool? #TODO: is this needed...
 
     ### CLI tools
@@ -328,8 +328,6 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
-    # custom directory as per dotbot configuration
-    ZDOTDIR = "$HOME/.config/zsh";
     # add npm global to path for global nodejs installation
     PATH = [ "$HOME/.npm-global/bin" ];
     # disable some weird setting from .net, otherwise marksman fails complaining about icu?
