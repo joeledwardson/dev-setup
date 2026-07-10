@@ -8,7 +8,6 @@
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
-    ./matrix.nix # self-hosted Matrix homeserver + Telegram bridge (test cut)
   ];
 
   # Stream kernel log to degen-bot over UDP in real time.
@@ -131,7 +130,6 @@
     powerManagement.enable = false;
     powerManagement.finegrained = false;
   };
-
 
   # NOTE: NVreg_PreserveVideoMemoryAllocations=1 was removed.
   # It requires powerManagement.enable=true to provide the procfs suspend interface.
