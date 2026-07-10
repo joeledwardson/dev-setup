@@ -37,12 +37,12 @@ in {
   "hermes-env.age".publicKeys = allHosts;
   # my access token for `ntfy.sh` - grabbed from here https://ntfy.sh/account
   "ntfy-token.age".publicKeys = allHosts;
-  # USDA food central API key - grabbed from here https://fdc.nal.usda.gov/api-key-signup/
-  "usda.age".publicKeys = allHosts;
 
-  "fatsecret-client-id.age".publicKeys = allHosts;
-  "fatsecret-client-secret.age".publicKeys = allHosts;
+  # ENV file for sparkyfitness secrets deployment
   "sparkyfitness-secrets.age".publicKeys = allHosts;
+
+  # plain text file for sparkyfitness related secrets 
+  "sparkyfitness-manual.age".publicKeys = allHosts;
 
   # matrix registration secret key - just a generated random string
   "matrix-registration.age".publicKeys = allHosts;

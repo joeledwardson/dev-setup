@@ -14,9 +14,7 @@ in {
     llm-gemini-key = mkSecret ../secrets/llm-gemini-key.age;
     hermes-env = mkSecret ../secrets/hermes-env.age;
     ntfy-token = mkSecret ../secrets/ntfy-token.age;
-    usda = mkSecret ../secrets/usda.age;
-    fatsecret-client-id = mkSecret ../secrets/fatsecret-client-id.age;
-    fatsecret-client-secret = mkSecret ../secrets/fatsecret-client-secret.age;
     sparkyfitness-secrets = mkSecret ../secrets/sparkyfitness-secrets.age;
+    sparkyfitness-manual = mkSecret ../secrets/sparkyfitness-manual.age;
   };
 }

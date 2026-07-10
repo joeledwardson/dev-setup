@@ -93,7 +93,8 @@ in {
     '';
 
     serviceConfig = {
-      Type = "simple"; # compose up (no -d) stays foreground -> systemd manages it
+      Type =
+        "simple"; # compose up (no -d) stays foreground -> systemd manages it
       StateDirectory = "sparkyfitness"; # creates/owns /var/lib/sparkyfitness
       WorkingDirectory = stateDir; # always exists (StateDirectory)
       ExecStart = "${compose} up";
@@ -123,14 +124,27 @@ in {
     };
   };
 
-  # ── manual setup (one-time, via the web UI) ──
-  # sparky stores AI + provider keys as encrypted db rows (no env knob), so these are NOT declarative:
-  #   SparkyAI (gemini): Settings -> AI Service -> Google / gemini-2.5-flash, key from
-  #                      `sudo cat /run/agenix/llm-gemini-key` (needs the MCP sidecar above)
-  #   USDA:              Settings -> Integrations -> USDA, `sudo cat /run/agenix/usda`
-  #   FatSecret:         Settings -> Integrations -> FatSecret, `…/fatsecret-client-id` + `…-fatsecret-client-secret`
+  # ── manual setup, once via UI
+  # grab the plain text secrets from sparkyfitness-manual.age.
+  # 1. fatsecret: 
+  #      - see dash here: https://platform.fatsecret.com/my-account/dashboard
+  #      - creds are in bitwarden to login to their platform
+  #      - go to sparkyfitness integrations and add fatsecret from the web UI
+  #      - should be a client ID/client secret in the nix age file
+  # 2.USDA:
+  #     - API key is a one time sign up here: https://fdc.nal.usda.gov/api-key-signup
+  #     - again go to sparkyfitness web UI and add USDA key there
+  # 3. Withings:
+  #     - developer portal is here: https://developer.withings.com/dashboard/
+  #     - credentials are on bitwarden to login
+  #     - requires creation of an app 
+  #     - go to sparkyfitness web UI and add withings integration - should be client id / secret in the age file
+  # 4. SparkyAI:
+  #      - go to sparkyfitness web UI and add gemini API key to sparkyfitness there
+  #      - gemini Key is held in llm-gemini-key.age
   #
-  # FatSecret gotcha: rejects non-allowlisted IPs (err 21). whitelist the box's IPv4
-  # (`curl -4 https://api.ipify.org`) in FatSecret console -> IP Restrictions. free tier = single IP,
-  # re-add if your ISP rotates it.
+  # ------------ IMPORTANT!!!!!!! ------------------------------------
+  # fatsecret requires IP whitelisting
+  # - I have done this for my home IP of pi-box
+  # - at some point will get errors from fatsecret and will have to update said IP on rotation
 }
