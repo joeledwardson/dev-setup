@@ -18,3 +18,4 @@ title: "Architecture Decision Records"
 | [ADR-007](007-orchestration-eval-harness) | Meta-eval harness: scoring the ADR-001 orchestration options | Proposed | 2026-06-24 |
 | [ADR-008](008-mdx-vs-mkdocs) | Docs engine: adopt Rspress (MDX); retain mkdocs for existing projects | Accepted | 2026-06-25 |
 | [ADR-009](009-personal-chat-matrix) | Personal multi-network chat via Matrix: self-host (Synapse + mautrix) vs Beeper | Proposed | 2026-06-25 |
+| [ADR-010](010-local-model-hardware) | Running LLMs locally: what to run, and what to run it on | Proposed | 2026-07-15 |

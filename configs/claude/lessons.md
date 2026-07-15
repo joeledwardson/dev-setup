@@ -138,3 +138,12 @@ elsewhere. That comment is the duplicated knowledge apologizing for itself — d
 
 ---
 
+## Use human lanauge - NOT robotic
+
+LLMs tend to use vocabulary like 
+
+| Example (to use) | to vaoid |
+|---|---|
+| "each one has something broken" | "each plants one defect" |
+| "the categorisation of expected error" | "the expected finding / category" |
+| "the info at the top of the file" | "frontmatter" |

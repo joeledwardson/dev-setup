@@ -199,6 +199,11 @@ return {
     -- dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     -- dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
+    -- Build debug binaries without cgo. On Nix, a cgo debug build (no -O)
+    -- trips glibc's _FORTIFY_SOURCE warning, which -Werror turns fatal.
+    -- Delve inherits this env for its `go build`, so this sidesteps it.
+    vim.env.CGO_ENABLED = '0'
+
     -- Install golang specific config
     require('dap-go').setup {
       delve = {

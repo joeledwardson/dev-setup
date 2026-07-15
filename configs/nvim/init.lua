@@ -916,6 +916,7 @@ require('lazy').setup {
           filetypes = { 'sh', 'zsh' },
         },
         svelte = {},
+        just = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -938,7 +939,29 @@ require('lazy').setup {
         vim.lsp.config(server_name, config)
       end
 
-      -- nixd is not available via mason, so calling directly
+      -- nixd is not available via mason, so calling directly.
+      -- Point nixd's options provider at THIS host's evaluated flake config.
+      -- Without it, hover/completion only knows base nixpkgs options — options
+      -- from flake inputs (agenix `age.secrets`, nixarr, hermes) and our own
+      -- modules hover as empty/"missing type". flake_dir is derived from the
+      -- nvim config symlink (…/dev-setup/configs/nvim -> repo root) so it works
+      -- on every host; hostname matches the nixosConfigurations key.
+      -- NB: category nodes (e.g. `fonts`, `age`) have no type of their own and
+      -- always hover as "missing type" — hover a leaf option like `fonts.packages`.
+      local flake_dir = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.stdpath 'config'), ':h:h')
+      local nix_hostname = vim.uv.os_gethostname()
+      vim.lsp.config('nixd', {
+        capabilities = capabilities,
+        settings = {
+          nixd = {
+            options = {
+              nixos = {
+                expr = string.format('(builtins.getFlake "%s").nixosConfigurations."%s".options', flake_dir, nix_hostname),
+              },
+            },
+          },
+        },
+      })
       vim.lsp.enable 'nixd'
       -- TODO: fix hard coded pg schema for atlas
       vim.lsp.config['atlas'] = { filetypes = { 'atlas-schema-postgresql' }, capabilities = capabilities, root_markers = { 'schema.pg.hcl' } }
@@ -1089,6 +1112,11 @@ require('lazy').setup {
           zsh = { 'shfmt', 'shellcheck' },
           sh = { 'shfmt', 'shellcheck' },
           python = { 'ruff_format' },
+          -- goimports runs gofmt AND fixes imports; it's from the Go toolchain
+          -- (OS-provided, like nixfmt/terraform_fmt below), so it isn't in the
+          -- mason ensure_installed list. Configuring it here makes format-on-save
+          -- deterministic instead of depending on gopls having attached.
+          go = { 'goimports' },
         },
         formatters = {
           sql_formatter = {
