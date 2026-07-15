@@ -138,4 +138,11 @@
     configDir = "/home/claude/.config/syncthing";
   };
 
+  services.ollama = {
+    enable = true;
+
+    # Declaratively pull models when the service starts
+    loadModels = [ "qwen2.5vl:3b" ];
+  };
+
 }

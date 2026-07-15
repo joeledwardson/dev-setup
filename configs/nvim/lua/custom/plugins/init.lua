@@ -149,6 +149,11 @@ vim.api.nvim_create_user_command('PrintFoldLevel', function()
   vim.api.nvim_echo({ { 'Fold level on line ' .. line .. ' is ' .. level } }, true, {})
 end, {})
 
+-- yank current file path
+vim.keymap.set('n', '<leader>Y', function()
+  vim.fn.setreg('+', vim.fn.expand '%:p')
+end, { desc = 'yank current file path to clipboard register' })
+
 --- remap custom fold
 vim.keymap.set('n', 'zX', function()
   -- get current line number
