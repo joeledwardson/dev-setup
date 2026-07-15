@@ -71,6 +71,7 @@
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
             ./hosts/degen-home/configuration.nix
+            ./modules/nixos-netbird.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
               keyboardIds = [

@@ -25,7 +25,6 @@ end
 --### VARIABLES ###
 
 local terminal = 'kitty'
-local fileManager = 'dolphin'
 local menu = 'fuzzel'
 local active_colour = { colors = { 'rgba(b5e853ee)', 'rgba(b5e853ee)' }, angle = 45 }
 local groupbar_active_colour = 'rgba(b5e853ff)'
@@ -204,8 +203,8 @@ hl.config {
 hl.bind(mainMod .. '+Return', hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. '+Q', hl.dsp.window.close())
 hl.bind(mainMod .. '+SHIFT+Q', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/confirm-exit.sh'))
-hl.bind(mainMod .. '+E', hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. '+SHIFT+E', hl.dsp.exec_cmd(terminal .. ' yazi'))
+hl.bind(mainMod .. '+SHIFT+E', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/blank-nvim.sh'))
+hl.bind(mainMod .. '+E', hl.dsp.exec_cmd(terminal .. ' yazi'))
 -- focus-cycle the opposite layer: from a floating window jump to tiled, else to floating
 hl.bind(mainMod .. '+SHIFT+T', function()
   local active = hl.get_active_window()

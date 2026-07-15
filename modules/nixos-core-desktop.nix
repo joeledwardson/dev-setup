@@ -10,8 +10,6 @@
     networkmanagerapplet # nm-applet tray icon
     pavucontrol # pulse audio GTK volume control
     cliphist # wayland-native clipboard history manager
-    kdePackages.dolphin # default GUI file manager
-    kdePackages.qtsvg # svg icons for dolphin
     fuzzel # new launcher to replace rofi/wofi
     hyprpaper # hyprland wallpaper
     hyprshot # screenshotting tool
@@ -82,7 +80,8 @@
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store'";
+      ExecStart =
+        "${pkgs.bash}/bin/bash -c '${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store'";
       Restart = "on-failure";
     };
   };
@@ -136,9 +135,7 @@
   # Persistent directory for Hyprland session logs.
   # Hyprland's own log lives in /run (tmpfs) and is lost on every reboot/crash.
   # A mirror script copies it here every 10s so post-crash forensics are possible.
-  systemd.tmpfiles.rules = [
-    "d /var/log/hyprland 0755 joelyboy users -"
-  ];
+  systemd.tmpfiles.rules = [ "d /var/log/hyprland 0755 joelyboy users -" ];
 
   # =======================================
   # Boot behaviour
@@ -163,7 +160,7 @@
     withUWSM = true;
   };
   # swaylock needs a PAM entry to authenticate — without this passwords won't work
-  security.pam.services.swaylock = {};
+  security.pam.services.swaylock = { };
 
   # XDG Portal for desktop integration
   # NOTE: programs.hyprland.enable already adds xdg-desktop-portal-hyprland
