@@ -139,6 +139,7 @@
     devenv
     nix-index
     nix-inspect
+    nh # nh search is REALLY helpful to replace to replace https://search.nixos.org/packages
 
     ### disk management
     udiskie # for status bar disks
