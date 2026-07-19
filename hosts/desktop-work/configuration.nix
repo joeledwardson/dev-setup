@@ -98,6 +98,17 @@
   programs.virt-manager.enable = true;
 
   # =======================================
+  # Ollama (local LLMs)
+  # =======================================
+  services.ollama = {
+    enable = true;
+    loadModels = [ "gpt-oss:20b" ];
+    host = "0.0.0.0";
+    package = pkgs.ollama-cuda;
+  };
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 11434 ];
+
+  # =======================================
   # Bluetooth Configuration
   # =======================================
   hardware.bluetooth = {

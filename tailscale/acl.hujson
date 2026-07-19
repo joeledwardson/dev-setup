@@ -15,7 +15,8 @@
     {"src": ["autogroup:member"], "dst": ["*"], "ip": ["*"]},
     // Trusted tagged devices — full access
     {"src": ["tag:trusted"],      "dst": ["*"], "ip": ["*"]},
-    // tag:sandbox is never a src — inbound reachable by all of the above, but cannot initiate outbound
+    // sandbox machines can only access ollama with outbound connections
+    {"src": ["tag:sandbox"], "dst": ["*"], "ip": ["tcp:11434"]},
   ],
 
   "ssh": [
