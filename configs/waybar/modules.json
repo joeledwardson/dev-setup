@@ -113,7 +113,7 @@
   },
 
   "custom/hyprwhspr": {
-    "exec": "cat ~/.cache/hyprwhspr-rs/status.json",
+    "exec": "cat ~/.cache/hyprwhspr-rs/status.json 2>/dev/null || echo '{}'",
     "return-type": "json",
     "interval": 1,
     "tooltip": true,

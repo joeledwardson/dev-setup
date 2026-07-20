@@ -4,7 +4,7 @@ Type=Application
 Name=Brave (Personal)
 Comment=Launch Brave with personal profile
 Icon=brave-browser
-Exec=brave --new-window --profile-directory=Default
+Exec=brave --new-window --profile-directory=Default --hide-crash-restore-bubble
 Categories=Network;WebBrowser;
 Terminal=false
 StartupNotify=true

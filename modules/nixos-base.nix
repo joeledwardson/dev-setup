@@ -195,6 +195,7 @@
     yq-go
     crudini # section-aware editor for INI/key=value files (remmina.pref etc)
     kbd # has showkey
+    evtest # like showkey but can debug events from mouse and other inputs
     btop # fancy version of top
     navi
     skopeo # useful for searching remote docker tags (required for video consumer)

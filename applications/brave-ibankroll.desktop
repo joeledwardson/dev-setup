@@ -4,7 +4,7 @@ Type=Application
 Name=Brave (IB work)
 Comment=Launch Brave with work profile
 Icon=brave-browser
-Exec=brave --new-window --profile-directory=Ibankroll-Profile
+Exec=brave --new-window --profile-directory=Ibankroll-Profile --hide-crash-restore-bubble
 Categories=Network;WebBrowser;
 Terminal=false
 StartupNotify=true

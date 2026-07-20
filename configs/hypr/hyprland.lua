@@ -227,7 +227,9 @@ hl.bind('CTRL+ALT+L', hl.dsp.exec_cmd 'swaylock -f')
 hl.bind(mainMod .. '+C', hl.dsp.exec_cmd 'swaync-client --close-all')
 hl.bind(mainMod .. '+TAB', hl.dsp.window.cycle_next())
 hl.bind(mainMod .. '+ALT+m', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/window-menu.sh'))
-hl.bind(mainMod .. '+slash', hl.dsp.exec_cmd 'rofimoji --action clipboard')
+hl.bind(mainMod .. '+b', hl.dsp.exec_cmd 'rofimoji --action clipboard')
+hl.bind(mainMod .. '+comma', hl.dsp.exec_cmd 'ydotool mousemove -w -x 0 -y -1')
+hl.bind(mainMod .. '+period', hl.dsp.exec_cmd 'ydotool mousemove -w -x 0 -y 1')
 hl.bind(mainMod .. '+u', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/toggle_hyprwhspr.sh'))
 
 -- Move focus
@@ -275,10 +277,6 @@ hl.bind(mainMod .. '+SHIFT+0', hl.dsp.window.move { workspace = 10 })
 -- Special workspace
 hl.bind(mainMod .. '+S', hl.dsp.workspace.toggle_special 'magic')
 hl.bind(mainMod .. '+SHIFT+S', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/toggle-special.sh'))
-
--- Scroll workspaces
-hl.bind(mainMod .. '+mouse_down', hl.dsp.focus { workspace = 'e+1' })
-hl.bind(mainMod .. '+mouse_up', hl.dsp.focus { workspace = 'e-1' })
 
 -- Mouse drag/resize
 hl.bind(mainMod .. '+mouse:272', hl.dsp.window.drag(), { mouse = true })
@@ -391,7 +389,6 @@ hl.define_submap('interactive_group', function()
   hl.bind('u', group_action(hl.dsp.window.move { out_of_group = true }))
   hl.bind('n', group_action(hl.dsp.group.next()))
   hl.bind('p', group_action(hl.dsp.group.prev()))
-  hl.bind('comma', group_action(hl.dsp.group.move_window { forward = false }))
   hl.bind('period', group_action(hl.dsp.group.move_window { forward = true }))
   hl.bind('escape', hl.dsp.submap 'reset')
   hl.bind('q', hl.dsp.submap 'reset')
