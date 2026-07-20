@@ -117,3 +117,73 @@ require('git'):setup {
   -- Order of status signs showing in the linemode
   order = 1500,
 }
+
+-- Small custom keybind actions, invoked from keymap.toml via yazi's inline `lua`
+-- action (see the `CustomPlugins.*` bindings there). Keeping them here as a global
+-- table instead of separate plugin packages removes the per-plugin `plugins/*.yazi`
+-- dirs and their `install.conf.yaml` symlinks.
+--
+-- Inline `lua` runs SYNCHRONOUSLY, so:
+--   * sync fns (only `cx` + `ya.emit`) are called directly:
+--       lua 'CustomPlugins.first_file()'
+--   * fns using a yielding API (`ya.clipboard`, `ya.input`) must be handed to the
+--     runtime with `ya.async`, else they error "attempt to yield from outside a
+--     coroutine". `cx` isn't reachable from the async task, so we read it in the
+--     sync part and pass the values in:
+--       lua 'ya.async(CustomPlugins.copy_path, CustomPlugins.gather_paths()) return'
+--     The trailing `return` discards ya.async's task handle (unserialisable → the
+--     dispatcher would otherwise log a "Call dispatch error" on every press).
+CustomPlugins = {}
+
+-- first-file: move the cursor to the first non-directory in the current dir. Sync.
+function CustomPlugins.first_file()
+  local tab = cx.active
+  local files = tab.current.files
+  for i = 1, #files do
+    local file = files[i]
+    if file and not file.cha.is_dir then
+      -- lua is 1-indexed; yazi's `arrow` moves relative to the current cursor
+      ya.emit('arrow', { (i - 1) - tab.current.cursor })
+      return
+    end
+  end
+end
+
+-- copy-path: collect the plain filesystem path(s) of the selected/hovered file(s).
+-- Reads `url.path` (not the Url) so it's correct inside `search://` views too.
+-- Runs in the sync context, so it can touch `cx` directly.
+function CustomPlugins.gather_paths()
+  local tab, paths = cx.active, {}
+  for _, url in pairs(tab.selected) do
+    paths[#paths + 1] = tostring(url.path)
+  end
+  if #paths == 0 and tab.current.hovered then
+    paths[1] = tostring(tab.current.hovered.url.path)
+  end
+  return paths
+end
+
+-- copy-path (async half): write the gathered paths to the clipboard. `ya.clipboard`
+-- yields, so this must run under `ya.async`.
+function CustomPlugins.copy_path(paths)
+  if not paths or #paths == 0 then
+    return ya.notify { title = 'Copy path', content = 'No file selected', level = 'warn', timeout = 5 }
+  end
+  ya.clipboard(table.concat(paths, '\n'))
+  local msg = #paths == 1 and paths[1] or (#paths .. ' paths')
+  ya.notify { title = 'Copy path', content = 'Copied: ' .. msg, level = 'info', timeout = 5 }
+end
+
+-- open-with-cmd: prompt for a command and run it (blocking) against the current
+-- file(s). `ya.input` yields, so this must run under `ya.async`.
+function CustomPlugins.open_with_cmd()
+  local value, event = ya.input {
+    title = 'Open with:',
+    pos = { 'hovered', y = 1, w = 50 },
+  }
+  if event ~= 1 then
+    return
+  end
+  local suffix = ya.target_family() == 'windows' and ' %*' or ' "$@"'
+  ya.emit('shell', { value .. suffix, block = true, orphan = false })
+end

@@ -2,9 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
   "runtime.version": "Lua 5.4",
   "workspace.library": [
-    "~/.config/yazi/plugins/types.yazi/",
-    "plugins/",
+    "plugins/types.yazi/",
     "types-extras.lua"
+  ],
+  "workspace.ignoreDir": [
+    "plugins"
   ],
   "diagnostics.globals": [
     "ya",

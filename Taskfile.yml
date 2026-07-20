@@ -9,6 +9,7 @@ vars:
   BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
   BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
   REMMINA_PREF: "{{.HOME}}/.config/remmina/remmina.pref"
+  LUA_LS: "{{.HOME}}/.local/share/nvim/mason/bin/lua-language-server"
 
 tasks:
   hyprland:reload:
@@ -80,6 +81,29 @@ tasks:
           ~/.cache/yazi/packages
       - task: dotbot:run
       - ya pkg install
+
+  lua:check:
+    desc: Type-check our Lua configs (yazi + hyprland) with lua-language-server; honours each dir's .luarc.json
+    cmds:
+      - task: lua:check:yazi
+      - task: lua:check:hypr
+
+  lua:check:yazi:
+    desc: Type-check the yazi Lua config (third-party plugins/ excluded via .luarc.json ignoreDir)
+    cmds:
+      # --check always exits 0, so fail the task ourselves unless it reports "no problems found"
+      - |
+        out=$("{{.LUA_LS}}" --check configs/yazi 2>&1)
+        echo "$out"
+        echo "$out" | grep -q "no problems found"
+
+  lua:check:hypr:
+    desc: Type-check the Hyprland Lua config
+    cmds:
+      - |
+        out=$("{{.LUA_LS}}" --check configs/hypr 2>&1)
+        echo "$out"
+        echo "$out" | grep -q "no problems found"
 
   tmux:reload:
     desc: Reload tmux config

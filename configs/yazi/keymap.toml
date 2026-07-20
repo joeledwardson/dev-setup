@@ -1,7 +1,7 @@
 ### jollof custom overrides
 [[mgr.prepend_keymap]]
 on = ["O"]
-run = "plugin open-with-cmd -- block"
+run = '''lua 'ya.async(CustomPlugins.open_with_cmd) return' '''
 desc = "Open with command (blocking)"
 
 [[mgr.prepend_keymap]]
@@ -19,7 +19,7 @@ desc = "Copy file(s) to clipboard"
 # filesystem path — correctly in both normal and search views.
 [[mgr.prepend_keymap]]
 on = ["c", "c"]
-run = "plugin copy-path"
+run = '''lua 'ya.async(CustomPlugins.copy_path, CustomPlugins.gather_paths()) return' '''
 desc = "Copy file path (search-safe)"
 
 [[mgr.prepend_keymap]]
@@ -44,7 +44,7 @@ desc = "Move in relative steps"
 
 [[mgr.prepend_keymap]]
 on = ["g", "f"]
-run = "plugin first-file"
+run = '''lua 'CustomPlugins.first_file()' '''
 desc = "Jump to first file (skip dirs)"
 
 [[mgr.prepend_keymap]]

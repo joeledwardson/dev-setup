@@ -256,6 +256,15 @@ return {
       library = {
         { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
       },
+      -- lazydev's lspconfig integration installs a root_dir *function* for lua_ls
+      -- that funnels every nested lua file into the first-opened workspace (repo
+      -- root ~/dev-setup). That root_dir fn overrides root_markers, so per-dir
+      -- .luarc.json files (configs/yazi, configs/hypr) are never read. Disabling it
+      -- restores normal root_markers detection, so each .luarc.json gets its own
+      -- LuaLS client (paired with the reuse_client override in init.lua's lua_ls).
+      integrations = {
+        lspconfig = false,
+      },
     },
   },
   {

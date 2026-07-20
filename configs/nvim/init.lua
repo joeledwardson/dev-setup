@@ -828,6 +828,16 @@ require('lazy').setup {
           -- uncomment below to add some juicy loggos
           -- cmd = { 'lua-language-server', '--loglevel=trace' },
 
+          -- Force a separate LuaLS instance per distinct root, so each nested
+          -- .luarc.json (configs/yazi, configs/hypr, …) gets its own workspace.
+          -- Default Neovm (>=0.11) reuses an ancestor client rooted at the repo
+          -- (~/dev-setup, which only has .git), so a sub-dir buffer attaches there
+          -- and its per-dir .luarc.json is never read. Strict root equality fixes it.
+          -- Inspect with :LspInfo / :checkhealth vim.lsp (expect one client per root).
+          reuse_client = function(client, config)
+            return client.name == config.name and client.root_dir == config.root_dir
+          end,
+
           on_init = function(client)
             if client.workspace_folders then
               local path = client.workspace_folders[1].name

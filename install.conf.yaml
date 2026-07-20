@@ -59,9 +59,6 @@
       ~/.config/zellij/plugins: ./configs/zellij/plugins
       ~/.config/foot/foot.ini: ./configs/foot/foot.ini
       ~/.config/ghostty/config: ./configs/ghostty/config
-      ~/.config/yazi/plugins/first-file.yazi: ./configs/yazi/custom-plugins/first-file.yazi
-      ~/.config/yazi/plugins/open-with-cmd.yazi: ./configs/yazi/custom-plugins/open-with-cmd.yazi
-      ~/.config/yazi/plugins/copy-path.yazi: ./configs/yazi/custom-plugins/copy-path.yazi
       ~/.config/pgcli/config: ./configs/pgcli/config
       ~/.config/helix/config.toml: ./configs/helix/config.toml
       ~/.config/tig/config: ./configs/tig/config
