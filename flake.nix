@@ -31,6 +31,7 @@
         "video" # legacy? not sure if needed for capture devices (https://wiki.archlinux.org/title/Users_and_groups#Pre-systemd_groups)
         "plugdev" # this is required (I think) for udiskie
         "docker" # non root access to docker
+        "ydotool" # access the ydotoold socket to inject synthetic input (Wayland automation)
         "netbird-wt0" # netbird daemon socket access for the tray UI. NB: this group only exists on the host running the netbird client; other hosts log a harmless "unknown group" warning on activation and skip it.
         "hermes" # lets the interactive `hermes` CLI read the hermes-agent service's shared HERMES_HOME. Same deal as netbird-wt0: only exists on hosts importing nixos-hermes.nix; harmless "unknown group" warning elsewhere.
       ];

@@ -97,13 +97,9 @@
   # kitty terminal support for SSH
   environment.systemPackages = with pkgs; [
     kitty.terminfo
-    ydotool # Wayland mouse/keyboard simulation
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
   ];
-
-  # ydotool daemon (required for ydotool to work)
-  programs.ydotool.enable = true;
 
   # auto-start wayvnc when Hyprland is running
   systemd.user.services.wayvnc = {

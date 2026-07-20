@@ -154,6 +154,9 @@
   # Wayland Configuration
   # =======================================
   programs.nm-applet.enable = true;
+  # ydotool: Wayland input simulation. Runs ydotoold (root UID but sandboxed to
+  # /dev/uinput only) and gates the client socket behind the `ydotool` group.
+  programs.ydotool.enable = true;
   programs.waybar = { enable = true; };
   programs.hyprland = {
     enable = true;

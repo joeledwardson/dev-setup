@@ -13,6 +13,9 @@ vim.o.termsync = false
 vim.opt.autoread = true
 vim.opt.swapfile = false
 
+-- useful to able to use next/previous occurance operators */# operators on words with hyphen
+vim.opt.iskeyword:append '-'
+
 -- custom command to run python (setting the python directory) and run current file
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'python',
