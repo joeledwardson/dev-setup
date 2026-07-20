@@ -229,7 +229,10 @@ I expected a 128GB Strix Halo at ~£1,500–2,000. It's **£3,449**. And 128GB o
 |---|---|---|---|---|
 | **Used RTX 3090** | **£500–800** | 24 GB VRAM | ✅ x86 + CUDA, proven | Fast 32B — the sensible start |
 | **New RTX 5090** | £3,399–3,560 | 32 GB VRAM | ✅ x86 + CUDA | Fast 32B with headroom + gaming |
-| **Strix Halo 128GB** (Framework) | £3,449 | ~96 GB of 128 | ✅ x86 native | 70B & big MoE at home |
+| **Strix Halo 128GB** — Framework | £3,449 | ~96 GB of 128 | ✅ x86 native | 70B & big MoE (Western brand) |
+| **Strix Halo 128GB** — Minisforum MS-S1 MAX | **~$2,221** (~£1,750) +2TB | ~96 GB of 128 | ✅ x86 native | Same chip, brand I trust |
+| **Strix Halo 128GB** — GMKtec EVO-X2 | **~$2,199** (~£1,730) | ~96 GB of 128 | ✅ x86 native | Same chip, cheapest branded |
+| **Strix Halo 128GB** — Alibaba white-label | £2,246 (B2B, +import) | 128 GB | ✅ x86 native | Cheapest on paper, real risk |
 | **DGX Spark** | ~$3,999 / UK bundles £9,849 | 128 GB | ⚠️ ARM + DGX OS | CUDA devs on Ubuntu |
 | **Mac Studio** | £2,499 → ~£8k (512GB) | up to 512 GB | ❌ macOS only | *Ruled out for me* |
 | **128GB DDR5 (CPU route)** | £1,575 (kit) | system RAM, slow | ✅ | Big models, slowly, on the cheap-ish |
@@ -257,10 +260,57 @@ I expected a 128GB Strix Halo at ~£1,500–2,000. It's **£3,449**. And 128GB o
 
 ![Framework Desktop configurator showing three tiers: Max 385/32GB £1,269, Max+ 395/64GB £1,959, Max+ 395/128GB £3,449](/assets/local-models/framework-desktop.png)
 
-**TL;DR:** £3,449 buys 128 GB of unified memory — enough to run 70B dense and big MoE models a GPU can't hold. x86, so **NixOS runs natively** (Framework even has a Linux support tab). Slower per word than a real GPU.
-**Pros:** by far the most memory-per-pound for *big* models · sips power vs a dGPU rig · native NixOS · one tidy mini-PC.
-**Cons:** £3,449 is 5× a used 3090 for *slower* inference · AMD ROCm still rougher than CUDA · memory soldered (non-upgradeable) · dense-70B speed unverified (💷).
+**TL;DR:** £3,449 buys 128 GB of unified memory — enough to run 70B dense and big MoE models a GPU can't hold. x86, so **NixOS runs natively** (Framework even has a Linux support tab). Slower per word than a real GPU. **But you're paying a big Western-brand premium — the exact same chip is ~£1,700 from Chinese brands (below).**
+**Pros:** trusted Western vendor, UK stock, no import faff · native NixOS · sips power vs a dGPU rig · one tidy mini-PC.
+**Cons:** **~£1,700 more than an identical GMKtec/Minisforum box** · £3,449 is 5× a used 3090 for *slower* inference · AMD ROCm still rougher than CUDA · memory soldered · dense-70B speed unverified (💷).
 🔗 [Framework Desktop configurator](https://frame.work/gb/en/products/desktop-diy-amd-aimax300/configuration/new)
+
+## The China-market route — same chip, ~half the price
+
+You asked about Chinese sites, and this is where it gets interesting. **Strix Halo isn't a Framework exclusive — it's an AMD chip, and Chinese brands drop it into mini-PCs for roughly half Framework's UK price.** Since you already rate Minisforum, this is probably the real big-memory option.
+
+:::tip The headline: the same 128GB Strix Halo, three ways
+| Where | Product | 128GB config | Buyer protection |
+|---|---|---|---|
+| 🇺🇸 Framework | Desktop DIY | **£3,449** | Full Western consumer rights, UK stock |
+| 🇨🇳 Minisforum | MS-S1 MAX | **~$2,221** (~£1,750, +2TB SSD) | Brand warranty, ships from CN/US |
+| 🇨🇳 GMKtec | EVO-X2 | **~$2,199** (~£1,730) | 1-yr warranty, 7-day return |
+| 🇨🇳 Alibaba | white-label OEM | **£2,246** | B2B — thin recourse (see below) |
+Prices in USD are the vendors' US-store figures; a UK buyer should **add ~20% import VAT** (and possibly duty), so real landed cost is ~£2,000–2,100. *Still £1,300+ under Framework.*
+:::
+
+### 🟢 Minisforum MS-S1 MAX — the one I'd actually buy for big models
+
+![Minisforum MS-S1 MAX product page — AMD Ryzen AI Max+ 395, 128GB RAM + 2TB SSD, marketed as a 160W AI Workstation for LM Studio](/assets/local-models/minisforum-mss1max.png)
+
+**TL;DR:** ~$2,221 (~£1,750) for the 128GB + 2TB config of the *same* Ryzen AI Max+ 395 chip — from the brand you already trust. Minisforum explicitly markets it as a **"160W AI Workstation for LM Studio"** and demos DeepSeek-R1 671B on a 4-node cluster, so they're aiming straight at this use case.
+**Pros:** half Framework's price · brand you've had good experiences with · 2TB SSD included · x86 → native NixOS · marketed *for* local LLMs.
+**Cons:** USD pricing + likely UK import VAT (~£2,050 landed) · warranty support is China-based · still bandwidth-limited (slower than a GPU per word).
+🔗 [Minisforum MS-S1 MAX](https://www.minisforum.com/products/ms-s1-max)
+
+### 🟢 GMKtec EVO-X2 — cheapest reputable brand
+
+![GMKtec EVO-X2 product page — AMD Ryzen AI Max+ 395, 64GB+1TB at $1,999.99, 128GB config $2,199, 30 reviews, 1-year warranty](/assets/local-models/gmktec-evox2.png)
+
+**TL;DR:** The best-known Strix Halo mini-PC. 64GB/1TB at $1,999.99 on sale, 128GB ~$2,199 (~£1,730). 30 reviews, sold through GMKtec's own storefront with returns + warranty.
+**Pros:** cheapest *branded* Strix Halo · established brand with real reviews · PayPal/Klarna, 7-day return · x86 → native NixOS.
+**Cons:** same import-VAT caveat for the UK · GMKtec less premium than Minisforum · China-based support.
+🔗 [GMKtec EVO-X2](https://www.gmktec.com/products/amd-ryzen%E2%84%A2-ai-max-395-evo-x2-ai-mini-pc)
+
+### ⚠️ Your Alibaba listing — real product, real risk
+
+![Alibaba listing — AI Workstation Mini PC AMD Ryzen AI Max+ 395 Strix Halo 128GB LPDDR5X, £2,245.92, sold by Shenzhen Dijuyan Technology, 2 years, 4.5/5](/assets/local-models/alibaba-listing.png)
+
+**Is it legit?** *The product is real; the transaction is riskier than it looks.* It's a genuine Strix Halo spec (Ryzen AI Max+ 395, 128GB LPDDR5X, Radeon 8060S) at **£2,245.92**. But:
+
+:::warning Weigh these before trusting the Alibaba route
+- **It's Alibaba, not AliExpress** — a **B2B wholesale** platform. You're doing an *import transaction*, not a consumer purchase. The listing even shows a multi-unit minimum ("2 combos").
+- **Thin track record:** seller *Shenzhen Dijuyan Technology* is **2 years old, 1 review, "2 sold"**. The 4.5/5 store rating is on very little volume.
+- **Import VAT + duty** land on top (~20%), pushing real cost toward ~£2,700 — which erodes most of the saving vs a *branded* GMKtec/Minisforum box.
+- **Recourse is weak:** UK Consumer Rights Act doesn't cover a B2B import; the "3-year warranty" means little from a small Shenzhen OEM. Alibaba Trade Assurance exists but disputes are slow.
+- **Verdict:** for ~the same money, **a branded GMKtec or Minisforum box gives you reviews, returns and a warranty you can actually use.** Only go white-label Alibaba if you want a specific spec they don't offer and you're comfortable with import risk.
+:::
+🔗 [Your Alibaba listing](https://www.alibaba.com/product-detail/AI-Workstation-Mini-PC-AMD-Ryzen_1601801496264.html)
 
 ### ⚠️ NVIDIA DGX Spark — right idea, wrong shape for NixOS
 
@@ -302,12 +352,12 @@ flowchart TD
     Q --> C["Frontier quality,<br/>low volume, no hardware"]
 
     A --> A1["✅ Used RTX 3090 (£500–800)<br/>x86 + CUDA on NixOS · pays back vs Flash"]:::yes
-    B --> B1["🟠 Strix Halo 128GB (£3,449)<br/>native NixOS, but pricey + slower.<br/>Only if 70B is the actual goal"]:::maybe
+    B --> B1["🟢 Minisforum MS-S1 MAX (~£1,750+VAT)<br/>128GB, native NixOS, brand I trust.<br/>NOT Framework at £3,449"]:::yes
     C --> C1["✅ Just use Gemini Flash<br/>cheaper than hardware at low volume"]:::no
 ```
 
 :::tip My lean
-**Start with a used RTX 3090.** It's the cheapest path to genuinely useful local inference, the NVIDIA+CUDA route on NixOS is boringly well-documented, and at £500–800 it can actually out-economise Flash 3.5 if I use it daily. **Strix Halo** is the *only* big-memory box that fits a NixOS life, but at £3,449 for slower-per-word inference it's a "I specifically need 70B at home" purchase, not a starter. **DGX Spark** (ARM/DGX OS) and **Mac Studio** (macOS) both fight my workflow — out. And for anything low-volume, **Flash is still cheaper than buying anything.**
+**Start with a used RTX 3090.** Cheapest path to genuinely useful local inference, the NVIDIA+CUDA route on NixOS is boringly well-documented, and at £500–800 it can out-economise Flash 3.5 with daily use. **If/when I want 70B+ at home**, the big-memory box is a **Minisforum MS-S1 MAX (~£1,750 + import VAT)** — same Strix Halo chip as Framework, half the price, and a brand I already rate — *not* the £3,449 Framework. The white-label Alibaba box saves nothing meaningful once import + risk are priced in. **DGX Spark** (ARM/DGX OS) and **Mac Studio** (macOS) fight my workflow — out. For anything low-volume, **Flash is still cheaper than buying anything.**
 :::
 
 ## Jargon, if you want it
@@ -329,7 +379,7 @@ flowchart TD
 
 ## Decision
 
-**Proposed — leaning used RTX 3090.** Pricing is done and points clearly: for a NixOS workflow, the sensible start is a **used RTX 3090 (£500–800)** running Qwen3 32B. **Strix Halo** stays on the shelf as the upgrade *if and when* I actually need 70B+ at home. **DGX Spark** and **Mac Studio** are out on workflow grounds (ARM/DGX OS and macOS). Not committing to buy until the two open questions below are closed.
+**Proposed — leaning used RTX 3090.** Pricing is done and points clearly: for a NixOS workflow, the sensible start is a **used RTX 3090 (£500–800)** running Qwen3 32B. The 70B+ upgrade path, *if and when* I need it, is a **Minisforum MS-S1 MAX (~£1,750 + VAT)** — same Strix Halo chip as Framework's £3,449 box, roughly half the price, brand I already trust. **DGX Spark** and **Mac Studio** are out on workflow grounds (ARM/DGX OS and macOS). Not committing to buy until the two open questions below are closed.
 
 **Consequences**
 - ✓ Cheapest route to useful local inference; proven NVIDIA+CUDA path on NixOS.

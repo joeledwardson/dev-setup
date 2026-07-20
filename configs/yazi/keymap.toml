@@ -14,10 +14,26 @@ on = ["c", "b"]
 run = "plugin wl-clipboard"
 desc = "Copy file(s) to clipboard"
 
+# Override default `cc` (copy path): default yanks the file Url, which in a
+# search:// view comes out scheme-prefixed. This copies url.path — the plain
+# filesystem path — correctly in both normal and search views.
+[[mgr.prepend_keymap]]
+on = ["c", "c"]
+run = "plugin copy-path"
+desc = "Copy file path (search-safe)"
+
 [[mgr.prepend_keymap]]
 on = ["'", "f"]
 run = "plugin sftp-dispatch"
 desc = "Copy file as sftp:// URL to clipboard (OSC52, works over SSH)"
+
+# Inline lua demo (yazi 26.5.6+): run Lua straight from a keybind, no plugin file.
+# Runs synchronously — cx is available, async APIs (ya.clipboard) are NOT.
+# ya.notify is sync, so it pops a visible toast right away — press 'l to see it.
+[[mgr.prepend_keymap]]
+on = ["'", "l"]
+run = "lua \"ya.notify({ title = 'Inline Lua', content = 'hello from lua', timeout = 3 })\""
+desc = "lua notification"
 
 
 ### relative motion plugin bindings
