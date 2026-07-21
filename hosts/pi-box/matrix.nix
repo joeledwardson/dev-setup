@@ -21,6 +21,9 @@ in {
       # the url clients actually hit (tailscale serve terminates TLS, see below)
       public_baseurl = "https://${fqdn}:${toString matrixPort}/";
       registration_shared_secret_path = config.age.secrets.matrix-registration.path;
+      # double-puppet appservice (ADR-011): lets the bridges write MY read receipts.
+      # Merges with the entries each bridge adds via registerToSynapse.
+      app_service_config_files = [ config.age.secrets.matrix-doublepuppet.path ];
       database.name = "sqlite3";
       # localhost listener; tailscale serve does TLS + proxies to it. x_forwarded as we're now
       # behind that proxy.
@@ -48,36 +51,46 @@ in {
       };
       telegram = { api_id = 0; api_hash = ""; }; # real values via environmentFile
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
+      # ADR-011 double puppeting: Telegram is the PYTHON bridge — different schema, and it
+      # already uses environmentFile. So no settings change here; add this to the EXISTING
+      # mautrix-telegram-env.age (alongside api_id/api_hash):
+      #   MAUTRIX_TELEGRAM_BRIDGE_LOGIN_SHARED_SECRET_MAP=json::{"jollof.chat":"as_token:<token>"}
     };
   };
 
   # whatsapp bridge
   services.mautrix-whatsapp = {
     enable = true;
+    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011: DOUBLEPUPPET_AS_TOKEN
     settings = {
       homeserver = {
         address = "http://localhost:8008";
         domain = serverName;
       };
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
+      # ADR-011: bridge acts as @jollof to sync read receipts. $VAR is envsubst'd at start.
+      double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
     };
   };
 
   # signal bridge
   services.mautrix-signal = {
     enable = true;
+    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011
     settings = {
       homeserver = {
         address = "http://localhost:8008";
         domain = serverName;
       };
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
+      double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
     };
   };
 
   # meta bridge - an instance, not a flat service like the others
   services.mautrix-meta.instances.facebook = {
     enable = true;
+    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011
     settings = {
       homeserver = {
         address = "http://localhost:8008";
@@ -86,6 +99,7 @@ in {
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
       # meta demands E2EE + drops plain commands otherwise - turn it off
       encryption = { allow = false; default = false; require = false; };
+      double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
     };
   };
 
@@ -114,4 +128,15 @@ in {
     file = ../../secrets/mautrix-telegram-env.age;
     owner = "mautrix-telegram";
   };
+  # ADR-011 double puppeting.
+  age.secrets.matrix-doublepuppet = {
+    file = ../../secrets/matrix-doublepuppet.age; # doublepuppet.yaml registration
+    owner = "matrix-synapse"; # synapse reads it directly
+  };
+  # DOUBLEPUPPET_AS_TOKEN for the Go bridges. Read by systemd (root) as EnvironmentFile,
+  # so default owner (root) is fine — the bridge users don't need read access.
+  age.secrets.matrix-doublepuppet-env.file = ../../secrets/matrix-doublepuppet-env.age;
+
+  # reload synapse when the registration/token changes (source .age hash changes on edit)
+  systemd.services.matrix-synapse.restartTriggers = [ ../../secrets/matrix-doublepuppet.age ];
 }

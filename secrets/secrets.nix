@@ -51,4 +51,11 @@ in {
   # 2. review docs of nixos - secret file MUST match the env specification in services.mautrix-telegram.environmentFile
   # 3. currently the format is `MAUTRIX_TELEGRAM_TELEGRAM_API_ID` and `MAUTRIX_TELEGRAM_TELEGRAM_API_HASH` keys
   "mautrix-telegram-env.age".publicKeys = allHosts;
+
+  # ADR-011 double puppeting.
+  # 1. matrix-doublepuppet.age = the doublepuppet.yaml appservice registration (as_token + hs_token).
+  # 2. matrix-doublepuppet-env.age = DOUBLEPUPPET_AS_TOKEN=<same as_token> for the Go bridges.
+  #    (Telegram's token goes in mautrix-telegram-env.age as LOGIN_SHARED_SECRET_MAP instead.)
+  "matrix-doublepuppet.age".publicKeys = allHosts;
+  "matrix-doublepuppet-env.age".publicKeys = allHosts;
 }

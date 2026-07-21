@@ -4,7 +4,7 @@ title: "ADR-011 Double Puppeting"
 
 # ADR-011 — Bridge read state doesn't sync back: enable double puppeting
 
-**Status:** **Proposed** — root cause identified; not yet applied to `hosts/pi-box/matrix.nix`.
+**Status:** **Proposed** — root cause identified; not yet applied to `hosts/pi-box/matrix.nix`. Nix sketch below corrected after checking the modules actually pinned in `flake.lock` — see [Reality check](#reality-check-verified-against-this-boxs-nixpkgs).
 
 **Date:** 2026-07-19
 
@@ -91,54 +91,93 @@ The bridge, WhatsApp, and Synapse are all working correctly — the read event e
 
 Register a single **double-puppet appservice** with Synapse and hand its `as_token` to each bridge under `double_puppet`. One registration covers all four bridges (the namespace matches my user, and every bridge puppets the *same* `@jollof`). Token lives in **agenix** — never inlined into the Nix store (bridge settings render to a world-readable file there).
 
+## Reality check (verified against this box's nixpkgs)
+
+Checked the modules actually pinned in `flake.lock`. Two facts reshape the config.
+
+**1. Three Go bridges, one Python bridge.** WhatsApp/Signal/Meta are Go; Telegram is still the old Python bridge (v0.15.3 — nixpkgs hasn't picked up the [Go rewrite](https://mau.fi/blog/2026-04-mautrix-release/) yet). Different codebase → different config key.
+
+| Bridge | Lang | Double-puppet config key |
+|---|---|---|
+| whatsapp / signal / meta | Go | `double_puppet.secrets.<domain>` |
+| telegram | Python | `bridge.login_shared_secret_map.<domain>` |
+
+**2. `environmentFile` is one file, not a list** (`types.nullOr types.path`). Telegram *already* uses its env file for `api_id`/`api_hash`, so its token goes *into that same file* — you can't attach a second. The three Go bridges have no env file today, so they share one new one.
+
+```mermaid
+flowchart TB
+    classDef good fill:#52be80,color:#145a32,stroke:#196f3d
+    classDef warn fill:#f5b041,color:#7e5109,stroke:#b9770e
+    E1["matrix-doublepuppet-env.age<br/>DOUBLEPUPPET_AS_TOKEN=…"]:::good --> WA[whatsapp]:::good
+    E1 --> SI[signal]:::good
+    E1 --> ME[meta]:::good
+    E2["mautrix-telegram-env.age<br/>api_id + api_hash<br/>+ ADD token line here"]:::warn --> TG[telegram]:::warn
+```
+
 ## How it looks in Nix
 
-Sketch for `hosts/pi-box/matrix.nix` (appservice method — I have homeserver admin, so no `login-matrix` dance needed):
+Appservice method — I have homeserver admin, so no `login-matrix` dance.
 
 ```nix
-{ pkgs, config, ... }:
+{ config, ... }:
 let
   serverName = "jollof.chat";
-  # doublepuppet.yaml is stored as an agenix secret (contains the as_token),
-  # so the token never hits the Nix store. Decrypts to a path Synapse reads.
-  doublePuppetRegistration = config.age.secrets.matrix-doublepuppet.path;
+  # doublepuppet.yaml (holds the as_token) is an agenix secret, so the token never
+  # hits the world-readable Nix store. Decrypts to a path Synapse reads.
+  reg = config.age.secrets.matrix-doublepuppet.path;
 in {
-  # 1. Synapse loads the extra appservice registration
-  services.matrix-synapse.settings.app_service_config_files = [
-    doublePuppetRegistration
-  ];
+  # 1. Synapse trusts the extra appservice. Merges with the entries each bridge
+  #    adds via registerToSynapse (app_service_config_files is a list).
+  services.matrix-synapse.settings.app_service_config_files = [ reg ];
+  systemd.services.matrix-synapse.restartTriggers = [ reg ];  # reload if token changes
 
-  # 2. Each bridge trusts that appservice to puppet my user.
-  #    The as_token is injected via environmentFile (agenix), referenced as
-  #    an env var so it isn't written into the store.
-  services.mautrix-whatsapp.settings.double_puppet.secrets.${serverName} =
-    "as_token:$DOUBLEPUPPET_AS_TOKEN";
-  services.mautrix-signal.settings.double_puppet.secrets.${serverName} =
-    "as_token:$DOUBLEPUPPET_AS_TOKEN";
-  services.mautrix-telegram.settings.double_puppet.secrets.${serverName} =
-    "as_token:$DOUBLEPUPPET_AS_TOKEN";
-  services.mautrix-meta.instances.facebook.settings.double_puppet.secrets.${serverName} =
-    "as_token:$DOUBLEPUPPET_AS_TOKEN";
+  # 2. Go bridges (wa/signal/meta): SAME key. "as_token:$VAR" lands literally in the
+  #    rendered config, then the module's envsubst substitutes $VAR from environmentFile
+  #    at start -> real token stays out of the store (same trick Telegram uses today).
+  #    Option docs:   https://search.nixos.org/options?channel=unstable&query=mautrix-whatsapp
+  #    Module source: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/matrix/mautrix-whatsapp.nix
+  services.mautrix-whatsapp.environmentFile = config.age.secrets.matrix-doublepuppet-env.path;
+  services.mautrix-whatsapp.settings.double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
+  services.mautrix-signal.environmentFile = config.age.secrets.matrix-doublepuppet-env.path;
+  services.mautrix-signal.settings.double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
+  services.mautrix-meta.instances.facebook.environmentFile = config.age.secrets.matrix-doublepuppet-env.path;
+  services.mautrix-meta.instances.facebook.settings.double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
+
+  # 3. Telegram (Python): DIFFERENT key, and it ALREADY has an environmentFile.
+  #    Do NOT set environmentFile here (it would clobber api_id/api_hash). Instead add the
+  #    token to the EXISTING mautrix-telegram-env.age as the JSON-map env var (see below):
+  #      MAUTRIX_TELEGRAM_BRIDGE_LOGIN_SHARED_SECRET_MAP=json::{"jollof.chat":"as_token:<token>"}
+  #    Telegram module: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/matrix/mautrix-telegram.nix
 
   age.secrets.matrix-doublepuppet = {
-    file = ../../secrets/matrix-doublepuppet.age;   # the doublepuppet.yaml
+    file = ../../secrets/matrix-doublepuppet.age;   # the doublepuppet.yaml registration
     owner = "matrix-synapse";
   };
+  age.secrets.matrix-doublepuppet-env.file = ../../secrets/matrix-doublepuppet-env.age;
 }
 ```
 
 ### Walking through the Nix
 
-How the four pieces above actually connect:
+1. **`app_service_config_files`** is Synapse's trust list. Adding the decrypted `doublepuppet.yaml` is what makes Synapse honour the `?user_id=@jollof` masquerade. Bridges add themselves via `registerToSynapse`; ours is manual (it isn't a NixOS service). `restartTriggers` makes Synapse reload when the token rotates.
+2. **`double_puppet.secrets.<serverName>`** = "to puppet users on `jollof.chat`, use this secret." `as_token:` = "raw appservice token" (vs `login:` = shared-secret method). Keyed by the *puppeted user's* homeserver — all my accounts are on `jollof.chat`, so one entry covers all.
+3. **`$DOUBLEPUPPET_AS_TOKEN`** is a literal string in the rendered YAML, swapped in at start by the module's `envsubst` (same mechanism Telegram uses for `api_id`/`api_hash`). Token comes from the agenix env file, never the store.
+4. **`age.secrets.matrix-doublepuppet`** decrypts the registration YAML for Synapse; the bridges get the *same* token via the env file. **Both copies must carry the identical token.**
 
-1. **`app_service_config_files`** is Synapse's list of appservices to trust. Adding the decrypted `doublepuppet.yaml` path here is what makes Synapse *accept* the `as_token` and honour the `?user_id=@jollof` masquerade. Without this line the token is just a random string Synapse has never heard of. The existing bridges add themselves to this list automatically (that's what `registerToSynapse` / `enable` does under the hood); our puppet appservice isn't a NixOS service, so we register it by hand.
-2. **`double_puppet.secrets.<serverName>`** tells each bridge: "to puppet users on `jollof.chat`, authenticate with *this* secret." The `"as_token:..."` prefix is mautrix's syntax for "the string after the colon is a raw appservice token" (the alternative prefix is `"login:"` for the shared-secret method — not what we're using). The key `${serverName}` matters because the bridge picks the secret by the *homeserver of the user it's puppeting* — all my accounts live on `jollof.chat`, so one entry covers everything.
-3. **`$DOUBLEPUPPET_AS_TOKEN`** is not a Nix value — it's a literal string that lands in the generated YAML and gets substituted at service start. The nixpkgs mautrix modules run their rendered config through `envsubst` when an `environmentFile` is set (this is the *same* trick already used for Telegram's `api_id`/`api_hash` — "real values via environmentFile" in the current file). So the actual token never appears in the Nix store; it's read from the agenix-decrypted env file at runtime. You'd add `environmentFile = config.age.secrets.matrix-doublepuppet-env.path;` to each bridge and put `DOUBLEPUPPET_AS_TOKEN=<token>` in that file.
-4. **`age.secrets.matrix-doublepuppet`** decrypts the full registration YAML to a path Synapse (its `owner`) can read. This is the copy Synapse validates against; the bridges get the *same* token via the env file in step 3. **Both copies must carry the identical token** — that's the one value to keep in sync between the two secrets.
-
-:::warning Two secrets, one token
-The token appears in two places by necessity: the **registration file** (so Synapse recognises it) and the **bridge env** (so the bridges present it). They must match exactly. Generate the token once (`openssl rand -hex 32`), then paste it into both agenix files.
+:::warning One token, two files
+The token lives in the **registration file** (so Synapse recognises it) *and* the **bridge env** (so bridges present it). Generate once (`openssl rand -hex 32`), paste into both agenix files.
 :::
+
+### The Telegram `..._MAP` env var, decoded
+
+Telegram's env var isn't a plain token — it's a **map** (homeserver → secret), so the value must be JSON. mautrix only parses it as JSON when you prefix with `json::`; without the prefix it's treated as a plain string and ignored.
+
+```text
+MAUTRIX_TELEGRAM_BRIDGE_LOGIN_SHARED_SECRET_MAP = json::{"jollof.chat":"as_token:<token>"}
+└──────── sets bridge.login_shared_secret_map ────────┘  └ "parse rest as JSON" ┘
+```
+
+Why a map: one bridge could puppet users across several homeservers, one secret each. We only have `jollof.chat`, so it's a one-entry map. **Caveat:** confirm the Python bridge (v0.15.3) accepts the `as_token:` prefix; if not, fall back to the shared-secret login method.
 
 The `doublepuppet.yaml` that gets encrypted into `matrix-doublepuppet.age`:
 
@@ -171,11 +210,19 @@ namespaces:
 - **Meta/Facebook** bridge has E2EE disabled here (ADR-009), so no extra key handling needed for the puppet.
 - Historical unreads won't retroactively clear — only reads made *after* this is live sync back.
 
+### Telegram: Python now, Go later
+
+- The [Go rewrite](https://mau.fi/blog/2026-04-mautrix-release/) shipped upstream as **v26.04** (Apr 2026) and migrates in-place from Python.
+- **nixpkgs-unstable isn't far enough yet** — even `master` still packages **0.15.3 Python** (checked 2026-07). Overriding `services.mautrix-telegram.package` alone won't help: the NixOS *module* is Python-shaped (runs `alembic`, expects `login_shared_secret_map`), so it'd render config the Go binary can't read. The module has to be updated too.
+- Practical call: keep the Python special-case now. When nixpkgs bumps **package + module**, Telegram collapses into the same `double_puppet.secrets` shape as the others. Track the nixpkgs PR before touching it.
+
 ## Sources
 
-- [Double puppeting — mautrix docs](https://docs.mau.fi/bridges/general/double-puppeting.html)
-- [Troubleshooting & FAQ — mautrix docs](https://docs.mau.fi/bridges/general/troubleshooting.html)
-- [mautrix-whatsapp CHANGELOG](https://github.com/mautrix/whatsapp/blob/main/CHANGELOG.md)
+- [Double puppeting — mautrix docs](https://docs.mau.fi/bridges/general/double-puppeting.html) ✓
+- [Go Telegram release (v26.04) — mau.fi blog](https://mau.fi/blog/2026-04-mautrix-release/) ✓
+- [NixOS option search — mautrix bridges](https://search.nixos.org/options?channel=unstable&query=mautrix-whatsapp) ✓
+- [mautrix-whatsapp module source (nixos-unstable)](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/matrix/mautrix-whatsapp.nix) ✓
+- [mautrix-telegram module source (nixos-unstable)](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/matrix/mautrix-telegram.nix) ✓
 - [iamb configuration](https://iamb.chat/configure.html)
 </content>
 </invoke>
