@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, commonGroups, ... }:
+{ config, pkgs, commonGroups, ... }:
 
 {
   imports = [ # Include the results of the hardware scan.
@@ -83,10 +83,7 @@
   };
 
   # add VM support
-  environment.systemPackages = with pkgs; [
-    vagrant
-    inputs.agenix.packages.${pkgs.system}.default # agenix CLI
-  ];
+  environment.systemPackages = with pkgs; [ vagrant ];
   virtualisation = {
     libvirtd = {
       enable = true;

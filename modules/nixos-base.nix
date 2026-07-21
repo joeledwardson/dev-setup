@@ -1,5 +1,5 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, pkgs-unstable, pkgs-nvim, ... }:
+{ pkgs, inputs, pkgs-unstable, pkgs-nvim, ... }:
 
 {
   # Enable Magic SysRq keys for emergency recovery (Alt+SysRq+R/S/B etc).
@@ -140,6 +140,7 @@
     nix-index
     nix-inspect
     nh # nh search is REALLY helpful to replace to replace https://search.nixos.org/packages
+    inputs.agenix.packages.${pkgs.system}.default # agenix CLI
 
     ### disk management
     udiskie # for status bar disks
