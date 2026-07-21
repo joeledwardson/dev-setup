@@ -65,7 +65,27 @@ sequenceDiagram
     Ia->>Ia: room drops off "Unread"
 ```
 
-Without the appservice, the bridge has no `as_token` for my account, so step 3 can only be sent as a ghost — Synapse won't let a ghost move *my* read marker, so the receipt lands on the wrong user and iamb never sees it.
+Without the appservice, the bridge has no `as_token` for my account, so step 3 can only be sent as a ghost — Synapse won't let a ghost move *my* read marker, so the receipt lands on the wrong user and iamb never sees it. Here's that same chain **as it runs today**, breaking at the same step:
+
+```mermaid
+sequenceDiagram
+    participant Ph as Phone (WhatsApp app)
+    participant WA as WhatsApp servers
+    participant Br as mautrix-whatsapp<br/>(ghost only, no as_token)
+    participant HS as Synapse
+    participant Ia as iamb
+
+    Ph->>WA: read a chat
+    WA-->>Br: "this chat was read"<br/>(bridge is a linked device)
+    Note over Br: same event arrives —<br/>the difference is who can act on it
+    Br->>HS: POST /rooms/{id}/receipt<br/>(no as_token → sent AS the ghost<br/>@whatsapp_… , not @jollof)
+    HS->>HS: ghost may only move<br/>its OWN read marker ✓
+    Note over HS: @jollof's marker: untouched ✗
+    HS-->>Ia: nothing about @jollof changed
+    Ia->>Ia: room STAYS "Unread"
+```
+
+The bridge, WhatsApp, and Synapse are all working correctly — the read event even arrives. It fails only because the receipt is stamped on the ghost instead of on me, and iamb only ever watches `@jollof`.
 
 ## Decision
 

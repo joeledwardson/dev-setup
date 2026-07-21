@@ -42,10 +42,6 @@ devenv.local.yaml
 # nix result files
 result
 
-
-# port registry — machine-local
-.registered-ports.toml
-
 # agent-native visual-plan scratch (local, has bridge tokens)
 plans/
 
