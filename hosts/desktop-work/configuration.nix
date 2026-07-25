@@ -10,14 +10,6 @@
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
   ];
 
-  # Stream kernel log to degen-bot over UDP in real time.
-  # On the receiving end: nc -ulp 6666 | tee ~/crash.log
-  # Captures the last kernel messages even when the disk never gets them.
-  boot.kernelModules = [ "netconsole" ];
-  boot.extraModprobeConfig = ''
-    options netconsole netconsole=6665@10.144.0.15/enp7s0,6666@10.144.0.234/d8:43:ae:85:c3:1d
-  '';
-
   # pstore: on kernel panic, writes ring buffer to EFI memory before dying.
   # Survives reboot — read at /sys/fs/pstore/ afterwards.
   # Only fires on actual panics, not silent hard hangs (use netconsole for those).
@@ -47,22 +39,6 @@
     };
   };
 
-  # mount windows from other partition
-  fileSystems."/mnt/joelyboy/windows" = {
-    device = "/dev/disk/by-label/Windows";
-    fsType = "ntfs3";
-    options = [
-      "users" # allows any user to mount and unmount
-      "nofail" # prevent system failure if i typed something wrong
-      "rw"
-      "uid=1000"
-      "gid=100"
-      "dmask=022"
-      "fmask=133"
-    ];
-
-  };
-
   # mount spare disk
   fileSystems."/mnt/joelyboy/spare" = {
     device = "/dev/disk/by-label/SPARE-DISK";
@@ -74,7 +50,7 @@
   };
 
   networking.hostName = "desktop-work"; # Define your hostname.
-  services.tailscale.enable = true;
+
   programs.obs-studio = {
     enable = true;
 
@@ -97,11 +73,27 @@
   # =======================================
   # Ollama (local LLMs)
   # =======================================
+  # force the CUDA module up at boot, not lazily on first use
+  boot.kernelModules = [ "nvidia_uvm" ];
+
+  # don't start Ollama until the NVIDIA driver is initialised
+  # previously I got total_vram="0 B" in the logs on startup? indicating it couldn't see the VRAM?
+  systemd.services.ollama = {
+    after = [ "nvidia-persistenced.service" ];
+    wants = [ "nvidia-persistenced.service" ];
+  };
+
   services.ollama = {
     enable = true;
     loadModels = [ "gpt-oss:20b" ];
     host = "0.0.0.0";
     package = pkgs.ollama-cuda;
+    environmentVariables = {
+      OLLAMA_FLASH_ATTENTION =
+        "1"; # my card (RTX 3060) is modern enough for this
+      OLLAMA_KV_CACHE_TYPE = "q8_0"; # free up some VRAM
+    };
+
   };
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 11434 ];
 

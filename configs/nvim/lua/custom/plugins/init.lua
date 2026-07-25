@@ -356,14 +356,19 @@ return {
   },
   {
     '3rd/image.nvim',
-    event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg',
+    event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg,*.md',
     build = false,
-    opts = {
-      backend = 'kitty',
-      processor = 'magick_cli',
-      max_width_window_percentage = 80,
-      max_height_window_percentage = 60,
-    },
+    config = function()
+      require('image').setup {
+        tmux_show_only_in_active_window = true, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+        only_render_image_at_cursor = true, -- defaults to false
+        only_render_image_at_cursor_mode = 'popup', -- "popup" or "inline", defaults to "popup"
+        backend = 'kitty',
+        processor = 'magick_cli',
+        max_width_window_percentage = 80,
+        max_height_window_percentage = 60,
+      }
+    end,
   },
   {
     'gbprod/yanky.nvim',

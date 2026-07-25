@@ -1,0 +1,17 @@
+# these 3 hostnames require tailscale and magic DNS resolution
+[services.streaming-server]
+type = "sftp"
+host = "streaming-server"
+user = "claude"
+port = 22
+[services.degen-bot]
+type = "sftp"
+host = "degen-bot"
+user = "claude"
+port = 22
+[services.pi-box]
+type = "sftp"
+host = "pi-box"
+user = "claude"
+port = 22
+

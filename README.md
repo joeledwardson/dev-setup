@@ -1,7 +1,6 @@
 ## Contents
 
-- [Development setup](#development-setup)
-  - [Utility script](#utility-script)
+- [Development setup](#development-setup) [Utility script](#utility-script)
   - [Adding a new device](#adding-a-new-devices)
   - [NixOS setup](#nixos-setup)
   - [Dotfiles](#dotfiles)

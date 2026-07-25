@@ -1,8 +1,8 @@
 ---
-title: "ADR-011 Double Puppeting"
+title: "ADR-011 Reviewing Matrix and XMPP"
 ---
 
-# ADR-011 — Bridge read state doesn't sync back: enable double puppeting
+# ADR-011 — Double Puppetting and XMPP considerations
 
 **Status:** **Proposed** — root cause identified; not yet applied to `hosts/pi-box/matrix.nix`. Nix sketch below corrected after checking the modules actually pinned in `flake.lock` — see [Reality check](#reality-check-verified-against-this-boxs-nixpkgs).
 
@@ -215,6 +215,25 @@ namespaces:
 - The [Go rewrite](https://mau.fi/blog/2026-04-mautrix-release/) shipped upstream as **v26.04** (Apr 2026) and migrates in-place from Python.
 - **nixpkgs-unstable isn't far enough yet** — even `master` still packages **0.15.3 Python** (checked 2026-07). Overriding `services.mautrix-telegram.package` alone won't help: the NixOS *module* is Python-shaped (runs `alembic`, expects `login_shared_secret_map`), so it'd render config the Go binary can't read. The module has to be updated too.
 - Practical call: keep the Python special-case now. When nixpkgs bumps **package + module**, Telegram collapses into the same `double_puppet.secrets` shape as the others. Track the nixpkgs PR before touching it.
+
+
+### Reviewing Matrix Clients
+To be fair to matrix, most of my gripes appear to be with `iamb` and not matrix itself. The separation of connections (whatsapp/facebook), read receipts, viewing invites are all iamb problems and not matrix.
+
+However, the double puppeting is a bit clunky. Having reviewed matrix clients again ive made a quick summary of my thoughts 
+
+## Matrix client comparison (keyboard-driven focus)
+
+_Stars as of 23 Jul 2026; approximate. Releases move fast._
+
+| Client | ⭐ Stars | Latest release | Hotkey nav | Read receipts | Accept-all invites | TLDR |
+|---|---|---|---|---|---|---|
+| **iamb** | ~1,250 | v0.0.11 | Best — true modal vim | Buggy — my dealbreaker | No | Best bindings in the game, but broken read receipts kill it for me |
+| **gomuks web** | ~1,700 | v0.2607.0 (Jul 2026) | Good — Ctrl+K + list nav | Works | No (per-room `/accept`) | Very minimal; headless backend + web UI, native to the mautrix stack |
+| **SchildiChat Revenge** | ~120 | v26.07.13 (Jul 2026) | Most nvim-like — command mode + rebindable `.toml` | Rust-SDK (should work, untested) | No bulk (has command mode) | Alpha and rough, but the only one built around fully rebindable keys — one to watch |
+| **Cinny** | ~3,800 | v4.12.3 (Jun 2026) | Good — Ctrl+K spotlight, no space-cycling | Works | No (nicest manual UI) | Good workhorse |
+| **nheko** | ~2,460 | v0.12.1 (Aug 2025) | Decent — keyboard-friendly, not modal | Works | No | Weird colours, everything dark, and couldn't connect |
+| **Element (Web/Desktop)** | ~13,300 | v1.12.18 (May 2026) | Decent — Ctrl+K switcher + most shortcuts, but not modal | Works | No | Feature-complete reference client; heavy Electron, not keyboard-first |
 
 ## Sources
 

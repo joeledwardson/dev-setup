@@ -30,6 +30,7 @@
     settings.StreamLocalBindUnlink = "yes";
   };
 
+  # tailscale is the key way i communicate between my machines
   services.tailscale.enable = true;
 
   programs.zsh.enable = true;
