@@ -123,6 +123,7 @@
             ./hosts/pi-box/configuration.nix
             ./hosts/pi-box/sparkyfitness.nix
             ./hosts/pi-box/matrix.nix
+            ./hosts/pi-box/xmpp.nix
           ];
         };
 

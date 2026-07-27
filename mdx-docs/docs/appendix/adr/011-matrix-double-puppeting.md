@@ -216,6 +216,7 @@ namespaces:
 - **nixpkgs-unstable isn't far enough yet** — even `master` still packages **0.15.3 Python** (checked 2026-07). Overriding `services.mautrix-telegram.package` alone won't help: the NixOS *module* is Python-shaped (runs `alembic`, expects `login_shared_secret_map`), so it'd render config the Go binary can't read. The module has to be updated too.
 - Practical call: keep the Python special-case now. When nixpkgs bumps **package + module**, Telegram collapses into the same `double_puppet.secrets` shape as the others. Track the nixpkgs PR before touching it.
 
+<<<<<<< HEAD
 
 ### Reviewing Matrix Clients
 To be fair to matrix, most of my gripes appear to be with `iamb` and not matrix itself. The separation of connections (whatsapp/facebook), read receipts, viewing invites are all iamb problems and not matrix.
@@ -235,9 +236,198 @@ _Stars as of 23 Jul 2026; approximate. Releases move fast._
 | **nheko** | ~2,460 | v0.12.1 (Aug 2025) | Decent — keyboard-friendly, not modal | Works | No | Weird colours, everything dark, and couldn't connect |
 | **Element (Web/Desktop)** | ~13,300 | v1.12.18 (May 2026) | Decent — Ctrl+K switcher + most shortcuts, but not modal | Works | No | Feature-complete reference client; heavy Electron, not keyboard-first |
 
+||||||| parent of 1a2732f (upgrade sparkyfitness and add xmpp to pi)
+=======
+
+## Reviewing alternatives
+So matrix is a bit.... shite - terminal clients are lacking, server is quite heavy - looking into the XMPP protocol as an alternative
+
+### Requirements
+
+What any replacement has to satisfy, in priority order:
+
+- **Self-hosting is a must-have** — I own my data. No hosted-homeserver options (rules out Beeper / `bbctl`).
+- **Terminal-based client** — a TUI (Text User Interface) is non-negotiable; no web/GUI-only clients.
+- **Client → server architecture preferred** — ideally I can read/write from any machine and the *server* holds history + read-state. A single terminal client (one device) is acceptable as a fallback, but multi-client sync is the gold standard.
+
+### Solution comparison
+
+Whole-stack options measured against the requirements above:
+
+| Solution | Client from any machine | Multi-client sync (gold standard) | Complexity | TL;DR |
+|---|---|---|---|---|
+| **Matrix + mautrix (Synapse)** | ✅ any Matrix client + token | ✅ server holds receipts + history (MAM) | High | What you have; sync works, `iamb` just exposes it badly |
+| **Matrix + mautrix (continuwuity)** | ✅ identical — it's still Matrix | ✅ identical | Lower | Same clients + sync, lighter server. Best keep-everything cut |
+| **XMPP + Slidge** | ✅ any XMPP client (multiple "resources") | ✅ MAM + carbons + chat markers | Med (containers) | Comparable sync story, rougher on nix |
+| **nchat** | ⚠️ per machine = separate linked device | ❌ no cross-machine read-state sync | Very low | Breaks your "any machine + sync" goal — each install is its own device |
+
+> **MAM** = Message Archive Management (server-side history, [XEP-0313](https://xmpp.org/extensions/xep-0313.html)). **Carbons** = message carbons ([XEP-0280](https://xmpp.org/extensions/xep-0280.html)), which fan a message out to all your logged-in devices. A **resource** in XMPP is one connected device/client of the same account.
+
+```mermaid
+flowchart LR
+    subgraph clients["Your machines · tailnet"]
+        L["laptop<br/>profanity"]
+        P["pi box<br/>gomuks"]
+    end
+
+    subgraph server["Prosody · XMPP server"]
+        direction TB
+        C2S["c2s :5222<br/>client listener"]
+        COMP["component :5347<br/>gateways · localhost"]
+        STORE[("MAM + SQLite<br/>history")]
+        PRIV["mod_privilege<br/>act as you"]
+        C2S <--> COMP
+        C2S --- STORE
+        COMP --- PRIV
+    end
+
+    subgraph gateways["Slidge gateways"]
+        WA["slidge-whatsapp"]
+        TG["slidgram"]
+        SG["slidgnal"]
+        FB["messlidger"]
+    end
+
+    subgraph networks["Remote networks"]
+        WAN(["WhatsApp"])
+        TGN(["Telegram"])
+        SGN(["Signal"])
+        FBN(["Meta / FB"])
+    end
+
+    L -->|TLS| C2S
+    P -->|TLS| C2S
+    COMP --> WA & TG & SG & FB
+    WA -->|your session| WAN
+    TG --> TGN
+    SG --> SGN
+    FB --> FBN
+    PRIV -. "self-msgs + reads<br/>(carbons)" .-> C2S
+
+    classDef hub fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    classDef gw  fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+    class C2S,COMP,STORE,PRIV hub
+    class WA,TG,SG,FB gw
+```
+
+
+### Client comparison
+
+Terminal clients across both protocols. "(your take)" marks my subjective judgement rather than a documented fact:
+
+| Client | Protocol | UI / formatting | Sync quality | Maturity | Main pain | Verdict |
+|---|---|---|---|---|---|---|
+| **iamb** | Matrix | Functional, not pretty (your take) | Protocol syncs, but `iamb`'s unread handling is janky (your take) | Stable, actively developed | Unread sync bad; no invite support (your take) | Reliable workhorse, rough UX |
+| **gomuks (TUI)** | Matrix | Nicest formatting; inline images in Kitty-class terms | Server-backed, decent | Beta | Escape leaks as `[27u`, audio renders as `127.0.0.1` (your take) — immature key/media handling | Prettiest, not ready. Note: gomuks web exists if you'd tolerate a browser |
+| **weechat-matrix** | Matrix | Excellent (weechat itself); scriptable; run on server + attach | Server-backed | Plugin is in maintenance mode; a Rust port exists but is early | E2EE needs a [pantalaimon](https://github.com/matrix-org/pantalaimon) proxy; device verification is painful | Great if you already live in weechat and stomach the E2EE detour; otherwise fading |
+| **profanity** | XMPP | Clean ncurses, tidy 1:1 | MAM + carbons across resources | Mature, maintained | Requires the XMPP+Slidge switch; OMEMO/carbons config | The most polished + mature terminal option here — but XMPP-only |
+| **poezio** | XMPP | Console UI, MUC-first | MAM + carbons | Mature, slower dev | Ergonomics lean toward rooms over DMs | Solid profanity alternative |
+| **nchat** | WA/TG/Signal direct | Decent TUI | Local only — no cross-machine sync | Active | ❌❌❌ NO FACEBOOK MESSENGER | Lowest effort, but fails the multi-machine goal |
+
+> **E2EE** = end-to-end encryption. **OMEMO** = the XMPP E2EE scheme ([XEP-0384](https://xmpp.org/extensions/xep-0384.html)). **MUC** = Multi-User Chat (group rooms, [XEP-0045](https://xmpp.org/extensions/xep-0045.html)).
+
+as a comparison to matrix, and how tht layers fit together
+
+```mermaid
+flowchart TB
+    subgraph legend["read each column top→down"]
+        direction TB
+        T1["① server + client"]
+        T2["② puppet layer"]
+        T3["③ sync mechanism"]
+        T1 --- T2 --- T3
+    end
+
+    subgraph mautrix["Matrix + mautrix · yours"]
+        direction TB
+        M1["Synapse + iamb"]
+        M2["mautrix bridge<br/>puppets contacts"]
+        M3["double-puppet token<br/>acts as you = sync"]
+        M1 --- M2 --- M3
+    end
+
+    subgraph slidge["XMPP + Slidge"]
+        direction TB
+        S1["Prosody + profanity"]
+        S2["Slidge gateway<br/>is your session"]
+        S3["carbons + markers<br/>built in, no token"]
+        S1 --- S2 --- S3
+    end
+
+    subgraph beeper["Beeper / bbctl · cut by self-host rule"]
+        direction TB
+        B1["hosted homeserver"]
+        B2["mautrix bridges"]
+        B3["auto double-puppet<br/>managed for you"]
+        B1 --- B2 --- B3
+    end
+
+    classDef coral  fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+    classDef teal   fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    classDef purple fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    classDef dim    fill:#F1EFE8,stroke:#888780,color:#2C2C2A
+    class M3 coral
+    class S3 teal
+    class B3 purple
+    class B1,B2 dim
+```
+
+### manual setps for prosodyctl and profanity
+Firstly the server side adding the user
+1. sudo prosodyctl register jollof jollof.chat <PASSWORD_HERE>
+
+Then in profanity for the client (testing)
+1. add the acc
+
+```
+  /account add jollof
+  /account set jollof jid jollof@jollof.chat
+  /account set jollof server 127.0.0.1
+  /account set jollof port 5222
+```
+2. disable tls as its local
+```
+  /account set jollof tls disable
+  /connect jollof
+```
+
+
+
+
+### Upstream nixpkgs status & long-term plan (checked 2026-07-22)
+
+The connecting packages, and how to eventually stop hand-maintaining them:
+
+| Package | In nixpkgs? | Tracking | Long-term step |
+|---|---|---|---|
+| `slidge` (core) | ⏳ in review | [PR #541886](https://github.com/NixOS/nixpkgs/pull/541886) — `init at 0.4.0` | on merge, drop the inline derivation → use `pkgs.slidge` |
+| `slidge-whatsapp` | ❌ | help-wanted [Discourse thread](https://discourse.nixos.org/t/need-help-to-package-slidge-whatsapp/78883) (Go+py build is the blocker) | package locally now; contribute upstream once the Go build settles |
+| `slidgram` (Telegram) | ❌ none | — | inline derivation now; upstream once core lands |
+| `slidgnal` (Signal) | ❌ none | — | inline derivation now; needs `signal-cli` sidecar (already in nixpkgs) |
+| `messlidger` (Meta) | ❌ none | — | inline derivation now (pure Python — the easiest to upstream first) |
+
+Reference for *how* a plugin gets packaged: [matridge PR #527267](https://github.com/NixOS/nixpkgs/pull/527267) (an XMPP↔Matrix slidge plugin — not one we need, but the same derivation shape).
+
+Draft stack module: [`hosts/pi-box/xmpp.nix`](https://github.com/joeledwardson/dev-setup/blob/main/hosts/pi-box/xmpp.nix) — runs parallel to `matrix.nix`, nothing removed.
+
+### Next steps (immediate)
+
+Prove one gateway end-to-end before investing in the rest. **Signal is the cheapest slice** (only 1 missing dep, no Go build):
+
+1. Get `slidgnal` (Signal) building + a minimal Prosody config running on `pi-box`.
+2. Create the `jollof@jollof.chat` XMPP account; pair `signal-cli` to my Signal.
+3. Connect with `profanity` from another machine — confirm history + read-state sync actually work.
+4. **Decision gate:** only if this beats the Matrix/`iamb` experience, add Telegram + WhatsApp. Likely drop Facebook (`messlidger` is stale, 2 slidge majors behind).
+5. Runs parallel to Matrix throughout — nothing removed until XMPP proves out.
+
+>>>>>>> 1a2732f (upgrade sparkyfitness and add xmpp to pi)
 ## Sources
 
 - [Double puppeting — mautrix docs](https://docs.mau.fi/bridges/general/double-puppeting.html) ✓
+- [slidge core — nixpkgs PR #541886](https://github.com/NixOS/nixpkgs/pull/541886)
+- [Packaging slidge-whatsapp — NixOS Discourse](https://discourse.nixos.org/t/need-help-to-package-slidge-whatsapp/78883)
+- [Slidge admin docs — gateways & components](https://slidge.im/docs/slidge/main/)
+- [Prosody: transports and gateways](https://prosody.im/doc/transports_and_gateways)
 - [Go Telegram release (v26.04) — mau.fi blog](https://mau.fi/blog/2026-04-mautrix-release/) ✓
 - [NixOS option search — mautrix bridges](https://search.nixos.org/options?channel=unstable&query=mautrix-whatsapp) ✓
 - [mautrix-whatsapp module source (nixos-unstable)](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/matrix/mautrix-whatsapp.nix) ✓

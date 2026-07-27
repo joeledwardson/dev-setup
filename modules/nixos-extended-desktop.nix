@@ -1,5 +1,26 @@
 # Extended desktop: additional GUI apps, extra terminals, productivity tools
-{ pkgs, pkgs-unstable, ... }: {
+{ pkgs, pkgs-unstable, ... }:
+let
+  # iamb 0.0.11 repaints every room as unread on each launch (ulyssa/iamb#564): it tracks
+  # unreads itself instead of reading the SDK's persisted receipts/notification counts, so on
+  # cold start it has no receipts loaded and defaults everything to unread. PR #579
+  # ("Hopefully finally fix unreads") switches to matrix-sdk's unread tracking. Not merged yet,
+  # so build from the PR branch. Cargo.lock is vendored so the dep set is pinned (no git deps).
+  # TODO: drop this override once #579 lands and nixpkgs bumps iamb past 0.0.11.
+  iamb-unreads = pkgs.iamb.overrideAttrs (_old: {
+    version = "0.0.11-unreads-pr579";
+    src = pkgs.fetchFromGitHub {
+      owner = "VAWVAW";
+      repo = "iamb";
+      rev =
+        "01a7732875f8e5a1ce141e3912799c6c67b27e1b"; # branch: unreads-sdk-functions
+      hash = "sha256-kvlKxPARbfyqcBhAP1d64oPw1unau/QDxuUzBpQ6QY8=";
+    };
+    cargoDeps = pkgs.rustPlatform.importCargoLock {
+      lockFile = ./iamb-unreads-Cargo.lock;
+    };
+  });
+in {
   environment.systemPackages = with pkgs; [
     ### extra terminal emulators
     alacritty

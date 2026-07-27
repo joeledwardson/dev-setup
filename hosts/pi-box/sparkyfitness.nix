@@ -6,12 +6,13 @@
 let
   stateDir = "/var/lib/sparkyfitness";
   repoUrl = "https://github.com/CodeWithCJ/SparkyFitness";
+  # pin repo + images to a release tag (GitHub + Docker Hub tags carry the `v` prefix).
+  version = "v1.6.0";
   repoDir = "${stateDir}/repo";
   composeDir = "${repoDir}/docker";
   secretsEnv = config.age.secrets.sparkyfitness-env.path;
 
-  # layered onto the upstream prod compose. the :latest server image needs SPARKY_FITNESS_MCP_URL +
-  # the MCP sidecar over http for SparkyAI chat (its bundled stdio MCP is broken). /etc, no secrets.
+  # layered onto the upstream prod compose purely to pin the image tags off :latest. /etc, no secrets.
   overrideFile = "/etc/sparkyfitness/docker-compose.override.yml";
 
   # docker-compose v2. absolute -f paths (clone dir doesnt exist till first clone). secrets via --env-file.
@@ -28,37 +29,15 @@ in {
   # sparkyfitness-* so it doesnt collide with the shared group-readable nixos-secrets set.
   age.secrets.sparkyfitness-env.file = ../../secrets/sparkyfitness-secrets.age;
 
-  # MCP sidecar + server wiring, merged onto the upstream compose. `''${VAR}` = a literal ${VAR} for
-  # compose to interpolate (from the environment below + --env-file), NOT nix interpolation.
+  # override only pins the images off upstream :latest (prod compose hardcodes latest, no version env var).
+  # the standalone MCP sidecar was decommissioned in v1.x — MCP is now the server's built-in /mcp endpoint,
+  # so no sidecar service or MCP env wiring is needed (see v1.6.0 release notes).
   environment.etc."sparkyfitness/docker-compose.override.yml".text = ''
     services:
       sparkyfitness-server:
-        environment:
-          SPARKY_FITNESS_MCP_URL: http://sparkyfitness-mcp:3001
-          # forwarded to MCP as x-api-key so non-browser callers (telegram bot, n8n) work without a cookie. see ADR-003
-          SPARKY_FITNESS_API_KEY: ''${SPARKY_FITNESS_API_KEY}
-      sparkyfitness-mcp:
-        image: codewithcj/sparkyfitness_mcp:latest
-        container_name: sparkyfitness-mcp
-        restart: always
-        depends_on:
-          - sparkyfitness-db
-        networks:
-          - sparkyfitness-network
-        environment:
-          SPARKY_FITNESS_DB_USER: ''${SPARKY_FITNESS_DB_USER:-sparky}
-          SPARKY_FITNESS_DB_HOST: ''${SPARKY_FITNESS_DB_HOST:-sparkyfitness-db}
-          SPARKY_FITNESS_DB_NAME: ''${SPARKY_FITNESS_DB_NAME}
-          SPARKY_FITNESS_DB_PASSWORD: ''${SPARKY_FITNESS_DB_PASSWORD}
-          SPARKY_FITNESS_APP_DB_USER: ''${SPARKY_FITNESS_APP_DB_USER:-sparkyapp}
-          SPARKY_FITNESS_APP_DB_PASSWORD: ''${SPARKY_FITNESS_APP_DB_PASSWORD}
-          SPARKY_FITNESS_DB_PORT: 5432
-          BETTER_AUTH_SECRET: ''${BETTER_AUTH_SECRET}
-          MCP_TRANSPORT: "http"
-          SPARKY_FITNESS_SERVER_HOST: sparkyfitness-server
-          SPARKY_FITNESS_SERVER_PORT: 3010
-          SPARKY_FITNESS_FRONTEND_URL: ''${SPARKY_FITNESS_FRONTEND_URL}
-          ALLOW_PRIVATE_NETWORK_CORS: ''${ALLOW_PRIVATE_NETWORK_CORS:-false}
+        image: codewithcj/sparkyfitness_server:${version}
+      sparkyfitness-frontend:
+        image: codewithcj/sparkyfitness:${version}
   '';
 
   systemd.services.sparkyfitness = {
@@ -83,13 +62,22 @@ in {
       SERVER_UPLOADS_PATH = "${stateDir}/uploads";
     };
 
-    # clone on first boot only (idempotent). nuke a partial/interrupted clone first so the retry
-    # isnt wedged by "destination already exists and is not empty".
+    # clone-if-missing (full clone, so all tags are local) then checkout the pinned `version` tag every
+    # start. a shallow --depth=1 clone would fetch 0 tags and the checkout would fail. data lives in
+    # stateDir, outside the clone, so this never touches the db.
     preStart = ''
+      set -e
       if [ ! -e "${repoDir}/.git" ]; then
+        echo "cloning directory ${repoDir}..."
         rm -rf "${repoDir}"
-        git clone --depth=1 ${repoUrl} "${repoDir}"
+        git clone ${repoUrl} "${repoDir}"
       fi
+      echo "going to dir... ${repoDir}"
+      cd "${repoDir}"
+      echo "getting tags..."
+      git fetch --all || exit 1
+      echo "checking out tag ${version}"
+      git checkout "tags/${version}" || exit 1
     '';
 
     serviceConfig = {
