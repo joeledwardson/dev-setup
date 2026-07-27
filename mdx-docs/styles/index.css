@@ -1,0 +1,5 @@
+/* Widen the doc content column. rspress default is 1000px, which leaves
+   very wide margins on large screens. */
+:root {
+  --rp-content-max-width: 1400px;
+}

@@ -47,9 +47,11 @@ function copyfile {
     echo "File path copied to clipboard: $fullpath"
 }
 
-# Load from cache immediately
+# Load completions from cache. -C skips the security audit (compaudit globbing
+# every fpath dir), which is the bulk of compinit's cost. We set NixOS's
+# programs.zsh.enableCompletion = false so this is the single compinit run.
 autoload -U compinit
-compinit
+compinit -C
 
 # Load bash completions compatibility for tools like Terraform
 autoload -U +X bashcompinit && bashcompinit
@@ -405,7 +407,6 @@ fi
 if [ -e "$HOME"/.config/zshrclocal ]; then
     source "$HOME"/.config/zshrclocal
 fi
-fastfetch
 
 # sandbox machine extras (IS_SANDBOX_MACHINE=1 set via NixOS environment.variables)
 if [[ "$IS_SANDBOX_MACHINE" == "1" ]]; then
