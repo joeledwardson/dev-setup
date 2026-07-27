@@ -138,12 +138,68 @@ elsewhere. That comment is the duplicated knowledge apologizing for itself — d
 
 ---
 
-## Use human lanauge - NOT robotic
+## Use human language — NOT robotic
 
-LLMs tend to use vocabulary like 
+**The principle**: write docs and comments for a person reading them, not a spec sheet. Decode the jargon, cut long sentences in half, and illustrate with a concrete example instead of more abstract prose.
 
-| Example (to use) | to vaoid |
+**Robotic word → plain English.** LLMs reach for vocabulary the reader then has to decode:
+
+| Robotic (to avoid) | Plain English (to use) |
 |---|---|
-| "each one has something broken" | "each plants one defect" |
-| "the categorisation of expected error" | "the expected finding / category" |
-| "the info at the top of the file" | "frontmatter" |
+| high fidelity | nothing is lost / accurate |
+| multimodal model | a model that reads text and images together |
+| prose | the words / the writing |
+| transcription | turning the picture into text |
+| free-form caption | a chatty one-line description |
+| leverage / utilise | use |
+| "the categorisation of expected error" | "the expected category" |
+| "frontmatter" (to a lay reader) | "the info at the top of the file" |
+
+**Long sentence → short.** If a sentence has two "because" / "which means" / em-dashes, split it.
+
+- ❌ "Highest fidelity: nothing is lost to a description step, so a subtle mismatch (the route diagram showing an 8-hour drive while the spec says 30 minutes) is visible to the same mind that reads the spec."
+- ✅ "One model reads the words and the picture together. Most accurate — nothing is lost. Example: it sees the diagram says '8 hours' while the spec says '30 minutes'."
+
+**Examples illustrate — they don't ramble.** A concrete example replaces a paragraph of abstraction. The example must carry the point.
+
+- ❌ "Guard against its lossiness by prompting the vision model for a structured extraction rather than a free-form caption."
+- ✅ "Prompt for a structured list, not a caption. Force the label `airport → 6 hours → hotel` so it can be checked against the spec's 'drive under 2 hours' and flagged."
+
+**The tell**: if you would never say the sentence out loud to a colleague, rewrite it.
+
+---
+
+## Formatting: break the wall of text
+
+**The principle**: this is as much about *shape on the page* as wording. Before shipping a paragraph, squint at it: does it read as a **wall of text** or as **short, scannable statements**? Good prose crammed into one dense block still reads badly. The fix is usually formatting, not rewriting.
+
+**The devices** (Markdown / MDX):
+
+| Use | For |
+|---|---|
+| a blank line between ideas | one thought per paragraph — let each breathe |
+| a **bold lead** sentence | the claim, so a skimmer gets it without reading on |
+| a `>` blockquote | a concrete example, set apart from the claim |
+| a callout (`:::note` / `!!!`) | an aside or caveat (a "Downside", a "Catch") — lifts it out of the flow |
+
+**Diagnostic**: three-plus sentences with no break, or a sentence carrying a claim *and* an example *and* a caveat at once → split it.
+
+**Before → after** (real, from ADR 0003):
+
+❌ One dense block:
+> **Approach A — one model sees both.** A single model reads the words and the picture at once and judges them together. Most accurate, because nothing is lost turning the picture into words. Example: it can see the route diagram says "8 hours" while the spec says "30 minutes" — one mind, both facts. Downside: you swap the text model for a multimodal one, and you can't easily save-and-test what it "saw".
+
+✅ Same words, broken to scan:
+```markdown
+**Approach A — one model sees both.** A single model reads words and picture together and judges them in one go.
+
+Most accurate: nothing is lost turning the picture into words.
+
+> **Example:** it sees the diagram says "8 hours" *and* the spec says "30 minutes" in one pass.
+
+:::note Downside
+Harder to tell what it actually "saw" in the image.
+:::
+```
+
+Same sentences. The claim, the example, and the caveat each get their own line and their own visual weight — so the eye lands on the point instead of drowning in the block.

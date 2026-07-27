@@ -316,7 +316,11 @@
     ];
   };
 
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    enableCompletion = false;
+  };
+
   # set default shell to zsh
   users.defaultUserShell = pkgs.zsh;
 

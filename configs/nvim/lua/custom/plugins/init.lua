@@ -102,6 +102,27 @@ vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
 
+-- mini.files: miller-column file explorer (a column per directory level, like
+-- Finder/yazi) — keeps the full hierarchy in view while drilling, unlike oil's
+-- manual <C-s> split cascade. mini.nvim itself is set up in init.lua; we set up
+-- the files module lazily on first press so this doesn't depend on plugin load
+-- order or need a second mini.nvim spec (which would clobber the main config).
+-- Navigate: l / <CR> = into, h = out, q = close (one key, no stranded splits),
+-- = = apply filesystem edits. Opens focused on the current file for context.
+-- NB: <leader>e is diagnostics above; this is capital <leader>E.
+local mini_files_setup = false
+vim.keymap.set('n', '<leader>E', function()
+  local mini_files = require 'mini.files'
+  if not mini_files_setup then
+    mini_files.setup {
+      windows = { preview = true, width_focus = 28, width_preview = 50 },
+    }
+    mini_files_setup = true
+  end
+  local current = vim.api.nvim_buf_get_name(0)
+  mini_files.open(current ~= '' and current or nil)
+end, { desc = 'mini.files explorer (miller columns)' })
+
 -- remap space, newline chars in normal mode to add (see :h i_CTRL-G_u)
 vim.keymap.set('i', '<Space>', '<C-G>u<Space>', { noremap = true, silent = true })
 -- same for newline
@@ -356,7 +377,8 @@ return {
   },
   {
     '3rd/image.nvim',
-    event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg,*.md',
+    enabled = false,
+    event = 'BufRead *.png,*.jpg,*.jpeg,*.gif,*.webp,*.bmp,*.svg',
     build = false,
     config = function()
       require('image').setup {

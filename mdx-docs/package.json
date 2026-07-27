@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@rspress/core": "^2.0.14",
+    "rspress-plugin-content-padding": "github:joels-claude-bot/rspress-plugin-content-padding",
+    "rspress-plugin-focus-mode": "github:joels-claude-bot/rspress-plugin-focus-mode",
     "rspress-plugin-mermaid": "^1.0.1"
   },
   "devDependencies": {
