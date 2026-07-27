@@ -4,14 +4,20 @@ type = "sftp"
 host = "streaming-server"
 user = "claude"
 port = 22
+key_file = "~/.ssh/id_ed25519"
+
+
 [services.degen-bot]
 type = "sftp"
 host = "degen-bot"
 user = "claude"
 port = 22
+key_file = "~/.ssh/id_ed25519"
+
 [services.pi-box]
 type = "sftp"
 host = "pi-box"
 user = "claude"
 port = 22
+key_file = "~/.ssh/id_ed25519"
 

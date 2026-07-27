@@ -206,3 +206,8 @@ desc = "rg contents search"
 on = ["/"]
 run = "filter"
 desc = "Find help.items"
+
+[[mgr.prepend_keymap]]
+on = [ "S" ]
+run = 'shell "zsh" --block'
+desc = "Open interactive zsh shell"

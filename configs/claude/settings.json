@@ -68,17 +68,9 @@
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
-    "agent-skills@addy-agent-skills": true,
     "gopls-lsp@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {
-    "addy-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "addyosmani/agent-skills"
-      }
-    }
-  },
+  "extraKnownMarketplaces": {},
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
