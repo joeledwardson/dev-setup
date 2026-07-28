@@ -20,10 +20,12 @@ in {
       server_name = serverName;
       # the url clients actually hit (tailscale serve terminates TLS, see below)
       public_baseurl = "https://${fqdn}:${toString matrixPort}/";
-      registration_shared_secret_path = config.age.secrets.matrix-registration.path;
+      registration_shared_secret_path =
+        config.age.secrets.matrix-registration.path;
       # double-puppet appservice (ADR-011): lets the bridges write MY read receipts.
       # Merges with the entries each bridge adds via registerToSynapse.
-      app_service_config_files = [ config.age.secrets.matrix-doublepuppet.path ];
+      app_service_config_files =
+        [ config.age.secrets.matrix-doublepuppet.path ];
       database.name = "sqlite3";
       # localhost listener; tailscale serve does TLS + proxies to it. x_forwarded as we're now
       # behind that proxy.
@@ -49,7 +51,10 @@ in {
         address = "http://localhost:8008";
         domain = serverName;
       };
-      telegram = { api_id = 0; api_hash = ""; }; # real values via environmentFile
+      telegram = {
+        api_id = 0;
+        api_hash = "";
+      }; # real values via environmentFile
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
       # ADR-011 double puppeting: Telegram is the PYTHON bridge — different schema, and it
       # already uses environmentFile. So no settings change here; add this to the EXISTING
@@ -61,7 +66,8 @@ in {
   # whatsapp bridge
   services.mautrix-whatsapp = {
     enable = true;
-    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011: DOUBLEPUPPET_AS_TOKEN
+    environmentFile =
+      config.age.secrets.matrix-doublepuppet-env.path; # ADR-011: DOUBLEPUPPET_AS_TOKEN
     settings = {
       homeserver = {
         address = "http://localhost:8008";
@@ -98,14 +104,16 @@ in {
       };
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
       # meta demands E2EE + drops plain commands otherwise - turn it off
-      encryption = { allow = false; default = false; require = false; };
+      encryption = {
+        allow = false;
+        default = false;
+        require = false;
+      };
       double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
     };
   };
 
-  # tailscale serve: tailnet HTTPS :8448 -> synapse on localhost. foreground so systemd owns it
-  # (same pattern as sparkyfitness.nix). separate port from sparky's :443 so both coexist.
-  # one-time manual prereq: node authed + HTTPS certs enabled in the tailscale admin console.
+  # tailscale serve: tailnet HTTPS :8448 -> synapse on localhost
   systemd.services.matrix-tailscale-serve = {
     description = "tailscale serve -> synapse :8448";
     after = [ "tailscaled.service" "matrix-synapse.service" ];
@@ -113,7 +121,9 @@ in {
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=${toString matrixPort} http://localhost:8008";
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=${
+          toString matrixPort
+        } http://localhost:8008";
       Restart = "on-failure";
       RestartSec = 10;
     };
@@ -130,13 +140,16 @@ in {
   };
   # ADR-011 double puppeting.
   age.secrets.matrix-doublepuppet = {
-    file = ../../secrets/matrix-doublepuppet.age; # doublepuppet.yaml registration
+    file =
+      ../../secrets/matrix-doublepuppet.age; # doublepuppet.yaml registration
     owner = "matrix-synapse"; # synapse reads it directly
   };
   # DOUBLEPUPPET_AS_TOKEN for the Go bridges. Read by systemd (root) as EnvironmentFile,
   # so default owner (root) is fine — the bridge users don't need read access.
-  age.secrets.matrix-doublepuppet-env.file = ../../secrets/matrix-doublepuppet-env.age;
+  age.secrets.matrix-doublepuppet-env.file =
+    ../../secrets/matrix-doublepuppet-env.age;
 
   # reload synapse when the registration/token changes (source .age hash changes on edit)
-  systemd.services.matrix-synapse.restartTriggers = [ ../../secrets/matrix-doublepuppet.age ];
+  systemd.services.matrix-synapse.restartTriggers =
+    [ ../../secrets/matrix-doublepuppet.age ];
 }

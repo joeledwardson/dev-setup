@@ -33,10 +33,12 @@ let
 in {
   # gemini LLM API - grabbed from here https://aistudio.google.com/app/api-keys?project=heb7-287610
   "llm-gemini-key.age".publicKeys = allHosts;
-  # env file for the litellm proxy - holds two secrets, as KEY=value lines:
+  # env file for the litellm proxy - holds these secrets, as KEY=value lines:
   # 1. GEMINI_API_KEY - same value as llm-gemini-key, lets the proxy call Google
   # 2. LITELLM_MASTER_KEY - the key clients must send to use the proxy at all.
   #    make one with `openssl rand -hex 24` and put sk- on the front
+  # 3. OPENROUTER_API_KEY - lets the proxy call hosted models (qwen3-coder).
+  #    grab from https://openrouter.ai/keys (prepaid credits, one key = many models)
   "litellm-env.age".publicKeys = allHosts;
   # hermes-agent env file - MUST be KEY=value lines (systemd EnvironmentFile syntax),
   "hermes-env.age".publicKeys = allHosts;

@@ -47,12 +47,6 @@ function copyfile {
     echo "File path copied to clipboard: $fullpath"
 }
 
-# Load completions from cache. -C skips the security audit (compaudit globbing
-# every fpath dir), which is the bulk of compinit's cost. We set NixOS's
-# programs.zsh.enableCompletion = false so this is the single compinit run.
-autoload -U compinit
-compinit
-
 # notify-send wrapper - uses OSC 9 over SSH/Docker, native otherwise
 # must be done before sheldon or zsh-auto-notify will complain about lack of `notify-send`
 notify-send() {
@@ -65,6 +59,10 @@ notify-send() {
 
 # load sheldon plugins
 eval "$(sheldon source)"
+
+autoload -U compinit
+# -C skips security audit
+compinit -C
 
 # show hostname
 DRACULA_DISPLAY_CONTEXT=1

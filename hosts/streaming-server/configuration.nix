@@ -4,7 +4,9 @@
 
 { pkgs, pkgs-unstable, config, commonGroups, inputs, ... }:
 
-{
+let liteLLMPort = 9177; # generated port (just one i made up)
+
+in {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -144,39 +146,57 @@
   # =======================================
   # LiteLLM proxy
   # =======================================
-  # One OpenAI-compatible endpoint (http://127.0.0.1:9177/v1) sitting in front of
-  # a few model providers. Clients pick which one by the model_name below.
-  #
-  # The keys don't live in this config - the Nix store is world-readable, so
-  # they'd leak. Instead we point at os.environ/NAME here and let systemd feed
-  # them in from the litellm-env secret. secrets/secrets.nix says what's in it.
   services.litellm = {
     enable = true;
-    host = "127.0.0.1"; # localhost only; use `tailscale serve` to expose on the tailnet
-    port = 9177; # deterministic: 9000 + crc32("litellm") % 900
+    host = "127.0.0.1"; # localhost only; must use tailscale to access outside
+    port = liteLLMPort;
     environmentFile = config.age.secrets."litellm-env".path;
-    # Clients have to send this as `Authorization: Bearer <key>`, or the proxy
-    # turns them away. Leave it out and anyone who can reach the port can spend
-    # our Gemini quota - the only reason that's fine today is we bind to
-    # localhost. A single static key like this needs no database.
+    # API key for clients to use (see secrets.nix)
+    # `os.environ` syntax is litellm specific (see https://docs.litellm.ai/docs/proxy/config_settings#general_settings---reference)
     settings.general_settings.master_key = "os.environ/LITELLM_MASTER_KEY";
     settings.model_list = [
       {
         model_name = "gemini-flash";
         litellm_params = {
-          model = "gemini/gemini-2.5-flash"; # Google AI Studio (API-key) provider
+          model =
+            "gemini/gemini-2.5-flash"; # Google AI Studio (API-key) provider
           api_key = "os.environ/GEMINI_API_KEY";
         };
       }
       {
-        # local model already pulled by services.ollama above (default port 11434)
+        # server local model hosted by ollama (see above)
         model_name = "qwen-vl";
         litellm_params = {
           model = "ollama/qwen2.5vl:3b";
           api_base = "http://127.0.0.1:11434";
         };
       }
+      {
+        # hosted Qwen3-Coder-30B-A3B (MoE) via OpenRouter, so we can trial a
+        # bigger agentic-coder model before buying the GPU to run it locally.
+        # OpenRouter is the live host; DeepInfra deprecated this exact model.
+        model_name = "qwen3-coder";
+        litellm_params = {
+          model = "openrouter/qwen/qwen3-coder-30b-a3b-instruct";
+          api_key = "os.environ/OPENROUTER_API_KEY";
+        };
+      }
     ];
+  };
+
+  # tailscale server tailnet HTTPS -> port litellm proxy
+  systemd.services.litellm-tailscale-serve = {
+    description = "tailscale serve -> litellm proxy ${toString liteLLMPort}";
+    after = [ "tailscaled.service" "litellm.service" ];
+    wants = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart =
+        "${pkgs.tailscale}/bin/tailscale serve http://localhost:${toString liteLLMPort}";
+      Restart = "on-failure";
+      RestartSec = 10;
+    };
   };
 
 }
