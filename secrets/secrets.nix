@@ -33,6 +33,11 @@ let
 in {
   # gemini LLM API - grabbed from here https://aistudio.google.com/app/api-keys?project=heb7-287610
   "llm-gemini-key.age".publicKeys = allHosts;
+  # env file for the litellm proxy - holds two secrets, as KEY=value lines:
+  # 1. GEMINI_API_KEY - same value as llm-gemini-key, lets the proxy call Google
+  # 2. LITELLM_MASTER_KEY - the key clients must send to use the proxy at all.
+  #    make one with `openssl rand -hex 24` and put sk- on the front
+  "litellm-env.age".publicKeys = allHosts;
   # hermes-agent env file - MUST be KEY=value lines (systemd EnvironmentFile syntax),
   "hermes-env.age".publicKeys = allHosts;
   # my access token for `ntfy.sh` - grabbed from here https://ntfy.sh/account
@@ -52,7 +57,6 @@ in {
   # 3. currently the format is `MAUTRIX_TELEGRAM_TELEGRAM_API_ID` and `MAUTRIX_TELEGRAM_TELEGRAM_API_HASH` keys
   "mautrix-telegram-env.age".publicKeys = allHosts;
 
-  # ADR-011 double puppeting.
   # 1. matrix-doublepuppet.age = the doublepuppet.yaml appservice registration (as_token + hs_token).
   # 2. matrix-doublepuppet-env.age = DOUBLEPUPPET_AS_TOKEN=<same as_token> for the Go bridges.
   #    (Telegram's token goes in mautrix-telegram-env.age as LOGIN_SHARED_SECRET_MAP instead.)

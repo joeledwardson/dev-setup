@@ -141,4 +141,42 @@
     loadModels = [ "qwen2.5vl:3b" ];
   };
 
+  # =======================================
+  # LiteLLM proxy
+  # =======================================
+  # One OpenAI-compatible endpoint (http://127.0.0.1:9177/v1) sitting in front of
+  # a few model providers. Clients pick which one by the model_name below.
+  #
+  # The keys don't live in this config - the Nix store is world-readable, so
+  # they'd leak. Instead we point at os.environ/NAME here and let systemd feed
+  # them in from the litellm-env secret. secrets/secrets.nix says what's in it.
+  services.litellm = {
+    enable = true;
+    host = "127.0.0.1"; # localhost only; use `tailscale serve` to expose on the tailnet
+    port = 9177; # deterministic: 9000 + crc32("litellm") % 900
+    environmentFile = config.age.secrets."litellm-env".path;
+    # Clients have to send this as `Authorization: Bearer <key>`, or the proxy
+    # turns them away. Leave it out and anyone who can reach the port can spend
+    # our Gemini quota - the only reason that's fine today is we bind to
+    # localhost. A single static key like this needs no database.
+    settings.general_settings.master_key = "os.environ/LITELLM_MASTER_KEY";
+    settings.model_list = [
+      {
+        model_name = "gemini-flash";
+        litellm_params = {
+          model = "gemini/gemini-2.5-flash"; # Google AI Studio (API-key) provider
+          api_key = "os.environ/GEMINI_API_KEY";
+        };
+      }
+      {
+        # local model already pulled by services.ollama above (default port 11434)
+        model_name = "qwen-vl";
+        litellm_params = {
+          model = "ollama/qwen2.5vl:3b";
+          api_base = "http://127.0.0.1:11434";
+        };
+      }
+    ];
+  };
+
 }

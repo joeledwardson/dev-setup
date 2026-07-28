@@ -51,10 +51,7 @@ function copyfile {
 # every fpath dir), which is the bulk of compinit's cost. We set NixOS's
 # programs.zsh.enableCompletion = false so this is the single compinit run.
 autoload -U compinit
-compinit -C
-
-# Load bash completions compatibility for tools like Terraform
-autoload -U +X bashcompinit && bashcompinit
+compinit
 
 # notify-send wrapper - uses OSC 9 over SSH/Docker, native otherwise
 # must be done before sheldon or zsh-auto-notify will complain about lack of `notify-send`
@@ -113,6 +110,7 @@ if command -v aws >/dev/null; then zsh-defer -c 'setup-aws'; fi
 if command -v tailscale >/dev/null; then zsh-defer -c 'eval "$(tailscale completion zsh)"'; fi
 if command -v zoxide >/dev/null; then zsh-defer -c 'eval "$(zoxide init zsh)"'; fi
 if command -v sg >/dev/null; then zsh-defer -c 'eval "$(ast-grep completions)"'; fi
+if command -v task >/dev/null; then zsh-defer -c 'eval "$(task --completion zsh)"'; fi
 # direnv  hook into precmd so run synchronously
 if command -v direnv >/dev/null; then eval "$(direnv hook zsh)"; fi
 # fnm completion and shell

@@ -4,7 +4,7 @@ title: "ADR-011 Reviewing Matrix and XMPP"
 
 # ADR-011 — Double Puppetting and XMPP considerations
 
-**Status:** **Proposed** — root cause identified; not yet applied to `hosts/pi-box/matrix.nix`. Nix sketch below corrected after checking the modules actually pinned in `flake.lock` — see [Reality check](#reality-check-verified-against-this-boxs-nixpkgs).
+**Status:** **Accepted** — applied to `hosts/pi-box/matrix.nix` (secrets wired and committed in `fa28415`). The reasoning below is kept as the rationale; the earlier [Reality check](#reality-check-verified-against-this-boxs-nixpkgs) against `flake.lock` still holds.
 
 **Date:** 2026-07-19
 
@@ -216,8 +216,6 @@ namespaces:
 - **nixpkgs-unstable isn't far enough yet** — even `master` still packages **0.15.3 Python** (checked 2026-07). Overriding `services.mautrix-telegram.package` alone won't help: the NixOS *module* is Python-shaped (runs `alembic`, expects `login_shared_secret_map`), so it'd render config the Go binary can't read. The module has to be updated too.
 - Practical call: keep the Python special-case now. When nixpkgs bumps **package + module**, Telegram collapses into the same `double_puppet.secrets` shape as the others. Track the nixpkgs PR before touching it.
 
-<<<<<<< HEAD
-
 ### Reviewing Matrix Clients
 To be fair to matrix, most of my gripes appear to be with `iamb` and not matrix itself. The separation of connections (whatsapp/facebook), read receipts, viewing invites are all iamb problems and not matrix.
 
@@ -235,9 +233,6 @@ _Stars as of 23 Jul 2026; approximate. Releases move fast._
 | **Cinny** | ~3,800 | v4.12.3 (Jun 2026) | Good — Ctrl+K spotlight, no space-cycling | Works | No (nicest manual UI) | Good workhorse |
 | **nheko** | ~2,460 | v0.12.1 (Aug 2025) | Decent — keyboard-friendly, not modal | Works | No | Weird colours, everything dark, and couldn't connect |
 | **Element (Web/Desktop)** | ~13,300 | v1.12.18 (May 2026) | Decent — Ctrl+K switcher + most shortcuts, but not modal | Works | No | Feature-complete reference client; heavy Electron, not keyboard-first |
-
-||||||| parent of 1a2732f (upgrade sparkyfitness and add xmpp to pi)
-=======
 
 ## Reviewing alternatives
 So matrix is a bit.... shite - terminal clients are lacking, server is quite heavy - looking into the XMPP protocol as an alternative
@@ -420,7 +415,6 @@ Prove one gateway end-to-end before investing in the rest. **Signal is the cheap
 4. **Decision gate:** only if this beats the Matrix/`iamb` experience, add Telegram + WhatsApp. Likely drop Facebook (`messlidger` is stale, 2 slidge majors behind).
 5. Runs parallel to Matrix throughout — nothing removed until XMPP proves out.
 
->>>>>>> 1a2732f (upgrade sparkyfitness and add xmpp to pi)
 ## Sources
 
 - [Double puppeting — mautrix docs](https://docs.mau.fi/bridges/general/double-puppeting.html) ✓
