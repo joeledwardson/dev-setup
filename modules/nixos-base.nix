@@ -335,8 +335,10 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
-    # add npm global to path for global nodejs installation
-    PATH = [ "$HOME/.npm-global/bin" ];
+    PATH = [
+      "$HOME/.npm-global/bin" # add npm global to path for global nodejs installation
+      "$HOME/go/bin" # for globally installed golang packages
+    ];
     # disable some weird setting from .net, otherwise marksman fails complaining about icu?
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1";
     # moor pager (less replacement with sane defaults)
