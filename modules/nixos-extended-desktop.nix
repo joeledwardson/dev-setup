@@ -1,27 +1,9 @@
 # Extended desktop: additional GUI apps, extra terminals, productivity tools
-{ pkgs, pkgs-unstable, ... }:
-let
-  # iamb 0.0.11 repaints every room as unread on each launch (ulyssa/iamb#564): it tracks
-  # unreads itself instead of reading the SDK's persisted receipts/notification counts, so on
-  # cold start it has no receipts loaded and defaults everything to unread. PR #579
-  # ("Hopefully finally fix unreads") switches to matrix-sdk's unread tracking. Not merged yet,
-  # so build from the PR branch. Cargo.lock is vendored so the dep set is pinned (no git deps).
-  # TODO: drop this override once #579 lands and nixpkgs bumps iamb past 0.0.11.
-  iamb-unreads = pkgs.iamb.overrideAttrs (_old: {
-    version = "0.0.11-unreads-pr579";
-    src = pkgs.fetchFromGitHub {
-      owner = "VAWVAW";
-      repo = "iamb";
-      rev =
-        "01a7732875f8e5a1ce141e3912799c6c67b27e1b"; # branch: unreads-sdk-functions
-      hash = "sha256-kvlKxPARbfyqcBhAP1d64oPw1unau/QDxuUzBpQ6QY8=";
-    };
-    cargoDeps = pkgs.rustPlatform.importCargoLock {
-      lockFile = ./iamb-unreads-Cargo.lock;
-    };
-  });
-in {
+{ pkgs, pkgs-unstable, ... }: {
   environment.systemPackages = with pkgs; [
+    ### printing (GTK front-end; CUPS web UI also at http://localhost:631)
+    system-config-printer
+
     ### extra terminal emulators
     alacritty
     wezterm
@@ -105,6 +87,23 @@ in {
 
   # printing
   services.printing.enable = true;
+  # Driver pool for non-driverless printers (each queue picks its own PPD). The
+  # Samsung C460 is actually driverless (IPP Everywhere), so it uses none of these
+  # -- they're just a fallback for other/older printers you might add via the
+  # system dialog. Printers themselves are added imperatively (CUPS state in
+  # /var/lib/cups) so they stay per-machine and don't break on other networks.
+  services.printing.drivers = with pkgs; [
+    samsung-unified-linux-driver
+    gutenprint # huge generic set (Epson, Canon, many others)
+    hplip # HP
+  ];
+
+  # mDNS/DNS-SD so network printers (and scanners) are auto-discovered.
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   # keyboard building config
   hardware.keyboard.qmk.enable = true;
