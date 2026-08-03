@@ -57,7 +57,7 @@
             ./hosts/degen-work/configuration.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
-              keyboardIds = [ "0001:0001:a33e860f" ];
+              keyboardIds = [ "0001:0001:09650417" ];
             })
           ];
         };
