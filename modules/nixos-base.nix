@@ -289,11 +289,6 @@
     pinentryPackage = pkgs.pinentry-curses;
   };
 
-  services.syncthing = {
-    enable = true;
-    openDefaultPorts = true; # Open ports in the firewall for Syncthing
-  };
-
   networking.firewall = {
     enable = true;
     allowedTCPPortRanges = [

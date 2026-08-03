@@ -91,7 +91,6 @@
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" ];
-  services.syncthing.user = "jollof";
 
   # =======================================
   # Ollama (local LLMs)

@@ -129,12 +129,6 @@ in {
       };
     };
   };
-  services.syncthing = {
-    user = "claude";
-    group = "users";
-    dataDir = "/home/claude/syncthing";
-    configDir = "/home/claude/.config/syncthing";
-  };
 
   services.ollama = {
     enable = true;
@@ -192,8 +186,9 @@ in {
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart =
-        "${pkgs.tailscale}/bin/tailscale serve http://localhost:${toString liteLLMPort}";
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve http://localhost:${
+          toString liteLLMPort
+        }";
       Restart = "on-failure";
       RestartSec = 10;
     };

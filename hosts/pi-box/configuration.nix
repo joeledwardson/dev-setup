@@ -60,7 +60,4 @@
 
   # kitty terminal support for SSH
   environment.systemPackages = [ pkgs.kitty.terminfo ];
-  services.syncthing.user = "jollof";
-
-  systemd.tmpfiles.rules = [ "d /var/lib/syncthing 0770 jollof users -" ];
 }
