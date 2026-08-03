@@ -14,7 +14,7 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3UaYy3igve5yJdZ+rZpvHairlg94nrIPcDraHkTS6s root@jollof-home";
 
   degen-work =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMBqhsbwRCHSyhBKOlXh11A9F+hyUXlA6gPBSwoBUbiI root@degen-work";
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA1sMqmmvFD78J7V7UmviGuAz16jhmv8ZC6QAd+gQ2Ey root@degen-work";
 
   streaming-server =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUkogBNkR3QnTAxF4zKoCjdp1G0mp1rcD6e9X1H+BtD root@streaming-server";

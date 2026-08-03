@@ -78,11 +78,18 @@ cp /mnt/etc/nixos/hardware-configuration.nix "$HOME/dev-setup/hosts/$NEW_HOSTNAM
 ```bash
 sudo nixos-install --root /mnt --flake .#$NEW_HOSTNAME
 ```
-13. Remove the USB and reboot, (GRUB should appear) and pick NixOS to boot into
+13. Copy any changes to the new partition so they don't get lost
+```bash
+cp ~/dev-setup
+git diff > sudo tee /mnt/home/dev-setup-changes/patch >/dev/null
 
+```
+14. Remove the USB and reboot, (GRUB should appear) and pick NixOS to boot into. then apply the changes
+```bash
+cd ~/dev-setup
+git apply /mnt/home/dev-setup-changes.patch
+```
 
-## Shameless thievery
-- 
 
 
 
