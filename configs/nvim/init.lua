@@ -972,6 +972,7 @@ require('lazy').setup {
           },
         },
       })
+      vim.lsp.enable 'tailwindcss'
       vim.lsp.enable 'nixd'
       -- TODO: fix hard coded pg schema for atlas
       vim.lsp.config['atlas'] = { filetypes = { 'atlas-schema-postgresql' }, capabilities = capabilities, root_markers = { 'schema.pg.hcl' } }
