@@ -68,15 +68,16 @@
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {},
   "effortLevel": "high",
+  "tui": "default",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false,
-  "tui": "default"
+  "viMode": false
 }

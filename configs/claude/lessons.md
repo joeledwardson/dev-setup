@@ -154,6 +154,7 @@ elsewhere. That comment is the duplicated knowledge apologizing for itself — d
 | leverage / utilise | use |
 | "the categorisation of expected error" | "the expected category" |
 | "frontmatter" (to a lay reader) | "the info at the top of the file" |
+| "generative video from content combined ref A overlay B" | "a video made by overlaying one image on top of the other" |
 
 **Long sentence → short.** If a sentence has two "because" / "which means" / em-dashes, split it.
 
@@ -164,6 +165,11 @@ elsewhere. That comment is the duplicated knowledge apologizing for itself — d
 
 - ❌ "Guard against its lossiness by prompting the vision model for a structured extraction rather than a free-form caption."
 - ✅ "Prompt for a structured list, not a caption. Force the label `airport → 6 hours → hotel` so it can be checked against the spec's 'drive under 2 hours' and flagged."
+
+**Describe a feature by what it does, not the technique behind it.** This bites hardest in UI copy and page explainers, where the reader wants the plain action, not the ML-pipeline term. Name the visible result.
+
+- ❌ "generative video from content combined ref A + overlay B"
+- ✅ "a video made by overlaying one image on top of the other"
 
 **The tell**: if you would never say the sentence out loud to a colleague, rewrite it.
 

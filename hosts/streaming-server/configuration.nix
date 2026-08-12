@@ -90,7 +90,6 @@ in {
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
   # Delegate `tailscale serve` to the claude user so it runs without sudo
-  # (pairs with permitCertUid above for sudo-free HTTPS serve).
   services.tailscale.extraSetFlags = [ "--operator=claude" ];
 
   # wayvnc remote desktop

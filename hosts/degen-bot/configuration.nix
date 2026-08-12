@@ -49,6 +49,10 @@
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
+  services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
+  services.tailscale.permitCertUid = "claude";
+  # Delegate `tailscale serve` to the claude user so it runs without sudo
+  services.tailscale.extraSetFlags = [ "--operator=claude" ];
 
   # NVIDIA driver + CUDA
   services.xserver.videoDrivers = [ "nvidia" ];

@@ -926,6 +926,25 @@ require('lazy').setup {
           filetypes = { 'sh', 'zsh' },
         },
         svelte = {},
+
+        -- Plain CSS files + <style> blocks. Tailwind v4 uses at-rules cssls
+        -- doesn't recognise (@theme, @apply, @custom-variant), so silence those
+        -- warnings rather than let them spam diagnostics.
+        cssls = {
+          settings = {
+            css = { lint = { unknownAtRules = 'ignore' } },
+            scss = { lint = { unknownAtRules = 'ignore' } },
+            less = { lint = { unknownAtRules = 'ignore' } },
+          },
+        },
+
+        -- Tailwind utility classes inside class="..." (Svelte 5 + Tailwind v4).
+        -- Recent server autodetects v4's CSS-first config (`@import 'tailwindcss'`
+        -- + `@theme` in src/app.css) with no tailwind.config.js needed.
+        tailwindcss = {
+          filetypes = { 'css', 'html', 'svelte' },
+        },
+
         just = {},
       }
 
