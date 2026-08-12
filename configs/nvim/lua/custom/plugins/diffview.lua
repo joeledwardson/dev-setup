@@ -28,7 +28,10 @@ return {
           if lib.get_current_view() then
             vim.cmd 'DiffviewClose'
           else
-            vim.cmd 'DiffviewFileHistory'
+            -- scope history to ONLY the current file (git log --patch -- %).
+            -- NB: `%` (no `--`); adding `-- ` makes diffview ignore the path
+            -- and show whole-repo history instead.
+            vim.cmd 'DiffviewFileHistory %'
           end
         end,
         desc = 'Toggle diff file history',
