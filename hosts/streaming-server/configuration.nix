@@ -174,6 +174,17 @@ in {
           api_key = "os.environ/OPENROUTER_API_KEY";
         };
       }
+      {
+        # hosted Qwen3-VL-32B (vision) via OpenRouter — the tier-2 vision
+        # candidate from ADR-0005. Same 32B weights a used RTX 3090 (24GB)
+        # would run locally, so we can judge image->text quality here before
+        # spending on the GPU. Local `qwen-vl` above is the tier-1 3060 model.
+        model_name = "qwen3-vl";
+        litellm_params = {
+          model = "openrouter/qwen/qwen3-vl-32b-instruct";
+          api_key = "os.environ/OPENROUTER_API_KEY";
+        };
+      }
     ];
   };
 

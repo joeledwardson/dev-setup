@@ -137,6 +137,7 @@
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-sandbox.nix
             ./hosts/streaming-server/configuration.nix
+            ./modules/nixos-hermes.nix
           ];
         };
 

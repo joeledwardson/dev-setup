@@ -22,7 +22,6 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
     'mxsdev/nvim-dap-vscode-js',
   },
   keys = {
@@ -96,7 +95,6 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
       },
     }
 
@@ -199,18 +197,5 @@ return {
     -- dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     -- dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Build debug binaries without cgo. On Nix, a cgo debug build (no -O)
-    -- trips glibc's _FORTIFY_SOURCE warning, which -Werror turns fatal.
-    -- Delve inherits this env for its `go build`, so this sidesteps it.
-    vim.env.CGO_ENABLED = '0'
-
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
   end,
 }
