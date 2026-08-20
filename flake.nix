@@ -55,6 +55,7 @@
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
             ./hosts/degen-work/configuration.nix
+            ./modules/nixos-netbird.nix
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
               keyboardIds = [ "0001:0001:09650417" ];
