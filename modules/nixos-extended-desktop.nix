@@ -1,5 +1,5 @@
 # Extended desktop: additional GUI apps, extra terminals, productivity tools
-{ pkgs, pkgs-unstable, ... }: {
+{ pkgs, pkgs-unstable, inputs, ... }: {
   environment.systemPackages = with pkgs; [
     ### printing (GTK front-end; CUPS web UI also at http://localhost:631)
     system-config-printer
@@ -16,7 +16,7 @@
 
     ### communication
     slack
-    iamb
+    inputs.iamb.packages.${pkgs.system}.default
     cinny-desktop
 
     ### productivity

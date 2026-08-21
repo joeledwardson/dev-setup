@@ -9,6 +9,12 @@
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
     hermes-agent.url = "github:NousResearch/hermes-agent";
+    # build iamb from git main rather than the tagged release in nixpkgs.
+    # bump with: nix flake update iamb
+    iamb = {
+      url = "github:ulyssa/iamb";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   # inputs are resolved to flakes. 
