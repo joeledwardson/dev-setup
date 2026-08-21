@@ -215,7 +215,24 @@ hl.bind(mainMod .. '+SHIFT+T', function()
   end
 end)
 hl.bind(mainMod .. '+T', hl.dsp.window.float())
-hl.bind(mainMod .. '+F', hl.dsp.window.fullscreen())
+-- Fullscreen. Brave is a special case: a normal fullscreen tells the client it
+-- is fullscreen, so Brave enters immersive mode and collapses its vertical tab
+-- strip, which never re-expands on exit (upstream bug brave-browser#33136). We
+-- give Brave "internal" fullscreen instead (fills the monitor, client state left
+-- at 0), so Brave is never told it went fullscreen and leaves the tabs alone.
+-- Every other app keeps the normal toggle.
+hl.bind(mainMod .. '+F', function()
+  local active = hl.get_active_window()
+  if active and active.class == 'brave-browser' then
+    if active.fullscreen ~= 0 then
+      hl.dispatch(hl.dsp.window.fullscreen_state { internal = 0, client = 0 })
+    else
+      hl.dispatch(hl.dsp.window.fullscreen_state { internal = 2, client = 0 })
+    end
+  else
+    hl.dispatch(hl.dsp.window.fullscreen())
+  end
+end)
 hl.bind(mainMod .. '+V', hl.dsp.exec_cmd 'cliphist list | fuzzel --dmenu | cliphist decode | wl-copy')
 hl.bind(mainMod .. '+space', hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. '+backspace', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/shutdown.sh'))
