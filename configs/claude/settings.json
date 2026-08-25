@@ -29,16 +29,17 @@
       "Bash(cat:*)",
       "Bash(wc:*)",
       "Bash(head:*)"
-    ]
+    ],
+    "defaultMode": "default"
   },
   "hooks": {
-    "PreToolUse": [
+    "PermissionRequest": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/scripts/awk-sed-reminder.sh"
+            "command": "$HOME/.claude/scripts/bash-permission-guard.sh"
           }
         ]
       }
