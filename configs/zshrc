@@ -134,6 +134,36 @@ function bw-use-work() {
     export BITWARDENCLI_APPDATA_DIR
 }
 
+# setup bitwarden session
+function bw-session() {
+    if ! bw_status="$(bw status | jq -r '.status')"; then
+        echo "failed to get bitwarden status" >&2
+        return 1
+    fi
+    if [[ "$bw_status" == "unauthenticated" ]]; then
+        echo "needs to be logged in first" >&2
+        return 1
+    fi
+
+    if [[ "$bw_status" == "unlocked" ]]; then
+        echo "already unlocked" >&2
+        return 1
+    fi
+
+    if [[ "$bw_status" != "locked" ]]; then
+        echo "status $bw_status not recognised" >&2
+        return 1
+    fi
+
+    if ! bw_session_id="$(bw unlock --raw)"; then
+        echo "failed to unlock" >&2
+        return 1
+    fi
+
+    export BW_SESSION="$bw_session_id"
+    echo "exported bitwarden session successfully"
+}
+
 # find and view a bitwarden entry
 function bw-view() {
     # get all items from bitwarden
