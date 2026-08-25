@@ -189,6 +189,8 @@ tasks:
         fi
         # set host key to F12
         crudini --set "{{.REMMINA_PREF}}" remmina_pref hostkey 65481
+        # unbind the screenshot shortcut (0 = no key)
+        crudini --set "{{.REMMINA_PREF}}" remmina_pref shortcutkey_screenshot 0
 
   dev:build:
     desc: Build dev container
