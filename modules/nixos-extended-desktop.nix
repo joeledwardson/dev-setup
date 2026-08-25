@@ -16,7 +16,6 @@
 
     ### communication
     slack
-    inputs.iamb.packages.${pkgs.system}.default
     cinny-desktop
 
     ### productivity

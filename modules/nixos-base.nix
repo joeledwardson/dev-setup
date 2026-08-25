@@ -176,6 +176,9 @@
     caligula # TUI for disk imaging ISO burning to USB etc
     tig # helpful git tool? #TODO: is this needed...
 
+    ### Chat
+    inputs.iamb.packages.${pkgs.system}.default
+
     ### CLI tools
     tldr
     bat
