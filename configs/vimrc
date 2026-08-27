@@ -20,17 +20,51 @@ set number
 " Show relative line numbers
 set relativenumber
 
-" hack for clipboard on wsl
-if system('uname -r') =~ "Microsoft"
-  augroup Yank
-    autocmd!
-    autocmd TextYankPost * :call system('/mnt/c/windows/system32/clip.exe ',@")
-  augroup END
-endif
-
 set clipboard=unnamedplus
+
+" Clipboard forwarding for remote/pluginless Vim.
+let s:is_wsl = system('uname -r') =~? 'Microsoft'
+
+function! s:Osc52Copy(text) abort
+  if empty(a:text)
+    return
+  endif
+
+  let l:encoded = system('base64 | tr -d "\n"', a:text)
+  if v:shell_error
+    return
+  endif
+
+  let l:sequence = "\e]52;c;" . l:encoded . "\x07"
+  if !empty($TMUX)
+    let l:sequence = "\ePtmux;" . substitute(l:sequence, "\e", "\e\e", 'g') . "\e\\"
+  endif
+
+  call system('cat > /dev/tty', l:sequence)
+endfunction
+
+function! s:CopyYank() abort
+  if v:event.operator !=# 'y'
+    return
+  endif
+
+  let l:reg = empty(v:event.regname) ? '"' : v:event.regname
+  let l:text = getreg(l:reg)
+
+  if s:is_wsl
+    call system('/mnt/c/windows/system32/clip.exe ', l:text)
+  endif
+
+  if !empty($SSH_TTY) || !empty($SSH_CONNECTION)
+    call s:Osc52Copy(l:text)
+  endif
+endfunction
+
+augroup Yank
+  autocmd!
+  autocmd TextYankPost * call <SID>CopyYank()
+augroup END
 
 " Jump to next/previous URL
 nnoremap ]l /https:\/\/<CR>
 nnoremap [l ?https:\/\/<CR>
-
