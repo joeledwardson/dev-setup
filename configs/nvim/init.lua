@@ -1100,6 +1100,23 @@ require('lazy').setup {
       },
     },
     config = function()
+      -- Default autoformat-on-save OFF. The format_on_save handler below early-returns
+      -- when this global is set, so saving won't reformat. Toggle it back on for the
+      -- session with <leader>tF (global) or <leader>tf (buffer); <leader>F still formats manually.
+      vim.g.disable_autoformat = true
+
+      -- Prefer Biome for JS/TS/JSON when the project ships a biome config; otherwise
+      -- fall back to Prettier. Lets biome-managed repos (e.g. octane-tools) format with
+      -- <leader>F / format-on-save with no global switch. Biome resolves from the project's
+      -- node_modules/.bin. Biome doesn't fully format .svelte, so Svelte stays on Prettier.
+      local function web_formatter(bufnr)
+        local dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ':h')
+        if #vim.fs.find({ 'biome.json', 'biome.jsonc' }, { upward = true, path = dir }) > 0 then
+          return { 'biome' }
+        end
+        return { 'prettier' }
+      end
+
       require('conform').setup {
         log_level = vim.log.levels.DEBUG,
         notify_on_error = false,
@@ -1132,11 +1149,11 @@ require('lazy').setup {
           toml = { 'tombi' },
           html = { 'html_beautify', stop_after_first = true },
           css = { 'html_beautify', stop_after_first = true },
-          json = { 'prettier', stop_after_first = true },
-          javascript = { 'prettier', stop_after_first = true },
-          typescript = { 'prettier', stop_after_first = true },
-          javascriptreact = { 'prettier', stop_after_first = true },
-          typescriptreact = { 'prettier', stop_after_first = true },
+          json = web_formatter,
+          javascript = web_formatter,
+          typescript = web_formatter,
+          javascriptreact = web_formatter,
+          typescriptreact = web_formatter,
           svelte = { 'prettier', stop_after_first = true },
           bash = { 'shfmt', 'shellcheck' },
           zsh = { 'shfmt', 'shellcheck' },
@@ -1170,7 +1187,7 @@ require('lazy').setup {
 
       -- Auto-install Mason-managed formatters (nixfmt, terraform_fmt, ... are OS-provided)
       require('mason-tool-installer').setup {
-        ensure_installed = { 'stylua', 'prettier', 'shfmt', 'shellcheck', 'sql-formatter', 'ruff' },
+        ensure_installed = { 'stylua', 'prettier', 'biome', 'shfmt', 'shellcheck', 'sql-formatter', 'ruff' },
       }
 
       vim.api.nvim_create_user_command('FormatDisable', function(args)
