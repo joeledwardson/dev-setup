@@ -69,9 +69,17 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true
+    "vercel@claude-plugins-official": true,
+    "sentry-mcp@sentry-mcp": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "sentry-mcp": {
+      "source": {
+        "source": "github",
+        "repo": "getsentry/sentry-mcp"
+      }
+    }
+  },
   "effortLevel": "high",
   "tui": "default",
   "skipDangerousModePermissionPrompt": true,
