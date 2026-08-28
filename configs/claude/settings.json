@@ -88,5 +88,6 @@
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false
+  "viMode": false,
+  "model": "claude-fable-5[1m]"
 }
