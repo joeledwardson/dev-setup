@@ -13,6 +13,8 @@ vim.o.termsync = false
 vim.opt.autoread = true
 vim.opt.swapfile = false
 
+require('custom.mdx').setup()
+
 -- useful to able to use next/previous occurance operators */# operators on words with hyphen
 vim.opt.iskeyword:append '-'
 
@@ -493,7 +495,7 @@ return {
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' },
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    ft = 'markdown',
+    ft = { 'markdown', 'mdx' },
     opts = {
       heading = {
         -- heading icons are annoying

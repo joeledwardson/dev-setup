@@ -991,6 +991,8 @@ require('lazy').setup {
           },
         },
       })
+      vim.lsp.enable('biome')
+      vim.lsp.enable('mdx_analyzer')
       vim.lsp.enable 'tailwindcss'
       vim.lsp.enable 'nixd'
       -- TODO: fix hard coded pg schema for atlas
