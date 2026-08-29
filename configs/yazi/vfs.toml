@@ -1,21 +1,18 @@
 # these 3 hostnames require tailscale and magic DNS resolution
-[services.streaming-server]
-type = "sftp"
+[sftp.streaming-server]
 host = "streaming-server"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 
 
-[services.degen-bot]
-type = "sftp"
+[sftp.degen-bot]
 host = "degen-bot"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 
-[services.pi-box]
-type = "sftp"
+[sftp.pi-box]
 host = "pi-box"
 user = "claude"
 port = 22
