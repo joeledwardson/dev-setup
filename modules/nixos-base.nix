@@ -268,6 +268,7 @@
     ansible-lint
 
     ### unstable packages
+    pkgs-unstable.opencode
     pkgs-unstable.postgres-language-server # connectionString argument only released recently
     pkgs-unstable.yazi # mediainfo plugin doesnt work with 25.05
     pkgs-unstable.zellij # v0.44.0 currently only available on unstable
