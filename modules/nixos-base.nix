@@ -19,8 +19,12 @@
 
   services.resolved = {
     enable = true;
-    domains = [ "~." ];
-    fallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
+    settings = {
+      Resolve = {
+        Domains = [ "~." ];
+        FallbackDns = [ "1.1.1.1" "1.0.0.1" ]; # Cloudflare
+      };
+    };
   };
 
   services.mullvad-vpn.enable = true;
@@ -220,7 +224,7 @@
     ripgrep
     prettierd
     stylua
-    nixfmt-classic
+    nixfmt
     tree-sitter
     readline
     libedit

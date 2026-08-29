@@ -209,3 +209,38 @@ Harder to tell what it actually "saw" in the image.
 ```
 
 Same sentences. The claim, the example, and the caveat each get their own line and their own visual weight — so the eye lands on the point instead of drowning in the block.
+
+---
+
+## Rules files: intent, not recipe
+An example says 1000 words...
+In this case I was updating `AGENTS.md` for some rules about logging to aid the LLM in a svelte project
+
+NEW (my version)
+- for context, LOG_LEVEL=info is commited in code so doesn't need an explicit point
+- not logging secrets is basic knowledge
+- other points are not simply too verbose - not necessary - the points below I added cover everything thats needed in a concise manner in human language
+- even the title should be simple and easy to follow (notice just "logging" and not more prose)
+- rules, not descriptions
+
+```
+## Logging
+- Never `console.log/error` etc, instead use `$lib/server/logger`. exceptions are `scripts`, and scaffolding (e.g. tests setup)
+- use structured logging for parameters, e.g. `log.debug('task created', {taskId})` over `log.debug("task " + taskId + " created"`
+- route invokations and database are already tracked via sentry so do not need logging
+- the most prominent use of logs is tracking use of external API invokations which otherwise would not be tracked (other than errors caught by sentry)
+
+OLD (claudes style)
+
+## Logging & tracing (LogTape `logger` -> stdout JSON + Sentry; log records inside a span carry its trace id automatically)
+- 
+- Bind context once: `const log = logger.with({ job, jobId, taskId })`; pass `log` down or re-`with` — never re-type ids in messages.
+- Background jobs: wrap the body in `Sentry.startSpan({ name: 'job <type>', op: 'job', forceTransaction: true, attributes: { jobId } })`; `log.info` at start and finish.
+- Every catch that persists or swallows an error calls `log.error('<what failed>', { err: error, ...ids })` BEFORE `updateJob`/return. A message on a DB row is not logging.
+- Every external HTTP client has exactly one request helper; it logs `{ url, payload }` at `debug` (prompt truncated to 500 chars) and `{ url, status, body: text.slice(0, 4000) }` at `error` on non-2xx or schema mismatch.
+- Log properties, not string interpolation: `log.info('task created', { taskId })`, not `` `task ${taskId} created` ``.
+- Never log secrets (api keys, tokens, auth headers), base64/binary bodies, or full prompts above `debug`.
+- Remote functions and routes need no extra logging (already spanned) unless they catch an error — then the catch rule applies.
+- NOTE: prod runs at `LOG_LEVEL=info` (config.ts default when NODE_ENV=production) so `debug` records are dropped unless `LOG_LEVEL=debug` is set on the box.
+```
+

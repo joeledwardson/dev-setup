@@ -9,6 +9,7 @@
 - Do NOT add additional code I did not specify - ask yourself is this actually required according to the question
 - Default to boring, explicit code: one decision per branch, complete SQL statements (never assembled from fragments), duplication over abstraction for ≤2 adjacent variants. Clever/compressed constructs (tuple-compares, DISTINCT ON tricks, dynamic param numbering) are a smell — DRY applies to knowledge, not text (see lessons.md).
 - **Before writing any code: read `~/.claude/lessons.md`.** It contains accumulated anti-patterns with concrete examples. Apply patterns from it without being asked.
+- **Before editing `AGENTS.md` / `CLAUDE.md` / rules sections: read lessons.md "Rules files: intent, not recipe".** Intent + rule, one example, no call signatures or magic numbers, 3-5 bullets per topic.
 - for reading files - prefer Read/Glob/Greb over awk/sed as you gave permissions to the former
 - do not use single letter variable names
 - prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
