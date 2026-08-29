@@ -34,6 +34,34 @@
   zramSwap.enable = true;
 
   # =======================================
+  # Big external HDD (bulk/media storage)
+  # =======================================
+  # ~7TB ext4 drive on USB, mounted at /mnt/big-hdd. The whole point of these
+  # options is: IF THE DRIVE IS UNPLUGGED, THE BOX MUST STILL BOOT NORMALLY.
+  # That's what took down degen-work — a mount without `nofail` is treated as
+  # required-for-boot, so a missing device drops you into emergency mode.
+  fileSystems."/mnt/big-hdd" = {
+    # Match by filesystem UUID, NOT /dev/sdb1: USB enumeration order isn't
+    # stable (sdb today can be sda tomorrow), but the UUID never moves.
+    # From `lsblk -f`: sdb1 ext4.
+    device = "/dev/disk/by-uuid/115e7867-fda1-4601-94b5-61c1a3b2cfd5";
+    fsType = "ext4";
+    options = [
+      # nofail: a missing device is logged and skipped, not fatal to boot.
+      # THIS is the one degen-work lacked.
+      "nofail"
+      # device-timeout: don't wait the default ~90s for an absent device.
+      "x-systemd.device-timeout=10s"
+      # automount: mount lazily on first access (autofs) instead of at boot, so
+      # boot never depends on the drive at all. Empty path until you plug it in.
+      "x-systemd.automount"
+      # idle-timeout: auto-unmount after 10 min idle for clean replug/remount
+      # (drop this line if you'd rather it stay mounted once first accessed).
+      "x-systemd.idle-timeout=600"
+    ];
+  };
+
+  # =======================================
   # Networking Configuration
   # =======================================
   networking.hostName = "pi-box";
