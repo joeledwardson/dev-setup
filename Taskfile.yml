@@ -28,6 +28,7 @@ tasks:
       - task: yazi:pkg
       - task: tmux:tpm
       - task: tmux:reload
+      - task: brave:apply
       - task: hyprland:reload
 
   os:build:

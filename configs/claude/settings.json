@@ -32,6 +32,7 @@
     ],
     "defaultMode": "default"
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PermissionRequest": [
       {
@@ -88,6 +89,5 @@
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false,
-  "model": "claude-fable-5[1m]"
+  "viMode": false
 }

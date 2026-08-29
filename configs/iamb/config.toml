@@ -20,3 +20,8 @@ username_display = "displayname"
 
 [macros.normal]
 "ge" = ":editor<Enter>"
+
+[dirs]
+downloads = "$HOME/Downloads/matrix"
+
+

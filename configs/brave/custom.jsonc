@@ -25,6 +25,10 @@
       "37000": [
         "Control+KeyF",
         "Control+Shift+KeyF"
+      ],
+      // default is C-e and C-k, but C-k is annoying as it blocks documentation sites bindings
+      "39002": [
+        "Control+KeyE"
       ]
     },
     // Google as default search in private windows.
