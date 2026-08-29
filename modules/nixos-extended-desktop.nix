@@ -17,8 +17,6 @@
     ### communication
     slack
     cinny-desktop
-    # iamb is terminal but its chunky to build from cargo...
-    inputs.iamb.packages.${pkgs.system}.default
 
     ### productivity
     libreoffice
