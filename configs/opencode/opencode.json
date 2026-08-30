@@ -1,0 +1,101 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "litellm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LiteLLM proxy (OpenRouter-backed)",
+      "options": {
+        "baseURL": "http://127.0.0.1:9177/v1",
+        "apiKey": "{env:LITELLM_API_KEY}"
+      },
+      "models": {
+        "qwen3-coder": {
+          "name": "qwen3-coder-30b-a3b (openrouter)",
+          "limit": { "context": 262144, "output": 16384 }
+        },
+        "qwen3-vl": {
+          "name": "qwen3-vl-32b (openrouter)",
+          "limit": { "context": 131072, "output": 16384 }
+        },
+        "gemini-flash": {
+          "name": "gemini-2.5-flash",
+          "limit": { "context": 1000000, "output": 16384 }
+        },
+        "qwen35-35b": {
+          "name": "qwen3.5-35b-a3b (openrouter)",
+          "limit": { "context": 262144, "output": 16384 }
+        },
+        "qwen35-27b": {
+          "name": "qwen3.5-27b dense (openrouter)",
+          "limit": { "context": 262144, "output": 16384 }
+        },
+        "qwen3-coder-next": {
+          "name": "qwen3-coder-next-80b-a3b (openrouter)",
+          "limit": { "context": 262144, "output": 16384 }
+        },
+        "llama33-70b": {
+          "name": "llama-3.3-70b-instruct (openrouter)",
+          "limit": { "context": 131072, "output": 16384 }
+        },
+        "gemma4-26b": {
+          "name": "gemma-4-26b-a4b-it (openrouter)",
+          "limit": { "context": 262144, "output": 16384 }
+        }
+      }
+    },
+    "openrouter-direct": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter direct",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "qwen/qwen3.5-27b": {
+          "name": "Qwen3.5-27B dense",
+          "limit": { "context": 262144, "output": 16384 }
+        }
+      }
+    },
+    "openrouter-traced": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter through local redacting trace proxy",
+      "options": {
+        "baseURL": "http://127.0.0.1:9188/api/v1",
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "qwen/qwen3.5-27b": {
+          "name": "Qwen3.5-27B dense (wire traced)",
+          "limit": { "context": 262144, "output": 16384 }
+        }
+      }
+    },
+    "opencode-go": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenCode Go",
+      "options": {
+        "baseURL": "https://opencode.ai/zen/go/v1",
+        "apiKey": "{env:OPENCODE_GO_API_KEY}"
+      },
+      "models": {
+        "glm-5.3-flash": {
+          "name": "GLM-5.3-Flash",
+          "limit": { "context": 202752, "output": 16384 }
+        }
+      }
+    },
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://desktop-work:11434/v1",
+        "apiKey": "ollama-dummy-key"
+      },
+      "models": {
+        "gpt-oss:20b": { "name": "gpt-oss 20b", "limit": { "context": 32768, "output": 8192 } },
+        "qwen3:30b-a3b": { "name": "qwen3 30b a3b", "limit": { "context": 32768, "output": 8192 } }
+      }
+    }
+  }
+}
