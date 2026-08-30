@@ -6,6 +6,11 @@ C-y = "scroll_up"
 "{" = "goto_prev_paragraph"
 "}" = "goto_next_paragraph"
 
+[keys.normal.space]
+"[" = "goto_previous_buffer"
+"]" = "goto_next_buffer"
+k = "keep_selections"
+
 [keys.normal.g]
 P = "move_parent_node_start"
 
