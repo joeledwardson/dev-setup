@@ -208,6 +208,22 @@
         "type": "github"
       }
     },
+    "mkdocs-catppuccin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767028711,
+        "narHash": "sha256-YVIZAtQT2B4Xs2sBaszvyyukm+1klCJdRpsc/BYV1gw=",
+        "owner": "ruslanlap",
+        "repo": "mkdocs-catppuccin",
+        "rev": "fd8ac6106b5b6d32922cd80cbc3d221622a17408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ruslanlap",
+        "repo": "mkdocs-catppuccin",
+        "type": "github"
+      }
+    },
     "nixarr": {
       "inputs": {
         "nixpkgs": "nixpkgs_3",
@@ -225,6 +241,29 @@
       "original": {
         "owner": "rasmus-kirk",
         "repo": "nixarr",
+        "type": "github"
+      }
+    },
+    "nixflix": {
+      "inputs": {
+        "mkdocs-catppuccin": "mkdocs-catppuccin",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix",
+        "vpn-confinement": "vpn-confinement"
+      },
+      "locked": {
+        "lastModified": 1787957350,
+        "narHash": "sha256-1SX8qWC4se3tJhCU8AG1F1nVM16/94Z3Zx0q4qLZzho=",
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
+        "rev": "29041ed489fc62db55ccdac70ee5f90683c013f5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kiriwalawren",
+        "repo": "nixflix",
         "type": "github"
       }
     },
@@ -401,6 +440,7 @@
         "hermes-agent": "hermes-agent",
         "iamb": "iamb",
         "nixarr": "nixarr",
+        "nixflix": "nixflix",
         "nixpkgs": "nixpkgs_4",
         "nixpkgs-nvim": "nixpkgs-nvim",
         "nixpkgs-unstable": "nixpkgs-unstable"
@@ -453,6 +493,27 @@
         "type": "github"
       }
     },
+    "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixflix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785945821,
+        "narHash": "sha256-NLSyTCW4K4ofhNBllt3omPasm6QpralXH1DBZOc91Dw=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "ae7910970dddc408fe6ab1c8e4b277bb21d72dc0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
     "uv2nix": {
       "inputs": {
         "nixpkgs": [
@@ -475,6 +536,21 @@
       "original": {
         "owner": "pyproject-nix",
         "repo": "uv2nix",
+        "type": "github"
+      }
+    },
+    "vpn-confinement": {
+      "locked": {
+        "lastModified": 1785142579,
+        "narHash": "sha256-WEPxDMiKt3uGVVu/aorHnIgYYW62mEq2Q+rlN3qH6bg=",
+        "owner": "Maroka-chan",
+        "repo": "VPN-Confinement",
+        "rev": "b3aa71a7edfe6af748c23729d1bdec3b499741ff",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Maroka-chan",
+        "repo": "VPN-Confinement",
         "type": "github"
       }
     },
