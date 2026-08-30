@@ -72,13 +72,20 @@
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
-    "sentry-mcp@sentry-mcp": true
+    "sentry-mcp@sentry-mcp": true,
+    "tmux-agent-sidebar@hiroppy": true
   },
   "extraKnownMarketplaces": {
     "sentry-mcp": {
       "source": {
         "source": "github",
         "repo": "getsentry/sentry-mcp"
+      }
+    },
+    "hiroppy": {
+      "source": {
+        "source": "directory",
+        "path": "$HOME/.config/tmux/plugins/tmux-agent-sidebar"
       }
     }
   },

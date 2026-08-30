@@ -29,10 +29,6 @@ pretty-path() {
     echo "${1:-$PATH}" | sed "s/:/\n/g"
 }
 
-# reload tmux configuration
-function reload-tmux {
-    tmux source-file ~/.config/tmux/tmux.conf
-}
 # copy a file to clipboard
 function copyfile {
     # Resolve the full path of the file

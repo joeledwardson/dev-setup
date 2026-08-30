@@ -26,7 +26,7 @@ tasks:
       - task: llm:keys
       - task: sheldon:lock
       - task: yazi:pkg
-      - task: tmux:tpm
+      - task: tmux:tpm-setup
       - task: tmux:reload
       - task: brave:apply
       - task: hyprland:reload
@@ -124,13 +124,18 @@ tasks:
           echo 'no tmux session to reload'
         fi
 
-  tmux:tpm:
+  tmux:tpm-setup:
     desc: Setup tmux plugin manager
     cmds:
       - git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
       - task: tmux:reload
     status:
       - test -e "$HOME/.tmux/plugins/tpm"
+
+  tmux:tpm-install:
+    desc: Install tpm plugins
+    cmds:
+      - "$HOME/.config/tmux/plugins/tpm/bin/install_plugins"
 
   claude:init:
     desc: Initialize Claude Code config (skip onboarding prompt)

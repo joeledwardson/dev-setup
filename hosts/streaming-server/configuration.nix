@@ -147,6 +147,12 @@ in {
     # API key for clients to use (see secrets.nix)
     # `os.environ` syntax is litellm specific (see https://docs.litellm.ai/docs/proxy/config_settings#general_settings---reference)
     settings.general_settings.master_key = "os.environ/LITELLM_MASTER_KEY";
+    # Extra models that can be added without a nixos rebuild: litellm appends the
+    # included file's model_list to the one below (see _process_includes in
+    # proxy_server.py). Edit the file as root, then `systemctl restart litellm`.
+    # The file MUST exist or litellm refuses to start, so the ExecStartPre below
+    # seeds an empty one on first run.
+    settings.include = [ "/var/lib/litellm/models.yaml" ];
     settings.model_list = [
       {
         model_name = "gemini-flash";
@@ -187,6 +193,17 @@ in {
       }
     ];
   };
+
+  # Seed the include file for the litellm section above. Runs as the service's
+  # DynamicUser inside its StateDirectory, which is why this is an ExecStartPre
+  # and not a tmpfiles rule (/var/lib/litellm is a symlink systemd manages).
+  systemd.services.litellm.serviceConfig.ExecStartPre = [
+    (pkgs.writeShellScript "litellm-seed-models-yaml" ''
+      if [ ! -e /var/lib/litellm/models.yaml ]; then
+        echo "model_list: []" > /var/lib/litellm/models.yaml
+      fi
+    '')
+  ];
 
   # tailscale server tailnet HTTPS -> port litellm proxy
   systemd.services.litellm-tailscale-serve = {
