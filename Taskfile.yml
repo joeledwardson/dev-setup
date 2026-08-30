@@ -36,6 +36,13 @@ tasks:
     cmds:
       - sudo nixos-rebuild switch --flake .
       - task: hyprland:reload
+  
+  os:remote-build:
+    desc: Rebuild NixOS on a target machine
+    requires:
+      vars: [HOST, TARGET]
+    cmds:
+      - nixos-rebuild switch --flake .#{{.HOST}} --target-host {{.TARGET}} --ask-sudo-password
 
   installer:build:
     desc: Build installer ISO
