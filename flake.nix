@@ -2,6 +2,10 @@
   description = "NixOS configuration of joel";
 
   inputs = {
+    nixflix = {
+      url = "github:kiriwalawren/nixflix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-nvim.url =
@@ -18,7 +22,7 @@
   };
 
   # inputs are resolved to flakes. 
-  outputs = inputs@{ nixpkgs, nixpkgs-unstable, ... }:
+  outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixflix, ... }:
     let
       x86System = "x86_64-linux";
       archSystem = "aarch64-linux";
@@ -131,6 +135,8 @@
             ./hosts/pi-box/sparkyfitness.nix
             ./hosts/pi-box/matrix.nix
             ./hosts/pi-box/xmpp.nix
+            # lets give nixflix a try!
+            nixflix.nixosModules.default
           ];
         };
 

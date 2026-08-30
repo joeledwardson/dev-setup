@@ -30,7 +30,7 @@
       "Bash(wc:*)",
       "Bash(head:*)"
     ],
-    "defaultMode": "default"
+    "defaultMode": "auto"
   },
   "model": "claude-fable-5[1m]",
   "hooks": {

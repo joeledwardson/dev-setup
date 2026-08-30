@@ -64,4 +64,28 @@ in {
   #    (Telegram's token goes in mautrix-telegram-env.age as LOGIN_SHARED_SECRET_MAP instead.)
   "matrix-doublepuppet.age".publicKeys = allHosts;
   "matrix-doublepuppet-env.age".publicKeys = allHosts;
+
+  # nixflix media server secrets
+  # 1. the following are randomly generated keys for seeding
+  "nixflix-sonarr-apikey.age".publicKeys = allHosts;
+  "nixflix-sonarr-password.age".publicKeys = allHosts;
+  "nixflix-radarr-apikey.age".publicKeys = allHosts;
+  "nixflix-radarr-password.age".publicKeys = allHosts;
+  "nixflix-lidarr-apikey.age".publicKeys = allHosts;
+  "nixflix-lidarr-password.age".publicKeys = allHosts;
+  "nixflix-prowlarr-apikey.age".publicKeys = allHosts;
+  "nixflix-prowlarr-password.age".publicKeys = allHosts;
+  "nixflix-jellyfin-apikey.age".publicKeys = allHosts;
+  "nixflix-jellyfin-admin-password.age".publicKeys = allHosts;
+  "nixflix-seerr-apikey.age".publicKeys = allHosts;
+  "nixflix-sabnzbd-apikey.age".publicKeys = allHosts;
+  "nixflix-sabnzbd-nzbkey.age".publicKeys = allHosts;
+  "nixflix-sabnzbd-username.age".publicKeys = allHosts;
+  "nixflix-sabnzbd-password.age".publicKeys = allHosts;
+
+  # 2. the following are real credentials from external services
+  "nixflix-usenet-eweka-username.age".publicKeys = allHosts;
+  "nixflix-usenet-eweka-password.age".publicKeys = allHosts;
+  "nixflix-indexer-nzbgeek.age".publicKeys = allHosts;
+  # TODO(vpn): "nixflix-wireguard-conf.age".publicKeys = allHosts;
 }
