@@ -9,6 +9,7 @@ vars:
   BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
   BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
   REMMINA_PREF: "{{.HOME}}/.config/remmina/remmina.pref"
+  CODEX_CONFIG: "{{.HOME}}/.codex/config.toml"
   LUA_LS: "{{.HOME}}/.local/share/nvim/mason/bin/lua-language-server"
 
 tasks:
@@ -18,11 +19,12 @@ tasks:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
+    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, codex:configure, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
     cmds:
       - task: os:build
       - task: dotbot:run
       - task: remmina:configure
+      - task: codex:configure
       - task: llm:keys
       - task: sheldon:lock
       - task: yazi:pkg
@@ -204,6 +206,18 @@ tasks:
         crudini --set "{{.REMMINA_PREF}}" remmina_pref hostkey 65481
         # unbind the screenshot shortcut (0 = no key)
         crudini --set "{{.REMMINA_PREF}}" remmina_pref shortcutkey_screenshot 0
+
+  codex:configure:
+    desc: Apply Codex preferences via yq (skips if config.toml doesn't exist yet)
+    cmds:
+      - |
+        if [ ! -f "{{.CODEX_CONFIG}}" ]; then
+          echo "codex:configure — {{.CODEX_CONFIG}} not found, skipping (launch Codex once to generate it)"
+          exit 0
+        fi
+        yq -i -p toml -o toml \
+          '.features.hooks = true | del(.features.codex_hooks)' \
+          "{{.CODEX_CONFIG}}"
 
   dev:build:
     desc: Build dev container

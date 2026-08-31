@@ -1,4 +1,5 @@
 #!/usr/bin/env -S uv run --quiet python
+# vim: set filetype=python :
 """port-dash — port status dashboard at :9999. No deps."""
 import http.server
 import os
@@ -9,18 +10,43 @@ from pathlib import Path
 HOST = os.uname().nodename
 
 
+def load_projects():
+    """Read every ~/<project>/.registered-ports.toml and probe each port.
+
+    Returns a list of (project_name, services) where services is a list of
+    (service_name, port, is_up).
+    """
+    projects = []
+    for ports_file in sorted(Path.home().glob("*/.registered-ports.toml")):
+        services = []
+        for service_name, port in tomllib.loads(ports_file.read_text()).items():
+            if not isinstance(port, int):
+                continue
+            is_up = socket.socket().connect_ex(("localhost", port)) == 0
+            services.append((service_name, port, is_up))
+        if services:
+            projects.append((ports_file.parent.name, services))
+    return projects
+
+
 def render():
+    # projects where every port is down go first, marked (inactive)
+    projects = load_projects()
+    inactive = [p for p in projects if not any(is_up for _, _, is_up in p[1])]
+    active = [p for p in projects if p not in inactive]
+
     rows = ""
-    for f in sorted(Path.home().glob("*/.registered-ports.toml")):
-        for svc, port in tomllib.loads(f.read_text()).items():
-            if isinstance(port, int):
-                up = socket.socket().connect_ex(("localhost", port)) == 0
-                dot = "🟢" if up else "🔴"
-                url = f"http://{HOST}:{port}"
-                rows += f"<tr><td>{dot}</td><td>{f.parent.name}</td><td>{svc}</td><td><a href='{url}'>{url}</a></td></tr>"
+    for project_name, services in inactive + active:
+        suffix = "" if any(is_up for _, _, is_up in services) else " (inactive)"
+        rows += f"<tr class='section'><td colspan='3'>{project_name}{suffix}</td></tr>"
+        for service_name, port, is_up in services:
+            dot = "🟢" if is_up else "🔴"
+            url = f"http://{HOST}:{port}"
+            rows += f"<tr><td>{dot}</td><td>{service_name}</td><td><a href='{url}'>{url}</a></td></tr>"
     return f"""<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="5">
 <style>body{{font:14px monospace;padding:2rem}}table{{border-collapse:collapse}}
-td{{padding:.3rem 1.2rem .3rem 0}}</style>
+td{{padding:.3rem 1.2rem .3rem 0}}
+tr.section td{{padding-top:1rem;border-bottom:1px solid #888;font-weight:bold}}</style>
 <h3>port dash — {HOST}</h3><table>{rows}</table>"""
 
 
