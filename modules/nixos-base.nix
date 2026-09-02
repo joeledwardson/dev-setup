@@ -235,6 +235,7 @@
     sqlfluff
     systemd-lsp
     ueberzug
+    js-beautify # for conform html_beautify
 
     # diagrams
     mermaid-cli

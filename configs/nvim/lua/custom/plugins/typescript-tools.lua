@@ -2,7 +2,16 @@ return {
   'pmizio/typescript-tools.nvim',
   dependencies = { 'nvim-lua/plenary.nvim' },
   ft = { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact', 'vue' },
-  opts = {},
+  opts = {
+    settings = {
+      -- default (true) runs a second full tsserver just for diagnostics,
+      -- doubling memory per project
+      separate_diagnostic_server = false,
+      -- MB, passed as node --max-old-space-size; default "auto" is unbounded
+      -- and lets tsserver drift past 2GB. This repo settles ~900MB.
+      tsserver_max_memory = 2048,
+    },
+  },
   -- replaced by vtsls for now, otherwise too slow for big projects
   -- enabled = false,
   -- eh, maybe one way ill get round to fixing this garbage from claude. a globa typescript errors window would be nice...

@@ -9,6 +9,19 @@ from pathlib import Path
 
 HOST = os.uname().nodename
 
+STYLES = """
+body { font: 14px monospace; padding: 2rem; }
+table { border-collapse: collapse; }
+td { padding: .3rem 1.2rem .3rem 0; }
+tr.section td { padding-top: 1rem; border-bottom: 1px solid #888; font-weight: bold; }
+.dot { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; background: currentColor; }
+.dot.up { background: green; }
+.dot.down { background: red; }
+.dormant { color: #8c8c8c; }
+.dormant a { color: inherit; }
+.dormant .dot { background: transparent; box-shadow: inset 0 0 0 2px currentColor; }
+"""
+
 
 def load_projects():
     """Read every ~/<project>/.registered-ports.toml and probe each port.
@@ -35,19 +48,23 @@ def render():
     inactive = [p for p in projects if not any(is_up for _, _, is_up in p[1])]
     active = [p for p in projects if p not in inactive]
 
-    rows = ""
+    project_groups = ""
     for project_name, services in inactive + active:
-        suffix = "" if any(is_up for _, _, is_up in services) else " (inactive)"
-        rows += f"<tr class='section'><td colspan='3'>{project_name}{suffix}</td></tr>"
+        is_active = any(is_up for _, _, is_up in services)
+        suffix = "" if is_active else " (inactive)"
+        rows = f"<tr class='section'><td colspan='3'>{project_name}{suffix}</td></tr>"
         for service_name, port, is_up in services:
-            dot = "🟢" if is_up else "🔴"
+            status = "up" if is_up else "down"
             url = f"http://{HOST}:{port}"
-            rows += f"<tr><td>{dot}</td><td>{service_name}</td><td><a href='{url}'>{url}</a></td></tr>"
+            rows += (
+                f"<tr><td><span class='dot {status}'></span></td>"
+                f"<td>{service_name}</td><td><a href='{url}'>{url}</a></td></tr>"
+            )
+        group_class = " class='dormant'" if not is_active else ""
+        project_groups += f"<tbody{group_class}>{rows}</tbody>"
     return f"""<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="5">
-<style>body{{font:14px monospace;padding:2rem}}table{{border-collapse:collapse}}
-td{{padding:.3rem 1.2rem .3rem 0}}
-tr.section td{{padding-top:1rem;border-bottom:1px solid #888;font-weight:bold}}</style>
-<h3>port dash — {HOST}</h3><table>{rows}</table>"""
+<style>{STYLES}</style>
+<h3>port dash — {HOST}</h3><table>{project_groups}</table>"""
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
