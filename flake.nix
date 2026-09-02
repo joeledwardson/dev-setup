@@ -167,6 +167,19 @@
           ];
         };
 
+        # worker207 — sandbox box with a desktop, driven over VNC/PiKVM
+        "worker207" = nixpkgs.lib.nixosSystem {
+          system = x86System;
+          specialArgs = mkArgs x86System;
+          modules = [
+            inputs.agenix.nixosModules.default
+            ./modules/nixos-base.nix
+            ./modules/nixos-core-desktop.nix
+            ./modules/nixos-sandbox.nix
+            ./hosts/worker207/configuration.nix
+          ];
+        };
+
         # live installer ISO — build with:
         "installer" = nixpkgs.lib.nixosSystem {
           system = x86System;
