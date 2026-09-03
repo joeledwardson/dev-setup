@@ -109,9 +109,18 @@ end, { desc = 'open diagnostic' })
 -- manual <C-s> split cascade. mini.nvim itself is set up in init.lua; we set up
 -- the files module lazily on first press so this doesn't depend on plugin load
 -- order or need a second mini.nvim spec (which would clobber the main config).
--- Navigate: l / <CR> = into, h = out, q = close (one key, no stranded splits),
+-- Navigate: l = into, <CR> = into (opens file + closes explorer, mapped below —
+-- mini.files does NOT map <CR> by default), h = out, q = close,
 -- = = apply filesystem edits. Opens focused on the current file for context.
 -- NB: <leader>e is diagnostics above; this is capital <leader>E.
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'MiniFilesBufferCreate',
+  callback = function(event)
+    vim.keymap.set('n', '<CR>', function()
+      require('mini.files').go_in { close_on_file = true }
+    end, { buffer = event.data.buf_id, desc = 'open entry (close explorer on file)' })
+  end,
+})
 local mini_files_setup = false
 vim.keymap.set('n', '<leader>E', function()
   local mini_files = require 'mini.files'
