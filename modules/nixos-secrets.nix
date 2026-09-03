@@ -17,5 +17,8 @@ in {
     ntfy-token = mkSecret ../secrets/ntfy-token.age;
     sparkyfitness-secrets = mkSecret ../secrets/sparkyfitness-secrets.age;
     sparkyfitness-manual = mkSecret ../secrets/sparkyfitness-manual.age;
+    sandbox-tailscale-authkey = mkSecret ../secrets/sandbox-tailscale-authkey.age;
+    sandbox-github-token = mkSecret ../secrets/sandbox-github-token.age;
+    sandbox-gitlab-token = mkSecret ../secrets/sandbox-gitlab-token.age;
   };
 }

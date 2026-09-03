@@ -71,6 +71,14 @@ in
   "matrix-doublepuppet.age".publicKeys = allHosts;
   "matrix-doublepuppet-env.age".publicKeys = allHosts;
 
+  # sandbox machine credentials (joels-claude-bot accounts)
+  # tailscale auth key, tagged tag:sandbox - expires 2026-12-02
+  "sandbox-tailscale-authkey.age".publicKeys = allHosts;
+  # github classic API token for joels-claude-bot
+  "sandbox-github-token.age".publicKeys = allHosts;
+  # gitlab API (all access) token for joels-claude-bot - expires 21-05-2027
+  "sandbox-gitlab-token.age".publicKeys = allHosts;
+
   # nixflix media server secrets
   # 1. the following are randomly generated keys for seeding
   "nixflix-sonarr-apikey.age".publicKeys = allHosts;
