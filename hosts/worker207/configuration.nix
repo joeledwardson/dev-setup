@@ -23,6 +23,15 @@
   };
 
   # =======================================
+  # Graphics — AMD Radeon RX 6600 (open-source amdgpu + Mesa)
+  # =======================================
+  # Mesa is already pulled in implicitly by programs.hyprland (nixos-core-desktop);
+  # this makes it explicit, and loads amdgpu in the initrd so the display is
+  # driven by the real driver from early boot (useful when watching via PiKVM)
+  hardware.graphics.enable = true;
+  hardware.amdgpu.initrd.enable = true;
+
+  # =======================================
   # Networking Configuration
   # =======================================
   networking.hostName = "worker207";
