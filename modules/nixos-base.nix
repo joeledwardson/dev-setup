@@ -216,26 +216,12 @@
 
     ### neovim (pinned to 0.11.5 — 0.12 broke treesitter plugin APIs)
     pkgs-nvim.neovim
-    ### neovim dependencies
-    ast-grep
+    ### shell tools. nvim-min (configs/nvim-min/flake.nix) bundles every language server,
+    ### formatter and parser tool it needs, so nothing is installed here for its sake.
     ripgrep
-    prettierd
-    stylua
-    nixfmt
-    tree-sitter
-    readline
-    libedit
-    imagemagick # for image.nvim
-    luajitPackages.magick # lua bindings for imagemagick
-    sql-formatter
-    sqls
-    marksman
+    ast-grep # `sg`, completions wired in zshrc
     shellcheck
     shfmt
-    sqlfluff
-    systemd-lsp
-    ueberzug
-    js-beautify # for conform html_beautify
 
     # diagrams
     mermaid-cli
