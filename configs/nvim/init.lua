@@ -81,7 +81,9 @@ vim.pack.add({
   'https://github.com/tpope/vim-sleuth',
   'https://github.com/lewis6991/gitsigns.nvim',
   'https://github.com/folke/which-key.nvim',
-  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = '0.1.x' },
+  -- 0.1.x calls nvim-treesitter's removed `parsers.ft_to_lang`; 0.2.x uses core vim.treesitter.
+  -- A version *range* must be vim.version.range(); a bare string is read as a branch/tag/commit.
+  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = vim.version.range '0.2' },
   'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
   'https://github.com/nvim-telescope/telescope-ui-select.nvim',
   'https://github.com/nvim-telescope/telescope-live-grep-args.nvim',
