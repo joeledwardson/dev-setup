@@ -1,7 +1,65 @@
 # Base NixOS configuration shared by all hosts
-{ pkgs, inputs, pkgs-unstable, pkgs-nvim, ... }:
+{ pkgs, lib, inputs, pkgs-unstable, ... }:
 
-{
+let
+  # Neovim 0.12 plus every language server, formatter, debug adapter and parser
+  # build tool that ~/.config/nvim references. They go on nvim's own PATH rather
+  # than the system one, so the editor sees them and the shell does not. There is
+  # no Mason and nothing is downloaded at runtime.
+  #
+  # hiPrio because nixos-minimal.nix also installs a plain `neovim` for the
+  # installer image, and both provide bin/nvim.
+  neovim-bundled = let
+    languageServers = with pkgs-unstable; [
+      nixd
+      basedpyright
+      ruff
+      vtsls # typescript / javascript (bundles its own tsserver)
+      svelte-language-server
+      biome # repo-local node_modules/.bin/biome wins when present
+      tailwindcss-language-server
+      lua-language-server
+      marksman
+      postgres-language-server
+      vscode-langservers-extracted # jsonls, cssls
+      yaml-language-server
+      bash-language-server
+      just-lsp
+      mdx-language-server
+      atlas
+      terraform-ls
+      systemd-lsp
+      gopls
+      ansible-language-server
+    ];
+    formatters = with pkgs-unstable; [
+      stylua
+      prettier # repo-local node_modules/.bin/prettier wins when present
+      shfmt
+      shellcheck
+      sql-formatter
+      nixfmt
+    ];
+    debugAdapters = with pkgs-unstable; [
+      vscode-js-debug # provides `js-debug`
+    ];
+    # nvim-treesitter (main) compiles parsers from source; telescope-fzf-native runs make.
+    buildTools = with pkgs-unstable; [
+      tree-sitter
+      gcc
+      gnumake
+      gnutar
+      curl
+      ripgrep
+      fd
+    ];
+    toolPath =
+      lib.makeBinPath (languageServers ++ formatters ++ debugAdapters ++ buildTools);
+  in lib.hiPrio (pkgs-unstable.writeShellScriptBin "nvim" ''
+    export PATH=${toolPath}:$PATH
+    exec ${pkgs-unstable.neovim}/bin/nvim "$@"
+  '');
+in {
   # Enable Magic SysRq keys for emergency recovery (Alt+SysRq+R/S/B etc).
   # Required for TTY/keyboard recovery when the compositor hard-hangs.
   boot.kernel.sysctl."kernel.sysrq" = 1;
@@ -214,10 +272,9 @@
     ### video processing
     ffmpeg
 
-    ### neovim (pinned to 0.11.5 — 0.12 broke treesitter plugin APIs)
-    pkgs-nvim.neovim
-    ### shell tools. nvim-min (configs/nvim-min/flake.nix) bundles every language server,
-    ### formatter and parser tool it needs, so nothing is installed here for its sake.
+    ### neovim 0.12, with its language servers and formatters bundled in (see
+    ### neovim-bundled above). These four are also wanted on the shell PATH.
+    neovim-bundled
     ripgrep
     ast-grep # `sg`, completions wired in zshrc
     shellcheck

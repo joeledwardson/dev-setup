@@ -2,7 +2,7 @@
 -- highlights it, the expected language servers attach, go-to-definition lands
 -- in the expected file, and document/workspace symbols come back.
 --
---   nvim-min --headless -c 'luafile ~/.config/nvim-min/bench.lua'
+--   nvim --headless -c 'luafile ~/.config/nvim/bench.lua'
 --
 -- Prints one PASS/FAIL line per check and exits 1 if anything failed.
 
@@ -14,7 +14,7 @@ local cases = {
     repo = home .. '/dev-setup',
     file = 'flake.nix',
     servers = { 'nixd' },
-    definition = { line = 48, character = 24, expect_file = 'flake.nix', symbol = 'mkPkgs' },
+    definition = { line = 46, character = 24, expect_file = 'flake.nix', symbol = 'mkPkgs' },
     workspace_query = 'mkPkgs',
   },
   {

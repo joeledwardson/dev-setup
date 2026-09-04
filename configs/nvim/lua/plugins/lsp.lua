@@ -126,7 +126,7 @@ local servers = {
 -- Point nixd's options provider at THIS host's evaluated flake config. Without it,
 -- hover/completion only knows base nixpkgs options — options from flake inputs
 -- (agenix `age.secrets`, nixarr, hermes) and our own modules hover as empty/"missing
--- type". flake_dir is derived from the nvim config symlink (…/dev-setup/configs/nvim-min
+-- type". flake_dir is derived from the nvim config symlink (…/dev-setup/configs/nvim
 -- -> repo root) so it works on every host; hostname matches the nixosConfigurations key.
 -- NB: category nodes (e.g. `fonts`, `age`) have no type of their own and always hover
 -- as "missing type" — hover a leaf option like `fonts.packages`.
