@@ -80,7 +80,7 @@ sudo nixos-install --root /mnt --flake .#$NEW_HOSTNAME
 ```
 13. Copy any changes to the new partition so they don't get lost
 ```bash
-cp ~/dev-setup
+cd ~/dev-setup
 git diff > sudo tee /mnt/home/dev-setup-changes/patch >/dev/null
 
 ```
@@ -90,6 +90,23 @@ cd ~/dev-setup
 git apply /mnt/home/dev-setup-changes.patch
 ```
 
+## New device authentication
+
+tailscale
+```bash
+sudo tailsacle up --auth-key <auth_key_here>
+```
+
+login to github auth with classic API key
+```bash
+gh auth login
+```
+
+login to gitlab, and add the SSH key
+```bash
+glab auth login
+glab ssh-key add ~/.ssh/id_ed25519.pub --title $(hostname)
+```
 
 
 
@@ -97,26 +114,8 @@ git apply /mnt/home/dev-setup-changes.patch
 My dotfiles are located in `configs`, where the symlinks are applied by `dotbot` via the `install.conf.yaml` configuration file
 
 Some of the configurations are built from scratch, some based off a templated, or edited from the defaults:
-- `nvim` for neovim is based off the neovim kickstart project (although it has diverged a fair bit since)
-- `hyprland` is based off the default generated configuration, although has diverged a fair bit since then
-> To see the diffs from my config to the example generated one, run `git diff --no-index  <(curl https://raw.githubusercontent.com/hyprwm/Hyprland/refs/heads/main/example/hyprland.conf) configs/hypr/hyprland.conf`
 - `waybar` shamelessy stolen from https://github.com/d00m1k/SimpleBlueColorWaybar
 - `swaync` shamelessy stolen from https://github.com/schererleander/hyprdots
-
-## Applications
-The `applications` directory is symlinked via `dotbot` to my "custom" directory in `~/.local/share/applications/`.
-
-This enables me to have custom entries available in fuzzel launcher
-
-Ok this is pretty confusing.
-
-Well at least i found the docs for the `mimeapps.list` file: [here](https://specifications.freedesktop.org/mime-apps/latest/file.html)
-
-God... linux docs. well here is the list:
-- [base directory specification](https://specifications.freedesktop.org/basedir/latest/)
-- [desktop file naming](https://specifications.freedesktop.org/desktop-entry/latest/file-naming.html), explains about the applications subdirectory
-
-Ok well it turns out brave browser has this line in its config!
 
 ## Wallpapers
 Wallpapers shameless stolen from [mylinuxforwork dotfiles repo](https://github.com/mylinuxforwork/dotfiles/tree/main)
@@ -130,46 +129,4 @@ For keyboard devices such as my laptop keyboard which do not support QMK, I have
 
 For my programming keybaords that do support QMK, I have forked [QMK firmware here](https://github.com/joeledwardson/qmk_firmware) with layers added for my keyboards
 
-## Git authentication
-I have setup `glab` and `gh `clis for authentication so that i can login via browser on each which is easier
-
-TODO: review SSH keys synchronisation without commiting to git? maybe syncthing?
-
-
-## Syncthing
-So Am keeping my secrets in syncthing which requires peer to peer connection to operate
-
-> Would be interesting to read into, how it pierces NAT?
-
-According to [this documentation](https://forum.syncthing.net/t/device-behind-nat-is-sometimes-connected-without-relays/15684/7) there are some ways that it pierces NAT but honestly this is a whole tpoic in itself...
-
-I have enabled it in NixOS so (should) be available from http://localhost:8384/
-
-Can see the files to my `Sync` folder (requires root)
-```bash
-sudo ls -la /var/lib/syncthing/Sync
-```
-
-## Work VPN setup
-I have put my work VPN in syncthing which can be imported by network manager as a ovpn configuration file.
-
-> UPDATE FEBRUARY 2026 - password is now based on jumpcloud! and user is JoelEdwardson
-
-Script below imports 
-```bash
-if [[ -z "$VPN_PATH" ]]; then
-  echo "no VPN_PATH found"
-else if [[ -z "$VPN_PASS" ]]; then
-  echo "no password provided"
-else
-  nmcli c import type openvpn file "$VPN_PATH"
-  nmcli c modify work vpn.user-name JoelEdwardson
-  nmcli c modify work vpn.secrets "password=$VPN_PASS"
-  nmcli c modify work +vpn.data "password-flags=0"
-  nmcli c modify work ipv4.dns "8.8.8.8 1.1.1.1"
-  nmcli c modify work ipv4.ignore-auto-dns no
-fi
-```
-
-> According to claude, we have to forcifully set the dns otherwise it does not work? - claude's notes are in the [dev log](https://joels-claude-bot.github.io/dev-setup/dev-log/) (see Nov/Dec 2025).
 
