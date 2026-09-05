@@ -191,7 +191,7 @@
         "fenix": "fenix",
         "flake-utils": "flake-utils",
         "nixpkgs": [
-          "nixpkgs-unstable"
+          "nixpkgs-iamb"
         ]
       },
       "locked": {
@@ -205,6 +205,7 @@
       "original": {
         "owner": "ulyssa",
         "repo": "iamb",
+        "rev": "bb1a27831f0d7c19df4f09966820daba40a521be",
         "type": "github"
       }
     },
@@ -280,6 +281,22 @@
         "owner": "NixOS",
         "ref": "nixos-25.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-iamb": {
+      "locked": {
+        "lastModified": 1788316716,
+        "narHash": "sha256-bc7rSpXIdn9QWGNqfWcPZWOhEVF8NoeAZkWq0XWnf/k=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3ed67ec0a4d3c7ab4ae1f04f8ee8df07bfa506a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3ed67ec0a4d3c7ab4ae1f04f8ee8df07bfa506a2",
         "type": "github"
       }
     },
@@ -426,6 +443,7 @@
         "nixarr": "nixarr",
         "nixflix": "nixflix",
         "nixpkgs": "nixpkgs_4",
+        "nixpkgs-iamb": "nixpkgs-iamb",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
     },

@@ -11,11 +11,16 @@
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
     hermes-agent.url = "github:NousResearch/hermes-agent";
-    # build iamb from git main rather than the tagged release in nixpkgs.
-    # bump with: nix flake update iamb
+    # iamb is built from git main, and it is a slow cargo build. Both the iamb
+    # commit and the nixpkgs it builds against are pinned to explicit revs so a
+    # plain `nix flake update` can never move them and trigger a rebuild.
+    # To bump, edit both revs below by hand, then `nix flake lock --refresh`.
+    nixpkgs-iamb.url =
+      "github:NixOS/nixpkgs/3ed67ec0a4d3c7ab4ae1f04f8ee8df07bfa506a2";
     iamb = {
-      url = "github:ulyssa/iamb";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      url =
+        "github:ulyssa/iamb/bb1a27831f0d7c19df4f09966820daba40a521be";
+      inputs.nixpkgs.follows = "nixpkgs-iamb";
     };
   };
 
