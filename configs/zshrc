@@ -57,8 +57,8 @@ notify-send() {
 eval "$(sheldon source)"
 
 autoload -U compinit
-# -C skips security audit
-compinit -C
+# Use the cache when it is current and rebuild it when completions change.
+compinit
 
 # show hostname
 DRACULA_DISPLAY_CONTEXT=1

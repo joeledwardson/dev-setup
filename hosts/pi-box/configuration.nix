@@ -52,14 +52,14 @@
       "nofail"
       # device-timeout: don't wait the default ~90s for an absent device.
       "x-systemd.device-timeout=10s"
-      # automount: mount lazily on first access (autofs) instead of at boot, so
-      # boot never depends on the drive at all. Empty path until you plug it in.
-      "x-systemd.automount"
-      # idle-timeout: auto-unmount after 10 min idle for clean replug/remount
-      # (drop this line if you'd rather it stay mounted once first accessed).
-      "x-systemd.idle-timeout=600"
+      # Mount normally during boot; no autofs layer or idle unmounting.
     ];
   };
+
+  # Require the real ext4 mount before creating directories. If the disk is
+  # absent, NixFlix fails safely instead of creating state on the root disk.
+  systemd.services.nixflix-setup-dirs.unitConfig.RequiresMountsFor =
+    [ "/mnt/big-hdd" ];
 
   # =======================================
   # Networking Configuration
@@ -164,7 +164,7 @@
 
     recyclarr = {
       enable = true;
-      cleanupUnmanagedProfiles = true;
+      cleanupUnmanagedProfiles.enable = true;
     };
 
     lidarr = {
@@ -191,7 +191,7 @@
       };
     };
 
-    sabnzbd = {
+    usenetClients.sabnzbd = {
       enable = true;
 
       settings = {
@@ -241,9 +241,10 @@
     #   1. re-add the "nixflix-wireguard-conf" secret to the age.secrets list
     #      above and to ../../secrets/secrets.nix, then `agenix -e
     #      nixflix-wireguard-conf.age` (paste the whole wg-quick .conf).
-    #   2. uncomment this block; `enable` only BUILDS the isolated `wg` netns —
-    #      nothing routes through it until a service opts in with
-    #      `nixflix.<service>.vpn.enable = true` (candidates: sabnzbd, prowlarr).
+    #   2. uncomment this block; `enable` builds the isolated `wg` netns. Most
+    #      services' per-service `vpn.enable` DEFAULTS to the global value — so
+    #      flipping this on confines sabnzbd etc. automatically; set
+    #      `nixflix.<service>.vpn.enable = false` to exempt one.
     #   3. set accessibleFrom to THIS box's real LAN subnet (check with
     #      `ip addr` on the pi) — it's the inbound allowlist for reaching a
     #      confined service's web UI from your network.
