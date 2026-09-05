@@ -164,9 +164,9 @@ tasks:
 
   brave:apply:
     desc: Apply custom configs to every Brave profile listed in Local State
+    # skip (don't fail) if Brave has never been launched here, so no Local State yet
+    if: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
     preconditions:
-      - sh: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
-        msg: "Brave Local State not found at {{.BRAVE_LOCAL_STATE}} — open Brave at least once first"
       - sh: "pgrep -x brave >/dev/null && exit 1 || exit 0"
         msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
     cmds:
