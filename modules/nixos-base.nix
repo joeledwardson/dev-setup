@@ -324,10 +324,6 @@ in {
 
   # enable docker
   virtualisation.docker.enable = true;
-  # docker declares Wants=network-online.target which puts it on the
-  # graphical.target critical chain (~5s). Start it after multi-user.target
-  # instead — same fix as postgresql.
-  systemd.services.docker.after = [ "multi-user.target" ];
 
   # this is needed for stuff like markdown-preview extension in neovim with random binaries
   programs.nix-ld.enable = true;
