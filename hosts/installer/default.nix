@@ -51,7 +51,7 @@
   environment.etc."gitconfig".text = ''
     [user]
       name  = Joel
-      email = joel.edwardson@whiteswandata.com
+      email = joel.edwardson1@gmail.com
   '';
 
   # Clone dev-setup automatically once network is up so the repo
