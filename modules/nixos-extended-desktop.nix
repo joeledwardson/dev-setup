@@ -76,25 +76,20 @@
       host   all       all     ::1/128         trust
     '';
   };
+
+
   # postgresql.target is WantedBy=multi-user.target by default, putting it on
   # the graphical.target critical chain. Adding After=multi-user.target keeps
   # auto-start but means it starts after the desktop sequence, not before.
   systemd.targets.postgresql.after = [ "multi-user.target" ];
-  # keyboard settings
-  services.udev.packages = [ pkgs.via ];
 
   # VM/spice support
   services.spice-vdagentd.enable = true;
 
   # printing
   services.printing.enable = true;
-  # Driver pool for non-driverless printers (each queue picks its own PPD). The
-  # Samsung C460 is actually driverless (IPP Everywhere), so it uses none of these
-  # -- they're just a fallback for other/older printers you might add via the
-  # system dialog. Printers themselves are added imperatively (CUPS state in
-  # /var/lib/cups) so they stay per-machine and don't break on other networks.
   services.printing.drivers = with pkgs; [
-    samsung-unified-linux-driver
+    samsung-unified-linux-driver # this (shouldnt) be needed as Samsung C460 uses universal driver (mum and dads printer)
     gutenprint # huge generic set (Epson, Canon, many others)
     hplip # HP
   ];
@@ -106,8 +101,9 @@
     openFirewall = true;
   };
 
-  # keyboard building config
+  # keyboards
   hardware.keyboard.qmk.enable = true;
+  services.udev.packages = [ pkgs.via ];
 
   # =======================================
   # Greeter Configuration

@@ -11,6 +11,7 @@
 - **Before writing any code: read `~/.claude/lessons.md`.** It contains accumulated anti-patterns with concrete examples. Apply patterns from it without being asked.
 - **Before editing `AGENTS.md` / `CLAUDE.md` / rules sections: read lessons.md "Rules files: intent, not recipe".** Intent + rule, one example, no call signatures or magic numbers, 3-5 bullets per topic.
 - for reading files - prefer Read/Glob/Greb over awk/sed as you gave permissions to the former
+- Nix dependencies resolve into `/nix/store` (readable, no prompt). When a build or activation log prints a store path, read that path directly - do not search the filesystem for the source, it usually isn't in the repo. For the script behind a failing unit: `systemctl cat <unit>` names its store path.
 - do not use single letter variable names
 - prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
 - where possible - do NOT pipe bash commands - then it ignores any pre-set permissions i have given for Find:* Grep:* etc
