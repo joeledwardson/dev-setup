@@ -51,7 +51,7 @@
       "Bash(file:*)",
       "Bash(jq:*)"
     ],
-    "defaultMode": "manual"
+    "defaultMode": "dontAsk"
   },
   "model": "claude-opus-5[1m]",
   "hooks": {
