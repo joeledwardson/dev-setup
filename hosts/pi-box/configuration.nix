@@ -1,6 +1,9 @@
 { config, pkgs, lib, commonGroups, modulesPath, ... }:
 
-{
+let
+  # tailnet name this box is served at (domain shared via modules/tailnet.nix).
+  tailnetFqdn = (import ../../modules/tailnet.nix).fqdnFor "pi-box";
+in {
   imports = [
     # Build a bootable Raspberry Pi image: firmware partition (Pi firmware +
     # U-Boot) + an auto-expanding ext4 root, with the extlinux bootloader.
@@ -148,16 +151,24 @@
 
     sonarr = {
       enable = true;
+      openFirewall = true; # tcp 8989
       config = {
         apiKey._secret = config.age.secrets."nixflix-sonarr-apikey".path;
+        # nixflix binds every service to 127.0.0.1 when a reverse proxy is on
+        # (modules/arr-common/hostConfig.nix). We want http://pi-box:8989 from
+        # the LAN and the tailnet, so bind all interfaces. nginx still reaches
+        # it on 127.0.0.1, so the proxy keeps working.
+        hostConfig.bindAddress = "0.0.0.0";
         hostConfig.password._secret = config.age.secrets."nixflix-sonarr-password".path;
       };
     };
 
     radarr = {
       enable = true;
+      openFirewall = true; # tcp 7878
       config = {
         apiKey._secret = config.age.secrets."nixflix-radarr-apikey".path;
+        hostConfig.bindAddress = "0.0.0.0";
         hostConfig.password._secret = config.age.secrets."nixflix-radarr-password".path;
       };
     };
@@ -169,16 +180,20 @@
 
     lidarr = {
       enable = true;
+      openFirewall = true; # tcp 8686
       config = {
         apiKey._secret = config.age.secrets."nixflix-lidarr-apikey".path;
+        hostConfig.bindAddress = "0.0.0.0";
         hostConfig.password._secret = config.age.secrets."nixflix-lidarr-password".path;
       };
     };
 
     prowlarr = {
       enable = true;
+      openFirewall = true; # tcp 9696
       config = {
         apiKey._secret = config.age.secrets."nixflix-prowlarr-apikey".path;
+        hostConfig.bindAddress = "0.0.0.0";
         hostConfig.password._secret = config.age.secrets."nixflix-prowlarr-password".path;
         indexers = [
           {
@@ -193,9 +208,23 @@
 
     usenetClients.sabnzbd = {
       enable = true;
+      openFirewall = true; # tcp 8081
 
       settings = {
         misc = {
+          # NOT 8080: mautrix-telegram's appservice defaults to it (nixpkgs
+          # mautrix-telegram.nix:35) and wins the race on restarts. SABnzbd loses
+          # SILENTLY — find_free_port in SABnzbd.py moves it to some other port
+          # rather than failing — and then sabnzbd-categories talks to the bridge
+          # and dies on a 404. Everything else (the *arrs' download client, the
+          # nginx vhost, the firewall) derives from this one value.
+          port = 8081;
+          # same reverse-proxy-forces-localhost default as the *arrs
+          host = "0.0.0.0";
+          # SABnzbd refuses any request whose Host header isn't whitelisted.
+          # nixflix only lists the nginx vhost, so add the names we actually
+          # browse to. Comma-separated; keep the nginx one or the proxy breaks.
+          host_whitelist = "sabnzbd.nixflix,pi-box,${tailnetFqdn}";
           api_key._secret = config.age.secrets."nixflix-sabnzbd-apikey".path;
           nzb_key._secret = config.age.secrets."nixflix-sabnzbd-nzbkey".path;
           username._secret = config.age.secrets."nixflix-sabnzbd-username".path;
@@ -220,6 +249,14 @@
 
     jellyfin = {
       enable = true;
+      # tcp 8096/8920 + udp 1900/7359 (the udp pair is DLNA/client discovery).
+      openFirewall = true;
+      # Same reverse-proxy-forces-localhost default as the *arrs, just spelled
+      # differently: nixflix pins localNetworkAddresses to ["127.0.0.1"] when a
+      # proxy is on (jellyfin/network/options.nix:156), so jellyfin only ever
+      # bound to loopback and http://pi-box:8096 refused. Empty list = bind every
+      # interface; nginx still reaches it on 127.0.0.1.
+      network.localNetworkAddresses = [ ];
       apiKey._secret = config.age.secrets."nixflix-jellyfin-apikey".path;
       users = {
         admin = {
@@ -232,6 +269,7 @@
 
     seerr = {
       enable = true;
+      openFirewall = true; # tcp 5055
       apiKey._secret = config.age.secrets."nixflix-seerr-apikey".path;
     };
 
@@ -254,5 +292,11 @@
     #   accessibleFrom = [ "192.168.1.0/24" ];
     # };
   };
+
+  # Seerr is the one service with no bindAddress option — nixflix hardcodes
+  # `HOST = "127.0.0.1"` whenever a reverse proxy is enabled (modules/seerr/
+  # default.nix:212). mkForce is the only way to reach it from off-box; nginx
+  # still proxies to 127.0.0.1, which 0.0.0.0 covers.
+  systemd.services.seerr.environment.HOST = lib.mkForce "0.0.0.0";
 
 }
