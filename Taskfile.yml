@@ -19,14 +19,14 @@ tasks:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, codex:configure, sheldon:lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
+    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, codex:configure, zsh:sheldon-lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
     cmds:
       - task: os:build
       - task: dotbot:run
       - task: remmina:configure
       - task: codex:configure
       - task: llm:keys
-      - task: sheldon:lock
+      - task: zsh:sheldon-lock
       - task: yazi:pkg
       - task: tmux:tpm-setup
       - task: tmux:reload
@@ -70,12 +70,18 @@ tasks:
       - dotbot -c install.conf.yaml
       - task: hyprland:reload
 
-  sheldon:lock:
+  zsh:clean-compdump:
+    desc: clean compdump for zsh
+    cmds:
+      - rm -f ~/.zcompdump
+      - zsh
+
+  zsh:sheldon-lock:
     desc: Rebuild sheldon plugin lock
     cmds:
       - sheldon lock
 
-  sheldon:update:
+  zsh:sheldon-update:
     desc: Update sheldon packages
     cmds:
       - sheldon lock --update

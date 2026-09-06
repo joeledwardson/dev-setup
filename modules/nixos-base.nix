@@ -362,7 +362,12 @@ in {
 
   programs.zsh = {
     enable = true;
-    enableCompletion = false;
+    # Links /share/zsh into the system profile, which is where packages ship
+    # their completions (_systemctl, _journalctl, ...). Without it fpath has no
+    # system completions at all and `systemctl status <TAB>` falls back to files.
+    enableCompletion = true;
+    # ...but our own zshrc runs compinit, so skip the one in /etc/zshrc.
+    enableGlobalCompInit = false;
   };
 
   # set default shell to zsh
