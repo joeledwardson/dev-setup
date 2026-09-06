@@ -2,6 +2,7 @@
 -- root markers) come from nvim-lspconfig's lsp/*.lua; overrides below are merged on top
 -- via vim.lsp.config. Completion and signature help are the built-in ones:
 --   insert mode <C-s>  signature help (nvim default)
+--   insert mode <C-Space> open the LSP completion menu by hand (what blink's <C-Space> did)
 --   typing             LSP completion menu, docs in a popup ('completeopt' in init.lua)
 --   <Tab>              accept the selected item, or jump to the next snippet field
 --   <C-n> / <C-x><C-f> buffer words / file paths, as ever
@@ -180,6 +181,12 @@ for _, atlas_filetype in ipairs {
 } do
   vim.treesitter.language.register('hcl', atlas_filetype)
 end
+
+-- <C-Space> opens the completion menu on demand, e.g. after <C-e> dismissed it or in a
+-- spot the trigger characters miss. Neovim has no default for this key; see :h vim.lsp.completion.get()
+vim.keymap.set('i', '<C-Space>', function()
+  vim.lsp.completion.get()
+end, { desc = 'trigger LSP completion' })
 
 -- <Tab> accepts the highlighted completion (the first one if none is highlighted, like
 -- blink's select_and_accept did), or moves to the next snippet field, else is a tab.
