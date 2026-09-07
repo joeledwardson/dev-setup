@@ -49,7 +49,7 @@
     ];
   };
 
-  networking.hostName = "desktop-work"; # Define your hostname.
+  networking.hostName = "joel-desktop-work"; # Define your hostname.
 
   programs.obs-studio = {
     enable = true;
