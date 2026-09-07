@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Brave (IB work)
+Name=Brave (Work Ibankroll)
 Comment=Launch Brave with work profile
 Icon=brave-browser
 Exec=brave --new-window --profile-directory=Ibankroll-Profile --hide-crash-restore-bubble
