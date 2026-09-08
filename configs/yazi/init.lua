@@ -187,3 +187,37 @@ function CustomPlugins.open_with_cmd()
   local suffix = ya.target_family() == 'windows' and ' %*' or ' "$@"'
   ya.emit('shell', { value .. suffix, block = true, orphan = false })
 end
+
+-- goto-sftp-host: list the hosts registered in vfs.toml and `cd` into the chosen
+-- one. `yq` (yq-go, already a system package) does the TOML reading — `.sftp | keys`
+-- prints one host per line, in file order, so there's no TOML parsing here.
+-- `Command:output()` and `ya.which` both yield, so this must run under `ya.async`.
+function CustomPlugins.goto_sftp_host()
+  local vfs_path = os.getenv 'HOME' .. '/.config/yazi/vfs.toml'
+  local output, err = Command('yq'):arg { '-p=toml', '-o=yaml', '.sftp | keys | .[]', vfs_path }:output()
+  if not output then
+    return ya.notify { title = 'SFTP', content = 'Failed to run yq: ' .. tostring(err), level = 'error', timeout = 5 }
+  end
+  if not output.status.success then
+    return ya.notify { title = 'SFTP', content = 'yq failed on vfs.toml: ' .. output.stderr, level = 'error', timeout = 5 }
+  end
+
+  local hosts = {}
+  for host in output.stdout:gmatch '[^\r\n]+' do
+    hosts[#hosts + 1] = host
+  end
+  if #hosts == 0 then
+    return ya.notify { title = 'SFTP', content = 'No [sftp.*] hosts found in vfs.toml', level = 'warn', timeout = 5 }
+  end
+
+  local cands = {}
+  for index, host in ipairs(hosts) do
+    cands[index] = { on = tostring(index), desc = host }
+  end
+
+  local picked = ya.which { cands = cands }
+  if not picked then
+    return
+  end
+  ya.emit('cd', { 'sftp://' .. hosts[picked] })
+end

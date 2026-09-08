@@ -27,6 +27,11 @@ on = ["'", "f"]
 run = "plugin sftp-dispatch"
 desc = "Copy file as sftp:// URL to clipboard (OSC52, works over SSH)"
 
+[[mgr.prepend_keymap]]
+on = ["g", "s"]
+run = '''lua 'ya.async(CustomPlugins.goto_sftp_host) return' '''
+desc = "Go to an sftp host from vfs.toml"
+
 # Inline lua demo (yazi 26.5.6+): run Lua straight from a keybind, no plugin file.
 # Runs synchronously — cx is available, async APIs (ya.clipboard) are NOT.
 # ya.notify is sync, so it pops a visible toast right away — press 'l to see it.
@@ -198,7 +203,7 @@ run = "search --via=fd --args='--hidden --no-ignore'"
 desc = "fd file search"
 
 [[mgr.prepend_keymap]]
-on = ["'", "S"]
+on = ["'", "g"]
 run = "search --via=rg --args='--hidden --no-ignore'"
 desc = "rg contents search"
 
