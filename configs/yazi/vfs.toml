@@ -5,7 +5,6 @@ user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 
-
 [sftp.degen-bot]
 host = "degen-bot"
 user = "claude"
@@ -14,6 +13,12 @@ key_file = "~/.ssh/id_ed25519"
 
 [sftp.pi-box]
 host = "pi-box"
+user = "claude"
+port = 22
+key_file = "~/.ssh/id_ed25519"
+
+[sftp.worker]
+host = "worker"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"

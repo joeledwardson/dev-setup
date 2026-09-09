@@ -237,6 +237,7 @@ in {
     tabiew # CSV terminal viewer (tw is program)
     caligula # TUI for disk imaging ISO burning to USB etc
     tig # helpful git tool? #TODO: is this needed...
+    systemd-manager-tui
 
     ### CLI tools
     tldr
