@@ -1,4 +1,15 @@
-require('diffview').setup {}
+require('diffview').setup {
+  hooks = {
+    -- Diffview sets `foldmethod=diff` on its windows, which folds everything
+    -- outside `diffopt` context and leaks a stuck `foldmethod=diff` into any
+    -- window split off the diff window. Use manual folds so ufo/treesitter
+    -- folds the diff by function instead.
+    diff_buf_win_enter = function(_, winid)
+      vim.wo[winid].foldmethod = 'manual'
+      vim.wo[winid].foldlevel = 99
+    end,
+  },
+}
 
 vim.keymap.set('n', '<leader>tv', function()
   local lib = require 'diffview.lib'

@@ -39,6 +39,7 @@ vim.o.termsync = false
 vim.o.autoread = true
 vim.o.swapfile = false
 vim.opt.iskeyword:append '-'
+vim.opt.diffopt:append 'context:3'
 
 -- Clipboard: system clipboard when a display is present, OSC52 over SSH.
 local function has_system_clipboard()
