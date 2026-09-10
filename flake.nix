@@ -8,6 +8,10 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
     hermes-agent.url = "github:NousResearch/hermes-agent";
@@ -186,6 +190,17 @@
           modules = [ ./hosts/installer ];
         };
 
+      };
+
+      darwinConfigurations = {
+        # M1 Mac mini — macOS host for the iMessage bridge.
+        "mac-mini" = inputs.nix-darwin.lib.darwinSystem {
+          specialArgs = mkArgs "aarch64-darwin";
+          modules = [
+            ./modules/nixos-sandbox.nix
+            ./hosts/mac-mini/darwin.nix
+          ];
+        };
       };
 
     };
