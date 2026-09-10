@@ -34,3 +34,7 @@ Host streaming-server
 Host worker
     User claude
     Hostname worker207
+
+Host mac-mini
+    User jollof
+    Hostname joels-mac-mini
