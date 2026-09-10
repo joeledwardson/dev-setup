@@ -102,4 +102,11 @@ in
   "nixflix-usenet-eweka-password.age".publicKeys = allHosts;
   "nixflix-indexer-nzbgeek.age".publicKeys = allHosts;
   # TODO(vpn): "nixflix-wireguard-conf.age".publicKeys = allHosts;
+
+  # client ID and secret for gcalcli, on my personal google account
+  # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
+  # needs my personal email adding as "test user" in audience: https://console.cloud.google.com/auth/audience
+  "gcal-client-id".publicKeys = trustedHosts;
+  "gcal-client-secret".publicKeys = trustedHosts;
+
 }

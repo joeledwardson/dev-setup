@@ -287,6 +287,7 @@ tasks:
   secrets:edit:
     desc: |
       Edit an existing agenix secret. Usage: task secrets:edit -- <secret.age>
+      Or create a new secret (add to secrets/secrets.nix first). Usage: task secrets:edit -- <secret>
     # agenix has no default editor, so EDITOR must be set. root nix key required too.
     requires:
       vars: [CLI_ARGS]
