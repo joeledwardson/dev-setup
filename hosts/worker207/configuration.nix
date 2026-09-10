@@ -4,6 +4,10 @@
   imports = [
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
+    # Observability trial: beszel / monit / munin / zabbix / netdata side by
+    # side, plus systemd + failed-login alerting. Self-contained — drop this
+    # import to remove the lot.
+    ./observability.nix
   ];
 
   # =======================================
