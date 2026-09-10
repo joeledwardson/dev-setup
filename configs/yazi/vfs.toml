@@ -18,7 +18,7 @@ port = 22
 key_file = "~/.ssh/id_ed25519"
 
 [sftp.worker]
-host = "worker"
+host = "worker207"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"

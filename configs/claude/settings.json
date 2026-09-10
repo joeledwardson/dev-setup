@@ -1,11 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "additionalDirectories": [
-      "/nix/store",
-      "/etc/nixos",
-      "/run/current-system"
-    ],
     "allow": [
       "WebFetch",
       "WebSearch",
@@ -51,7 +46,12 @@
       "Bash(file:*)",
       "Bash(jq:*)"
     ],
-    "defaultMode": "dontAsk"
+    "defaultMode": "dontAsk",
+    "additionalDirectories": [
+      "/nix/store",
+      "/etc/nixos",
+      "/run/current-system"
+    ]
   },
   "model": "claude-opus-5[1m]",
   "hooks": {
@@ -117,5 +117,6 @@
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false
+  "viMode": false,
+  "preferredNotifChannel": "iterm2"
 }
