@@ -2,9 +2,6 @@
 version: "3"
 
 vars:
-  WIN_DIR: win
-  WINGET_FILE: "{{.WIN_DIR}}/winget.json"
-  SCOOP_FILE: "{{.WIN_DIR}}/scoop.json"
   BRAVE_DIR: "{{.HOME}}/.config/BraveSoftware/Brave-Browser"
   BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
   BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
@@ -35,9 +32,18 @@ tasks:
 
   os:build:
     desc: Rebuild NixOS configuration
+    vars:
+      OS:
+        sh: uname
     cmds:
-      - sudo nixos-rebuild switch --flake .
-      - task: hyprland:reload
+      - |
+        echo "got operating sytem: {{.OS}}"
+        {{if eq .OS "Darwin"}}
+        sudo darwin-rebuild switch --flake .
+        {{else}}
+        sudo nixos-rebuild switch --flake .
+        {{end}}
+      -  task hyprland:reload
   
   os:remote-build:
     desc: Rebuild NixOS on a target machine
@@ -151,22 +157,6 @@ tasks:
       - cp dev-image/claude.json ~/.claude.json
     status:
       - test -e ~/.claude.json
-
-  win:push:
-    desc: Export Windows packages
-    cmds:
-      - mkdir -p {{.WIN_DIR}}
-      - winget export --nowarn --output "{{.WINGET_FILE}}" --include-versions
-      - scoop export > "{{.SCOOP_FILE}}"
-
-  win:pull:
-    desc: Import Windows packages
-    preconditions:
-      - test -f "{{.WINGET_FILE}}"
-      - test -f "{{.SCOOP_FILE}}"
-    cmds:
-      - winget import --accept-package-agreements --ignore-unavailable --accept-source-agreements --import-file "{{.WINGET_FILE}}"
-      - scoop import "{{.SCOOP_FILE}}"
 
   brave:apply:
     desc: Apply custom configs to every Brave profile listed in Local State

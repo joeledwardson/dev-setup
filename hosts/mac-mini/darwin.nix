@@ -99,4 +99,6 @@ in {
   # 1. un-set natural scrolling in settings => mouse (inverted scrolling is incredibly annoying)
   # 2. set the keyboard in settings => keyboard to `british pc`, otherwise the british one switches " and @
   # 3. install homebrew
+  # 4. 
+  # (then can run the installer)
 }

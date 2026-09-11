@@ -4,7 +4,6 @@
   - [Adding a new device](#adding-a-new-devices)
   - [NixOS setup](#nixos-setup)
   - [Dotfiles](#dotfiles)
-  - [Windows installation](#windows-installation)
   - [Applications](#applications)
   - [Wallpapers](#wallpapers)
   - [Keyboard re-bindings](#keyboard-re-bindings)
