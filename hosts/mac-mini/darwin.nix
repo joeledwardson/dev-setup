@@ -92,6 +92,14 @@ in
   # this during routine upgrades.
   system.stateVersion = 6;
 
+  ## --- setup steps ---
+  # these have already been completed, but for reference 
+  # 1. use the mautrix-imessage-registration from the template (https://github.com/mautrix/imessage/blob/master/example-registration.yaml)
+  # 2. generate random strings for `as_token` and `hs_token` and save the secret
+  # 3. generate the mautrix-imessage-config from the template (https://mau.dev/mautrix/gmessages/-/blob/v0.4.3/example-config.yaml)
+  # 4. replace the `as_token` and `hs_token` with the values used earlier
+  # 5. replace the `login_shared_secret` with the value we configured for matrix-doublepuppet
+
   ## --- manual steps ---
   # still a few steps in setting up the mac mini that must be done on the device can't be done remotely.
   # 1. un-set natural scrolling in settings => mouse (inverted scrolling is incredibly annoying)
