@@ -3,7 +3,8 @@
 let
   user = "jollof";
   mautrix-imessage = pkgs.callPackage ../../pkgs/mautrix-imessage.nix { };
-in {
+in
+{
   # This is still macOS. nix-darwin only manages the declared settings and
   # services on top of it.
   nixpkgs.hostPlatform = "aarch64-darwin";
@@ -14,7 +15,10 @@ in {
 
   # Keep Nix builds isolated from the rest of the machine.
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
 
   # Both services are managed as native macOS launchd jobs.
@@ -48,10 +52,14 @@ in {
     };
   };
 
-  # Small terminal environment. Language servers and desktop applications can
-  # be added later when this host actually needs them.
+  # dont let it sleep!
+  power.sleep.computer = "never";
+  power.sleep.harddisk = "never";
+  power.restartAfterPowerFailure = true;
+
   programs.zsh.enable = true;
   environment.variables.EDITOR = "nvim";
+
   environment.systemPackages = with pkgs; [
     bat
     delta
@@ -75,6 +83,7 @@ in {
     yazi
     zoxide
     go-task
+    tree-sitter
   ];
 
   # Compatibility version for nix-darwin's stateful defaults. Do not change
@@ -86,6 +95,8 @@ in {
   # 1. un-set natural scrolling in settings => mouse (inverted scrolling is incredibly annoying)
   # 2. set the keyboard in settings => keyboard to `british pc`, otherwise the british one switches " and @
   # 3. install homebrew
-  # 4. 
-  # (then can run the installer)
+  # 4. go to settings => general => sharing => screen sharing => tick "vnc viewers may control..."
+  # 5. (then can run `task os:build`)
+  # 6. search for "full disk access" in mac settings and enable it for mautrix-imessage
+
 }
