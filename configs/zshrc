@@ -121,6 +121,7 @@ alias nvimc="nvim -c 'lua require(\"session_manager\").delete_current_dir_sessio
 
 # i dont like the name status default as sometimes i want git log --patch
 alias gl='git log'
+alias glg='git log --oneline --graph --all'
 
 # llg (llm chat with gemini)
 alias llg='llm chat -t fast'
