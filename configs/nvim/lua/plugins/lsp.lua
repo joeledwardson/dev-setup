@@ -12,7 +12,11 @@ require('fidget').setup { notification = { override_vim_notify = true } }
 
 local servers = {
   basedpyright = {},
-  vtsls = {},
+  vtsls = {
+    settings = {
+      vtsls = { autoUseWorkspaceTsdk = true },
+    },
+  },
   marksman = {},
   postgres_lsp = {
     cmd = { 'postgres-language-server', 'lsp-proxy' },
