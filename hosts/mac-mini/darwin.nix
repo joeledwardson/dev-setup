@@ -48,19 +48,6 @@ in {
     };
   };
 
-  # RustDesk must live in /Applications so macOS can attach Screen Recording
-  # and Accessibility permissions to a stable app bundle. nixpkgs marks its
-  # Darwin package broken, so let nix-darwin manage the Homebrew cask.
-  homebrew = {
-    enable = true;
-    casks = [ "rustdesk" ];
-    onActivation = {
-      autoUpdate = false;
-      cleanup = "none";
-      upgrade = false;
-    };
-  };
-
   # Small terminal environment. Language servers and desktop applications can
   # be added later when this host actually needs them.
   programs.zsh.enable = true;
