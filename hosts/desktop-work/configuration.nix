@@ -10,6 +10,9 @@
     (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
   ];
 
+  # Build pi-box locally using QEMU to run ARM64 build steps.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # pstore: on kernel panic, writes ring buffer to EFI memory before dying.
   # Survives reboot — read at /sys/fs/pstore/ afterwards.
   # Only fires on actual panics, not silent hard hangs (use netconsole for those).
