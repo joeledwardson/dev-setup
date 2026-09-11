@@ -55,7 +55,9 @@ in
   # dont let it sleep!
   power.sleep.computer = "never";
   power.sleep.harddisk = "never";
+  power.sleep.display = "never";
   power.restartAfterPowerFailure = true;
+  power.restartAfterFreeze = true;
 
   programs.zsh.enable = true;
   environment.variables.EDITOR = "nvim";
