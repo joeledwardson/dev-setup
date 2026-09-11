@@ -1,22 +1,20 @@
 // most of this was stolen from https://tailscale.com/docs/reference/examples/acls and written by claude...
 {
   // tagOwners: which users can *assign* a tag to a device (not what the tag can access).
-  // autogroup:admin = only tailnet admins can apply these tags.
   "tagOwners": {
     "tag:trusted": ["autogroup:admin"],
     "tag:sandbox": ["autogroup:admin"],
   },
 
-  // Grants control what each source can connect to.
-  // Tagged devices are removed from autogroup:member, so they
-  // only get access if explicitly listed as a src below.
   "grants": [
     // Untagged devices (personal machines) — full access
     {"src": ["autogroup:member"], "dst": ["*"], "ip": ["*"]},
     // Trusted tagged devices — full access
     {"src": ["tag:trusted"],      "dst": ["*"], "ip": ["*"]},
-    // sandbox machines can only access ollama with outbound connections
+    // allow outbound from sandbox to ollama IP
     {"src": ["tag:sandbox"], "dst": ["*"], "ip": ["tcp:11434"]},
+    // outbound access from pi-box to joels-mac-mini on mautrix imessage port (defined in mautrix-imessage-registration)
+    {"src": ["tag:sandbox"], "dst": ["*"], "ip": ["tcp:29320"]},
   ],
 
   "ssh": [
