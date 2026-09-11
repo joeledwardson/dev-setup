@@ -73,6 +73,10 @@ in
   #    (Telegram's token goes in mautrix-telegram-env.age as LOGIN_SHARED_SECRET_MAP instead.)
   "matrix-doublepuppet.age".publicKeys = allHosts;
   "matrix-doublepuppet-env.age".publicKeys = allHosts;
+  # iMessage bridge config on macOS and matching appservice registration on pi-box.
+  # Both files contain the same as_token and hs_token pair.
+  "mautrix-imessage-config.age".publicKeys = allHosts;
+  "mautrix-imessage-registration.age".publicKeys = allHosts;
 
   # sandbox machine credentials (joels-claude-bot accounts)
   # tailscale auth key, tagged tag:sandbox - expires 2026-12-02

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   user = "jollof";
@@ -20,6 +20,33 @@ in {
   # Both services are managed as native macOS launchd jobs.
   services.openssh.enable = true;
   services.tailscale.enable = true;
+
+  age.secrets.mautrix-imessage-config = {
+    file = ../../secrets/mautrix-imessage-config.age;
+    owner = user;
+  };
+
+  # create working and logs directory under user
+  system.activationScripts.postActivation.text = ''
+    install -d -o ${user} -g staff \
+      /Users/${user}/.local/share/mautrix-imessage \
+      /Users/${user}/Library/Logs/mautrix-imessage
+  '';
+
+  # This must be a user agent: the bridge reads jollof's Messages database and
+  # drives Messages.app in the logged-in GUI session.
+  launchd.user.agents.mautrix-imessage = {
+    command = "${mautrix-imessage}/bin/mautrix-imessage -c ${config.age.secrets.mautrix-imessage-config.path}";
+    environment.HOME = "/Users/${user}";
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = true;
+      ThrottleInterval = 10;
+      WorkingDirectory = "/Users/${user}/.local/share/mautrix-imessage";
+      StandardOutPath = "/Users/${user}/Library/Logs/mautrix-imessage/stdout.log";
+      StandardErrorPath = "/Users/${user}/Library/Logs/mautrix-imessage/stderr.log";
+    };
+  };
 
   # RustDesk must live in /Applications so macOS can attach Screen Recording
   # and Accessibility permissions to a stable app bundle. nixpkgs marks its
