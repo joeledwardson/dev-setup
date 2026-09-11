@@ -96,6 +96,22 @@ in {
     };
   };
 
+  # facebook broke the mautrix server 😠
+  # TODO: once 26.08.1 reaches nix packages can switch to that
+  services.mautrix-meta.package = pkgs.mautrix-meta.overrideAttrs (old: {
+    version = "26.08.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "mautrix";
+      repo = "meta";
+      tag = "v0.2608.1";
+      hash = "sha256-xTfbLtQ1lo6ukWlGjNwjxYaLMod6hljhQEcwdSgoBcQ=";
+    };
+    vendorHash = "sha256-CCGF13D0QO2GAE+kN/7xl924rSloqikDoGPr00clofI=";
+    # upstream bakes the tag into ldflags via `rec`, so overrideAttrs can't reach it -
+    # restate them or `mautrix-meta --version` keeps claiming v26.07
+    ldflags = [ "-s" "-w" "-X" "main.Tag=v0.2608.1" ];
+  });
+
   # meta bridge - an instance, not a flat service like the others
   services.mautrix-meta.instances.facebook = {
     enable = true;
