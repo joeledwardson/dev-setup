@@ -114,7 +114,7 @@
         };
 
         # desktop work PC
-        "desktop-work" = nixpkgs.lib.nixosSystem {
+        "joel-desktop-work" = nixpkgs.lib.nixosSystem {
           system = x86System;
           specialArgs = mkArgs x86System;
           modules = [
@@ -194,7 +194,7 @@
 
       darwinConfigurations = {
         # M1 Mac mini — macOS host for the iMessage bridge.
-        "mac-mini" = inputs.nix-darwin.lib.darwinSystem {
+        "joels-mac-mini" = inputs.nix-darwin.lib.darwinSystem {
           specialArgs = mkArgs "aarch64-darwin";
           modules = [
             ./modules/nixos-sandbox.nix
