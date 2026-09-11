@@ -87,6 +87,7 @@ in {
     tmux
     yazi
     zoxide
+    go-task
   ];
 
   # Compatibility version for nix-darwin's stateful defaults. Do not change
@@ -97,4 +98,5 @@ in {
   # still a few steps in setting up the mac mini that must be done on the device can't be done remotely.
   # 1. un-set natural scrolling in settings => mouse (inverted scrolling is incredibly annoying)
   # 2. set the keyboard in settings => keyboard to `british pc`, otherwise the british one switches " and @
+  # 3. install homebrew
 }
