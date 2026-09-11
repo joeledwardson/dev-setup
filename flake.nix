@@ -197,6 +197,7 @@
         "joels-mac-mini" = inputs.nix-darwin.lib.darwinSystem {
           specialArgs = mkArgs "aarch64-darwin";
           modules = [
+            inputs.agenix.darwinModules.default
             ./modules/nixos-sandbox.nix
             ./hosts/mac-mini/darwin.nix
           ];

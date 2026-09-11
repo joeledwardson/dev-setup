@@ -25,7 +25,10 @@ in {
       # double-puppet appservice (ADR-011): lets the bridges write MY read receipts.
       # Merges with the entries each bridge adds via registerToSynapse.
       app_service_config_files =
-        [ config.age.secrets.matrix-doublepuppet.path ];
+        [
+          config.age.secrets.matrix-doublepuppet.path
+          config.age.secrets.mautrix-imessage-registration.path
+        ];
       database.name = "sqlite3";
       # localhost listener; tailscale serve does TLS + proxies to it. x_forwarded as we're now
       # behind that proxy.
@@ -148,8 +151,15 @@ in {
   # so default owner (root) is fine — the bridge users don't need read access.
   age.secrets.matrix-doublepuppet-env.file =
     ../../secrets/matrix-doublepuppet-env.age;
+  age.secrets.mautrix-imessage-registration = {
+    file = ../../secrets/mautrix-imessage-registration.age;
+    owner = "matrix-synapse";
+  };
 
   # reload synapse when the registration/token changes (source .age hash changes on edit)
   systemd.services.matrix-synapse.restartTriggers =
-    [ ../../secrets/matrix-doublepuppet.age ];
+    [
+      ../../secrets/matrix-doublepuppet.age
+      ../../secrets/mautrix-imessage-registration.age
+    ];
 }
