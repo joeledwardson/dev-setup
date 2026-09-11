@@ -23,11 +23,14 @@ let
 
   worker207 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII7r/NHO2TiSXW5LHA3S/VQVUmOeNtS2WNdKr6sH7ZO8 root@worker207";
 
+  mac-mini = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOjWfjNa/8vfdLCJTnnaYnaLxOlJfLyu4PEk0VzQApQj";
+
   trustedHosts = [
     desktop-work
     jollof-home
     degen-work
     degen-home
+    mac-mini
   ];
   allHosts = trustedHosts ++ [
     streaming-server
