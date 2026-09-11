@@ -129,6 +129,14 @@ in {
         require = false;
       };
       double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
+      # add backfill so it catches up to new messages on downtime
+      backfill = {
+        enabled = true;
+        max_initial_messages = 50;
+        max_catchup_messages = 500;
+        unread_hours_threshold = 720;
+        threads.max_initial_messages = 50;
+      };
     };
   };
 
