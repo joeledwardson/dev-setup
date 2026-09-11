@@ -89,6 +89,8 @@ in {
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
 
+  services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
+
   # kitty terminal support for SSH
   environment.systemPackages = [ pkgs.kitty.terminfo ];
   
