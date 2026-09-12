@@ -1,27 +1,48 @@
+-- replace regular vim notifications with fidget
 require('fidget').setup { notification = { override_vim_notify = true } }
 
-local servers = {
-  basedpyright = {},
-  vtsls = {
+-- Configurations supplied by nvim-lspconfig that need no local overrides.
+vim.lsp.enable {
+  'basedpyright',
+  'marksman',
+  'svelte',
+  'just',
+  'biome',
+  'mdx_analyzer',
+  'ruff',
+  'gopls',
+  'ansiblels',
+  'systemd_ls',
+}
+
+vim.lsp.config('vtsls', {
+    ---@type lspconfig.settings.vtsls
     settings = {
       vtsls = { autoUseWorkspaceTsdk = true },
     },
-  },
-  marksman = {},
-  postgres_lsp = {
+})
+vim.lsp.enable 'vtsls'
+
+vim.lsp.config('postgres_lsp', {
     cmd = { 'postgres-language-server', 'lsp-proxy' },
     filetypes = { 'sql' },
     root_markers = { 'postgres-language-server.jsonc' },
-  },
-  jsonls = {
+})
+vim.lsp.enable 'postgres_lsp'
+
+vim.lsp.config('jsonls', {
+    ---@type lspconfig.settings.jsonls
     settings = {
       json = {
         schemas = require('schemastore').json.schemas(),
         validate = { enable = true },
       },
     },
-  },
-  yamlls = {
+})
+vim.lsp.enable 'jsonls'
+
+vim.lsp.config('yamlls', {
+    ---@type lspconfig.settings.yamlls
     settings = {
       yaml = {
         schemaStore = {
@@ -31,18 +52,14 @@ local servers = {
         schemas = require('schemastore').yaml.schemas(),
       },
     },
-  },
-  lua_ls = {
+})
+vim.lsp.enable 'yamlls'
+
+vim.lsp.config('lua_ls', {
     reuse_client = function(client, config)
       return client.name == config.name and client.root_dir == config.root_dir
     end,
     on_init = function(client)
-      if client.workspace_folders then
-        local path = client.workspace_folders[1].name
-        if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then
-          return
-        end
-      end
       client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
         runtime = { version = 'LuaJIT' },
         workspace = {
@@ -59,6 +76,7 @@ local servers = {
         },
       })
     end,
+    ---@type lspconfig.settings.lua_ls
     settings = {
       Lua = {
         completion = {
@@ -85,64 +103,58 @@ local servers = {
         },
       },
     },
-  },
-  bashls = {
+})
+vim.lsp.enable 'lua_ls'
+
+vim.lsp.config('bashls', {
     filetypes = { 'sh', 'zsh' },
-  },
-  svelte = {},
-  cssls = {
+})
+vim.lsp.enable 'bashls'
+
+vim.lsp.config('cssls', {
+    ---@type lspconfig.settings.cssls
     settings = {
       css = { lint = { unknownAtRules = 'ignore' } },
       scss = { lint = { unknownAtRules = 'ignore' } },
       less = { lint = { unknownAtRules = 'ignore' } },
     },
-  },
-  tailwindcss = {
+})
+vim.lsp.enable 'cssls'
+
+vim.lsp.config('tailwindcss', {
     filetypes = { 'css', 'html', 'svelte' },
-  },
-  just = {},
-  biome = {},
-  mdx_analyzer = {},
-  ruff = {},
-  gopls = {},
-  ansiblels = {},
-  systemd_ls = {},
-  terraformls = {
+})
+vim.lsp.enable 'tailwindcss'
+
+vim.lsp.config('terraformls', {
     on_attach = function(client, _)
       client.server_capabilities.signatureHelpProvider = nil
     end,
-  },
-  atlas = {
+})
+vim.lsp.enable 'terraformls'
+
+vim.lsp.config('atlas', {
     filetypes = { 'atlas-schema-postgresql' },
     root_markers = { 'schema.pg.hcl' },
-  },
-}
+})
+vim.lsp.enable 'atlas'
 
--- Point nixd's options provider at THIS host's evaluated flake config. Without it,
--- hover/completion only knows base nixpkgs options — options from flake inputs
--- (agenix `age.secrets`, nixarr, hermes) and our own modules hover as empty/"missing
--- type". flake_dir is derived from the nvim config symlink (…/dev-setup/configs/nvim
--- -> repo root) so it works on every host; hostname matches the nixosConfigurations key.
--- NB: category nodes (e.g. `fonts`, `age`) have no type of their own and always hover
--- as "missing type" — hover a leaf option like `fonts.packages`.
-local flake_dir = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.stdpath 'config'), ':h:h')
-local nix_hostname = vim.uv.os_gethostname()
-servers.nixd = {
+vim.lsp.config('nixd', {
+  ---@type lspconfig.settings.nixd
   settings = {
     nixd = {
       options = {
         nixos = {
-          expr = string.format('(builtins.getFlake "%s").nixosConfigurations."%s".options', flake_dir, nix_hostname),
+          expr = string.format(
+            '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.%q.options',
+            vim.uv.os_gethostname()
+          ),
         },
       },
     },
   },
-}
-
-for server_name, server_config in pairs(servers) do
-  vim.lsp.config(server_name, server_config)
-end
-vim.lsp.enable(vim.tbl_keys(servers))
+})
+vim.lsp.enable 'nixd'
 
 -- atlas HCL dialects
 vim.filetype.add {
@@ -176,31 +188,6 @@ for _, atlas_filetype in ipairs {
   vim.treesitter.language.register('hcl', atlas_filetype)
 end
 
--- <C-Space> opens the completion menu on demand, e.g. after <C-e> dismissed it or in a
--- spot the trigger characters miss. Neovim has no default for this key; see :h vim.lsp.completion.get()
-vim.keymap.set('i', '<C-Space>', function()
-  vim.lsp.completion.get()
-end, { desc = 'trigger LSP completion' })
-
--- <Tab> accepts the highlighted completion (the first one if none is highlighted, like
--- blink's select_and_accept did), or moves to the next snippet field, else is a tab.
-vim.keymap.set('i', '<Tab>', function()
-  if vim.fn.pumvisible() == 1 then
-    local nothing_selected = vim.fn.complete_info({ 'selected' }).selected == -1
-    return nothing_selected and '<C-n><C-y>' or '<C-y>'
-  end
-  if vim.snippet.active { direction = 1 } then
-    return '<Cmd>lua vim.snippet.jump(1)<CR>'
-  end
-  return '<Tab>'
-end, { expr = true, desc = 'accept completion / next snippet field' })
-vim.keymap.set({ 'i', 's' }, '<S-Tab>', function()
-  if vim.snippet.active { direction = -1 } then
-    return '<Cmd>lua vim.snippet.jump(-1)<CR>'
-  end
-  return '<S-Tab>'
-end, { expr = true, desc = 'previous snippet field' })
-
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
@@ -221,15 +208,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('K', vim.lsp.buf.hover, 'Hover Documentation')
 
     local client = vim.lsp.get_client_by_id(event.data.client_id)
-
-    -- Built-in completion. Servers only auto-trigger on their own characters
-    -- (".", ":" ...); adding every word character makes it fire as you type.
-    -- See :h lsp-autocompletion.
-    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_completion) then
-      local word_characters = vim.split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_', '')
-      client.server_capabilities.completionProvider.triggerCharacters = word_characters
-      vim.lsp.completion.enable(true, client.id, event.buf, { autotrigger = true })
-    end
 
     if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
       local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })

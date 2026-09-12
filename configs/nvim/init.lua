@@ -1,10 +1,4 @@
--- The daily-driver config, on Neovim 0.12 idioms.
---   * vim.pack instead of lazy.nvim (plugins load eagerly; lockfile is nvim-pack-lock.json)
---   * vim.lsp.enable + nvim-lspconfig definitions instead of Mason (servers come from modules/nixos-base.nix)
---   * nvim-treesitter `main` instead of `master` (the API change that broke 0.12 last time)
---
--- Layout: options here, keymaps/commands in lua/custom/, one file per plugin group in
--- lua/plugins/. `nvim` is a wrapper (modules/nixos-base.nix) that puts the servers on PATH.
+-- simplified configuration for neovim 0.12
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -57,22 +51,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Plugins -------------------------------------------------------------------
--- Build steps that lazy.nvim used to run via `build = ...`.
-vim.api.nvim_create_autocmd('PackChanged', {
-  callback = function(event)
-    local name, kind = event.data.spec.name, event.data.kind
-    if kind ~= 'install' and kind ~= 'update' then
-      return
-    end
-    if name == 'telescope-fzf-native.nvim' then
-      vim.system({ 'make' }, { cwd = event.data.path }):wait()
-    end
-    if name == 'nvim-treesitter' and kind == 'update' then
-      vim.cmd 'TSUpdate'
-    end
-  end,
-})
-
 -- Order matters only for dependencies: a plugin is listed after what it requires.
 -- confirm = false: install without prompting so a headless first run works.
 vim.pack.add({
@@ -85,14 +63,15 @@ vim.pack.add({
   -- 0.1.x calls nvim-treesitter's removed `parsers.ft_to_lang`; 0.2.x uses core vim.treesitter.
   -- A version *range* must be vim.version.range(); a bare string is read as a branch/tag/commit.
   { src = 'https://github.com/nvim-telescope/telescope.nvim', version = vim.version.range '0.2' },
-  'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
   'https://github.com/nvim-telescope/telescope-ui-select.nvim',
   'https://github.com/nvim-telescope/telescope-live-grep-args.nvim',
+  -- Snippet bodies for blink's `snippets` source. Blink itself is built by Nix, but it
+  -- picks this up by scanning the runtimepath, so it only has to be present, not configured.
+  'https://github.com/rafamadriz/friendly-snippets',
   'https://github.com/neovim/nvim-lspconfig', -- server definitions only (lsp/*.lua); the client is built in
   'https://github.com/j-hui/fidget.nvim',
   'https://github.com/b0o/schemastore.nvim',
   'https://github.com/stevearc/conform.nvim',
-  { src = 'https://github.com/nvim-treesitter/nvim-treesitter', version = 'main' },
   'https://github.com/nvim-treesitter/nvim-treesitter-context',
   'https://github.com/DariusCorvus/tree-sitter-language-injection.nvim',
   'https://github.com/fionn/nvim-hujson',
@@ -103,8 +82,6 @@ vim.pack.add({
   'https://github.com/folke/todo-comments.nvim',
   'https://github.com/grafana/vim-alloy',
   'https://github.com/mfussenegger/nvim-ansible',
-  'https://github.com/gbprod/yanky.nvim',
-  'https://github.com/sQVe/sort.nvim',
   'https://github.com/aaronik/treewalker.nvim',
   'https://github.com/chentoast/marks.nvim',
   { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
@@ -112,8 +89,6 @@ vim.pack.add({
   'https://github.com/kevinhwang91/promise-async',
   'https://github.com/kevinhwang91/nvim-ufo',
   'https://github.com/MeanderingProgrammer/render-markdown.nvim',
-  'https://github.com/MagicDuck/grug-far.nvim',
-  'https://github.com/tpope/vim-dotenv',
   'https://github.com/tpope/vim-dadbod',
   'https://github.com/kristijanhusak/vim-dadbod-completion',
   'https://github.com/kristijanhusak/vim-dadbod-ui',
@@ -128,9 +103,32 @@ vim.pack.add({
   'https://github.com/folke/trouble.nvim',
 }, { confirm = false })
 
+require('todo-comments').setup {}
+require('treewalker').setup {}
+require('marks').setup {}
+require('bqf').setup {}
+
+require('render-markdown').setup {
+  file_types = { 'markdown', 'mdx' },
+  heading = {
+    icons = { '', '', '', '', '', '' },
+    backgrounds = { 'RenderMarkdownH1Bg', 'RenderMarkdownH2Bg', '', '', '', '' },
+    border = false,
+    position = 'inline',
+    sign = false,
+  },
+  bullet = {
+    icons = { ' ◉  ', '  ◦  ', '   ▪  ', '    ▫  ' },
+  },
+}
+vim.keymap.set('n', '<leader>tm', function()
+  require('render-markdown').toggle()
+end, { desc = 'toggle markdown render' })
+
 require 'plugins.theme'
 require 'plugins.whichkey'
 require 'plugins.mini' -- before telescope: mini.icons stands in for nvim-web-devicons
+require 'plugins.completion' -- before LSP servers start so they receive Blink's capabilities
 require 'plugins.telescope'
 require 'plugins.lsp'
 require 'plugins.conform'
@@ -146,7 +144,6 @@ require 'plugins.outline'
 require 'plugins.session'
 require 'plugins.trouble'
 require 'plugins.lua-console'
-require 'plugins.misc'
 
 require 'custom.keymaps'
 require 'custom.commands'

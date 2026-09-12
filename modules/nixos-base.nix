@@ -2,13 +2,7 @@
 { pkgs, lib, inputs, pkgs-unstable, ... }:
 
 let
-  # Neovim 0.12 plus every language server, formatter, debug adapter and parser
-  # build tool that ~/.config/nvim references. They go on nvim's own PATH rather
-  # than the system one, so the editor sees them and the shell does not. There is
-  # no Mason and nothing is downloaded at runtime.
-  #
-  # hiPrio because nixos-minimal.nix also installs a plain `neovim` for the
-  # installer image, and both provide bin/nvim.
+  # some claude slop - bundling in neovim with all of trhe relevant packages together
   neovim-bundled = let
     languageServers = with pkgs-unstable; [
       nixd
@@ -43,21 +37,48 @@ let
     debugAdapters = with pkgs-unstable; [
       vscode-js-debug # provides `js-debug`
     ];
-    # nvim-treesitter (main) compiles parsers from source; telescope-fzf-native runs make.
-    buildTools = with pkgs-unstable; [
-      tree-sitter
-      gcc
-      gnumake
-      gnutar
-      curl
+    runtimeTools = with pkgs-unstable; [
       ripgrep
       fd
     ];
-    toolPath =
-      lib.makeBinPath (languageServers ++ formatters ++ debugAdapters ++ buildTools);
+    treesitter = pkgs-unstable.vimPlugins.nvim-treesitter.withPlugins (parsers: with parsers; [
+      bash
+      css
+      diff
+      dockerfile
+      go
+      hcl
+      html
+      javascript
+      json
+      luadoc
+      nix
+      python
+      regex
+      scss
+      sql
+      svelte
+      terraform
+      toml
+      tsx
+      typescript
+      yaml
+    ]);
+    neovim = pkgs-unstable.wrapNeovimUnstable pkgs-unstable.neovim-unwrapped {
+      wrapRc = false;
+      plugins = [
+        pkgs-unstable.vimPlugins.blink-cmp
+        (pkgs-unstable.vimPlugins.telescope-fzf-native-nvim.overrideAttrs {
+          # telescope.nvim itself is managed by vim.pack.
+          dependencies = [ ];
+        })
+        treesitter
+      ];
+    };
+    toolPath = lib.makeBinPath (languageServers ++ formatters ++ debugAdapters ++ runtimeTools);
   in lib.hiPrio (pkgs-unstable.writeShellScriptBin "nvim" ''
     export PATH=${toolPath}:$PATH
-    exec ${pkgs-unstable.neovim}/bin/nvim "$@"
+    exec ${neovim}/bin/nvim "$@"
   '');
 in {
   # Enable Magic SysRq keys for emergency recovery (Alt+SysRq+R/S/B etc).
@@ -210,15 +231,12 @@ in {
     exfat # in case of running `exfatlabel` to re-label SD cards etc
 
     ### languages
-    clojure # for metabase
-    gcc # for nvim kickstart
+    gcc
     uv
     go
-    nixd
-    nodejs_22 # add nodejs global just for claude code
+    nodejs_22 # add nodejs global - useful for adhoc `npm -g install`
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
-    ruff
 
     ### Database tools
     ruby
@@ -236,7 +254,6 @@ in {
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
     caligula # TUI for disk imaging ISO burning to USB etc
-    tig # helpful git tool? #TODO: is this needed...
     systemd-manager-tui
 
     ### CLI tools

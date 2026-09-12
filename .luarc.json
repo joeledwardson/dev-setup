@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "workspace.library": [
+    "${env:VIMRUNTIME}",
+    "${3rd}/luv/library",
+    "${env:HOME}/.local/share/nvim/site/pack/core/opt",
+    "configs/yazi/plugins/types.yazi/",
+    "configs/yazi/types-extras.lua",
+    "/run/current-system/sw/share/hypr/stubs/"
+  ],
+  "workspace.ignoreDir": [
+    "configs/yazi/plugins"
+  ],
+  "diagnostics.globals": [
+    "ya",
+    "Linemode"
+  ]
+}

@@ -1,7 +1,4 @@
-
--- Prefer Biome for JS/TS/JSON when the project ships a biome config; otherwise
--- fall back to Prettier. Both are picked up from the repo's node_modules/.bin
--- when present. Biome doesn't fully format .svelte, so Svelte stays on Prettier.
+-- use biome if configuration file found, otherwise prettier
 local function web_formatter(bufnr)
   local dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ':h')
   if #vim.fs.find({ 'biome.json', 'biome.jsonc' }, { upward = true, path = dir }) > 0 then
@@ -20,6 +17,7 @@ require('conform').setup {
     -- html_beautify (a Ruby gem Mason installed) is not in nixpkgs; prettier handles both.
     html = { 'prettier', stop_after_first = true },
     css = { 'prettier', stop_after_first = true },
+    yaml = { 'prettier', stop_after_first = true },
     json = web_formatter,
     javascript = web_formatter,
     typescript = web_formatter,
