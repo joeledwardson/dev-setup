@@ -228,7 +228,6 @@ Vim help spells `"` as `quote` in its help tags, so `:h quote=` means "help for 
 |------|---------|---------|
 | `vim.g.mapleader` | `vim.g.mapleader = ' '` | global var, set leader key |
 | `vim.g.clipboard` | `vim.g.clipboard = {...}` | global var, clipboard provider config |
-| `vim.b.disable_autoformat` | `vim.b.disable_autoformat = true` | buffer var, custom flag for conform.nvim |
 | `vim.opt.number` | `vim.opt.number = true` | option, show line numbers |
 | `vim.bo.filetype` | `vim.bo.filetype` | buffer option, get current filetype |
 | `vim.wo.wrap` | `vim.wo.wrap = false` | window option, disable line wrap |
