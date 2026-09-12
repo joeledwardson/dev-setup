@@ -95,10 +95,13 @@ in
 
     # packages for mautrix imessage service
     mautrix-imessage
-
-    # apple reminders cli
-    remindctl
   ];
+
+  homebrew = {
+    enable = true;
+    taps = [ "steipete/tap" ];
+    brews = [ "steipete/tap/remindctl" ];
+  };
 
   # Compatibility version for nix-darwin's stateful defaults. Do not change
   # this during routine upgrades.
