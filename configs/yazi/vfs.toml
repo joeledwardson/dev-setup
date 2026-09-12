@@ -11,7 +11,7 @@ host = "degen-bot"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
-custom_key = "d"
+custom_key = "b"
 
 [sftp.pi-box]
 host = "pi-box"
@@ -33,3 +33,11 @@ user = "jollof"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 custom_key = "m"
+
+[sftp.desktop-work]
+host = "desktop-work"
+user = "joelyboy"
+port = 22
+key_file = "~/.ssh/id_ed25519"
+custom_key = "d"
+

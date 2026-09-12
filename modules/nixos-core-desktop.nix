@@ -1,6 +1,18 @@
 # Core desktop: minimum packages for a functional Hyprland desktop
 { pkgs, inputs, ... }: {
 
+  # Keep Vimium whole-site exclusions consistent across Brave profiles/machines.
+  # Policy host patterns omit paths; * matches HTTP and HTTPS.
+  environment.etc."brave/policies/managed/vimium.json".text =
+    builtins.toJSON {
+      ExtensionSettings."dbepggeogbaibhgnhhndojpepiihcmeb" = {
+        runtime_blocked_hosts = [
+          "*://mail.google.com"
+          "*://pikvm.lcasino.work"
+        ];
+      };
+    };
+
   environment.systemPackages = with pkgs; [
     ### terminal + browser
     kitty
