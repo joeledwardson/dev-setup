@@ -199,10 +199,11 @@ tasks:
           echo "remmina:configure — {{.REMMINA_PREF}} not found, skipping (launch Remmina once to generate it)"
           exit 0
         fi
-        # set host key to F12
-        crudini --set "{{.REMMINA_PREF}}" remmina_pref hostkey 65481
-        # unbind the screenshot shortcut (0 = no key)
-        crudini --set "{{.REMMINA_PREF}}" remmina_pref shortcutkey_screenshot 0
+        # remmina uses gdk keycodes, see here: https://gitlab.gnome.org/GNOME/gtk/-/blob/4.24.0/gdk/gdkkeysyms.h?ref_type=tags
+        # set host key to grave
+        crudini --set "{{.REMMINA_PREF}}" remmina_pref hostkey 96
+        # set grab keyboard to return
+        crudini --set "{{.REMMINA_PREF}}" remmina_pref shortcutkey_grab 65293
 
   codex:configure:
     desc: Apply Codex preferences via yq (skips if config.toml doesn't exist yet)
