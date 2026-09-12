@@ -60,7 +60,10 @@ in
   power.restartAfterFreeze = true;
 
   programs.zsh.enable = true;
-  environment.variables.EDITOR = "nvim";
+  environment.variables = {
+    EDITOR = "nvim";
+    LANG = "en_GB.UTF-8";
+  };
 
   environment.systemPackages = with pkgs; [
     bat
@@ -93,7 +96,7 @@ in
   system.stateVersion = 6;
 
   ## --- setup steps ---
-  # these have already been completed, but for reference 
+  # these have already been completed, but for reference
   # 1. use the mautrix-imessage-registration from the template (https://github.com/mautrix/imessage/blob/master/example-registration.yaml)
   # 2. generate random strings for `as_token` and `hs_token` and save the secret
   # 3. generate the mautrix-imessage-config from the template (https://mau.dev/mautrix/gmessages/-/blob/v0.4.3/example-config.yaml)

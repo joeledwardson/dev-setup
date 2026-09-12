@@ -31,10 +31,10 @@ Host streaming-server
     User claude
     Hostname streaming-server
 
-Host worker
+Host worker207
     User claude
     Hostname worker207
 
-Host mac-mini
+Host joels-mac-mini
     User jollof
     Hostname joels-mac-mini

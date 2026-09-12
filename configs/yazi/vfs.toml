@@ -17,9 +17,14 @@ user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 
-[sftp.worker]
+[sftp.worker207]
 host = "worker207"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 
+[sftp.joels-mac-mini]
+host = "joels-mac-mini"
+user = "jollof"
+port = 22
+key_file = "~/.ssh/id_ed25519"
