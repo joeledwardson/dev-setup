@@ -188,52 +188,82 @@ for _, atlas_filetype in ipairs {
   vim.treesitter.language.register('hcl', atlas_filetype)
 end
 
+-- Per-buffer setup, run once for every server that attaches -------------------
+local methods = vim.lsp.protocol.Methods
+
+-- Ours to drive: there is no `vim.lsp.document_highlight.enable()`, unlike inlay hints.
+local highlight_group = vim.api.nvim_create_augroup('lsp-highlight', { clear = true })
+
+--- Highlights other occurrences of the symbol under the cursor, after `updatetime` of idle.
+--- @param bufnr integer
+local function enable_reference_highlights(bufnr)
+  -- Clear first, so a second server attaching does not double the requests per idle.
+  vim.api.nvim_clear_autocmds { group = highlight_group, buffer = bufnr }
+
+  vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+    buffer = bufnr,
+    group = highlight_group,
+    callback = vim.lsp.buf.document_highlight,
+  })
+  vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+    buffer = bufnr,
+    group = highlight_group,
+    callback = vim.lsp.buf.clear_references,
+  })
+end
+
+--- Buffer-scoped keymap options, with the 'LSP: ' which-key prefix applied.
+--- @param bufnr integer
+--- @param desc string
+--- @return vim.keymap.set.Opts
+local function lsp_opts(bufnr, desc)
+  return { buffer = bufnr, desc = 'LSP: ' .. desc }
+end
+
+--- @param bufnr integer
+--- @param client vim.lsp.Client
+local function set_lsp_keymaps(bufnr, client)
+  local builtin = require 'telescope.builtin'
+
+  vim.keymap.set('n', 'grn', vim.lsp.buf.rename, lsp_opts(bufnr, '[R]e[n]ame'))
+  vim.keymap.set({ 'n', 'x' }, 'gra', vim.lsp.buf.code_action, lsp_opts(bufnr, '[G]oto Code [A]ction'))
+  vim.keymap.set('n', 'grr', builtin.lsp_references, lsp_opts(bufnr, '[G]oto [R]eferences'))
+  vim.keymap.set('n', 'gri', builtin.lsp_implementations, lsp_opts(bufnr, '[G]oto [I]mplementation'))
+  vim.keymap.set('n', 'grd', builtin.lsp_definitions, lsp_opts(bufnr, '[G]oto [D]efinition'))
+  vim.keymap.set('n', 'grD', vim.lsp.buf.declaration, lsp_opts(bufnr, '[G]oto [D]eclaration'))
+  vim.keymap.set('n', 'gO', builtin.lsp_document_symbols, lsp_opts(bufnr, 'Open Document Symbols'))
+  vim.keymap.set('n', 'gW', builtin.lsp_dynamic_workspace_symbols, lsp_opts(bufnr, 'Open Workspace Symbols'))
+  vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, lsp_opts(bufnr, '[G]oto [T]ype Definition'))
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, lsp_opts(bufnr, 'Hover Documentation'))
+
+  if client:supports_method(methods.textDocument_inlayHint) then
+    vim.keymap.set('n', '<leader>th', function()
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = bufnr })
+    end, lsp_opts(bufnr, '[T]oggle Inlay [H]ints'))
+  end
+end
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
-    local map = function(keys, func, desc, mode)
-      mode = mode or 'n'
-      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-    end
-    local builtin = require 'telescope.builtin'
-    map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-    map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-    map('grr', builtin.lsp_references, '[G]oto [R]eferences')
-    map('gri', builtin.lsp_implementations, '[G]oto [I]mplementation')
-    map('grd', builtin.lsp_definitions, '[G]oto [D]efinition')
-    map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-    map('gO', builtin.lsp_document_symbols, 'Open Document Symbols')
-    map('gW', builtin.lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
-    map('grt', builtin.lsp_type_definitions, '[G]oto [T]ype Definition')
-    map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
     local client = vim.lsp.get_client_by_id(event.data.client_id)
-
-    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-      local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
-      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-        buffer = event.buf,
-        group = highlight_augroup,
-        callback = vim.lsp.buf.document_highlight,
-      })
-      vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-        buffer = event.buf,
-        group = highlight_augroup,
-        callback = vim.lsp.buf.clear_references,
-      })
-      vim.api.nvim_create_autocmd('LspDetach', {
-        group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
-        callback = function(event2)
-          vim.lsp.buf.clear_references()
-          vim.api.nvim_clear_autocmds { group = 'lsp-highlight', buffer = event2.buf }
-        end,
-      })
+    if not client then
+      return
     end
 
-    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-      map('<leader>th', function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-      end, '[T]oggle Inlay [H]ints')
+    set_lsp_keymaps(event.buf, client)
+
+    if client:supports_method(methods.textDocument_documentHighlight) then
+      enable_reference_highlights(event.buf)
     end
+  end,
+})
+
+-- Registered once here, rather than rebuilt on every attach as it was before.
+vim.api.nvim_create_autocmd('LspDetach', {
+  group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
+  callback = function(event)
+    vim.lsp.buf.clear_references()
+    vim.api.nvim_clear_autocmds { group = highlight_group, buffer = event.buf }
   end,
 })
