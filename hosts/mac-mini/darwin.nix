@@ -40,7 +40,10 @@ in
   # This must be a user agent: the bridge reads jollof's Messages database and
   # drives Messages.app in the logged-in GUI session.
   launchd.user.agents.mautrix-imessage = {
-    command = "${mautrix-imessage}/bin/mautrix-imessage -c ${config.age.secrets.mautrix-imessage-config.path}";
+    # --no-update: the bridge rewrites its config on startup via a temp file in
+    # the config's own directory, and /run/agenix is root-owned so that always
+    # fails. Safe here because the config has no `generate` placeholder values.
+    command = "${mautrix-imessage}/bin/mautrix-imessage -c ${config.age.secrets.mautrix-imessage-config.path} --no-update";
     environment.HOME = "/Users/${user}";
     serviceConfig = {
       RunAtLoad = true;
@@ -98,7 +101,7 @@ in
   # 2. generate random strings for `as_token` and `hs_token` and save the secret
   # 3. generate the mautrix-imessage-config from the template (https://mau.dev/mautrix/gmessages/-/blob/v0.4.3/example-config.yaml)
   # 4. replace the `as_token` and `hs_token` with the values used earlier
-  # 5. replace the `login_shared_secret` with the value we configured for matrix-doublepuppet
+  # 5. replace the `login_shared_secret` with the value "appservice" (see here: https://github.com/mautrix/imessage/issues/224#issuecomment-3076655899)
 
   ## --- manual steps ---
   # still a few steps in setting up the mac mini that must be done on the device can't be done remotely.
