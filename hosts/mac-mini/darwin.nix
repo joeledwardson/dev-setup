@@ -69,6 +69,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    # minimal packages to make my shell useable
     bat
     delta
     direnv
@@ -80,7 +81,6 @@ in
     gnumake
     go
     jq
-    mautrix-imessage
     mediainfo
     neovim
     ouch
@@ -92,6 +92,12 @@ in
     zoxide
     go-task
     tree-sitter
+
+    # packages for mautrix imessage service
+    mautrix-imessage
+
+    # apple reminders cli
+    remindctl
   ];
 
   # Compatibility version for nix-darwin's stateful defaults. Do not change
