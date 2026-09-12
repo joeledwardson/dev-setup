@@ -147,9 +147,10 @@ tasks:
       - test -e "$HOME/.tmux/plugins/tpm"
 
   tmux:tpm-install:
-    desc: Install tpm plugins
+    desc: Install configured tpm plugins and remove plugins no longer configured
     cmds:
       - "$HOME/.config/tmux/plugins/tpm/bin/install_plugins"
+      - "$HOME/.config/tmux/plugins/tpm/bin/clean_plugins"
 
   claude:init:
     desc: Initialize Claude Code config (skip onboarding prompt)
