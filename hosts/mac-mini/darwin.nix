@@ -99,6 +99,7 @@ in
 
   homebrew = {
     enable = true;
+    enableZshIntegration = true;
     taps = [ "steipete/tap" ];
     brews = [ "steipete/tap/remindctl" ];
   };
