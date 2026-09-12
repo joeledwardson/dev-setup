@@ -131,6 +131,7 @@ in {
     enable = true;
     # Bulk data lives on the big external HDD (see fileSystems."/mnt/big-hdd").
     mediaDir = "/mnt/big-hdd/nixflix/media";
+    downloadsDir = "/mnt/big-hdd/nixflix/downloads";
     stateDir = "/mnt/big-hdd/nixflix/.state";
     mediaUsers = ["claude" "jollof"]; # was the "myuser" placeholder — set to a real user
 
