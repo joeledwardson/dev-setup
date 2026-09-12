@@ -1,65 +1,65 @@
 - defaults:
-      link:
-          relink: true
-          force: true
-          create: true
+    link:
+      relink: true
+      force: true
+      create: true
 
 - clean: ["~"]
 
 - clean:
-      ~/:
-          force: true
-      ~/.config:
-          recursive: true
+    ~/:
+      force: true
+    ~/.config:
+      recursive: true
 
 - link:
-      # root dotfiles (either not available or a pain in the ass to move to a subdir)
-      ~/.vim/vimrc: ./configs/vimrc
-      ~/.zshrc: ./configs/zshrc
-      ~/.npmrc: ./configs/npmrc
-      ~/.config/waybar: ./configs/waybar
-      ~/.config/swaync: ./configs/swaync
-      ~/.config/nvim: ./configs/nvim
-      ~/.config/tmux/tmux.conf: ./configs/tmux/tmux.conf
-      ~/.config/tmux/scripts: ./configs/tmux/scripts
-      ~/.config/git/config: ./configs/gitconfig
-      ~/.config/git/ignore: ./configs/gitignore
-      ~/.config/hypr/hyprland.lua: ./configs/hypr/hyprland.lua
-      ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
-      ~/.config/hypr/hypridle.conf: ./configs/hypr/hypridle.conf
-      ~/.config/swaylock/config: ./configs/swaylock/config
-      ~/.config/swaylock/wallpaper.jpeg: ./configs/swaylock/wallpaper.jpeg
-      ~/.config/hypr/scripts: ./configs/hypr/scripts
-      ~/.config/hypr/wallpapers: ./wallpapers
-      ~/.config/kitty/kitty.conf: ./configs/kitty.conf
-      ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
-      ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
-      ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
-      ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
-      ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
-      ~/.config/io.datasette.llm/templates: ./configs/io.datasette.llm/templates
-      ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
-      ~/.config/hyprwhspr-rs/config.jsonc: ./configs/hyprwhspr-rs/config.jsonc
-      ~/.local/share/applications/custom: ./applications
-      ~/.config/mpv/input.conf: ./configs/mpv/input.conf
-      ~/.config/mpv/scripts: ./configs/mpv/scripts
-      ~/.config/yazi: ./configs/yazi
-      ~/.config/mimeapps.list: ./configs/mimeapps.list
-      ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
-      ~/.claude/CLAUDE.md: ./configs/claude/claude.md
-      ~/.claude/lessons.md: ./configs/claude/lessons.md
-      ~/.claude/settings.json: ./configs/claude/settings.json
-      ~/.claude/scripts: ./configs/claude/scripts
-      ~/.claude/keybindings.json: ./configs/claude/keybindings.json
-      ~/.claude/skills: ./configs/claude/skills
-      ~/.local/bin/port-dash: ./configs/bin/port-dash
-      ~/.ssh/config: ./configs/ssh/config
-      ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
-      ~/.config/zellij/plugins: ./configs/zellij/plugins
-      ~/.config/foot/foot.ini: ./configs/foot/foot.ini
-      ~/.config/ghostty/config: ./configs/ghostty/config
-      ~/.config/pgcli/config: ./configs/pgcli/config
-      ~/.config/helix/config.toml: ./configs/helix/config.toml
-      ~/.config/tig/config: ./configs/tig/config
-      ~/.config/iamb/config.toml: ./configs/iamb/config.toml
-      ~/.config/opencode/opencode.json: ./configs/opencode/opencode.json
+    # root dotfiles (either not available or a pain in the ass to move to a subdir)
+    ~/.vim/vimrc: ./configs/vimrc
+    ~/.zshrc: ./configs/zshrc
+    ~/.npmrc: ./configs/npmrc
+    ~/.config/waybar: ./configs/waybar
+    ~/.config/swaync: ./configs/swaync
+    ~/.config/nvim: ./configs/nvim
+    ~/.config/tmux/tmux.conf: ./configs/tmux/tmux.conf
+    ~/.config/tmux/scripts: ./configs/tmux/scripts
+    ~/.config/git/config: ./configs/gitconfig
+    ~/.config/git/ignore: ./configs/gitignore
+    ~/.config/hypr/hyprland.lua: ./configs/hypr/hyprland.lua
+    ~/.config/hypr/hyprpaper.conf: ./configs/hypr/hyprpaper.conf
+    ~/.config/hypr/hypridle.conf: ./configs/hypr/hypridle.conf
+    ~/.config/swaylock/config: ./configs/swaylock/config
+    ~/.config/swaylock/wallpaper.jpeg: ./configs/swaylock/wallpaper.jpeg
+    ~/.config/hypr/scripts: ./configs/hypr/scripts
+    ~/.config/hypr/wallpapers: ./wallpapers
+    ~/.config/kitty/kitty.conf: ./configs/kitty.conf
+    ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
+    ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
+    ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
+    ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
+    ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
+    ~/.config/io.datasette.llm/templates: ./configs/io.datasette.llm/templates
+    ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini
+    ~/.config/hyprwhspr-rs/config.jsonc: ./configs/hyprwhspr-rs/config.jsonc
+    ~/.local/share/applications/custom: ./applications
+    ~/.config/mpv/input.conf: ./configs/mpv/input.conf
+    ~/.config/mpv/scripts: ./configs/mpv/scripts
+    ~/.config/yazi: ./configs/yazi
+    ~/.config/mimeapps.list: ./configs/mimeapps.list
+    ~/.config/sheldon/plugins.toml: ./configs/sheldon/plugins.toml
+    ~/.claude/CLAUDE.md: ./configs/claude/claude.md
+    ~/.claude/lessons.md: ./configs/claude/lessons.md
+    ~/.claude/settings.json: ./configs/claude/settings.json
+    ~/.claude/scripts: ./configs/claude/scripts
+    ~/.claude/keybindings.json: ./configs/claude/keybindings.json
+    ~/.claude/skills: ./configs/claude/skills
+    ~/.local/bin/port-dash: ./configs/bin/port-dash
+    ~/.ssh/config: ./configs/ssh/config
+    ~/.config/zellij/config.kdl: ./configs/zellij/config.kdl
+    ~/.config/zellij/plugins: ./configs/zellij/plugins
+    ~/.config/foot/foot.ini: ./configs/foot/foot.ini
+    ~/.config/ghostty/config: ./configs/ghostty/config
+    ~/.config/pgcli/config: ./configs/pgcli/config
+    ~/.config/helix/config.toml: ./configs/helix/config.toml
+    ~/.config/tig/config: ./configs/tig/config
+    ~/.config/iamb/config.toml: ./configs/iamb/config.toml
+    ~/.config/opencode/opencode.json: ./configs/opencode/opencode.json
