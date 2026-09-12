@@ -4,27 +4,32 @@ host = "streaming-server"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
+custom_key = "s"
 
 [sftp.degen-bot]
 host = "degen-bot"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
+custom_key = "d"
 
 [sftp.pi-box]
 host = "pi-box"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
+custom_key = "p"
 
 [sftp.worker207]
 host = "worker207"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
+custom_key = "w"
 
 [sftp.joels-mac-mini]
 host = "joels-mac-mini"
 user = "jollof"
 port = 22
 key_file = "~/.ssh/id_ed25519"
+custom_key = "m"

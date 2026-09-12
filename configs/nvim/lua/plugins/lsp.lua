@@ -1,13 +1,3 @@
--- Language servers. Binaries come from flake.nix (no Mason); definitions (cmd, filetypes,
--- root markers) come from nvim-lspconfig's lsp/*.lua; overrides below are merged on top
--- via vim.lsp.config. Completion and signature help are the built-in ones:
---   insert mode <C-s>  signature help (nvim default)
---   insert mode <C-Space> open the LSP completion menu by hand (what blink's <C-Space> did)
---   typing             LSP completion menu, docs in a popup ('completeopt' in init.lua)
---   <Tab>              accept the selected item, or jump to the next snippet field
---   <C-n> / <C-x><C-f> buffer words / file paths, as ever
---   <C-x><C-o>         omnifunc, e.g. vim-dadbod-completion in sql buffers
-
 require('fidget').setup { notification = { override_vim_notify = true } }
 
 local servers = {

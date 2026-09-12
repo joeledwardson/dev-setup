@@ -189,12 +189,12 @@ function CustomPlugins.open_with_cmd()
 end
 
 -- goto-sftp-host: list the hosts registered in vfs.toml and `cd` into the chosen
--- one. `yq` (yq-go, already a system package) does the TOML reading — `.sftp | keys`
--- prints one host per line, in file order, so there's no TOML parsing here.
--- `Command:output()` and `ya.which` both yield, so this must run under `ya.async`.
+-- one. `custom_key` is our own optional metadata; Yazi ignores unknown VFS fields,
+-- while this picker uses it as the key shown by `ya.which`.
 function CustomPlugins.goto_sftp_host()
   local vfs_path = os.getenv 'HOME' .. '/.config/yazi/vfs.toml'
-  local output, err = Command('yq'):arg { '-p=toml', '-o=yaml', '.sftp | keys | .[]', vfs_path }:output()
+  local query = '.sftp | to_entries[] | [.key, (.value.custom_key // "")]'
+  local output, err = Command('yq'):arg { '-p=toml', '-o=tsv', query, vfs_path }:output()
   if not output then
     return ya.notify { title = 'SFTP', content = 'Failed to run yq: ' .. tostring(err), level = 'error', timeout = 5 }
   end
@@ -202,17 +202,22 @@ function CustomPlugins.goto_sftp_host()
     return ya.notify { title = 'SFTP', content = 'yq failed on vfs.toml: ' .. output.stderr, level = 'error', timeout = 5 }
   end
 
-  local hosts = {}
-  for host in output.stdout:gmatch '[^\r\n]+' do
+  local hosts, cands, used_keys = {}, {}, {}
+  for line in output.stdout:gmatch '[^\r\n]+' do
+    local host, custom_key = line:match '^([^\t]+)\t?(.*)$'
+    local key = custom_key ~= '' and custom_key or tostring(#hosts + 1)
+    if #key ~= 1 then
+      return ya.notify { title = 'SFTP', content = 'custom_key for ' .. host .. ' must be one character', level = 'error', timeout = 5 }
+    end
+    if used_keys[key] then
+      return ya.notify { title = 'SFTP', content = 'Duplicate custom_key: ' .. key, level = 'error', timeout = 5 }
+    end
+    used_keys[key] = true
     hosts[#hosts + 1] = host
+    cands[#cands + 1] = { on = key, desc = host }
   end
   if #hosts == 0 then
     return ya.notify { title = 'SFTP', content = 'No [sftp.*] hosts found in vfs.toml', level = 'warn', timeout = 5 }
-  end
-
-  local cands = {}
-  for index, host in ipairs(hosts) do
-    cands[index] = { on = tostring(index), desc = host }
   end
 
   local picked = ya.which { cands = cands }
