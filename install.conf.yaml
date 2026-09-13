@@ -35,7 +35,6 @@
     ~/.config/nixpkgs/config.nix: ./configs/nixpkgs/config.nix
     ~/.config/gtk-3.0/settings.ini: ./configs/gtk-3.0/settings.ini
     ~/.config/gtk-4.0/settings.ini: ./configs/gtk-4.0/settings.ini
-    ~/.config/wezterm/wezterm.lua: ./configs/wezterm/wezterm.lua
     ~/.config/io.datasette.llm/default_model.txt: ./configs/io.datasette.llm/default_model.txt
     ~/.config/io.datasette.llm/templates: ./configs/io.datasette.llm/templates
     ~/.config/fuzzel/fuzzel.ini: ./configs/fuzzel/fuzzel.ini

@@ -6,7 +6,6 @@
 
     ### extra terminal emulators
     alacritty
-    wezterm
     foot
     ghostty
 
