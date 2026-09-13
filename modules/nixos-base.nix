@@ -150,16 +150,11 @@ in {
   # enable libinput (so can run commands like libinput list-devices)
   services.libinput.enable = true;
 
-  fonts = {
-    packages = with pkgs; [ nerd-fonts.hack ];
-    fontconfig = {
-      defaultFonts = {
-        monospace = [ "Hack Nerd Font" ];
-        sansSerif = [ "DejaVu Sans" ];
-        serif = [ "DejaVu Serif" ];
-      };
-    };
-  };
+  # Fonts live in nixos-core-desktop.nix. A headless box never rasterises a
+  # glyph — over SSH it emits bytes and the *client* terminal picks the font.
+  # (Character *width* is decided here, but by glibc wcwidth(), not by fonts.)
+  # Re-add fonts to a headless host only if something renders server-side:
+  # headless Chromium screenshots, graphviz/mermaid, PDF or image generation.
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
