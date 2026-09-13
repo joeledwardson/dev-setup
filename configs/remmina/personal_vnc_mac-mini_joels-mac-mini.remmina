@@ -41,3 +41,5 @@ ssh_tunnel_passphrase=
 protocol=VNC
 showcursor=0
 ssh_tunnel_server=
+window_maximize=1
+viewmode=1

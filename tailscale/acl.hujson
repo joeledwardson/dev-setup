@@ -13,6 +13,8 @@
     {"src": ["tag:trusted"],      "dst": ["*"], "ip": ["*"]},
     // allow outbound from sandbox to ollama IP
     {"src": ["tag:sandbox"], "dst": ["*"], "ip": ["tcp:11434"]},
+    // sandbox devices can reach each other
+    {"src": ["tag:sandbox"], "dst": ["tag:sandbox"], "ip": ["*"]},
     // outbound access from pi-box to joels-mac-mini on mautrix imessage port (defined in mautrix-imessage-registration)
     {"src": ["tag:sandbox"], "dst": ["*"], "ip": ["tcp:29320"]},
   ],
