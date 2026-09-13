@@ -137,6 +137,30 @@
     };
   };
 
+  # Fonts only matter on hosts that actually draw glyphs, so they live here
+  # rather than in nixos-base.nix (pi-box and degen-bot are headless).
+  # symbols-only carries every Nerd Font icon glyph; fontconfig falls back to it
+  # for codepoints the text font lacks, so tmux/eza/yazi icons survive whichever
+  # monospace is picked below — including an unpatched font.
+  # To audition the others live: restart kitty, then `kitten choose-fonts`.
+  fonts = {
+    packages = with pkgs; [
+      nerd-fonts.hack
+      nerd-fonts.symbols-only
+      nerd-fonts.geist-mono
+      nerd-fonts.roboto-mono
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.commit-mono
+    ];
+    fontconfig = {
+      defaultFonts = {
+        monospace = [ "Hack Nerd Font" ];
+        sansSerif = [ "DejaVu Sans" ];
+        serif = [ "DejaVu Serif" ];
+      };
+    };
+  };
+
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
