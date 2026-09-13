@@ -25,6 +25,7 @@ tasks:
       - task: llm:keys
       - task: zsh:sheldon-lock
       - task: yazi:pkg
+      - task: tmux:tpm-install
       - task: tmux:tpm-setup
       - task: tmux:reload
       - task: brave:apply
@@ -142,7 +143,6 @@ tasks:
     desc: Setup tmux plugin manager
     cmds:
       - git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-      - task: tmux:reload
     status:
       - test -e "$HOME/.tmux/plugins/tpm"
 
