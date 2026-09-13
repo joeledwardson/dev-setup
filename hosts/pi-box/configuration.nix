@@ -178,7 +178,29 @@ in {
 
     recyclarr = {
       enable = true;
-      cleanupUnmanagedProfiles.enable = true;
+      # Deletes any profile not named here, so this list must be updated in the
+      # same commit as the quality_profiles below or the new profile gets reaped.
+      cleanupUnmanagedProfiles = {
+        enable = true;
+        managedProfiles = [ "HD Bluray + WEB" "WEB-1080p (Alternative)" ];
+      };
+
+      # nixflix defaults Radarr to [SQP] SQP-1 (1080p), which gates on
+      # minFormatScore 1000. That score comes almost entirely from a release
+      # group allowlist, so public usenet indexers rarely clear it and nothing
+      # gets grabbed (kiriwalawren/nixflix#305). HD Bluray + WEB uses 0, and its
+      # Golden Rule HD group scores x265 HD releases at -10000 — which is also
+      # exactly what we want, since no desktop browser direct-plays HEVC.
+      # Sonarr is left alone: WEB-1080p (Alternative) already uses 0.
+      config.radarr.radarr = {
+        quality_definition.type = "movie";
+        quality_profiles = [
+          {
+            trash_id = "d1d67249d3890e49bc12e275d989a7e9"; # HD Bluray + WEB
+            reset_unmatched_scores.enabled = true;
+          }
+        ];
+      };
     };
 
     lidarr = {
@@ -264,8 +286,42 @@ in {
       users = {
         admin = {
           mutable = false;
-          policy.isAdministrator = true;
+          policy = {
+            isAdministrator = true;
+            # This Pi has no hardware video encoder — /dev/video* doesn't exist,
+            # and Jellyfin deprecated the Pi V4L2 path anyway. Software encoding
+            # on the Cortex-A72 runs at roughly a third of realtime, so a
+            # transcode is never watchable. Refusing playback is the honest
+            # failure: you find out immediately that the file is wrong for the
+            # client, instead of staring at a buffering spinner.
+            enableVideoPlaybackTranscoding = false;
+            enableAudioPlaybackTranscoding = false;
+            # Remuxing only rewrites the container (mkv -> mp4), no re-encoding,
+            # so it's nearly free even here. Leave it on.
+            enablePlaybackRemuxing = true;
+          };
           password._secret = config.age.secrets."nixflix-jellyfin-admin-password".path;
+        };
+      };
+
+      # Trickplay generation decodes every video end to end to build the
+      # thumbnail strip you see when dragging the seek bar. Chapter images are
+      # the same idea. Both default to on AND to running inline with the library
+      # scan (jellyfin/libaries/options.nix:144-153), which on a Pi 4 pins all
+      # four cores for hours per import and blocks new media from appearing
+      # behind it. Cost of turning them off: no seek-bar preview thumbnails.
+      libraries = {
+        Movies = {
+          enableTrickplayImageExtraction = false;
+          extractTrickplayImagesDuringLibraryScan = false;
+          enableChapterImageExtraction = false;
+          extractChapterImagesDuringLibraryScan = false;
+        };
+        Shows = {
+          enableTrickplayImageExtraction = false;
+          extractTrickplayImagesDuringLibraryScan = false;
+          enableChapterImageExtraction = false;
+          extractChapterImagesDuringLibraryScan = false;
         };
       };
     };
