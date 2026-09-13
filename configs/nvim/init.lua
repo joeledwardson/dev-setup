@@ -27,7 +27,7 @@ vim.o.scrolloff = 10
 -- fuck knows, some thing to stop nvim poppuping up with random menus
 vim.o.completeopt = 'menuone,noselect,popup,fuzzy'
 vim.o.autoindent = true
-vim.o.smartindent = true
+-- removed the 'smartindent' option as it breaks on nixos (# comments get moved to start col)
 vim.o.expandtab = true
 vim.o.shiftwidth = 2
 vim.o.tabstop = 2

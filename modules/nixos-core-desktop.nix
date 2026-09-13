@@ -1,8 +1,7 @@
 # Core desktop: minimum packages for a functional Hyprland desktop
 { pkgs, inputs, ... }: {
 
-  # Keep Vimium whole-site exclusions consistent across Brave profiles/machines.
-  # Policy host patterns omit paths; * matches HTTP and HTTPS.
+  # block list for vimium sites (handled at the brave level NOT at the vimium extension config level)
   environment.etc."brave/policies/managed/vimium.json".text =
     builtins.toJSON {
       ExtensionSettings."dbepggeogbaibhgnhhndojpepiihcmeb" = {
@@ -49,9 +48,6 @@
 
   ];
 
-  # Subscribe to the jollof-claude ntfy topic on login and bridge incoming
-  # messages into desktop notifications via notify-send → swaync. Token lives
-  # in /run/agenix/ntfy-token (provisioned per-host in configuration.nix).
   systemd.user.services.hyprpaper = {
     description = "Hyprland wallpaper daemon";
     after = [ "graphical-session.target" ];
@@ -111,6 +107,8 @@
     };
   };
 
+
+  # subscribe ntfy channel for claude focus events and notify them to desktop
   systemd.user.services.ntfy-claude-subscribe = {
     description =
       "ntfy subscriber → notify-send bridge for jollof-claude topic";
@@ -139,7 +137,6 @@
     };
   };
 
-  # enable thunar while i decide if its better than dolpin for me
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
@@ -156,11 +153,6 @@
     platformTheme = "gtk2"; # or "gnome", "gtk3", "qt5ct"
     style = "adwaita-dark"; # or "breeze", "fusion", etc.
   };
-
-  # Persistent directory for Hyprland session logs.
-  # Hyprland's own log lives in /run (tmpfs) and is lost on every reboot/crash.
-  # A mirror script copies it here every 10s so post-crash forensics are possible.
-  systemd.tmpfiles.rules = [ "d /var/log/hyprland 0755 joelyboy users -" ];
 
   # =======================================
   # Boot behaviour
