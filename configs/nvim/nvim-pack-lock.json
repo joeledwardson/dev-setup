@@ -20,6 +20,10 @@
       "rev": "5be654f2232c10ddcad19c1607a67b6b4b78fc29",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "grug-far.nvim": {
+      "rev": "11595bf747edc270bce2069d1020502ad4ae56cf",
+      "src": "https://github.com/MagicDuck/grug-far.nvim"
+    },
     "harpoon": {
       "rev": "87b1a3506211538f460786c23f98ec63ad9af4e5",
       "src": "https://github.com/ThePrimeagen/harpoon",
@@ -77,6 +81,10 @@
       "rev": "edcc181a875301dd21840189aa2f2f9ad69fc172",
       "src": "https://github.com/nvim-neotest/nvim-nio"
     },
+    "nvim-treesitter": {
+      "rev": "427e9222363d07c32d6db6169e4049c28d58d141",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
     "nvim-treesitter-context": {
       "rev": "f3061339b8eaf9fda873600bc425b8d2d8502533",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
@@ -116,6 +124,14 @@
     "schemastore.nvim": {
       "rev": "6a1a2daf151dd742d5ff2f64eb2cc049d7e5ab4a",
       "src": "https://github.com/b0o/schemastore.nvim"
+    },
+    "sort.nvim": {
+      "rev": "fa6318fc6676294bff0fd56ae8e8f9552be1ac7e",
+      "src": "https://github.com/sQVe/sort.nvim"
+    },
+    "telescope-fzf-native.nvim": {
+      "rev": "b25b749b9db64d375d782094e2b9dce53ad53a40",
+      "src": "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
     },
     "telescope-live-grep-args.nvim": {
       "rev": "53e9df55b3651dd7cf77e172f1e8c9a17407acca",
@@ -162,6 +178,10 @@
       "rev": "afd07819d8efcefc3317205b855ad4e3513b0011",
       "src": "https://github.com/kristijanhusak/vim-dadbod-ui"
     },
+    "vim-dotenv": {
+      "rev": "5c51cfcf8d87280d6414e03cd6b253eb70ecb800",
+      "src": "https://github.com/tpope/vim-dotenv"
+    },
     "vim-fugitive": {
       "rev": "3b753cf8c6a4dcde6edee8827d464ba9b8c4a6f0",
       "src": "https://github.com/tpope/vim-fugitive"
@@ -173,6 +193,10 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
+    },
+    "yanky.nvim": {
+      "rev": "dd6689fdda85f66cab7d9b1a1664625f3be0920d",
+      "src": "https://github.com/gbprod/yanky.nvim"
     }
   }
 }

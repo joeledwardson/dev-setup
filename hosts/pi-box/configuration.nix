@@ -296,10 +296,20 @@ in {
     # };
   };
 
-  # Seerr is the one service with no bindAddress option — nixflix hardcodes
-  # `HOST = "127.0.0.1"` whenever a reverse proxy is enabled (modules/seerr/
-  # default.nix:212). mkForce is the only way to reach it from off-box; nginx
-  # still proxies to 127.0.0.1, which 0.0.0.0 covers.
+  # sabnzbd only creates dirs on first job - so create these now with the right permissions
+  # there is an open issue about this for qbittorrent but not solved yet ofr sabnzbd https://github.com/kiriwalawren/nixflix/issues/135
+  systemd.tmpfiles.settings."10-sabnzbd" =
+    let
+      completeDir = config.nixflix.usenetClients.sabnzbd.settings.misc.complete_dir;
+      categoryDir = { d = { user = "sabnzbd"; group = "media"; mode = "0775"; }; };
+    in {
+      "${completeDir}/radarr" = categoryDir;
+      "${completeDir}/sonarr" = categoryDir;
+      "${completeDir}/lidarr" = categoryDir;
+      "${completeDir}/prowlarr" = categoryDir;
+    };
+
+  # seer has no bindAddres so have to bind to all IPs via host var
   systemd.services.seerr.environment.HOST = lib.mkForce "0.0.0.0";
 
 }
