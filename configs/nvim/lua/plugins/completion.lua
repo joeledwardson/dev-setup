@@ -3,8 +3,7 @@ local cmp = require 'blink.cmp'
 cmp.setup {
   keymap = {
     preset = 'default',
-    -- enter key to select suggestion
-    ['<CR>'] = { 'accept', 'fallback' },
+    -- <CR> is deliberately unmapped: Enter always means newline, never accept. Tab accepts.
     -- prioritise snippets with tab first, otherwise accept suggestion
     ['<Tab>'] = { 'snippet_forward', 'select_and_accept', 'fallback' },
     ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },

@@ -19,11 +19,13 @@ vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
 vim.o.list = true
+-- ahh this is the chars that appear in place of hidden characters
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.o.inccommand = 'split'
 vim.o.cursorline = true
 vim.o.scrolloff = 10
-vim.o.completeopt = 'menuone,noselect,popup,fuzzy' -- popup = documentation window next to the menu
+-- fuck knows, some thing to stop nvim poppuping up with random menus
+vim.o.completeopt = 'menuone,noselect,popup,fuzzy'
 vim.o.autoindent = true
 vim.o.smartindent = true
 vim.o.expandtab = true

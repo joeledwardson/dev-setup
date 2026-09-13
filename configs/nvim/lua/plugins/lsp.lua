@@ -220,13 +220,13 @@ local function lsp_opts(bufnr, desc)
   return { buffer = bufnr, desc = 'LSP: ' .. desc }
 end
 
+--- (see `:help gr-default`), so the maps below either swap in a Telescope picker for core's
+--- quickfix list, or cover a request core leaves unmapped.
 --- @param bufnr integer
 --- @param client vim.lsp.Client
 local function set_lsp_keymaps(bufnr, client)
   local builtin = require 'telescope.builtin'
 
-  vim.keymap.set('n', 'grn', vim.lsp.buf.rename, lsp_opts(bufnr, '[R]e[n]ame'))
-  vim.keymap.set({ 'n', 'x' }, 'gra', vim.lsp.buf.code_action, lsp_opts(bufnr, '[G]oto Code [A]ction'))
   vim.keymap.set('n', 'grr', builtin.lsp_references, lsp_opts(bufnr, '[G]oto [R]eferences'))
   vim.keymap.set('n', 'gri', builtin.lsp_implementations, lsp_opts(bufnr, '[G]oto [I]mplementation'))
   vim.keymap.set('n', 'grd', builtin.lsp_definitions, lsp_opts(bufnr, '[G]oto [D]efinition'))
@@ -234,7 +234,6 @@ local function set_lsp_keymaps(bufnr, client)
   vim.keymap.set('n', 'gO', builtin.lsp_document_symbols, lsp_opts(bufnr, 'Open Document Symbols'))
   vim.keymap.set('n', 'gW', builtin.lsp_dynamic_workspace_symbols, lsp_opts(bufnr, 'Open Workspace Symbols'))
   vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, lsp_opts(bufnr, '[G]oto [T]ype Definition'))
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, lsp_opts(bufnr, 'Hover Documentation'))
 
   if client:supports_method(methods.textDocument_inlayHint) then
     vim.keymap.set('n', '<leader>th', function()

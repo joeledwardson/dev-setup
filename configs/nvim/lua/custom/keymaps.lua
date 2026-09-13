@@ -1,11 +1,8 @@
 -- Keymaps that do not belong to a plugin. Plugin keymaps live next to their setup in lua/plugins/.
 
 vim.keymap.set('n', '<Esc>', '<cmd>noh<cr><esc>', { desc = 'Clear hlsearch' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostics to location list' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-vim.keymap.set('n', ']h', function()
-  vim.notify 'hello there'
-end, { desc = 'hello there' })
 
 vim.keymap.set('n', '<leader>[', ':tabprevious<CR>', { desc = 'previous tab' })
 vim.keymap.set('n', '<leader>]', ':tabnext<CR>', { desc = 'next tab' })
@@ -25,9 +22,10 @@ vim.keymap.set('n', '<leader>Y', function()
   vim.fn.setreg('+', vim.fn.expand '%:p')
 end, { desc = 'yank current file path to clipboard register' })
 
+-- Normal-mode counterpart to core's <C-S>, which only covers insert and select mode.
 vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
-end, { silent = true, noremap = true, desc = 'toggle signature' })
+end, { silent = true, noremap = true, desc = 'show signature help' })
 vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
