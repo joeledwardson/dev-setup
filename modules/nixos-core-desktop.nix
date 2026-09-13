@@ -98,6 +98,19 @@
     };
   };
 
+  # wayland bins off clipboard afterr app closes, this keeps it
+  systemd.user.services.wl-clip-persist = {
+    description = "Keep clipboard contents alive after the source app exits";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart =
+        "${pkgs.wl-clip-persist}/bin/wl-clip-persist --clipboard regular --disable-timestamps";
+      Restart = "on-failure";
+    };
+  };
+
   systemd.user.services.ntfy-claude-subscribe = {
     description =
       "ntfy subscriber → notify-send bridge for jollof-claude topic";

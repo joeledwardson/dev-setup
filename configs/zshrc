@@ -422,6 +422,24 @@ function tmux_precmd() {
     print -Pn '\e]133;B\a'
 }
 
+# TODO: remove this - debugging script for pasting not working
+clipdebug() {
+    echo "WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-UNSET}"
+    echo "--- who owns the clipboard ---"
+    wl-paste -l
+    echo "exit=$?"
+    echo "--- plain paste ---"
+    wl-paste | head -c 200
+    echo " exit=$?"
+    echo "--- forced text/plain ---"
+    wl-paste -t text/plain | head -c 200
+    echo " exit=$?"
+    echo "--- cliphist top ---"
+    cliphist list | head -3
+    echo "--- source app alive? ---"
+    ps -eo pid,etime,comm | grep -Ei 'brave|chrom' | grep -v grep
+}
+
 add-zsh-hook preexec tmux_preexec
 add-zsh-hook precmd tmux_precmd
 
