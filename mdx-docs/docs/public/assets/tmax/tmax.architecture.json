@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "tmax \u00b7 local control, remote execution",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1320,
+      720
+    ]
+  },
+  "components": [
+    {
+      "id": "switcher",
+      "type": "frontend",
+      "label": "Session switcher",
+      "sublabel": "remote.py \u00b7 fzf popup",
+      "pos": [
+        60,
+        330
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "proxy",
+      "type": "backend",
+      "label": "Proxy panes",
+      "sublabel": "remote.py \u00b7 view / control",
+      "pos": [
+        370,
+        330
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "master",
+      "type": "security",
+      "label": "SSH master",
+      "sublabel": "auth.py \u00b7 shared connection",
+      "pos": [
+        680,
+        330
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "remote-tmux",
+      "type": "backend",
+      "label": "Remote tmux",
+      "sublabel": "pi-box \u00b7 sessions and panes",
+      "pos": [
+        1030,
+        330
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "config",
+      "type": "database",
+      "label": "Config and state",
+      "sublabel": "remotes.json \u00b7 cache \u00b7 sockets",
+      "pos": [
+        60,
+        100
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "local-tmux",
+      "type": "backend",
+      "label": "Local tmux",
+      "sublabel": "tmax.tmux \u00b7 bindings / hooks",
+      "pos": [
+        370,
+        100
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "lease",
+      "type": "security",
+      "label": "Lease watchdog",
+      "sublabel": "auth.py \u00b7 24-hour expiry",
+      "pos": [
+        680,
+        100
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "agents",
+      "type": "external",
+      "label": "Remote programs",
+      "sublabel": "Claude Code \u00b7 Codex \u00b7 Pi",
+      "pos": [
+        1030,
+        100
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "local-status",
+      "type": "backend",
+      "label": "Local activity",
+      "sublabel": "agent_status.py \u00b7 snapshot",
+      "pos": [
+        60,
+        560
+      ],
+      "size": [
+        230,
+        72
+      ]
+    },
+    {
+      "id": "remote-status",
+      "type": "backend",
+      "label": "Remote activity",
+      "sublabel": "installed agent_status.py",
+      "pos": [
+        1030,
+        560
+      ],
+      "size": [
+        230,
+        72
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "This machine",
+      "wraps": [
+        "switcher",
+        "proxy",
+        "master",
+        "config",
+        "local-tmux",
+        "lease",
+        "local-status"
+      ],
+      "pad": 26
+    },
+    {
+      "kind": "region",
+      "label": "pi-box \u00b7 remote host",
+      "wraps": [
+        "remote-tmux",
+        "agents",
+        "remote-status"
+      ],
+      "pad": 26
+    }
+  ],
+  "connections": [
+    {
+      "id": "switcher-to-proxy",
+      "from": "switcher",
+      "to": "proxy",
+      "label": "select session",
+      "variant": "emphasis"
+    },
+    {
+      "id": "proxy-to-master",
+      "from": "proxy",
+      "to": "master",
+      "label": "control mode",
+      "variant": "emphasis"
+    },
+    {
+      "id": "master-to-remote-tmux",
+      "from": "master",
+      "to": "remote-tmux",
+      "label": "SSH / tmux -C",
+      "variant": "emphasis"
+    },
+    {
+      "id": "config-to-switcher",
+      "from": "config",
+      "to": "switcher",
+      "label": "read / write",
+      "variant": "default",
+      "labelDy": 80
+    },
+    {
+      "id": "local-tmux-to-proxy",
+      "from": "local-tmux",
+      "to": "proxy",
+      "label": "host panes",
+      "variant": "default",
+      "labelDy": 80
+    },
+    {
+      "id": "lease-to-master",
+      "from": "lease",
+      "to": "master",
+      "label": "check / revoke",
+      "variant": "default",
+      "labelDy": 80
+    },
+    {
+      "id": "remote-tmux-to-agents",
+      "from": "remote-tmux",
+      "to": "agents",
+      "label": "run programs",
+      "variant": "default"
+    },
+    {
+      "id": "local-status-to-switcher",
+      "from": "local-status",
+      "to": "switcher",
+      "label": "window states",
+      "variant": "default"
+    },
+    {
+      "id": "master-to-remote-status",
+      "from": "master",
+      "to": "remote-status",
+      "label": "SSH snapshot",
+      "variant": "default"
+    },
+    {
+      "id": "remote-status-to-remote-tmux",
+      "from": "remote-status",
+      "to": "remote-tmux",
+      "label": "inspect panes",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Discovery follows remote tmux",
+      "items": [
+        "Local popup polls list-sessions via SSH.",
+        "tmux owns sessions; local entries are proxies."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Two different update mechanisms",
+      "items": [
+        "Control mode streams pane output.",
+        "Local watcher reconciles layouts at 5s / 15s."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "No separate tmax daemon on the Pi",
+      "items": [
+        "SSH service and tmux remain running.",
+        "Activity helper runs per snapshot or hook."
+      ]
+    }
+  ]
+}

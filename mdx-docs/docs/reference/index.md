@@ -11,3 +11,5 @@ Cheat sheets and reference material extracted from the dev log.
 - **[Shell & Bash](shell)** — Heredocs, herestrings, colour pipes, jq, shell debugging
 - **[Networking](networking)** — resolv.conf, iptables, DNS, VPN
 - **[Observability & monitoring](observability)** — dead-man's-switch, metrics, logs; tiered base template for a script/daemon/cron on NixOS + ntfy
+
+- **[tmax architecture](tmax)** — Interactive map of remote sessions, SSH authentication, and agent activity reporting

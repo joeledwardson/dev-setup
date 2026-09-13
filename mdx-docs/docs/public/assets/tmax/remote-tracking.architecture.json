@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "tmax \u00b7 how remote tracking works",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1300,
+      740
+    ]
+  },
+  "components": [
+    {
+      "id": "popup",
+      "type": "frontend",
+      "label": "1 \u00b7 Session list",
+      "sublabel": "Local fzf popup",
+      "pos": [
+        60,
+        100
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "discovery",
+      "type": "backend",
+      "label": "discover / refresh",
+      "sublabel": "Local list-sessions + cache",
+      "pos": [
+        450,
+        100
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "session-owner",
+      "type": "backend",
+      "label": "Remote tmux server",
+      "sublabel": "Owns sessions, windows, panes",
+      "pos": [
+        980,
+        100
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "proxy-workers",
+      "type": "backend",
+      "label": "2 \u00b7 Proxy workers",
+      "sublabel": "Local view + sync / watch",
+      "pos": [
+        60,
+        330
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "shared-control",
+      "type": "backend",
+      "label": "control-serve",
+      "sublabel": "Local Unix socket / SSH client",
+      "pos": [
+        450,
+        330
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "remote-control",
+      "type": "backend",
+      "label": "tmux -C client",
+      "sublabel": "Remote attach; output events",
+      "pos": [
+        980,
+        330
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "status-dots",
+      "type": "frontend",
+      "label": "3 \u00b7 Activity dots",
+      "sublabel": "Local window/session aggregates",
+      "pos": [
+        60,
+        560
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "status-refresh",
+      "type": "backend",
+      "label": "Activity refresh",
+      "sublabel": "Local SSH command + JSON cache",
+      "pos": [
+        450,
+        560
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "remote-collector",
+      "type": "backend",
+      "label": "agent_status.py",
+      "sublabel": "Remote process / hook snapshot",
+      "pos": [
+        980,
+        560
+      ],
+      "size": [
+        260,
+        90
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "This machine \u00b7 tmax runs here",
+      "wraps": [
+        "popup",
+        "discovery",
+        "proxy-workers",
+        "shared-control",
+        "status-dots",
+        "status-refresh"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "pi-box \u00b7 existing SSH service",
+      "wraps": [
+        "session-owner",
+        "remote-control",
+        "remote-collector"
+      ],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "id": "popup-to-discovery",
+      "from": "popup",
+      "to": "discovery",
+      "label": "refresh ~2s",
+      "variant": "emphasis"
+    },
+    {
+      "id": "discovery-to-session-owner",
+      "from": "discovery",
+      "to": "session-owner",
+      "label": "SSH list-sessions",
+      "variant": "emphasis"
+    },
+    {
+      "id": "proxy-workers-to-shared-control",
+      "from": "proxy-workers",
+      "to": "shared-control",
+      "label": "input / actions",
+      "variant": "default"
+    },
+    {
+      "id": "shared-control-to-remote-control",
+      "from": "shared-control",
+      "to": "remote-control",
+      "label": "SSH control mode",
+      "variant": "default"
+    },
+    {
+      "id": "remote-control-to-session-owner",
+      "from": "remote-control",
+      "to": "session-owner",
+      "label": "attach",
+      "variant": "default"
+    },
+    {
+      "id": "status-refresh-to-status-dots",
+      "from": "status-refresh",
+      "to": "status-dots",
+      "label": "cached states",
+      "variant": "default"
+    },
+    {
+      "id": "status-refresh-to-remote-collector",
+      "from": "status-refresh",
+      "to": "remote-collector",
+      "label": "SSH snapshot / JSON",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Session discovery",
+      "items": [
+        "Popup polling pauses during navigation.",
+        "Cached sessions become cheap local entries."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Output events + layout reconciliation",
+      "items": [
+        "tmux -C streams output to proxy workers.",
+        "watch queries list-panes every 5s / 15s."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Agent state is a separate flow",
+      "items": [
+        "Agent hooks store @tmax-agent in tmux.",
+        "Collector reads it on demand; no daemon."
+      ]
+    }
+  ]
+}

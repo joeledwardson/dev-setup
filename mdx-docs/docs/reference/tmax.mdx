@@ -1,0 +1,98 @@
+---
+title: "tmax architecture"
+---
+
+import { withBase } from '@rspress/core/runtime';
+
+# tmax architecture
+
+Interactive architecture map of the local tmax checkout, generated with Archify on 13 September 2026. It covers the session switcher, SSH connections, remote panes, and agent activity reporting. The detailed map below separates session discovery, pane synchronization, and agent status.
+
+<a href={withBase('/assets/tmax/tmax.html')} target="_blank" rel="noopener noreferrer">Open the map in a full browser tab</a>
+
+<iframe
+  src={withBase('/assets/tmax/tmax.html')}
+  title="Interactive tmax architecture map"
+  style={{ width: '100%', height: '80vh', minHeight: '600px', border: '1px solid #64748b', borderRadius: '8px' }}
+  allowFullScreen
+/>
+
+## How the remote is tracked
+
+**The Pi's tmux server owns the sessions, windows, and panes.** Your local tmax asks it what exists over SSH, then creates local proxy sessions so you can browse and interact with them. It does not need a separate tmax service running on the Pi.
+
+<a href={withBase('/assets/tmax/remote-tracking.html')} target="_blank" rel="noopener noreferrer">Open the remote tracking map in a full browser tab</a>
+
+<iframe
+  src={withBase('/assets/tmax/remote-tracking.html')}
+  title="How tmax discovers and tracks remote sessions"
+  style={{ width: '100%', height: '80vh', minHeight: '600px', border: '1px solid #64748b', borderRadius: '8px' }}
+  allowFullScreen
+/>
+
+The three rows are separate flows. SSH carries commands and responses in both directions. The middle row groups local pane workers and the topology watcher; the watcher queries remote tmux directly over SSH, while pane input/output uses the shared control client.
+
+### 1. Finding sessions
+
+While the local popup is open, fzf schedules `switch-refresh` every two seconds. After the initial refresh, tmax skips a poll if you have navigated within the last second. `discover()` calls `refresh()` for each configured host, using the existing unlocked SSH connection to run `tmux list-sessions` on the remote host.
+
+The returned session IDs, names, and window counts are cached locally. tmax registers lightweight local placeholder sessions for the remote sessions, which makes them visible in the switcher and tmux's native session tree. It skips sessions marked as another tmax instance's proxies and removes stale local proxies when a successful listing confirms a remote session is gone. An unreachable host can retain cached session entries; cached entries do not prove the host is currently online.
+
+This discovery polling belongs to the **local popup**. It is not a permanent remote scanner, and it does not require the agent activity helper.
+
+### 2. Keeping an opened session in sync
+
+Selecting a proxy session invokes `attach()` and `sync()`. tmax asks the remote tmux server for `list-panes` data, creates a local proxy pane for each remote pane, and mirrors window names, layout, and zoom state. It records the remote server PID and session creation time so reused session IDs cannot silently attach to a different session.
+
+Two mechanisms then keep the opened view current:
+
+- **Output and interaction:** each local `view` process connects through a Unix socket to one local `control-serve` process per remote session. That process holds an SSH channel running `tmux -C attach-session` on the Pi. tmux control-mode output events stream terminal output back; local input and wrapped tmux actions become commands sent through the same control client.
+- **Topology reconciliation:** a local `watch` process calls `sync()` and queries remote `list-panes` every five seconds when attached, otherwise every fifteen seconds. Attaching and completing a wrapped pane action also trigger synchronization. Control-mode layout/window events are parsed in this checkout, but the `topology_changed` flag is not consumed; those events alone do not reconcile the layout.
+
+The remote tmux server remains the source of truth. Closing the local connection does not itself terminate programs in its sessions; an explicit remote kill or close-session action does.
+
+### 3. Finding agents and their activity
+
+Agent status is additional information about those panes. During a remote refresh with sessions present, local tmax invokes `python3 "$HOME/.local/share/tmax/agent_status.py" snapshot` over SSH, respecting the configured remote tmux executable and named socket. The process exits after returning JSON containing window states.
+
+On the Pi, the collector reads tmux pane PIDs and inspects their process descendants for recognized agents. Agent lifecycle hooks write a state record to the tmux pane option `@tmax-agent`; the collector checks its PID and process start time before using it. If a valid hook record is unavailable, it uses terminal status hints as a best-effort fallback. Pane states are combined into window dots, then session dots on host rows: waiting takes priority over working, which takes priority over no detected agent.
+
+**The collector is not a daemon.** Python and the installed helper are needed for remote activity collection; loaded hooks improve accuracy. The activity response contains states, not captured terminal text. Interactive panes and previews transfer terminal content separately.
+
+## What stays running?
+
+| Component | Where | Lifetime |
+| --- | --- | --- |
+| Existing SSH service | Pi | Normal SSH service; already needed for `ssh pi-box`. |
+| tmux server and agent programs | Pi | Own the real sessions and keep running independently of the local connection. |
+| `tmux -C` client | Pi | Attached through an active SSH control channel; exits when the channel closes. |
+| Activity snapshot / hook reporter | Pi | Short-lived Python commands. The Pi extension lives inside the agent process. |
+| SSH master and lease watchdog | Local | Started when explicitly unlocked; the lease lasts up to 24 hours. Locking, expiry, or a failed connection closes it. |
+| Proxy pane `view` processes | Local | Run inside opened proxy panes, displaying connection state if transport is unavailable. |
+| Topology `watch` process | Local | Polls while the proxy session exists; one watcher per opened remote session. |
+| Shared `control-serve` process | Local | One per active remote session; exits after ten seconds without pane clients or when its lease ends. |
+| Popup discovery refresh | Local | Runs while the popup is open, with navigation-aware polling. |
+
+The small background processes are primarily **on your local machine**. The Pi uses its existing SSH service and tmux server. Running the full tmax plugin on the Pi would create its own local interface; it is not required for this machine to track the Pi.
+
+## Connection and activity setup
+
+Configure the target in the local plugin's `remotes.json`, then select its heading in the switcher and press **Enter**. This checkout accepts your normal SSH authentication; `setup-host.py` is optional and changes the server's SSH policy.
+
+After connecting, install activity reporting from local tmux:
+
+```sh
+python3 ~/.config/tmux/plugins/tmax/scripts/install-agent-status.py --host pi-box
+```
+
+The remote host must have `python3` available on its SSH PATH first. Restart agents after installation and review Codex hooks in `/hooks`.
+
+## Map source
+
+This is a snapshot of the working checkout, including the change to normal SSH authentication. Future tmax changes require regenerating and copying the map into the docs.
+
+<a href={withBase('/assets/tmax/tmax.architecture.json')} download>Download the overview Archify JSON</a>
+
+<a href={withBase('/assets/tmax/remote-tracking.architecture.json')} download>Download the remote tracking Archify JSON</a>
+
+Both maps pass Archify's nine showcase checks with zero composition errors or warnings. Automated browser checks and rendered visual review were not completed because Chrome/Chromium is unavailable in the generation environment. The diagrams describe the inspected code; they do not verify what is currently installed or running on the Pi.
