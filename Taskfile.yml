@@ -16,10 +16,11 @@ tasks:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotbot:run, remmina:configure, codex:configure, zsh:sheldon-lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
+    desc: Full system rebuild — os:build, dotbot:run, remmina:push, remmina:configure, codex:configure, zsh:sheldon-lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
     cmds:
       - task: os:build
       - task: dotbot:run
+      - task: remmina:push
       - task: remmina:configure
       - task: codex:configure
       - task: llm:keys
@@ -190,6 +191,18 @@ tasks:
           echo "OK:   $profile_dir"
         done
         rm -f "$custom_json"
+
+  remmina:diff:
+    desc: Show what differs between the Remmina profiles in this repo and the ones in ~/.local/share/remmina
+    cmd: ./scripts/remmina-sync.sh diff
+
+  remmina:pull:
+    desc: Copy Remmina profiles from ~/.local/share/remmina into this repo — check with git diff before committing
+    cmd: ./scripts/remmina-sync.sh pull
+
+  remmina:push:
+    desc: Copy Remmina profiles from this repo into ~/.local/share/remmina — stops if a profile was changed on this machine, FORCE=1 overrides
+    cmd: ./scripts/remmina-sync.sh push
 
   remmina:configure:
     desc: Apply Remmina preferences via crudini (skips if the pref file doesn't exist yet)
