@@ -69,6 +69,8 @@ in {
   # =======================================
   networking.hostName = "pi-box";
   my.ssh.defaultUser = "claude";
+  # NOTE: the raspberry pi in the home wi-fi has a static IP address of 192.168.1.250 for the TV to connect to
+
 
   # =======================================
   # Users
