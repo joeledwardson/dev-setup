@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 
 let
   user = "jollof";
@@ -95,6 +100,9 @@ in
 
     # packages for mautrix imessage service
     mautrix-imessage
+
+    # use latest claude code
+    pkgs-unstable.claude-code
   ];
 
   homebrew = {
