@@ -27,3 +27,11 @@ vim.keymap.set('n', '<leader>tg', function()
     vim.cmd 'DiffviewFileHistory %'
   end
 end, { desc = 'Toggle diff file history' })
+vim.keymap.set('n', '<leader>tG', function()
+  local lib = require 'diffview.lib'
+  if lib.get_current_view() then
+    vim.cmd 'DiffviewClose'
+  else
+    vim.cmd 'DiffviewFileHistory'
+  end
+end, { desc = 'Toggle diff global history' })
