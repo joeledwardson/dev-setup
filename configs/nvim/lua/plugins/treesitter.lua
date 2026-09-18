@@ -1,3 +1,15 @@
+-- Nix supplies parsers and queries; highlighting must still be enabled per buffer.
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('treesitter-highlight', { clear = true }),
+  desc = 'Enable Tree-sitter highlighting when a parser and highlight query exist',
+  callback = function(event)
+    local parser = vim.treesitter.get_parser(event.buf)
+    if parser and vim.treesitter.query.get(parser:lang(), 'highlights') then
+      vim.treesitter.start(event.buf)
+    end
+  end,
+})
+
 -- sticky context header
 require('treesitter-context').setup {
   enable = true,
