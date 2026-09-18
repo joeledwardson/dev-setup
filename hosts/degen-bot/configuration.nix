@@ -30,6 +30,12 @@
   # Allow netconsole UDP stream from desktop-work
   networking.firewall.allowedUDPPorts = [ 6666 ];
 
+  # claudes suggestion to stop the laptop turning off the wifi card, throttling speed
+  boot.extraModprobeConfig = ''
+    options iwlmvm power_scheme=1
+  '';
+  networking.networkmanager.wifi.powersave = false;
+
   # =======================================
   # Users
   # =======================================

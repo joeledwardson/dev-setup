@@ -36,6 +36,8 @@ vim.o.autoread = true
 vim.o.swapfile = false
 vim.opt.iskeyword:append '-'
 vim.opt.diffopt:append 'context:3'
+-- dont save ufo folds in sessions or it breaks
+vim.opt.sessionoptions:remove 'folds'
 
 -- Clipboard: system clipboard when a display is present, OSC52 over SSH.
 local function has_system_clipboard()

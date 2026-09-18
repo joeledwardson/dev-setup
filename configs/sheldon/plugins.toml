@@ -57,6 +57,9 @@ github = "MichaelAquilina/zsh-auto-notify"
 [plugins.navi]
 github = "denisidoro/navi"
 
+[plugins.git-wt]
+git = "https://github.com/k1LoW/git-wt"
+
 # For example:
 #
 # [plugins.base16]
