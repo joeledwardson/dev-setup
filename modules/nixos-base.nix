@@ -281,6 +281,7 @@ in {
     ansible
     go-task # has taskfile
     zoxide
+    git-wt
 
     ### video processing
     ffmpeg
@@ -330,6 +331,7 @@ in {
     pkgs-unstable.gemini-cli # latest gemini
     pkgs-unstable.codex
     pkgs-unstable.fzf # tmax complaining it wants v0.73+
+    pkgs-unstable.just # justfile
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
