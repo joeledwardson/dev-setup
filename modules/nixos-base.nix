@@ -232,6 +232,7 @@ in {
     nodejs_22 # add nodejs global - useful for adhoc `npm -g install`
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
+    python3 # nice to have a global python installation for messing around
 
     ### Database tools
     ruby
@@ -258,7 +259,6 @@ in {
     gh-markdown-preview
     glab
     tmux
-    fzf
     dotbot # required for dotfiles configuration
     google-cloud-sdk
     bitwarden-cli
@@ -329,6 +329,7 @@ in {
     pkgs-unstable.claude-code # pinned to nixpkgs master for latest version
     pkgs-unstable.gemini-cli # latest gemini
     pkgs-unstable.codex
+    pkgs-unstable.fzf # tmax complaining it wants v0.73+
 
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
