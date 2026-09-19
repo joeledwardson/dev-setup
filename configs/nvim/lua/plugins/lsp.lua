@@ -1,6 +1,3 @@
--- replace regular vim notifications with fidget
-require('fidget').setup { notification = { override_vim_notify = true } }
-
 -- Configurations supplied by nvim-lspconfig that need no local overrides.
 vim.lsp.enable {
   'basedpyright',

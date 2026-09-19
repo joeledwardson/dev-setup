@@ -31,7 +31,9 @@ vim.api.nvim_create_autocmd('User', {
     end, { buffer = event.data.buf_id, desc = 'open entry (close explorer on file)' })
   end,
 })
-vim.keymap.set('n', '<leader>E', function()
+local function open_files()
   local current = vim.api.nvim_buf_get_name(0)
   mini_files.open(current ~= '' and current or nil)
-end, { desc = 'mini.files explorer (miller columns)' })
+end
+vim.keymap.set('n', '<leader>e', open_files, { desc = 'mini.files explorer (miller columns)' })
+vim.keymap.set('n', '<leader>E', open_files, { desc = 'mini.files explorer (miller columns)' })

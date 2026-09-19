@@ -1,3 +1,7 @@
+# The container uses Neovim core, which has no desktop session manager.
+alias vim='nvim'
+alias nvimc='nvim'
+
 # claude code in YOLO mode: see https://github.com/anthropics/claude-code/issues/9184#issuecomment-3594539302
 alias yolo-claude='IS_SANDBOX=1 claude --dangerously-skip-permissions'
 

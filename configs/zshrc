@@ -346,7 +346,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1a --color=always $realpath'
 
 # eza aliases stolen from here: https://github.com/MohamedElashri/eza-zsh/blob/main/eza-zsh.plugin.zsh
 alias ..='cd ..'
-alias l='eza --long --icons -bF'                          # Extended details with binary sizes and type indicators
+alias l='eza --long --icons=always --binary --classify=always' # Extended details with binary sizes and type indicators
 alias ll='eza --long -a'                                  # Long format, including hidden files
 alias la='eza -a --group-directories-first'               # Show all files, with directories listed first
 alias lx='eza -a -l --group-directories-first --extended' # Show all files and extended attributes, directories first

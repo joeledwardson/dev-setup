@@ -6,41 +6,23 @@ WORKDIR $HOME
 RUN pacman -Syu --noconfirm curl
 RUN curl -sSL https://claude.ai/install.sh | bash
 
-# packages (see ./modules/nixos-base.nix for my default headless packages)
+# Shell, navigation and Git tools used by the shared configs.
 # Refresh here too: a cached earlier layer can contain stale Arch package indexes.
-RUN pacman -Syu --noconfirm \
-openssh \
-zsh \
-fzf \
-git \
-eza \
-man-db \
-tmux \
-jq \
-fastfetch \
-fd \
-github-cli \
-ripgrep \
-vim \
-neovim \
-wget \
-unzip \
-net-tools \
-file \
-socat \
-bat \
-uv \
-yazi \
-git-delta \
-zellij \
-sheldon \
-go-task \
-glab \
-gcc make \
-nodejs npm \
-python python-pip \
-postgresql-libs && \
+RUN pacman -Syu --needed --noconfirm \
+    openssh zsh sheldon \
+    eza fzf fd ripgrep bat less man-db \
+    git git-delta lazygit \
+    tmux jq file && \
     pacman -Scc --noconfirm
+
+# Match the desktop's Neovim release instead of following Arch's rolling package.
+ARG NVIM_VERSION=0.12.5
+ARG NVIM_SHA256=bce0f56eda1f1b1db6eee8f4133d7a38813ea07933837dd1777411ca384c6875
+RUN curl -fL "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" -o /tmp/nvim.tar.gz && \
+    echo "${NVIM_SHA256}  /tmp/nvim.tar.gz" | sha256sum -c - && \
+    tar -xzf /tmp/nvim.tar.gz -C /opt && \
+    ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim && \
+    rm /tmp/nvim.tar.gz
 
 ENV SHELL=/bin/zsh
 ENV PATH="$HOME/.local/bin:$PATH"
@@ -52,30 +34,17 @@ COPY configs/sheldon/plugins.toml $HOME/.config/sheldon/plugins.toml
 COPY configs/tmux/ $HOME/.config/tmux/
 COPY configs/yazi/*.toml configs/yazi/*.lua $HOME/.config/yazi/
 
-# Separate plugin list: do not copy the desktop init or its pack lockfile.
-COPY dev-image/nvim/init.lua $HOME/.config/nvim/init.lua
-COPY configs/nvim/lua/plugins/telescope.lua \
-     configs/nvim/lua/plugins/ufo.lua \
-     configs/nvim/lua/plugins/diffview.lua \
-     configs/nvim/lua/plugins/oil.lua \
-     configs/nvim/lua/plugins/whichkey.lua \
-     configs/nvim/lua/plugins/mini.lua \
-     $HOME/.config/nvim/lua/plugins/
-COPY configs/nvim/lua/custom/keybrowser.lua $HOME/.config/nvim/lua/custom/keybrowser.lua
+# Shared core entry point; the desktop extras and lockfile stay outside the image.
+COPY configs/nvim/init_core.lua $HOME/.config/nvim/init.lua
+COPY configs/nvim/lua/core/ $HOME/.config/nvim/lua/core/
 # vim.pack installs the selected plugins and generates a lockfile inside the image.
-RUN nvim --headless '+lua if vim.v.errmsg ~= "" then vim.cmd.cquit() end' +qa
+RUN nvim -l "$HOME/.config/nvim/init.lua"
 
 # Install TPM and the plugins declared in the tmux config.
 RUN git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" && \
     "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 
-# Install the pinned Yazi plugins and flavor.
-RUN ya pkg install
-
-# change default shell
-RUN chsh root -s /bin/zsh
-
-# load zsh plugins
+# Load zsh plugins
 RUN sheldon lock
 
 # generate ssh key for container
