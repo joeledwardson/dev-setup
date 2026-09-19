@@ -75,7 +75,7 @@ in {
   # /etc/ssh/ssh_host_ed25519_key (e.g. sudo ssh -i ... streamer@streaming-server).
   # Existing ~/.ssh/authorized_keys entries remain valid alongside these keys.
   services.openssh.settings = {
-    PasswordAuthentication = false;
+    PasswordAuthentication = true;
     KbdInteractiveAuthentication = false;
   };
 
