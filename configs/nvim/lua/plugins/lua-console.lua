@@ -1,6 +1,6 @@
 require('lua-console').setup {
   mappings = {
-    toggle = '`', -- toggle console
+    toggle = '<Leader>ll', -- keep native `a / `A mark jumps available
     attach = '<Leader>l`', -- attach console to a buffer
     quit = 'q', -- close console
     eval = '<CR>', -- evaluate code

@@ -61,6 +61,7 @@ vim.pack.add({
   'https://github.com/olimorris/onedarkpro.nvim',
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-mini/mini.nvim',
+  'https://github.com/nanozuki/tabby.nvim',
   'https://github.com/folke/which-key.nvim',
   -- 0.2.x uses core vim.treesitter instead of nvim-treesitter's removed ft_to_lang.
   { src = 'https://github.com/nvim-telescope/telescope.nvim', version = vim.version.range '0.2' },
@@ -78,6 +79,7 @@ vim.pack.add({
 require 'core.theme'
 require 'core.whichkey'
 require 'core.mini' -- before Telescope: mini.icons provides nvim-web-devicons
+require 'core.tabby'
 require 'core.telescope'
 require('fidget').setup { notification = { override_vim_notify = true } }
 require 'core.treesitter'

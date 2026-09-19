@@ -41,12 +41,13 @@ vim.keymap.set('n', 'zX', function()
 end, { desc = 'jollof recursive fold opener' })
 
 local url_pattern = [[https:\S\+]]
-vim.keymap.set('n', ']l', function()
+-- [l / ]l are Neovim's location-list navigation mappings.
+vim.keymap.set('n', ']u', function()
   vim.fn.setreg('/', url_pattern)
   vim.opt.hlsearch = true
   vim.fn.search(url_pattern, 'W')
 end, { desc = 'Next URL' })
-vim.keymap.set('n', '[l', function()
+vim.keymap.set('n', '[u', function()
   vim.fn.setreg('/', url_pattern)
   vim.opt.hlsearch = true
   vim.fn.search(url_pattern, 'bW')
@@ -79,11 +80,13 @@ vim.keymap.set('n', '<C-w>r', function()
 end, { desc = 'window resize mode' })
 
 vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('python-run-keymap', { clear = true }),
   pattern = 'python',
-  callback = function()
-    vim.keymap.set('n', '<F5>', function()
-      local file_path = vim.fn.expand '%'
-      vim.cmd('split | terminal PYTHONPATH=. python ' .. file_path)
-    end)
+  callback = function(event)
+    -- Keep <F5> for DAP, including after visiting a Python buffer.
+    vim.keymap.set('n', '<leader>rp', function()
+      local file_path = vim.fn.expand '%:p'
+      vim.cmd('split | terminal PYTHONPATH=. python ' .. vim.fn.shellescape(file_path))
+    end, { buffer = event.buf, desc = 'Run Python file' })
   end,
 })

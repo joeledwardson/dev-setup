@@ -3,6 +3,7 @@ require('which-key').setup {
   spec = {
     { '<leader>s', group = '[S]earch' },
     { '<leader>t', group = '[T]oggle' },
+    { '<leader>T', group = '[T]abs' },
     { '<leader>k', group = '[k]eys' },
   },
 }

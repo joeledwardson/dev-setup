@@ -129,6 +129,10 @@
       "rev": "fa6318fc6676294bff0fd56ae8e8f9552be1ac7e",
       "src": "https://github.com/sQVe/sort.nvim"
     },
+    "tabby.nvim": {
+      "rev": "3c130e1fcb598ce39a9c292847e32d7c3987cf11",
+      "src": "https://github.com/nanozuki/tabby.nvim"
+    },
     "telescope-fzf-native.nvim": {
       "rev": "b25b749b9db64d375d782094e2b9dce53ad53a40",
       "src": "https://github.com/nvim-telescope/telescope-fzf-native.nvim"

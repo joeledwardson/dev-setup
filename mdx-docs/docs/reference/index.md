@@ -7,6 +7,7 @@ title: "Reference"
 Cheat sheets and reference material extracted from the dev log.
 
 - **[Vim & Neovim](vim)** — Commands, registers, scopes, folding, LSPs, Lua, mappings, regexps
+- **[Neovim surround examples](surround)** — mini.surround commands broken into actions, Vim text objects, and wrapper identifiers, with before/after examples
 - **[Linux & System](linux)** — DBus, systemd, lsof/ss, partitions, mounting, permissions, hardware, crypto, character encodings
 - **[Shell & Bash](shell)** — Heredocs, herestrings, colour pipes, jq, shell debugging
 - **[Networking](networking)** — resolv.conf, iptables, DNS, VPN

@@ -61,7 +61,7 @@ end, { desc = 'toggle markdown render' })
 require('telescope').load_extension 'fzf'
 require('which-key').add {
   { '<leader>D', group = '[D]atabase' },
-  { '<leader>p', group = '[p]ossesson' },
+  { '<leader>p', group = 'Sessions' },
   { '<leader>l', group = '[l]ua console' },
   { '<leader>x', group = '[x] trouble' },
 }
