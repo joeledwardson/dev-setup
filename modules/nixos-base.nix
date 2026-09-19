@@ -246,7 +246,7 @@ in {
     graphviz # required for madge npm package
     tomato-c # pomodoro
     duf
-    gdu # replacement for ncdu
+    gdu # replacement for ncdu (file size interactive viewer)
     dust # another replacement for du
     tabiew # CSV terminal viewer (tw is program)
     caligula # TUI for disk imaging ISO burning to USB etc
