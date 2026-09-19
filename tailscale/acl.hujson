@@ -20,11 +20,51 @@
   ],
 
   "ssh": [
+    // personal devices -> own devices
     {
-      "action": "check",
+      "action": "accept",
       "src":    ["autogroup:member"],
       "dst":    ["autogroup:self"],
       "users":  ["autogroup:nonroot", "root"],
+    },
+    // personal + trusted -> trusted + sandbox
+    {
+      "action": "accept",
+      "src":    ["autogroup:member", "tag:trusted"],
+      "dst":    ["tag:trusted", "tag:sandbox"],
+      "users":  ["autogroup:nonroot", "root"],
+    },
+    // sandbox -> sandbox
+    {
+      "action": "accept",
+      "src":    ["tag:sandbox"],
+      "dst":    ["tag:sandbox"],
+      "users":  ["autogroup:nonroot", "root"],
+    },
+  ],
+
+  "sshTests": [
+    {
+      "src": "tag:trusted",
+      "dst": ["tag:trusted", "tag:sandbox"],
+      "accept": ["jollof", "joelyboy", "claude", "streamer", "root"],
+    },
+    {
+      "src": "tag:sandbox",
+      "dst": ["tag:sandbox"],
+      "accept": ["claude", "streamer", "root"],
+    },
+    {
+      "src": "tag:sandbox",
+      "dst": ["tag:trusted"],
+      "deny": ["jollof", "joelyboy", "claude", "streamer", "root"],
+    },
+  ],
+  "tests": [
+    {
+      "src": "tag:sandbox",
+      "accept": ["tag:sandbox:22"],
+      "deny": ["tag:trusted:22"],
     },
   ],
 }
