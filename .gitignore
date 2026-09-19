@@ -45,3 +45,7 @@ result
 # agent-native visual-plan scratch (local, has bridge tokens)
 plans/
 
+# worktrees (tmux agent sidebar)
+.worktrees/
+# worktrees (git wt)
+.wt/

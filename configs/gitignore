@@ -13,3 +13,8 @@
 
 # python cache files
 **/__pycache__
+
+# worktrees (tmux agent sidebar)
+.worktrees/
+# worktrees (git wt)
+.wt/
