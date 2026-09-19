@@ -7,10 +7,8 @@ RUN pacman -Syu --noconfirm curl
 RUN curl -sSL https://claude.ai/install.sh | bash
 
 # packages (see ./modules/nixos-base.nix for my default headless packages)
-# NOTE: neovim is NOT installed via pacman — Arch ships bleeding-edge (0.12.x)
-# which breaks nvim-treesitter (master branch). We pin to 0.11.x below to match
-# the host NixOS environment.
-RUN pacman -S --noconfirm \
+# Refresh here too: a cached earlier layer can contain stale Arch package indexes.
+RUN pacman -Syu --noconfirm \
 openssh \
 zsh \
 fzf \
@@ -18,13 +16,13 @@ git \
 eza \
 man-db \
 tmux \
-direnv \
 jq \
 fastfetch \
 fd \
 github-cli \
 ripgrep \
 vim \
+neovim \
 wget \
 unzip \
 net-tools \
@@ -34,7 +32,6 @@ bat \
 uv \
 yazi \
 git-delta \
-ruff \
 zellij \
 sheldon \
 go-task \
@@ -42,43 +39,38 @@ glab \
 gcc make \
 nodejs npm \
 python python-pip \
-postgresql-libs \
-lua-language-server
-
-# Pin neovim to match host (NixOS nixos-25.11 ships 0.11.x). Arch's bleeding-edge
-# 0.12.x breaks the pinned nvim-treesitter master commit — 0.12 changed the
-# query match API (values are TSNode[] lists, not single nodes), and master
-# was archived before adapting. See docs/dev-log/2026-04.md — "nvim-treesitter: archived" entry.
-ARG NVIM_VERSION=v0.11.7
-RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
-    | tar -xz -C /opt && \
-    ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-
-# typescript-tools.nvim plugin needs `tsserver` (from typescript npm pkg) on PATH,
-# otherwise it errors loudly every time you open a .ts/.js file.
-RUN npm install -g typescript
-
-# clean pacman cache
-RUN pacman -Scc --noconfirm
+postgresql-libs && \
+    pacman -Scc --noconfirm
 
 ENV SHELL=/bin/zsh
 ENV PATH="$HOME/.local/bin:$PATH"
-ENV EDITOR=vim
+ENV EDITOR=nvim
 
-RUN uv tool install dotbot
-COPY . $HOME/dev-setup
+# Copy only the shell, terminal, and file-manager configs used in this image.
+COPY configs/zshrc $HOME/.zshrc
+COPY configs/sheldon/plugins.toml $HOME/.config/sheldon/plugins.toml
+COPY configs/tmux/ $HOME/.config/tmux/
+COPY configs/yazi/*.toml configs/yazi/*.lua $HOME/.config/yazi/
 
-# run dotbot
-WORKDIR $HOME/dev-setup
-RUN git submodule update --init
-RUN dotbot -c $HOME/dev-setup/install.conf.yaml
-WORKDIR $HOME
+# Separate plugin list: do not copy the desktop init or its pack lockfile.
+COPY dev-image/nvim/init.lua $HOME/.config/nvim/init.lua
+COPY configs/nvim/lua/plugins/telescope.lua \
+     configs/nvim/lua/plugins/ufo.lua \
+     configs/nvim/lua/plugins/diffview.lua \
+     configs/nvim/lua/plugins/oil.lua \
+     configs/nvim/lua/plugins/whichkey.lua \
+     configs/nvim/lua/plugins/mini.lua \
+     $HOME/.config/nvim/lua/plugins/
+COPY configs/nvim/lua/custom/keybrowser.lua $HOME/.config/nvim/lua/custom/keybrowser.lua
+# vim.pack installs the selected plugins and generates a lockfile inside the image.
+RUN nvim --headless '+lua if vim.v.errmsg ~= "" then vim.cmd.cquit() end' +qa
 
-# install lazy plugins (gcc/make needed for treesitter parsers + telescope-fzf-native)
-RUN nvim --headless "+Lazy! sync" +qa
+# Install TPM and the plugins declared in the tmux config.
+RUN git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" && \
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 
-# install mason LSP servers/tools
-RUN nvim --headless "+MasonToolsInstallSync" +qa
+# Install the pinned Yazi plugins and flavor.
+RUN ya pkg install
 
 # change default shell
 RUN chsh root -s /bin/zsh
