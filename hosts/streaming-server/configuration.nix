@@ -6,7 +6,6 @@
 
 let
   liteLLMPort = 9177; # generated port (just one i made up)
-  hostKeys = import ../../secrets/host-keys.nix;
 
 in {
   imports = [
@@ -71,9 +70,6 @@ in {
   # Define your hostname.
   networking.hostName = "streaming-server";
 
-  # Host-key login trial: each source machine must explicitly use its root-only
-  # /etc/ssh/ssh_host_ed25519_key (e.g. sudo ssh -i ... streamer@streaming-server).
-  # Existing ~/.ssh/authorized_keys entries remain valid alongside these keys.
   services.openssh.settings = {
     PasswordAuthentication = true;
     KbdInteractiveAuthentication = false;
@@ -86,14 +82,12 @@ in {
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;
-      openssh.authorizedKeys.keys = hostKeys.allHosts;
     };
     streamer = {
       isNormalUser = true;
       description = "jollof";
       initialPassword = "password";
       extraGroups = commonGroups;
-      openssh.authorizedKeys.keys = hostKeys.allHosts;
     };
   };
   # this stops devenv complaing every time we enter into a shell
@@ -101,8 +95,11 @@ in {
 
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
-  # Delegate `tailscale serve` to the claude user so it runs without sudo
-  services.tailscale.extraSetFlags = [ "--operator=claude" ];
+  services.tailscale.extraSetFlags = [
+    "--operator=claude"
+    "--advertise-tags=tag:sandbox"
+    "--ssh"
+  ];
 
   # wayvnc remote desktop
   networking.firewall.allowedTCPPorts = [ 5900 ];
