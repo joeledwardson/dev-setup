@@ -42,7 +42,6 @@ telescope.setup {
     },
   },
 }
-telescope.load_extension 'fzf'
 telescope.load_extension 'ui-select'
 telescope.load_extension 'live_grep_args'
 
@@ -50,26 +49,20 @@ local builtin = require 'telescope.builtin'
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>kk', builtin.keymaps, { desc = 'nvim [k]eymaps' })
 vim.keymap.set('n', '<leader>kv', function()
-  require('custom.keybrowser').open()
+  require('core.keybrowser').open()
 end, { desc = 'built-in [v]im keys' })
 vim.keymap.set('n', '<leader>kz', function()
-  require('custom.keybrowser').open_zsh()
+  require('core.keybrowser').open_zsh()
 end, { desc = '[z]sh keybindings' })
 vim.keymap.set('n', '<leader>kt', function()
-  require('custom.keybrowser').open_telescope()
+  require('core.keybrowser').open_telescope()
 end, { desc = '[t]elescope keybindings' })
 vim.keymap.set('n', '<leader>kj', function()
-  require('custom.keybrowser').open_zellij()
+  require('core.keybrowser').open_zellij()
 end, { desc = 'zelli[j] keybindings' })
 vim.keymap.set('n', '<leader>kp', function()
-  require('custom.keybrowser').open_pgcli()
+  require('core.keybrowser').open_pgcli()
 end, { desc = '[p]gcli keybindings' })
-vim.keymap.set('n', '<leader>kb', function()
-  require('custom.keybrowser').open_brave()
-end, { desc = '[b]rave keybindings' })
-vim.keymap.set('n', '<leader>kB', function()
-  require('custom.keybrowser').open_brave_extensions()
-end, { desc = '[B]rave extensions' })
 vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = '[f]iles search' })
 vim.keymap.set('n', '<leader>sF', function()
   builtin.find_files {

@@ -178,8 +178,17 @@ end
 --   kdl_body(node)     → the child nodes inside its { } block
 function M.open_zellij()
   local config_path = vim.env.ZELLIJ_CONFIG_FILE or vim.fn.expand('~/.config/zellij/config.kdl')
+  if vim.fn.filereadable(config_path) == 0 then
+    vim.notify('Zellij config not found: ' .. config_path, vim.log.levels.WARN)
+    return
+  end
   local source = table.concat(vim.fn.readfile(config_path), '\n')
-  local tree = vim.treesitter.get_string_parser(source, 'kdl'):parse()[1]
+  local ok, parser = pcall(vim.treesitter.get_string_parser, source, 'kdl')
+  if not ok or not parser then
+    vim.notify('Zellij keybindings need a Tree-sitter KDL parser', vim.log.levels.WARN)
+    return
+  end
+  local tree = parser:parse()[1]
 
   local function txt(node) return vim.treesitter.get_node_text(node, source) end
 
