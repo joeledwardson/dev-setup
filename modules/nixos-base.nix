@@ -227,7 +227,8 @@ in {
     nodejs_22 # add nodejs global - useful for adhoc `npm -g install`
     lua
     glib # contains gio, useful for viewing all mounts (including SMB etc)
-    python3 # nice to have a global python installation for messing around
+    # nice to have a global python installation for messing around
+    (python3.withPackages (ps: [ ps.argcomplete ])) # argcomplete for gcalcli zsh completion
 
     ### Database tools
     ruby

@@ -303,3 +303,18 @@ tasks:
     desc: update secrets with recipients list
     dir: ./secrets
     cmd: sudo agenix -r -i /etc/ssh/ssh_host_ed25519_key
+
+  gcalcli:init:
+    desc: Initialise gcalcli using the agenix client ID and secret
+    silent: true
+    interactive: true
+    preconditions:
+      - sh: command -v gcalcli >/dev/null
+        msg: gcalcli is not installed; rebuild the system first.
+      - sh: test -r /run/agenix/gcal-client-id && test -r /run/agenix/gcal-client-secret
+        msg: Google Calendar secrets are not readable; rebuild the system and run as their owner.
+    cmd: >-
+      gcalcli
+      --client-id "$(cat /run/agenix/gcal-client-id)"
+      --client-secret "$(cat /run/agenix/gcal-client-secret)"
+      init

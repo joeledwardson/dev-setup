@@ -111,6 +111,7 @@ if command -v sg >/dev/null; then zsh-defer -c 'eval "$(ast-grep completions)"';
 if command -v task >/dev/null; then zsh-defer -c 'eval "$(task --completion zsh)"'; fi
 if command -v just >/dev/null; then zsh-defer -c 'source <(just --completions zsh)'; fi
 if command -v git-wt >/dev/null; then zsh-defer -c 'eval "$(git wt --init zsh)"'; fi
+if command -v direnv >/dev/null; then zsh-defer "$(register-python-argcomplete gcalcli)"; fi
 if command -v direnv >/dev/null; then zsh-defer "$(direnv hook zsh)"; fi
 
 # nvim alias to clear session and start
