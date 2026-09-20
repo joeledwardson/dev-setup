@@ -10,6 +10,12 @@ let
   mautrix-imessage = pkgs.callPackage ../../pkgs/mautrix-imessage.nix { };
 in
 {
+  imports = [ ./bluebubbles.nix ];
+
+  # Configure app permissions, password and Private API before enabling startup.
+  # The actual backend is selected in mautrix-imessage-config.age.
+  local.bluebubbles.startAtLogin = false;
+
   # This is still macOS. nix-darwin only manages the declared settings and
   # services on top of it.
   nixpkgs.hostPlatform = "aarch64-darwin";
@@ -51,8 +57,8 @@ in
       /Users/${user}/Library/Logs/mautrix-imessage
   '';
 
-  # This must be a user agent: the bridge reads jollof's Messages database and
-  # drives Messages.app in the logged-in GUI session.
+  # Keep the bridge in jollof's session and retain its state across backend
+  # changes. Both backends use the same upstream bridge executable.
   launchd.user.agents.mautrix-imessage = {
     # --no-update: the bridge rewrites its config on startup via a temp file in
     # the config's own directory, and /run/agenix is root-owned so that always
