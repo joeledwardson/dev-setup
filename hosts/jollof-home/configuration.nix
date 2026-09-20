@@ -75,6 +75,7 @@
   # =======================================
   # Define your hostname.
   networking.hostName = "jollof-home";
+  my.ssh.defaultUser = "jollof";
 
   # Tailscale tray: tailscale itself is enabled in nixos-base.nix. Here we let
   # `jollof` drive tailscaled without sudo (operator — same pattern as the

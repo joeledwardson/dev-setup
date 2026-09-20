@@ -81,6 +81,7 @@ let
     exec ${neovim}/bin/nvim "$@"
   '');
 in {
+  imports = [ ./ssh-client.nix ];
   # Enable Magic SysRq keys for emergency recovery (Alt+SysRq+R/S/B etc).
   # Required for TTY/keyboard recovery when the compositor hard-hangs.
   boot.kernel.sysctl."kernel.sysrq" = 1;
@@ -88,8 +89,7 @@ in {
   # for windows support (USBs etc)
   boot.supportedFilesystems = [ "ntfs" ];
 
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # use networkmanager with resolved for DNS resolution
   networking.networkmanager = {
     enable = true;
     plugins = with pkgs; [ networkmanager-openvpn ];
@@ -106,14 +106,10 @@ in {
     };
   };
 
+  # always have mullvad in case i need it 
   services.mullvad-vpn.enable = true;
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Set your time zone.
-  # time.timeZone = "Europe/London";
+  # auto detection of timezone
   services.automatic-timezoned.enable = true;
 
   # Select internationalisation properties.
@@ -150,12 +146,6 @@ in {
   # enable libinput (so can run commands like libinput list-devices)
   services.libinput.enable = true;
 
-  # Fonts live in nixos-core-desktop.nix. A headless box never rasterises a
-  # glyph — over SSH it emits bytes and the *client* terminal picks the font.
-  # (Character *width* is decided here, but by glibc wcwidth(), not by fonts.)
-  # Re-add fonts to a headless host only if something renders server-side:
-  # headless Chromium screenshots, graphviz/mermaid, PDF or image generation.
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -163,7 +153,12 @@ in {
   services.udisks2.enable = true;
 
   # Enable tailscale at startup
-  services.tailscale = { enable = true; };
+  services.tailscale = {
+    enable = true;
+    # enable tailscale ssh authentication so I don't have to copy my ssh key across
+    # (see the acl.hujson file, SSH must be enabled in tailscale side for this to work)
+    extraSetFlags = [ "--ssh" ];
+  };
 
   # Enable swap (8GB universal size for all systems)
   swapDevices = [{
@@ -374,9 +369,7 @@ in {
 
   programs.zsh = {
     enable = true;
-    # Links /share/zsh into the system profile, which is where packages ship
-    # their completions (_systemctl, _journalctl, ...). Without it fpath has no
-    # system completions at all and `systemctl status <TAB>` falls back to files.
+    # link zsh to system profile completions (_systemctl, _journalctl etc)
     enableCompletion = true;
     # ...but our own zshrc runs compinit, so skip the one in /etc/zshrc.
     enableGlobalCompInit = false;

@@ -29,6 +29,15 @@ in
   # Both services are managed as native macOS launchd jobs.
   services.openssh.enable = true;
   services.tailscale.enable = true;
+  # nix-darwin has no extraSetFlags option. Retry until tailscaled is ready.
+  launchd.daemons.tailscale-ssh = {
+    command = "${config.services.tailscale.package}/bin/tailscale set --ssh";
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive.SuccessfulExit = false;
+      ThrottleInterval = 30;
+    };
+  };
 
   age.secrets.mautrix-imessage-config = {
     file = ../../secrets/mautrix-imessage-config.age;

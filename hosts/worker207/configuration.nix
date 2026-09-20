@@ -39,6 +39,7 @@
   # Networking Configuration
   # =======================================
   networking.hostName = "worker207";
+  my.ssh.defaultUser = "claude";
 
   # wayvnc remote desktop
   networking.firewall.allowedTCPPorts = [ 5900 ];

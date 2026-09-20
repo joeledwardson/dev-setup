@@ -68,6 +68,7 @@ in {
   # Networking Configuration
   # =======================================
   networking.hostName = "pi-box";
+  my.ssh.defaultUser = "claude";
 
   # =======================================
   # Users

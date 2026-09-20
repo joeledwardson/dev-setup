@@ -26,6 +26,7 @@
 
   # Define your hostname.
   networking.hostName = "degen-work";
+  my.ssh.defaultUser = "jollof";
 
   # =======================================
   # Bluetooth Configuration

@@ -30,6 +30,7 @@
 
   # Define your hostname.
   networking.hostName = "degen-home";
+  my.ssh.defaultUser = "jollof";
 
   # mount windows from other partition
   fileSystems."/mnt/joelyboy/windows" = {

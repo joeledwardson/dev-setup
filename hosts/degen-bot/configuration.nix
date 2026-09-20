@@ -26,6 +26,7 @@
   # Networking Configuration
   # =======================================
   networking.hostName = "degen-bot";
+  my.ssh.defaultUser = "claude";
 
   # Allow netconsole UDP stream from desktop-work
   networking.firewall.allowedUDPPorts = [ 6666 ];

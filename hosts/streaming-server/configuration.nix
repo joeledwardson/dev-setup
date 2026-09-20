@@ -69,6 +69,7 @@ in {
   # =======================================
   # Define your hostname.
   networking.hostName = "streaming-server";
+  my.ssh.defaultUser = "claude";
 
   services.openssh.settings = {
     PasswordAuthentication = true;
@@ -93,13 +94,10 @@ in {
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "streamer" "claude" ];
 
+  # --advertise-tags is supported by `tailscale up`, not `tailscale set`.
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
-  services.tailscale.extraSetFlags = [
-    "--operator=claude"
-    "--advertise-tags=tag:sandbox"
-    "--ssh"
-  ];
+  services.tailscale.extraSetFlags = [ "--operator=claude" ];
 
   # wayvnc remote desktop
   networking.firewall.allowedTCPPorts = [ 5900 ];

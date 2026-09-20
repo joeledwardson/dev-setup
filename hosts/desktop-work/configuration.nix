@@ -53,6 +53,7 @@
   };
 
   networking.hostName = "joel-desktop-work"; # Define your hostname.
+  my.ssh.defaultUser = "joelyboy";
 
   programs.obs-studio = {
     enable = true;
