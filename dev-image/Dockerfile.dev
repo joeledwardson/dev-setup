@@ -12,7 +12,7 @@ RUN pacman -Syu --needed --noconfirm \
     openssh zsh sheldon \
     eza fzf fd ripgrep bat less man-db \
     git git-delta lazygit \
-    tmux jq file && \
+    tmux python jq file && \
     pacman -Scc --noconfirm
 
 # Match the desktop's Neovim release instead of following Arch's rolling package.
@@ -32,6 +32,7 @@ ENV EDITOR=nvim
 COPY configs/zshrc $HOME/.zshrc
 COPY configs/sheldon/plugins.toml $HOME/.config/sheldon/plugins.toml
 COPY configs/tmux/ $HOME/.config/tmux/
+COPY --chmod=755 configs/bin/tmux-switcher $HOME/.local/bin/tmux-switcher
 COPY configs/yazi/*.toml configs/yazi/*.lua $HOME/.config/yazi/
 
 # Shared core entry point; the desktop extras and lockfile stay outside the image.

@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+"""Pick -> attach -> wait for detach -> repeat. fzf calls `rows` and `preview`."""
+import concurrent.futures
+import datetime
+import os
+import shlex
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import NamedTuple
+
+SELF_COMMAND = shlex.join([sys.executable, str(Path(__file__).resolve())])
+CURRENT = Path("/tmp/tmux-current-hostname")
+PREVIOUS = Path("/tmp/tmux-previous-hostname")
+
+
+class Row(NamedTuple):
+    host: str
+    session_name: str = ""
+    window_name: str = ""
+    window_index: int = 0
+    pane_index: int = 0
+    pane_id: str = "-"
+    session_id: str = ""
+    agent: str = ""
+    state: str = ""
+    updated: int = 0
+    error: str = ""
+
+    def print_fzf_line(self) -> None:
+        if self.error:
+            text = f"{self.host:<8} UNAVAILABLE: {' '.join(self.error.split())}"
+        else:
+            update_text = "—"
+            if self.updated:
+                moment = datetime.datetime.fromtimestamp(self.updated, datetime.timezone.utc)
+                age = datetime.timedelta(seconds=max(0, int(time.time()) - self.updated))
+                update_text = f"{moment:%H:%M:%S UTC} ({age} ago)"
+            text = (f"{self.host:<8} {self.session_name:<12} "
+                    f"{self.window_index}.{self.pane_index:<3} {self.window_name:<14} "
+                    f"{self.agent:<10} {self.state or '—':<12} {update_text}")
+        # fzf hides the first three columns; they identify the pane to preview/attach.
+        print(f"{self.host}\t{self.pane_id}\t{self.session_id}\t{text}", flush=True)
+
+
+def run_tmux(host: str, *args: str) -> str:
+    command = ["tmux", "-u", *args]
+    if host != "local":
+        command = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
+                   "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
+                   host, shlex.join(command)]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=6, check=False)
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or "tmux unavailable")
+    return result.stdout
+
+
+def panes_on_host(host: str) -> list[Row]:
+    fields = (
+        "pane_id", "session_id", "session_name", "window_index", "window_name", "pane_index",
+        "pane_current_command", "@agent_state", "@agent_name", "@agent_updated",
+    )
+    tmux_format = "\t".join("#{" + field + "}" for field in fields)
+    try:
+        raw = run_tmux(host, "list-panes", "-a", "-F", tmux_format)
+    except (RuntimeError, subprocess.TimeoutExpired) as error:
+        return [Row(host, error=str(error))]
+    rows: list[Row] = []
+    for line in raw.splitlines():
+        pane = dict(zip(fields, line.split("\t")))
+        rows.append(Row(
+            host=host,
+            session_name=pane["session_name"],
+            window_name=pane["window_name"],
+            window_index=int(pane["window_index"]),
+            pane_index=int(pane["pane_index"]),
+            pane_id=pane["pane_id"],
+            session_id=pane["session_id"],
+            agent=pane["@agent_name"] or pane["pane_current_command"],
+            state=pane["@agent_state"],
+            updated=int(pane["@agent_updated"]) if pane["@agent_updated"].isdigit() else 0,
+        ))
+    return rows
+
+
+def print_rows() -> None:
+    hosts = ["local"]
+    try:
+        hosts += (Path.home() / ".tmux_remote_hosts").read_text().split()
+    except FileNotFoundError:
+        pass
+    current_host = read_host(CURRENT)
+    hosts = sorted(set(hosts), key=lambda host: (host != current_host, host))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(hosts)) as pool:
+        for batch in pool.map(panes_on_host, hosts):
+            for row in sorted(batch, key=lambda row: (
+                row.session_name, row.window_name, row.window_index, row.pane_index,
+            )):
+                row.print_fzf_line()
+
+
+def pick() -> tuple[str, str]:
+    result = subprocess.run([
+        "fzf", "--delimiter", "\t", "--with-nth", "4", "--layout=reverse", "--no-sort",
+        "--prompt", "All hosts > ",
+        "--header", "Enter: attach · Esc: back · Ctrl+o: previous host · Ctrl+r: refresh · Ctrl+q: quit",
+        "--expect", "ctrl-o,ctrl-q", "--with-shell", "sh -c",
+        "--preview-window", "down,40%,wrap", "--preview", f"{SELF_COMMAND} preview {{1}} {{2}}",
+        "--bind", f"start:reload({SELF_COMMAND} rows),ctrl-r:reload({SELF_COMMAND} rows)",
+    ], stdin=subprocess.DEVNULL, capture_output=True, text=True, check=False)
+    if result.returncode == 130:  # fzf cancelled (Escape or Ctrl+c)
+        return "back", ""
+    if result.returncode != 0:
+        return "ctrl-q", ""
+    # --expect puts the pressed key on the first line (empty for Enter).
+    key, _, row = result.stdout.rstrip("\n").partition("\n")
+    return key, row
+
+
+def preview(host: str, pane: str) -> None:
+    if pane == "-":
+        print("Host unavailable. Ctrl+r to retry.")
+        return
+    print("Loading preview…", flush=True)
+    try:
+        print("\033[2J" + run_tmux(host, "capture-pane", "-ep", "-t", pane), end="")
+    except (RuntimeError, subprocess.TimeoutExpired) as error:
+        print("\033[2JPreview unavailable:", str(error))
+
+
+def read_host(path: Path) -> str:
+    try:
+        return path.read_text().strip()
+    except FileNotFoundError:
+        return ""
+
+
+def attach(host: str, pane: str = "", session: str = "") -> int:
+    command = ["tmux", "-u"]
+    if pane:
+        command += ["select-window", "-t", pane, ";", "select-pane", "-t", pane, ";"]
+    command += ["attach-session"]
+    if session:
+        command += ["-t", session]
+    if host != "local":
+        command = ["env", "SWITCHER_CONTROLLER=1", *command]
+        command = ["ssh", "-t", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
+                   "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
+                   host, shlex.join(command)]
+    # Wait until detach. With only a hostname, tmux chooses its session.
+    result = subprocess.run(command, check=False, env={**os.environ, "SWITCHER_CONTROLLER": "1"})
+    return result.returncode
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if args == ["rows"]:
+        print_rows()
+        return
+    if len(args) == 3 and args[0] == "preview":
+        host, pane = args[1:]
+        preview(host, pane)
+        return
+    previous_requested = args == ["previous"]
+    if args in (["open"], ["previous"]):
+        # Called by detach-client -E. Return to the waiting controller, even over SSH.
+        if os.environ.get("SWITCHER_CONTROLLER") == "1":
+            sys.exit(10 if previous_requested else 0)
+        # A directly attached client has no waiting controller: start one here.
+        _ = os.environ.pop("TMUX", None)
+        _ = os.environ.pop("TMUX_PANE", None)
+        current_host = read_host(CURRENT)
+        if current_host and current_host != "local":
+            _ = PREVIOUS.write_text(current_host + "\n")
+        _ = CURRENT.write_text("local\n")
+    elif args:
+        sys.exit("Usage: tmux-switcher [open | previous | rows | preview HOST PANE]")
+    if os.environ.get("TMUX"):
+        sys.exit("Start outside tmux, or use prefix + S.")
+
+    while True:
+        if previous_requested:
+            key, row = "ctrl-o", ""
+        else:
+            key, row = pick()
+        previous_requested = False
+        if key == "ctrl-q":
+            return
+        if key == "back":
+            host = read_host(CURRENT)
+            if not host:
+                return
+            exit_code = attach(host)
+        elif key == "ctrl-o":
+            host = read_host(PREVIOUS)
+            if not host:
+                continue
+            exit_code = attach(host)
+        else:
+            host, pane, session, _ = row.split("\t", 3)
+            if pane == "-":  # Unavailable host: nothing to attach to.
+                continue
+            exit_code = attach(host, pane, session)
+
+        if exit_code not in (0, 10):
+            continue
+        # Prefix + O returns exit code 10; go straight to the previous host.
+        previous_requested = exit_code == 10
+        current_host = read_host(CURRENT)
+        if current_host and current_host != host:
+            _ = PREVIOUS.write_text(current_host + "\n")
+        _ = CURRENT.write_text(host + "\n")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
