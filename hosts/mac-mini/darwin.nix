@@ -147,5 +147,6 @@ in
   # 4. go to settings => general => sharing => screen sharing => tick "vnc viewers may control..."
   # 5. (then can run `task os:build`)
   # 6. search for "full disk access" in mac settings and enable it for mautrix-imessage
+  # 7. run bluebubbles app, then grant permissions and set server password to the value, found in `mautrix-imessage-config.age` where it says `bluebubbles_password`
 
 }
