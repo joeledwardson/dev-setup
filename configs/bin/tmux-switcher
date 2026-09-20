@@ -27,25 +27,34 @@ class Row(NamedTuple):
     state: str = ""
     updated: int = 0
     error: str = ""
+    display: str = ""
 
     def print_fzf_line(self) -> None:
-        if self.error:
-            text = f"{self.host:<8} UNAVAILABLE: {' '.join(self.error.split())}"
+        if self.display:
+            text = self.display
+        elif self.error:
+            text = f"{self.host:<8.8} UNAVAILABLE: {' '.join(self.error.split())}"
         else:
             update_text = "—"
             if self.updated:
                 moment = datetime.datetime.fromtimestamp(self.updated, datetime.timezone.utc)
                 age = datetime.timedelta(seconds=max(0, int(time.time()) - self.updated))
                 update_text = f"{moment:%H:%M:%S UTC} ({age} ago)"
-            text = (f"{self.host:<8} {self.session_name:<12} "
-                    f"{self.window_index}.{self.pane_index:<3} {self.window_name:<14} "
-                    f"{self.agent:<10} {self.state or '—':<12} {update_text}")
+            text = (f"{self.host:<8.8} {self.session_name:<12.12} "
+                    f"{self.window_index}.{self.pane_index:<3} {self.window_name:<14.14} "
+                    f"{self.agent:<10.10} {self.state or '—':<12.12} {update_text}")
         # fzf hides the first three columns; they identify the pane to preview/attach.
         print(f"{self.host}\t{self.pane_id}\t{self.session_id}\t{text}", flush=True)
 
+    @classmethod
+    def parse_fzf_line(cls, line: str) -> "Row":
+        """Recover the attachment target and display without decoding its labels."""
+        host, pane_id, session_id, display = line.split("\t", 3)
+        return cls(host=host, pane_id=pane_id, session_id=session_id, display=display)
 
-def run_tmux(host: str, *args: str) -> str:
-    command = ["tmux", "-u", *args]
+
+def run_on_host(host: str, *args: str) -> str:
+    command = list(args)
     if host != "local":
         command = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
                    "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
@@ -56,19 +65,48 @@ def run_tmux(host: str, *args: str) -> str:
     return result.stdout
 
 
+def activity_log_times(host: str, panes: list[str]) -> dict[str, int]:
+    """Read sidebar log mtimes; its pane metadata has no last-activity field."""
+    if not panes:
+        return {}
+    script = r'''
+for pane do
+    file="/tmp/tmux-agent-activity_${pane#%}.log"
+    [ -f "$file" ] || continue
+    updated=$(stat -c %Y "$file" 2>/dev/null) ||
+        updated=$(stat -f %m "$file" 2>/dev/null) || continue
+    printf '%s\t%s\n' "$pane" "$updated"
+done
+'''
+    try:
+        raw = run_on_host(host, "sh", "-c", script, "sh", *panes)
+    except (RuntimeError, subprocess.TimeoutExpired):
+        return {}
+    times = {}
+    for line in raw.splitlines():
+        pane, _, updated = line.partition("\t")
+        if updated.isdigit():
+            times[pane] = int(updated)
+    return times
+
+
 def panes_on_host(host: str) -> list[Row]:
     fields = (
         "pane_id", "session_id", "session_name", "window_index", "window_name", "pane_index",
         "pane_current_command", "@agent_state", "@agent_name", "@agent_updated",
+        "@pane_agent", "@pane_status", "@pane_started_at",
     )
     tmux_format = "\t".join("#{" + field + "}" for field in fields)
     try:
-        raw = run_tmux(host, "list-panes", "-a", "-F", tmux_format)
+        raw = run_on_host(host, "tmux", "-u", "list-panes", "-a", "-F", tmux_format)
     except (RuntimeError, subprocess.TimeoutExpired) as error:
         return [Row(host, error=str(error))]
+    panes = [dict(zip(fields, line.split("\t"))) for line in raw.splitlines()]
+    # Ignore leftover activity logs for panes no longer registered as agents.
+    times = activity_log_times(host, [pane["pane_id"] for pane in panes if pane["@pane_agent"]])
     rows: list[Row] = []
-    for line in raw.splitlines():
-        pane = dict(zip(fields, line.split("\t")))
+    for pane in panes:
+        timestamps = [pane["@agent_updated"], pane["@pane_started_at"]]
         rows.append(Row(
             host=host,
             session_name=pane["session_name"],
@@ -77,9 +115,10 @@ def panes_on_host(host: str) -> list[Row]:
             pane_index=int(pane["pane_index"]),
             pane_id=pane["pane_id"],
             session_id=pane["session_id"],
-            agent=pane["@agent_name"] or pane["pane_current_command"],
-            state=pane["@agent_state"],
-            updated=int(pane["@agent_updated"]) if pane["@agent_updated"].isdigit() else 0,
+            agent=pane["@pane_agent"] or pane["@agent_name"] or pane["pane_current_command"],
+            state=pane["@pane_status"] or pane["@agent_state"],
+            updated=max(times.get(pane["pane_id"], 0),
+                        *(int(value) if value.isdigit() else 0 for value in timestamps)),
         ))
     return rows
 
@@ -93,17 +132,19 @@ def print_rows() -> None:
     current_host = read_host(CURRENT)
     hosts = sorted(set(hosts), key=lambda host: (host != current_host, host))
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(hosts)) as pool:
-        for batch in pool.map(panes_on_host, hosts):
-            for row in sorted(batch, key=lambda row: (
-                row.session_name, row.window_name, row.window_index, row.pane_index,
-            )):
-                row.print_fzf_line()
+        rows = [row for batch in pool.map(panes_on_host, hosts) for row in batch]
+    # Sort globally: a recent remote agent must precede an older local agent.
+    for row in sorted(rows, key=lambda row: (
+        bool(row.error), -row.updated, row.host != current_host, row.host,
+        row.session_name, row.window_name, row.window_index, row.pane_index,
+    )):
+        row.print_fzf_line()
 
 
 def pick() -> tuple[str, str]:
     result = subprocess.run([
         "fzf", "--delimiter", "\t", "--with-nth", "4", "--layout=reverse", "--no-sort",
-        "--prompt", "All hosts > ",
+        "--prompt", "All hosts · recent activity > ",
         "--header", "Enter: attach · Esc: back · Ctrl+o: previous host · Ctrl+r: refresh · Ctrl+q: quit",
         "--expect", "ctrl-o,ctrl-q", "--with-shell", "sh -c",
         "--preview-window", "down,40%,wrap", "--preview", f"{SELF_COMMAND} preview {{1}} {{2}}",
@@ -124,7 +165,7 @@ def preview(host: str, pane: str) -> None:
         return
     print("Loading preview…", flush=True)
     try:
-        print("\033[2J" + run_tmux(host, "capture-pane", "-ep", "-t", pane), end="")
+        print("\033[2J" + run_on_host(host, "tmux", "-u", "capture-pane", "-ep", "-t", pane), end="")
     except (RuntimeError, subprocess.TimeoutExpired) as error:
         print("\033[2JPreview unavailable:", str(error))
 
@@ -155,15 +196,19 @@ def attach(host: str, pane: str = "", session: str = "") -> int:
 
 def main() -> None:
     args = sys.argv[1:]
-    if args == ["rows"]:
+    command = args.pop(0) if args else ""
+    argument_counts = {"": 0, "open": 0, "previous": 0, "rows": 0, "preview": 2}
+    if command not in argument_counts or len(args) != argument_counts[command]:
+        sys.exit("Usage: tmux-switcher [open | previous | rows | preview HOST PANE]")
+    if command == "rows":
         print_rows()
         return
-    if len(args) == 3 and args[0] == "preview":
-        host, pane = args[1:]
+    if command == "preview":
+        host, pane = args
         preview(host, pane)
         return
-    previous_requested = args == ["previous"]
-    if args in (["open"], ["previous"]):
+    previous_requested = command == "previous"
+    if command in ("open", "previous"):
         # Called by detach-client -E. Return to the waiting controller, even over SSH.
         if os.environ.get("SWITCHER_CONTROLLER") == "1":
             sys.exit(10 if previous_requested else 0)
@@ -174,10 +219,8 @@ def main() -> None:
         if current_host and current_host != "local":
             _ = PREVIOUS.write_text(current_host + "\n")
         _ = CURRENT.write_text("local\n")
-    elif args:
-        sys.exit("Usage: tmux-switcher [open | previous | rows | preview HOST PANE]")
     if os.environ.get("TMUX"):
-        sys.exit("Start outside tmux, or use prefix + S.")
+        sys.exit("Start outside tmux, or use prefix + Space.")
 
     while True:
         if previous_requested:
@@ -198,10 +241,11 @@ def main() -> None:
                 continue
             exit_code = attach(host)
         else:
-            host, pane, session, _ = row.split("\t", 3)
-            if pane == "-":  # Unavailable host: nothing to attach to.
+            selected = Row.parse_fzf_line(row)
+            if selected.pane_id == "-":  # Unavailable host: nothing to attach to.
                 continue
-            exit_code = attach(host, pane, session)
+            host = selected.host
+            exit_code = attach(host, selected.pane_id, selected.session_id)
 
         if exit_code not in (0, 10):
             continue
