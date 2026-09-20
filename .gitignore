@@ -49,3 +49,6 @@ plans/
 .worktrees/
 # worktrees (git wt)
 .wt/
+
+# codex/claude experimental stuff
+experiments/
