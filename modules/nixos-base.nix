@@ -406,8 +406,14 @@ in {
   # Put ~/.local/bin on PATH so the xdg-open shim shadows the system one.
   environment.localBinInPath = true;
 
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  # Disable password-based SSH logins by default, including PAM prompts.
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = lib.mkDefault false;
+      KbdInteractiveAuthentication = lib.mkDefault false;
+    };
+  };
 
   # enable flakes and nix command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

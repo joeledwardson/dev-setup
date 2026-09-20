@@ -71,11 +71,6 @@ in {
   networking.hostName = "streaming-server";
   my.ssh.defaultUser = "claude";
 
-  services.openssh.settings = {
-    PasswordAuthentication = true;
-    KbdInteractiveAuthentication = false;
-  };
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users = {
     claude = {
