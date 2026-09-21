@@ -34,6 +34,12 @@
     };
   };
 
+  # Force real S3 suspend-to-RAM ("deep") instead of the firmware default
+  # "s2idle" (modern standby). s2idle keeps the platform in a light sleep that
+  # drains ~10%/hr, flattening the battery overnight; deep drops to ~1%/hr.
+  # The nvidia powerManagement services below handle dGPU state across S3.
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
+
   # Define your hostname.
   networking.hostName = "degen-work";
   my.ssh.defaultUser = "jollof";
