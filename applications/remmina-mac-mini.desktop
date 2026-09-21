@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=VNC: Mac Mini
+Comment=Connect to Joel's Mac Mini using Remmina
+Icon=org.remmina.Remmina
+Exec=remmina -c /home/joelyboy/.local/share/remmina/personal_vnc_mac-mini_joels-mac-mini.remmina
+Categories=Network;RemoteAccess;
+Keywords=Remmina;VNC;Remote;Mac Mini;
+Terminal=false
+StartupNotify=true

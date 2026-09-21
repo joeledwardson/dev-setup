@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=VNC: Worker 207
+Comment=Connect to Worker 207 using Remmina
+Icon=org.remmina.Remmina
+Exec=remmina -c /home/joelyboy/.local/share/remmina/personal_vnc_worker-207_worker207.remmina
+Categories=Network;RemoteAccess;
+Keywords=Remmina;VNC;Remote;Worker 207;
+Terminal=false
+StartupNotify=true
