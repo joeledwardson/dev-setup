@@ -30,7 +30,7 @@ vim.pack.add({
   'https://github.com/yarospace/lua-console.nvim',
   'https://github.com/joeledwardson/joels-lua-utils',
   'https://github.com/epheien/outline-treesitter-provider.nvim',
-  'https://github.com/hedyhli/outline.nvim',
+  'https://github.com/joels-claude-bot/outline.nvim',
   'https://github.com/Shatur/neovim-session-manager',
   'https://github.com/folke/trouble.nvim',
 }, { confirm = false })
