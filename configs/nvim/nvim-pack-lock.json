@@ -106,8 +106,8 @@
       "src": "https://github.com/epheien/outline-treesitter-provider.nvim"
     },
     "outline.nvim": {
-      "rev": "2a132953b944561d45b52e4541ebfff71934a742",
-      "src": "https://github.com/hedyhli/outline.nvim"
+      "rev": "927e4e3d6e4a41a4857b1f35de2add105202bb34",
+      "src": "https://github.com/joels-claude-bot/outline.nvim"
     },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
