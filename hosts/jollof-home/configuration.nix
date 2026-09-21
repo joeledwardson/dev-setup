@@ -2,13 +2,22 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ pkgs, inputs, config, commonGroups, ... }:
+{
+  pkgs,
+  inputs,
+  config,
+  commonGroups,
+  ...
+}:
 
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
+    (import ../../modules/nixos-secrets.nix {
+      owner = "jollof";
+      enableGcal = true;
+    })
     ../../modules/nixos-dictation.nix # local voice dictation (hyprwhspr-rs)
     ../../modules/nixos-netbird.nix # netbird mesh VPN client (wt0) — manual connect/disconnect
   ];
@@ -99,7 +108,9 @@
   # NVIDIA Configuration
   # =======================================
 
-  hardware.graphics = { enable = true; };
+  hardware.graphics = {
+    enable = true;
+  };
 
   # Load NVIDIA driver for Xorg and Wayland
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -116,8 +127,7 @@
     nvidiaSettings = true;
 
     # Optionally, you may select a specific driver version
-    package =
-      config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
+    package = config.boot.kernelPackages.nvidiaPackages.stable; # or .stable or .beta
 
     # Enable power management (can cause sleep/suspend issues on some laptops)
     powerManagement.enable = true;
@@ -133,7 +143,10 @@
     packages = [ pkgs.recyclarr ];
   };
   # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "jollof" ];
+  nix.settings.trusted-users = [
+    "root"
+    "jollof"
+  ];
 
   # =======================================
   # Additional Configuration

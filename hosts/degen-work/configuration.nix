@@ -2,10 +2,20 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, commonGroups, ... }: {
-  imports = [ # Include the results of the hardware scan.
+{
+  config,
+  pkgs,
+  commonGroups,
+  ...
+}:
+{
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
+    (import ../../modules/nixos-secrets.nix {
+      owner = "jollof";
+      enableGcal = true;
+    })
   ];
 
   # boot configuration
@@ -51,7 +61,10 @@
     packages = [ ];
   };
   # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "jollof" ];
+  nix.settings.trusted-users = [
+    "root"
+    "jollof"
+  ];
 
   # =======================================
   # NVIDIA Configuration (hybrid graphics)

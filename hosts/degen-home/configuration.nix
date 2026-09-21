@@ -2,12 +2,21 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, commonGroups, ... }:
+{
+  config,
+  pkgs,
+  commonGroups,
+  ...
+}:
 
 {
-  imports = [ # Include the results of the hardware scan.
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/nixos-secrets.nix { owner = "jollof"; })
+    (import ../../modules/nixos-secrets.nix {
+      owner = "jollof";
+      enableGcal = true;
+    })
   ];
 
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:trusted" ];
@@ -53,11 +62,21 @@
   # =======================================
   # Media server
   # =======================================
-  services.sabnzbd = { enable = true; };
-  services.nzbget = { enable = true; };
-  services.sonarr = { enable = true; };
-  services.radarr = { enable = true; };
-  services.prowlarr = { enable = true; };
+  services.sabnzbd = {
+    enable = true;
+  };
+  services.nzbget = {
+    enable = true;
+  };
+  services.sonarr = {
+    enable = true;
+  };
+  services.radarr = {
+    enable = true;
+  };
+  services.prowlarr = {
+    enable = true;
+  };
 
   # =======================================
   # Bluetooth Configuration
@@ -77,7 +96,11 @@
   services.udisks2.enable = true;
 
   # MTP filesystem tools for mounting devices
-  environment.systemPackages = with pkgs; [ libmtp jmtpfs go-mtpfs ];
+  environment.systemPackages = with pkgs; [
+    libmtp
+    jmtpfs
+    go-mtpfs
+  ];
 
   # =======================================
   # Accounts Configuration
@@ -91,7 +114,10 @@
     packages = [ ];
   };
   # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "jollof" ];
+  nix.settings.trusted-users = [
+    "root"
+    "jollof"
+  ];
 
   # =======================================
   # Ollama (local LLMs)

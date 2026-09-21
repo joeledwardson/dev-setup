@@ -81,6 +81,7 @@ in
   "matrix-doublepuppet-env.age".publicKeys = allHosts;
   # iMessage bridge config on macOS and matching appservice registration on pi-box.
   # Both files contain the same as_token and hs_token pair.
+  # NOTE: this has the destination fully formed tailscale URL, changing tailnet requires changing this also
   "mautrix-imessage-config.age".publicKeys = allHosts;
   "mautrix-imessage-registration.age".publicKeys = allHosts;
 
@@ -119,7 +120,7 @@ in
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
   # needs my personal email adding as "test user" in audience: https://console.cloud.google.com/auth/audience
-  "gcal-client-id".publicKeys = trustedHosts;
-  "gcal-client-secret".publicKeys = trustedHosts;
+  "gcal-client-id.age".publicKeys = trustedHosts;
+  "gcal-client-secret.age".publicKeys = trustedHosts;
 
 }

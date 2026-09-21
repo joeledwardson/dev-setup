@@ -1,13 +1,22 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, commonGroups, ... }:
+# and in the NixOS manual (accessible by running ‘nixos-help’).desktopconfig
 
 {
-  imports = [ # Include the results of the hardware scan.
+  config,
+  pkgs,
+  commonGroups,
+  ...
+}:
+
+{
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/nixos-secrets.nix { owner = "joelyboy"; })
+    (import ../../modules/nixos-secrets.nix {
+      owner = "joelyboy";
+      enableGcal = true;
+    })
   ];
 
   # Build pi-box locally using QEMU to run ARM64 build steps.
@@ -93,8 +102,7 @@
     host = "0.0.0.0";
     package = pkgs.ollama-cuda;
     environmentVariables = {
-      OLLAMA_FLASH_ATTENTION =
-        "1"; # my card (RTX 3060) is modern enough for this
+      OLLAMA_FLASH_ATTENTION = "1"; # my card (RTX 3060) is modern enough for this
       OLLAMA_KV_CACHE_TYPE = "q8_0"; # free up some VRAM
     };
 
@@ -115,7 +123,9 @@
   # =======================================
   # NVIDIA Configuration
   # =======================================
-  hardware.graphics = { enable = true; };
+  hardware.graphics = {
+    enable = true;
+  };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -150,5 +160,8 @@
     packages = with pkgs; [ drawio ];
   };
   # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "joelyboy" ];
+  nix.settings.trusted-users = [
+    "root"
+    "joelyboy"
+  ];
 }

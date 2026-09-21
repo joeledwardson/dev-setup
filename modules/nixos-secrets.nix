@@ -1,4 +1,4 @@
-{ owner }:
+{ owner, enableGcal ? false }:
 let
   # Secrets the importing host should expose to its login user. All get the same
   # treatment: owned by `owner`, group `users`, mode 0440 (so the user can read
@@ -9,8 +9,7 @@ let
     group = "users";
     mode = "0440";
   };
-in {
-  age.secrets = {
+  baseSecrets = {
     llm-gemini-key = mkSecret ../secrets/llm-gemini-key.age;
     litellm-env = mkSecret ../secrets/litellm-env.age;
     hermes-env = mkSecret ../secrets/hermes-env.age;
@@ -21,4 +20,16 @@ in {
     sandbox-github-token = mkSecret ../secrets/sandbox-github-token.age;
     sandbox-gitlab-token = mkSecret ../secrets/sandbox-gitlab-token.age;
   };
+  gCalSecrets =
+    if enableGcal then
+      {
+        gcal-client-id = mkSecret ../secrets/gcal-client-id.age;
+        gcal-client-secret = mkSecret ../secrets/gcal-client-secret.age;
+      }
+    else
+      { };
+in
+{
+  age.secrets = baseSecrets // gCalSecrets;
+
 }

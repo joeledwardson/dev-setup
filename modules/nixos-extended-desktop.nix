@@ -58,20 +58,6 @@
 
   ];
 
-  # Personal Google Calendar OAuth credentials for gcalcli.
-  age.secrets = {
-    gcal-client-id = {
-      file = ../secrets/gcal-client-id;
-      owner = "jollof";
-      mode = "0400";
-    };
-    gcal-client-secret = {
-      file = ../secrets/gcal-client-secret;
-      owner = "jollof";
-      mode = "0400";
-    };
-  };
-
   # use gnome keywring in remmina
   services.gnome.gnome-keyring.enable = true;
   # enable gnome keywring on login

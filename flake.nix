@@ -122,7 +122,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
-            ./hosts/desktop-work/configuration.nix
+            ./hosts/joel-desktop-work/configuration.nix
           ];
         };
 
