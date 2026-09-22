@@ -16,7 +16,7 @@ tasks:
       - hyprctl activewindow &>/dev/null && hyprctl reload || true
 
   os:all:
-    desc: Full system rebuild — os:build, dotbot:run, remmina:push, remmina:configure, codex:configure, zsh:sheldon-lock, yazi, tmux:tpm, tmux:reload, hyprland:reload
+    desc: Full system rebuild — os:build, dotbot:run, remmina:push, remmina:configure, codex:configure, zsh:sheldon-lock, yazi, tmux:tpm, tmux:reload, firefox:profiles, hyprland:reload
     cmds:
       - task: os:build
       - task: dotbot:run
@@ -30,6 +30,7 @@ tasks:
       - task: tmux:tpm-setup
       - task: tmux:reload
       - task: brave:apply
+      - task: firefox:profiles
       - task: hyprland:reload
 
   os:build:
@@ -159,6 +160,14 @@ tasks:
       - cp dev-image/claude.json ~/.claude.json
     status:
       - test -e ~/.claude.json
+
+  firefox:profiles:
+    desc: Create personal, work and ibankroll Firefox profile directories
+    cmds:
+      - |
+        for profile in personal-profile work-profile ibankroll-profile; do
+          mkdir -p "$HOME/.mozilla/firefox/$profile"
+        done
 
   brave:apply:
     desc: Apply custom configs to every Brave profile listed in Local State

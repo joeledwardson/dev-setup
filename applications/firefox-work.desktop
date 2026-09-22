@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Firefox (Work WhiteSwan)
+Comment=Launch Firefox with work profile
+Icon=firefox
+Exec=sh -c "exec firefox --profile ~/.mozilla/firefox/work-profile \\"\\$@\\"" firefox %u
+Categories=Network;WebBrowser;
+Terminal=false
+StartupNotify=true
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;x-scheme-handler/http;x-scheme-handler/https;
