@@ -40,7 +40,7 @@ class Row(NamedTuple):
                 moment = datetime.datetime.fromtimestamp(self.updated, datetime.timezone.utc)
                 age = datetime.timedelta(seconds=max(0, int(time.time()) - self.updated))
                 update_text = f"{moment:%H:%M:%S UTC} ({age} ago)"
-            text = (f"{self.host:<8.8} {self.session_name:<12.12} "
+            text = (f"{self.host:<12.12} {self.session_name:<12.12} "
                     f"{self.window_index}.{self.pane_index:<3} {self.window_name:<14.14} "
                     f"{self.agent:<10.10} {self.state or '—':<12.12} {update_text}")
         # fzf hides the first three columns; they identify the pane to preview/attach.
