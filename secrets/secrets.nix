@@ -86,6 +86,8 @@ in
   # set the same password in the Mac app. Reuse existing age keys and AS tokens.
   # No extra secret file is required.
   "mautrix-imessage-config.age".publicKeys = allHosts;
+  # Synapse requires de.sorunome.msc2409.push_ephemeral: true here to forward
+  # read receipts and typing. Synapse ignores receive_ephemeral in this registration.
   "mautrix-imessage-registration.age".publicKeys = allHosts;
 
   # sandbox machine credentials (joels-claude-bot accounts)
