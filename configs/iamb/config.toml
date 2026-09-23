@@ -16,6 +16,9 @@ dms = ["invite", "unread", "recent"]
 
 [settings]
 username_display = "displayname"
+# Forward reads to bridges when the focused chat is scrolled to its newest message.
+read_receipt_send = true
+read_receipt_trigger = "focused"
 
 
 [macros.normal]
@@ -23,5 +26,4 @@ username_display = "displayname"
 
 [dirs]
 downloads = "$HOME/Downloads/matrix"
-
 

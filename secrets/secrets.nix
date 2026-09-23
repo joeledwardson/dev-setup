@@ -82,6 +82,9 @@ in
   # iMessage bridge config on macOS and matching appservice registration on pi-box.
   # Both files contain the same as_token and hs_token pair.
   # NOTE: this has the destination fully formed tailscale URL, changing tailnet requires changing this also
+  # BlueBubbles cutover: add imessage.bluebubbles_password to the config file;
+  # set the same password in the Mac app. Reuse existing age keys and AS tokens.
+  # No extra secret file is required.
   "mautrix-imessage-config.age".publicKeys = allHosts;
   "mautrix-imessage-registration.age".publicKeys = allHosts;
 

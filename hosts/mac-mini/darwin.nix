@@ -10,6 +10,12 @@ let
   mautrix-imessage = pkgs.callPackage ../../pkgs/mautrix-imessage.nix { };
 in
 {
+  imports = [ ./bluebubbles.nix ];
+
+  # App permissions, password and Private API have been configured manually.
+  # The actual backend is selected in mautrix-imessage-config.age.
+  local.bluebubbles.startAtLogin = true;
+
   # This is still macOS. nix-darwin only manages the declared settings and
   # services on top of it.
   nixpkgs.hostPlatform = "aarch64-darwin";
@@ -51,8 +57,8 @@ in
       /Users/${user}/Library/Logs/mautrix-imessage
   '';
 
-  # This must be a user agent: the bridge reads jollof's Messages database and
-  # drives Messages.app in the logged-in GUI session.
+  # Keep the bridge in jollof's session and retain its state across backend
+  # changes. Both backends use the same upstream bridge executable.
   launchd.user.agents.mautrix-imessage = {
     # --no-update: the bridge rewrites its config on startup via a temp file in
     # the config's own directory, and /run/agenix is root-owned so that always
@@ -141,5 +147,9 @@ in
   # 4. go to settings => general => sharing => screen sharing => tick "vnc viewers may control..."
   # 5. (then can run `task os:build`)
   # 6. search for "full disk access" in mac settings and enable it for mautrix-imessage
+  # 7. run bluebubbles app, then grant permissions and set server password to the value, found in `mautrix-imessage-config.age` where it says `bluebubbles_password`
+  # 8. enable Private API; use Nix for startup and disable the app's own launch-at-login option
+  # 9. after changing backend or Private API settings, wait for BlueBubbles to be ready, then run:
+  #    launchctl kickstart -k gui/$(id -u)/org.nixos.mautrix-imessage
 
 }
