@@ -12,9 +12,9 @@ in
 {
   imports = [ ./bluebubbles.nix ];
 
-  # Configure app permissions, password and Private API before enabling startup.
+  # App permissions, password and Private API have been configured manually.
   # The actual backend is selected in mautrix-imessage-config.age.
-  local.bluebubbles.startAtLogin = false;
+  local.bluebubbles.startAtLogin = true;
 
   # This is still macOS. nix-darwin only manages the declared settings and
   # services on top of it.
@@ -148,5 +148,8 @@ in
   # 5. (then can run `task os:build`)
   # 6. search for "full disk access" in mac settings and enable it for mautrix-imessage
   # 7. run bluebubbles app, then grant permissions and set server password to the value, found in `mautrix-imessage-config.age` where it says `bluebubbles_password`
+  # 8. enable Private API; use Nix for startup and disable the app's own launch-at-login option
+  # 9. after changing backend or Private API settings, wait for BlueBubbles to be ready, then run:
+  #    launchctl kickstart -k gui/$(id -u)/org.nixos.mautrix-imessage
 
 }
