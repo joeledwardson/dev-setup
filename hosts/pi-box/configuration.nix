@@ -3,6 +3,7 @@
 let
   # tailnet name this box is served at (domain shared via modules/tailnet.nix).
   tailnetFqdn = (import ../../modules/tailnet.nix).fqdnFor "pi-box";
+  ssh-keys = import ../../secrets/host-keys.nix;
 in {
   imports = [
     # Build a bootable Raspberry Pi image: firmware partition (Pi firmware +
@@ -78,12 +79,14 @@ in {
   users.users = {
     jollof = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "jollof";
       initialPassword = "password";
       extraGroups = commonGroups;
     };
     claude = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;
@@ -269,7 +272,8 @@ in {
             connections = 20;
             ssl = true;
             priority = 0;
-            retention = 3000;
+            # some stupid setting that caused sabnzbd to silently fail if a video is old?
+            retention = 0;
           }
         ];
       };

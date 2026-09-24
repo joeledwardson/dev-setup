@@ -8,6 +8,7 @@
 let
   user = "jollof";
   mautrix-imessage = pkgs.callPackage ../../pkgs/mautrix-imessage.nix { };
+  ssh-keys = import ../../secrets/host-keys.nix;
 in
 {
   imports = [ ./bluebubbles.nix ];
@@ -24,6 +25,10 @@ in
   networking.hostName = "joels-mac-mini";
   system.primaryUser = user;
 
+  # LAN fallback if Tailscale is unavailable. From a source machine, use:
+  # sudo ssh -i /etc/ssh/ssh_host_ed25519_key jollof@<mac-lan-ip>
+  users.users.${user}.openssh.authorizedKeys.keys = ssh-keys.trustedHosts;
+
   # Keep Nix builds isolated from the rest of the machine.
   nix.settings = {
     experimental-features = [
@@ -33,7 +38,15 @@ in
   };
 
   # Both services are managed as native macOS launchd jobs.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    extraConfig = ''
+      AuthenticationMethods publickey
+      PubkeyAuthentication yes
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+    '';
+  };
   services.tailscale.enable = true;
   # nix-darwin has no extraSetFlags option. Retry until tailscaled is ready.
   launchd.daemons.tailscale-ssh = {

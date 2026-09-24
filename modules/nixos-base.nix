@@ -193,6 +193,7 @@ in {
     fastfetch # fancy temrinal output
     moor # better version of less (i hate stupid less keybindings no escape etc)
     gptfdisk # GPT disk management
+    iw # wireless helper
 
     ### hardware tools
     lm_sensors # temperature monitoring

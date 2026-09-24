@@ -8,7 +8,9 @@
   commonGroups,
   ...
 }:
-
+let
+  ssh-keys = import ../../secrets/host-keys.nix;
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -153,6 +155,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {
     isNormalUser = true;
+    openssh.authorizedKeys.keys = ssh-keys.trustedHosts;
     description = "joelyboy";
     initialPassword = "password";
     # add libvrtd groups (see https://wiki.nixos.org/wiki/Virt-manager)

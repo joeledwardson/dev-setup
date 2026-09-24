@@ -1,5 +1,7 @@
 { pkgs, config, commonGroups, ... }:
-
+let
+  ssh-keys = import ../../secrets/host-keys.nix;
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -43,12 +45,14 @@
   users.users = {
     jollof = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "jollof";
       initialPassword = "password";
       extraGroups = commonGroups;
     };
     claude = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;

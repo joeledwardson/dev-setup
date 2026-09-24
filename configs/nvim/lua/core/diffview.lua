@@ -1,4 +1,9 @@
 require('diffview').setup {
+  file_panel = {
+    win_config = {
+      width = 45,
+    },
+  },
   hooks = {
     -- Diffview sets `foldmethod=diff` on its windows, which folds everything
     -- outside `diffopt` context and leaks a stuck `foldmethod=diff` into any

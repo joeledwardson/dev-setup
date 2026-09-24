@@ -244,3 +244,44 @@ OLD (claudes style)
 - NOTE: prod runs at `LOG_LEVEL=info` (config.ts default when NODE_ENV=production) so `debug` records are dropped unless `LOG_LEVEL=debug` is set on the box.
 ```
 
+
+---
+
+## Test fixtures: say what you're making
+A fixture that takes a count and decides the rest for you is unreadable at the call site.
+Found this reviewing e2e seed helpers. `seedAssets(6)` — six of what? Turns out 3 images and 3 videos, alternating, because of `index % 2`.
+
+The rules
+- a fixture name says what it makes, not what it does. `seedImageAssets` / `seedVideoAssets`, not `seedAssets`
+- anything the test's assertions depend on (file type, job type, status, order) is an argument, not a constant hidden in the body
+- if you need both kinds, call the function twice. two explicit calls beat one clever loop
+- never derive variety from the loop index
+- name it after the thing in the database, not the reason you wrote it. `createSegmentationPreJob` (the type it inserts), not `createProbeDisplayJob` (the test that needed it)
+
+OLD
+
+```ts
+export async function seedAssets(total: number) {
+	for (let index = 0; index < total; index++) {
+		const isImage = index % 2 === 0;
+		await db.insert(assets).values({
+			contentType: isImage ? 'image/png' : 'video/mp4',
+			category: isImage ? 'upload' : 'asset',
+			...
+		});
+	}
+}
+// call site — no idea what you get
+const seeded = await seedAssets(6);
+```
+
+NEW
+
+```ts
+export async function seedAssets(kind: 'image' | 'video', total: number) { ... }
+// call site — obvious
+const images = await seedAssets('image', 3);
+const videos = await seedAssets('video', 3);
+```
+
+One more thing that bit here: the seed writes a database row with an `r2Key` but never puts any bytes in storage. That's fine, but only if the name or a comment says so — otherwise the next person writes a test that reads the file and spends an hour wondering why it 404s.

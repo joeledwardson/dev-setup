@@ -6,6 +6,7 @@
 
 let
   liteLLMPort = 9177; # generated port (just one i made up)
+  ssh-keys = import ../../secrets/host-keys.nix;
 
 in {
   imports = [
@@ -75,12 +76,14 @@ in {
   users.users = {
     claude = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;
     };
     streamer = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = ssh-keys.allHosts;
       description = "jollof";
       initialPassword = "password";
       extraGroups = commonGroups;
