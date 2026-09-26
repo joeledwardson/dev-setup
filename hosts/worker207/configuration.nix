@@ -6,11 +6,15 @@ in
   imports = [
     ./hardware-configuration.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
-    # Observability trial: beszel / monit / munin / zabbix / netdata side by
+    ../../modules/nixos-beszel-agent.nix
+    # Observability trial: monit / munin / zabbix / netdata side by
     # side, plus systemd + failed-login alerting. Self-contained — drop this
     # import to remove the lot.
     ./observability.nix
   ];
+
+  # Beszel agent connects to streaming-server over Tailscale, with SMART monitoring.
+  services.beszel.agent.smartmon.enable = true;
 
   # =======================================
   # Boot Configuration

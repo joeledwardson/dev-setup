@@ -22,11 +22,9 @@
 #   8086   openobserve
 #   8087   zabbix web        (nginx vhost -> php-fpm)
 #   8088   chronograf        — InfluxDB/Telegraf trial UI
-#   8090   beszel hub
 #   3001   uptime-kuma
 #   19999  netdata
 #   2812   monit
-#   45876  beszel agent      (localhost only, hub is on this same box)
 #   10050  zabbix agent      (localhost only)
 #   10051  zabbix server     (localhost only)
 #   8123   clickhouse http   (localhost only, signoz's telemetry store)
@@ -315,35 +313,6 @@ in
     settings = {
       listen-http = ":${toString ntfyPort}";
       base-url = "http://worker207:${toString ntfyPort}";
-    };
-  };
-
-  # =======================================
-  # Beszel — lightweight metrics (hub + agent)
-  # =======================================
-  # Hub is the dashboard + alert engine; agent is the ~10MB collector. Both on
-  # this box, so the agent stays on localhost.
-  #
-  # The agent's KEY is the HUB's public key — the hub proves its identity to the
-  # agent with it. The hub generates the keypair on its first start, at
-  # /var/lib/beszel-hub/beszel_data/id_ed25519, which is why this took two
-  # rebuilds. It is a public key, so inlining it (and thus putting it in the
-  # world-readable nix store) is fine; environmentFile is only needed for
-  # values that are actually secret.
-  services.beszel.hub = {
-    enable = true;
-    host = "0.0.0.0";
-    port = 8090;
-  };
-
-  services.beszel.agent = {
-    enable = true;
-    # Disk I/O and SMART health for the NVMe.
-    smartmon.enable = true;
-    environment = {
-      LISTEN = "45876";
-      KEY =
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILqazfe4EEXiMoKUe3dVl1Tvt+VNA7dBFkn1rhLsdV0l";
     };
   };
 
@@ -648,7 +617,7 @@ in
       endpoints = [
         {
           name = "beszel";
-          url = "http://127.0.0.1:8090/";
+          url = "http://streaming-server:8090/";
           interval = "60s";
           conditions = [ "[STATUS] == 200" ];
         }

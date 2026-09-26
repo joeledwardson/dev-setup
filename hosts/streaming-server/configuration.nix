@@ -58,6 +58,17 @@ in {
   };
 
   # =======================================
+  # Beszel monitoring hub
+  # =======================================
+  # http://streaming-server:8090; nixos-base opens ports 8000-9999.
+  # Persistent data is managed by the module in /var/lib/beszel-hub.
+  services.beszel.hub = {
+    enable = true;
+    host = "0.0.0.0";
+    port = 8090;
+  };
+
+  # =======================================
   # Cross-build for the Pi (aarch64)
   # =======================================
   # streaming-server is x86_64; building the pi-box aarch64 image needs QEMU

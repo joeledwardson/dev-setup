@@ -10,6 +10,7 @@ let
     mode = "0440";
   };
   baseSecrets = {
+    beszel-agent-env = mkSecret ../secrets/beszel-agent-env.age;
     llm-gemini-key = mkSecret ../secrets/llm-gemini-key.age;
     litellm-env = mkSecret ../secrets/litellm-env.age;
     hermes-env = mkSecret ../secrets/hermes-env.age;
