@@ -236,7 +236,7 @@ tasks:
           exit 0
         fi
         yq -i -p toml -o toml \
-          '.features.hooks = true | del(.features.codex_hooks)' \
+          '.features.hooks = true | del(.features.codex_hooks) | .tui.vim_mode_default = true' \
           "{{.CODEX_CONFIG}}"
 
   dev:build:
