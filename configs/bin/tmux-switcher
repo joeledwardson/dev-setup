@@ -11,8 +11,13 @@ from pathlib import Path
 from typing import NamedTuple
 
 SELF_COMMAND = shlex.join([sys.executable, str(Path(__file__).resolve())])
-CURRENT = Path("/tmp/tmux-current-hostname")
-PREVIOUS = Path("/tmp/tmux-previous-hostname")
+CURRENT = Path("/tmp/tmux-current-target")
+PREVIOUS = Path("/tmp/tmux-previous-target")
+
+
+class Target(NamedTuple):
+    host: str = ""
+    session_id: str = ""
 
 
 class Row(NamedTuple):
@@ -129,13 +134,15 @@ def print_rows() -> None:
         hosts += (Path.home() / ".tmux_remote_hosts").read_text().split()
     except FileNotFoundError:
         pass
-    current_host = read_host(CURRENT)
+    current = read_target(CURRENT)
+    current_host = current.host
     hosts = sorted(set(hosts), key=lambda host: (host != current_host, host))
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(hosts)) as pool:
         rows = [row for batch in pool.map(panes_on_host, hosts) for row in batch]
     # Sort globally: a recent remote agent must precede an older local agent.
     for row in sorted(rows, key=lambda row: (
-        bool(row.error), -row.updated, row.host != current_host, row.host,
+        bool(row.error), -row.updated,
+        (row.host, row.session_id) != current, row.host,
         row.session_name, row.window_name, row.window_index, row.pane_index,
     )):
         row.print_fzf_line()
@@ -145,7 +152,7 @@ def pick() -> tuple[str, str]:
     result = subprocess.run([
         "fzf", "--delimiter", "\t", "--with-nth", "4", "--layout=reverse", "--no-sort",
         "--prompt", "All hosts · recent activity > ",
-        "--header", "Enter: attach · Esc: back · Ctrl+o: previous host · Ctrl+r: refresh · Ctrl+q: quit",
+        "--header", "Enter: attach · Esc: back · Ctrl+o: previous session · Ctrl+r: refresh · Ctrl+q: quit",
         "--expect", "ctrl-o,ctrl-q", "--with-shell", "sh -c",
         "--preview-window", "down,40%,wrap", "--preview", f"{SELF_COMMAND} preview {{1}} {{2}}",
         "--bind", f"start:reload({SELF_COMMAND} rows),ctrl-r:reload({SELF_COMMAND} rows)",
@@ -170,10 +177,28 @@ def preview(host: str, pane: str) -> None:
         print("\033[2JPreview unavailable:", str(error))
 
 
-def read_host(path: Path) -> str:
+def read_target(path: Path) -> Target:
     try:
-        return path.read_text().strip()
+        host, _, session_id = path.read_text().strip().partition("\t")
+        return Target(host, session_id)
     except FileNotFoundError:
+        return Target()
+
+
+def write_target(path: Path, target: Target) -> None:
+    _ = path.write_text(f"{target.host}\t{target.session_id}\n")
+
+
+def current_tmux_session() -> str:
+    """Identify the session whose detach callback started this controller."""
+    pane = os.environ.get("TMUX_PANE")
+    if not pane:
+        return ""
+    try:
+        return run_on_host(
+            "local", "tmux", "-u", "display-message", "-p", "-t", pane, "#{session_id}"
+        ).strip()
+    except (RuntimeError, subprocess.TimeoutExpired):
         return ""
 
 
@@ -189,7 +214,7 @@ def attach(host: str, pane: str = "", session: str = "") -> int:
         command = ["ssh", "-t", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
                    "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
                    host, shlex.join(command)]
-    # Wait until detach. With only a hostname, tmux chooses its session.
+    # Wait until detach. If session discovery failed, tmux chooses its session.
     result = subprocess.run(command, check=False, env={**os.environ, "SWITCHER_CONTROLLER": "1"})
     return result.returncode
 
@@ -213,12 +238,13 @@ def main() -> None:
         if os.environ.get("SWITCHER_CONTROLLER") == "1":
             sys.exit(10 if previous_requested else 0)
         # A directly attached client has no waiting controller: start one here.
+        local_target = Target("local", current_tmux_session())
         _ = os.environ.pop("TMUX", None)
         _ = os.environ.pop("TMUX_PANE", None)
-        current_host = read_host(CURRENT)
-        if current_host and current_host != "local":
-            _ = PREVIOUS.write_text(current_host + "\n")
-        _ = CURRENT.write_text("local\n")
+        current = read_target(CURRENT)
+        if current.host and current != local_target:
+            write_target(PREVIOUS, current)
+        write_target(CURRENT, local_target)
     if os.environ.get("TMUX"):
         sys.exit("Start outside tmux, or use prefix + Space.")
 
@@ -231,30 +257,30 @@ def main() -> None:
         if key == "ctrl-q":
             return
         if key == "back":
-            host = read_host(CURRENT)
-            if not host:
+            target = read_target(CURRENT)
+            if not target.host:
                 return
-            exit_code = attach(host)
+            exit_code = attach(target.host, session=target.session_id)
         elif key == "ctrl-o":
-            host = read_host(PREVIOUS)
-            if not host:
+            target = read_target(PREVIOUS)
+            if not target.host:
                 continue
-            exit_code = attach(host)
+            exit_code = attach(target.host, session=target.session_id)
         else:
             selected = Row.parse_fzf_line(row)
             if selected.pane_id == "-":  # Unavailable host: nothing to attach to.
                 continue
-            host = selected.host
-            exit_code = attach(host, selected.pane_id, selected.session_id)
+            target = Target(selected.host, selected.session_id)
+            exit_code = attach(target.host, selected.pane_id, target.session_id)
 
         if exit_code not in (0, 10):
             continue
-        # Prefix + O returns exit code 10; go straight to the previous host.
+        # Prefix + O returns exit code 10; go straight to the previous target.
         previous_requested = exit_code == 10
-        current_host = read_host(CURRENT)
-        if current_host and current_host != host:
-            _ = PREVIOUS.write_text(current_host + "\n")
-        _ = CURRENT.write_text(host + "\n")
+        current = read_target(CURRENT)
+        if current.host and current != target:
+            write_target(PREVIOUS, current)
+        write_target(CURRENT, target)
 
 
 if __name__ == "__main__":
