@@ -1,19 +1,20 @@
 #!/bin/bash
-# Notification hook for Claude Code Stop / Notification events.
+# Notification hook for Claude Code and Codex lifecycle events.
 # Routes events to:
 #   1. ntfy.sh — always, unified desktop + mobile push
 #   2. notify-send — local errors / hook failures
 #
 # Hard guarantees:
-#   - Never blocks Claude. Watchdog SIGKILLs after HOOK_TIMEOUT seconds.
+#   - Never blocks the agent. Watchdog SIGKILLs after HOOK_TIMEOUT seconds.
 #   - Every external command is `timeout`-bounded.
 #   - Errors are surfaced via notify-send AND logged to /tmp/claude-notify-debug.log.
-#   - Always exits 0 — hooks must not propagate failure to Claude.
+#   - Always exits 0 — hooks must not propagate failure to the agent.
 set -uo pipefail
 
 HOOK_TIMEOUT=5
 DEBUG_LOG=/tmp/claude-notify-debug.log
 EVENT_LOG=/tmp/claude-notify-log.log
+AGENT_NAME=${1:-Claude}
 
 # ===== watchdog: kill self after HOOK_TIMEOUT no matter what =====
 (sleep "$HOOK_TIMEOUT" && kill -9 $$ 2>/dev/null) &
@@ -25,7 +26,7 @@ log_debug() { echo "[$(date -Iseconds)] $*" >>"$DEBUG_LOG"; }
 
 notify_error() {
     log_debug "ERROR: $*"
-    timeout 1 notify-send -u critical "Claude Hook Error" "$*" 2>/dev/null || true
+    timeout 1 notify-send -u critical "$AGENT_NAME Hook Error" "$*" 2>/dev/null || true
 }
 
 # Run a command with a per-call timeout. Logs failures, returns non-zero on failure.
@@ -43,7 +44,7 @@ safe_run() {
     printf '%s' "$output"
 }
 
-# ===== read input (Claude pipes the event JSON to stdin) =====
+# ===== read input (the agent pipes the event JSON to stdin) =====
 INPUT=$(timeout 1 cat) || {
     notify_error "notify-if-unfocused: stdin read timed out"
     exit 0
@@ -51,7 +52,12 @@ INPUT=$(timeout 1 cat) || {
 
 EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // "unknown"' 2>/dev/null) || EVENT=unknown
 PROJECT=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null | xargs basename 2>/dev/null) || PROJECT=""
-FULL_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // ""' 2>/dev/null) || FULL_MSG=""
+FULL_MSG=$(echo "$INPUT" | jq -r '
+    .last_assistant_message
+    // .message
+    // .tool_input.description?
+    // (if .tool_name then "Approval requested for " + .tool_name else "" end)
+' 2>/dev/null) || FULL_MSG=""
 if [ ${#FULL_MSG} -gt 200 ]; then
     MSG="${FULL_MSG:0:200}..."
 else
@@ -60,7 +66,7 @@ fi
 
 echo "$INPUT" >>"$EVENT_LOG"
 
-# ===== decide whether to fire (suppress when user is on the claude pane) =====
+# ===== decide whether to fire (suppress when user is on the agent pane) =====
 # On a local Hyprland host: suppress when terminal AND tmux pane both focused.
 # On remote/Docker/SSH (no hyprctl): always notify.
 should_notify() {
@@ -88,7 +94,7 @@ TOPIC="${NTFY_TOPIC:-jollof-claude}"
 if [ -z "$TOKEN" ] || [ -z "$TOPIC" ]; then
     exit 0
 fi
-if [ "$EVENT" = "Notification" ]; then
+if [ "$EVENT" = "Notification" ] || [ "$EVENT" = "PermissionRequest" ]; then
     tags="question"
     priority="high"
 else
@@ -96,7 +102,7 @@ else
     priority="default"
 fi
 timeout 3 curl -sS -u ":$TOKEN" \
-    -H "Title: Claude $EVENT / $PROJECT @ $(hostname)" \
+    -H "Title: $AGENT_NAME $EVENT / $PROJECT @ $(hostname)" \
     -H "Tags: $tags" \
     -H "Priority: $priority" \
     -d "$MSG" \

@@ -35,5 +35,4 @@ local function open_files()
   local current = vim.api.nvim_buf_get_name(0)
   mini_files.open(current ~= '' and current or nil)
 end
-vim.keymap.set('n', '<leader>e', open_files, { desc = 'mini.files explorer (miller columns)' })
 vim.keymap.set('n', '<leader>E', open_files, { desc = 'mini.files explorer (miller columns)' })

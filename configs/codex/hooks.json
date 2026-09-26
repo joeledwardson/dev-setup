@@ -31,12 +31,30 @@
         ]
       }
     ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh Codex",
+            "timeout": 6,
+            "async": true
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh codex stop"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/scripts/notify-if-unfocused.sh Codex",
+            "timeout": 6,
+            "async": true
           }
         ]
       }

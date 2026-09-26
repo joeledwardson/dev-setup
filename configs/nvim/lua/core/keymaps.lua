@@ -26,7 +26,7 @@ end, { desc = 'yank current file path to clipboard register' })
 vim.keymap.set({ 'n' }, '<Leader>ts', function()
   vim.lsp.buf.signature_help()
 end, { silent = true, noremap = true, desc = 'show signature help' })
-vim.keymap.set('n', '<leader>se', function()
+vim.keymap.set('n', '<leader>e', function()
   vim.diagnostic.open_float { focusable = true, focus = true }
 end, { desc = 'open diagnostic' })
 
