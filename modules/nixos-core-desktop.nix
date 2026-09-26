@@ -102,7 +102,7 @@
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart =
-        "${pkgs.wl-clip-persist}/bin/wl-clip-persist --clipboard regular --disable-timestamps";
+        "${pkgs.wl-clip-persist}/bin/wl-clip-persist --clipboard regular --ignore-event-on-error --disable-timestamps";
       Restart = "on-failure";
     };
   };
