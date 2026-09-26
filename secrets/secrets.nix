@@ -8,8 +8,7 @@ let
   inherit (import ./host-keys.nix) trustedHosts allHosts;
 in
 {
-  # Shared Beszel universal token + hub public key, as TOKEN= and KEY= lines.
-  # Obtain both from the streaming-server hub; see hosts/worker207/beszel.md.
+  # NOTE: these universal token + key must be be one-off grabbed from beszel dashboard, not possible to scaffold with nixos 😠
   "beszel-agent-env.age".publicKeys = allHosts;
   # gemini LLM API - grabbed from here https://aistudio.google.com/app/api-keys?project=heb7-287610
   "llm-gemini-key.age".publicKeys = allHosts;
