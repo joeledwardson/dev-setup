@@ -64,6 +64,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
@@ -82,6 +83,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
@@ -105,6 +107,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
@@ -119,6 +122,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
@@ -132,6 +136,7 @@
           specialArgs = mkArgs archSystem;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/pi-box/configuration.nix
@@ -148,6 +153,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-sandbox.nix
@@ -162,6 +168,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./modules/nixos-hermes.nix
@@ -175,6 +182,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-sandbox.nix
@@ -197,6 +205,7 @@
           specialArgs = mkArgs "aarch64-darwin";
           modules = [
             inputs.agenix.darwinModules.default
+            ./modules/darwin-beszel-agent.nix
             ./modules/nixos-sandbox.nix
             ./hosts/mac-mini/darwin.nix
           ];

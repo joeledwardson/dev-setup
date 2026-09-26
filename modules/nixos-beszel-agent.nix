@@ -1,5 +1,5 @@
 # Outbound monitoring over Tailscale. Import alongside nixos-secrets.nix.
-{ config, pkgs, ... }:
+{ config, ... }:
 {
   services.beszel.agent = {
     enable = true;
@@ -10,4 +10,5 @@
     };
     environmentFile = config.age.secrets.beszel-agent-env.path;
   };
+  systemd.services.beszel-agent.serviceConfig.StateDirectory = "beszel-agent";
 }
