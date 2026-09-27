@@ -1,27 +1,28 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ pkgs, pkgs-unstable, config, commonGroups, inputs, ... }:
+{ pkgs, config, commonGroups, ... }:
 
 let
-  liteLLMPort = 9177; # generated port (just one i made up)
   ssh-keys = import ../../secrets/host-keys.nix;
+  liteLLMPort = 9177;
+  liteLLMHttpsPort = 8443; # SparkyFitness owns :443; Matrix owns :8448.
 
 in {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
 
-    # add the nixarr module (consumed directly from flake inputs)
-    inputs.nixarr.nixosModules.default
+    ./matrix.nix
+    ./sparkyfitness.nix
+    ./nixflix.nix
 
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 
-  # =======================================
-  # Boot Configuration
-  # =======================================
+  fileSystems."/mnt/big-hdd" = {
+    device = "/dev/disk/by-uuid/115e7867-fda1-4601-94b5-61c1a3b2cfd5";
+    fsType = "ext4";
+    # Allow boot without the external HDD.
+    options = [ "nofail" "x-systemd.device-timeout=10s" ];
+  };
+
   boot.loader = {
     grub = {
       enable = true;
@@ -37,53 +38,19 @@ in {
     };
   };
 
-  # =======================================
-  # Media server 
-  # =======================================
-
-  nixarr = {
-    enable = true;
-    mediaDir = "/data/media";
-    stateDir = "/data/media/.state/nixarr";
-
-    sabnzbd.enable = true;
-    prowlarr.enable = true;
-    sonarr.enable = true;
-    radarr.enable = true;
-    plex.enable = true;
-
-    # Optional: VPN for downloads
-    # vpn.enable = true;
-    # sabnzbd.vpn.enable = true;
-  };
-
-  # =======================================
-  # Beszel monitoring hub
-  # =======================================
-  # http://streaming-server:8090; nixos-base opens ports 8000-9999.
-  # Persistent data is managed by the module in /var/lib/beszel-hub.
+  # Beszel hub: http://streaming-server:8090; state in /var/lib/beszel-hub.
   services.beszel.hub = {
     enable = true;
     host = "0.0.0.0";
     port = 8090;
   };
 
-  # =======================================
-  # Cross-build for the Pi (aarch64)
-  # =======================================
-  # streaming-server is x86_64; building the pi-box aarch64 image needs QEMU
-  # user-mode emulation so the aarch64 build/image-assembly steps can run here.
-  # Adds qemu + binfmt only — does not rebuild this host's apps.
+  # QEMU support for building pi-box images on this x86 host.
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
-  # =======================================
-  # Networking Configuration
-  # =======================================
-  # Define your hostname.
   networking.hostName = "streaming-server";
   my.ssh.defaultUser = "claude";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users = {
     claude = {
       isNormalUser = true;
@@ -92,82 +59,32 @@ in {
       initialPassword = "password";
       extraGroups = commonGroups;
     };
-    streamer = {
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allHosts;
-      description = "jollof";
-      initialPassword = "password";
-      extraGroups = commonGroups;
-    };
   };
-  # this stops devenv complaing every time we enter into a shell
-  nix.settings.trusted-users = [ "root" "streamer" "claude" ];
+  # Allow these users to configure Nix builds through devenv.
+  nix.settings.trusted-users = [ "root" "claude" ];
 
-  # --advertise-tags is supported by `tailscale up`, not `tailscale set`.
+  # Advertised tags are configured through tailscale up, not tailscale set.
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
   services.tailscale.extraSetFlags = [ "--operator=claude" ];
 
-  # wayvnc remote desktop
-  networking.firewall.allowedTCPPorts = [ 5900 ];
-
-  # kitty terminal support for SSH
-  environment.systemPackages = with pkgs; [
-    kitty.terminfo
-    wtype # Wayland text input
-    wayvnc # Wayland VNC server for remote check-ins
-  ];
-
-  # auto-start wayvnc when Hyprland is running
-  systemd.user.services.wayvnc = {
-    description = "wayvnc VNC server";
-    after = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.wayvnc}/bin/wayvnc 0.0.0.0";
-      Restart = "on-failure";
-      RestartSec = 3;
-    };
-  };
-
-  # auto-login claude and launch Hyprland via UWSM (activates graphical-session.target)
-  services.greetd = {
-    enable = true;
-    settings = {
-      initial_session = {
-        command = "uwsm start hyprland-uwsm.desktop";
-        user = "claude";
-      };
-      default_session = {
-        command = "uwsm start hyprland-uwsm.desktop";
-        user = "claude";
-      };
-    };
-  };
+  # Install terminal definitions for Kitty SSH sessions.
+  environment.systemPackages = [ pkgs.kitty.terminfo ];
 
   services.ollama = {
     enable = true;
 
-    # Declaratively pull models when the service starts
     loadModels = [ "qwen2.5vl:3b" ];
   };
 
-  # =======================================
-  # LiteLLM proxy
-  # =======================================
   services.litellm = {
     enable = true;
-    host = "127.0.0.1"; # localhost only; must use tailscale to access outside
+    host = "127.0.0.1"; # Remote access uses Tailscale Serve.
     port = liteLLMPort;
     environmentFile = config.age.secrets."litellm-env".path;
-    # API key for clients to use (see secrets.nix)
-    # `os.environ` syntax is litellm specific (see https://docs.litellm.ai/docs/proxy/config_settings#general_settings---reference)
+    # LiteLLM resolves this key from its environment file.
     settings.general_settings.master_key = "os.environ/LITELLM_MASTER_KEY";
-    # Extra models that can be added without a nixos rebuild: litellm appends the
-    # included file's model_list to the one below (see _process_includes in
-    # proxy_server.py). Edit the file as root, then `systemctl restart litellm`.
-    # The file MUST exist or litellm refuses to start, so the ExecStartPre below
-    # seeds an empty one on first run.
+    # Edit this file and restart LiteLLM to add models without rebuilding NixOS.
     settings.include = [ "/var/lib/litellm/models.yaml" ];
     settings.model_list = [
       {
@@ -179,7 +96,6 @@ in {
         };
       }
       {
-        # server local model hosted by ollama (see above)
         model_name = "qwen-vl";
         litellm_params = {
           model = "ollama/qwen2.5vl:3b";
@@ -187,9 +103,6 @@ in {
         };
       }
       {
-        # hosted Qwen3-Coder-30B-A3B (MoE) via OpenRouter, so we can trial a
-        # bigger agentic-coder model before buying the GPU to run it locally.
-        # OpenRouter is the live host; DeepInfra deprecated this exact model.
         model_name = "qwen3-coder";
         litellm_params = {
           model = "openrouter/qwen/qwen3-coder-30b-a3b-instruct";
@@ -197,10 +110,6 @@ in {
         };
       }
       {
-        # hosted Qwen3-VL-32B (vision) via OpenRouter — the tier-2 vision
-        # candidate from ADR-0005. Same 32B weights a used RTX 3090 (24GB)
-        # would run locally, so we can judge image->text quality here before
-        # spending on the GPU. Local `qwen-vl` above is the tier-1 3060 model.
         model_name = "qwen3-vl";
         litellm_params = {
           model = "openrouter/qwen/qwen3-vl-32b-instruct";
@@ -210,9 +119,7 @@ in {
     ];
   };
 
-  # Seed the include file for the litellm section above. Runs as the service's
-  # DynamicUser inside its StateDirectory, which is why this is an ExecStartPre
-  # and not a tmpfiles rule (/var/lib/litellm is a symlink systemd manages).
+  # Create the required include file as the service’s DynamicUser.
   systemd.services.litellm.serviceConfig.ExecStartPre = [
     (pkgs.writeShellScript "litellm-seed-models-yaml" ''
       if [ ! -e /var/lib/litellm/models.yaml ]; then
@@ -221,15 +128,15 @@ in {
     '')
   ];
 
-  # tailscale server tailnet HTTPS -> port litellm proxy
+  # Remote clients use HTTPS port 8443; the local API stays on 9177.
   systemd.services.litellm-tailscale-serve = {
-    description = "tailscale serve -> litellm proxy ${toString liteLLMPort}";
+    description = "tailscale serve :${toString liteLLMHttpsPort} -> litellm proxy";
     after = [ "tailscaled.service" "litellm.service" ];
     wants = [ "tailscaled.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve http://localhost:${
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=${toString liteLLMHttpsPort} http://localhost:${
           toString liteLLMPort
         }";
       Restart = "on-failure";

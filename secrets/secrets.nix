@@ -32,26 +32,20 @@ in
 
   # matrix registration secret key - just a generated random string
   "matrix-registration.age".publicKeys = allHosts;
-  # telegram app secrets
-  # 1. telegram app must be created via https://my.telegram.org/apps
-  # 2. review docs of nixos - secret file MUST match the env specification in services.mautrix-telegram.environmentFile
-  # 3. currently the format is `MAUTRIX_TELEGRAM_TELEGRAM_API_ID` and `MAUTRIX_TELEGRAM_TELEGRAM_API_HASH` keys
+
+  # telegram secrets - API ID + hash (from app) and "shared secret" (must match `as_token` from doublepuppet)
+  # NOTE: telegram app must be created via https://my.telegram.org/apps
   "mautrix-telegram-env.age".publicKeys = allHosts;
 
-  # 1. matrix-doublepuppet.age = the doublepuppet.yaml appservice registration (as_token + hs_token).
-  # 2. matrix-doublepuppet-env.age = DOUBLEPUPPET_AS_TOKEN=<same as_token> for the Go bridges.
-  #    (Telegram's token goes in mautrix-telegram-env.age as LOGIN_SHARED_SECRET_MAP instead.)
+  # the doublepuppet.yaml appservice registration (as_token + hs_token).
   "matrix-doublepuppet.age".publicKeys = allHosts;
+  # DOUBLEPUPPET_AS_TOKEN=<same as_token> for the Go bridges.
   "matrix-doublepuppet-env.age".publicKeys = allHosts;
-  # iMessage bridge config on macOS and matching appservice registration on pi-box.
-  # Both files contain the same as_token and hs_token pair.
-  # NOTE: this has the destination fully formed tailscale URL, changing tailnet requires changing this also
-  # BlueBubbles cutover: add imessage.bluebubbles_password to the config file;
-  # set the same password in the Mac app. Reuse existing age keys and AS tokens.
-  # No extra secret file is required.
+
+  # imessage bridge on macos, configured for bluebubbles (use same password as mac app) and dest => streaming-server
+  # NOTE: if synapse host URL changes, must be changed in this file
   "mautrix-imessage-config.age".publicKeys = allHosts;
-  # Synapse requires de.sorunome.msc2409.push_ephemeral: true here to forward
-  # read receipts and typing. Synapse ignores receive_ephemeral in this registration.
+  # The registration URL points back to the Mac bridge, not the homeserver.
   "mautrix-imessage-registration.age".publicKeys = allHosts;
 
   # sandbox machine credentials (joels-claude-bot accounts)
@@ -62,8 +56,7 @@ in
   # gitlab API (all access) token for joels-claude-bot - expires 21-05-2027
   "sandbox-gitlab-token.age".publicKeys = allHosts;
 
-  # nixflix media server secrets
-  # 1. the following are randomly generated keys for seeding
+  # nixflix media server secrets (randomly generated keys for seeding)
   "nixflix-sonarr-apikey.age".publicKeys = allHosts;
   "nixflix-sonarr-password.age".publicKeys = allHosts;
   "nixflix-radarr-apikey.age".publicKeys = allHosts;
@@ -80,11 +73,10 @@ in
   "nixflix-sabnzbd-username.age".publicKeys = allHosts;
   "nixflix-sabnzbd-password.age".publicKeys = allHosts;
 
-  # 2. the following are real credentials from external services
+  # nixflix media server secrets (real credentials from external services)
   "nixflix-usenet-eweka-username.age".publicKeys = allHosts;
   "nixflix-usenet-eweka-password.age".publicKeys = allHosts;
   "nixflix-indexer-nzbgeek.age".publicKeys = allHosts;
-  # TODO(vpn): "nixflix-wireguard-conf.age".publicKeys = allHosts;
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients

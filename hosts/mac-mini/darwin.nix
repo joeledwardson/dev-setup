@@ -73,9 +73,7 @@ in
   # Keep the bridge in jollof's session and retain its state across backend
   # changes. Both backends use the same upstream bridge executable.
   launchd.user.agents.mautrix-imessage = {
-    # --no-update: the bridge rewrites its config on startup via a temp file in
-    # the config's own directory, and /run/agenix is root-owned so that always
-    # fails. Safe here because the config has no `generate` placeholder values.
+    # --no-update keeps the bridge from rewriting the root-owned agenix config.
     command = "${mautrix-imessage}/bin/mautrix-imessage -c ${config.age.secrets.mautrix-imessage-config.path} --no-update";
     environment.HOME = "/Users/${user}";
     serviceConfig = {

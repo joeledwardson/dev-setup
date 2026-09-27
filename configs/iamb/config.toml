@@ -1,5 +1,5 @@
 [profiles."jollof-example"]
-url = "https://pi-box.rove-lydian.ts.net:8448"
+url = "https://streaming-server.rove-lydian.ts.net:8448"
 user_id = "@jollof:jollof.chat"
 
 [settings.notifications]

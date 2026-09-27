@@ -147,7 +147,7 @@
           ];
         };
 
-        # streaming box
+        # streaming box — headless permanent services
         "streaming-server" = nixpkgs.lib.nixosSystem {
           system = x86System;
           specialArgs = mkArgs x86System;
@@ -155,8 +155,8 @@
             inputs.agenix.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
-            ./modules/nixos-core-desktop.nix
             ./modules/nixos-sandbox.nix
+            nixflix.nixosModules.default
             ./hosts/streaming-server/configuration.nix
             ./modules/nixos-hermes.nix
           ];

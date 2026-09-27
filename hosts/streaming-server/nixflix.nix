@@ -1,63 +1,13 @@
-{ config, pkgs, lib, commonGroups, modulesPath, ... }:
+{ config, lib, ... }:
 
 let
-  tailnetFqdn = (import ../../modules/tailnet.nix).fqdnFor "pi-box";
-  ssh-keys = import ../../secrets/host-keys.nix;
+  tailnetFqdn = (import ../../modules/tailnet.nix).fqdnFor config.networking.hostName;
 in {
-  imports = [
-    # build image: nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
-    "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
-
-    # shared secrets are readable by claude; service secrets stay root-only
-    (import ../../modules/nixos-secrets.nix { owner = "claude"; })
-  ];
-
-  # USB storage drivers are needed to boot from the SSD
-  boot.initrd.availableKernelModules =
-    [ "xhci_pci" "usbhid" "usb_storage" "uas" ];
-
-  # use zram instead of the default 32GB swapfile
-  swapDevices = lib.mkForce [ ];
-  zramSwap.enable = true;
-
-  fileSystems."/mnt/big-hdd" = {
-    # UUID stays stable when USB device order changes
-    device = "/dev/disk/by-uuid/115e7867-fda1-4601-94b5-61c1a3b2cfd5";
-    fsType = "ext4";
-    options = [
-      # allow boot without the HDD
-      "nofail"
-      # avoid waiting 90s for a missing drive
-      "x-systemd.device-timeout=10s"
-    ];
-  };
-
-  # require the HDD before creating nixflix state
+  # Require the HDD before starting media services; tmpfiles may still create empty directories.
   systemd.services.nixflix-setup-dirs.unitConfig.RequiresMountsFor =
     [ "/mnt/big-hdd" ];
 
-  networking.hostName = "pi-box";
-  my.ssh.defaultUser = "claude";
-  # home Wi-Fi reserves 192.168.1.250 for TV access
-
-  users.users = {
-    claude = {
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allHosts;
-      description = "claude-code";
-      initialPassword = "password";
-      extraGroups = commonGroups;
-    };
-  };
-  # avoid devenv trust warnings
-  nix.settings.trusted-users = [ "root" "claude" ];
-
-  services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
-
-  # kitty terminal support for SSH
-  environment.systemPackages = [ pkgs.kitty.terminfo ];
-  
-  # one value per .age file; nixflix reads these as root at activation
+  # Existing secrets include streaming-server as an agenix recipient.
   age.secrets = lib.genAttrs [
     "nixflix-sonarr-apikey"
     "nixflix-sonarr-password"
@@ -84,7 +34,7 @@ in {
     mediaDir = "/mnt/big-hdd/nixflix/media";
     downloadsDir = "/mnt/big-hdd/nixflix/downloads";
     stateDir = "/mnt/big-hdd/nixflix/.state";
-    mediaUsers = ["claude"];
+    mediaUsers = [ "claude" ];
 
     theme = {
       enable = true;
@@ -93,7 +43,7 @@ in {
 
     nginx = {
       enable = true;
-      addHostsEntries = true;
+      addHostsEntries = true; # Resolve local proxy hostnames.
     };
 
     postgres.enable = true;
@@ -103,7 +53,7 @@ in {
       openFirewall = true; # tcp 8989
       config = {
         apiKey._secret = config.age.secrets."nixflix-sonarr-apikey".path;
-        # allow direct LAN/tailnet access alongside nginx
+        # Allow direct LAN/tailnet access alongside the nginx proxy.
         hostConfig.bindAddress = "0.0.0.0";
         hostConfig.password._secret = config.age.secrets."nixflix-sonarr-password".path;
       };
@@ -121,13 +71,13 @@ in {
 
     recyclarr = {
       enable = true;
-      # keep managedProfiles in sync with quality_profiles to prevent deletion
+      # Keep managedProfiles in sync with profile names below to prevent deletion.
       cleanupUnmanagedProfiles = {
         enable = true;
         managedProfiles = [ "HD Bluray + WEB" "WEB-1080p (Alternative)" ];
       };
 
-      # avoid SQP release-group score requirements; see nixflix#305
+      # Avoid the default SQP release-group score requirement; see nixflix#305.
       config.radarr.radarr = {
         quality_definition.type = "movie";
         quality_profiles = [
@@ -158,7 +108,7 @@ in {
         hostConfig.password._secret = config.age.secrets."nixflix-prowlarr-password".path;
         indexers = [
           {
-            # Prowlarr indexer schema names are case-sensitive
+            # Must match Prowlarr’s case-sensitive indexer schema name.
             name = "NZBgeek";
             apiKey._secret = config.age.secrets."nixflix-indexer-nzbgeek".path;
           }
@@ -172,12 +122,11 @@ in {
 
       settings = {
         misc = {
-          # 8080 is used by mautrix-telegram
+          # Port 8080 is used by mautrix-telegram.
           port = 8081;
-          # allow direct LAN/tailnet access alongside nginx
           host = "0.0.0.0";
-          # allow proxy, LAN and tailnet hostnames
-          host_whitelist = "sabnzbd.nixflix,pi-box,${tailnetFqdn}";
+          # Accept requests using the proxy, LAN and tailnet hostnames.
+          host_whitelist = "sabnzbd.nixflix,${config.networking.hostName},${tailnetFqdn}";
           api_key._secret = config.age.secrets."nixflix-sabnzbd-apikey".path;
           nzb_key._secret = config.age.secrets."nixflix-sabnzbd-nzbkey".path;
           username._secret = config.age.secrets."nixflix-sabnzbd-username".path;
@@ -194,8 +143,7 @@ in {
             connections = 20;
             ssl = true;
             priority = 0;
-            # allow downloads regardless of article age
-            retention = 0;
+            retention = 3000;
           }
         ];
       };
@@ -203,9 +151,8 @@ in {
 
     jellyfin = {
       enable = true;
-      # TCP 8096/8920; UDP 1900/7359 for discovery
       openFirewall = true;
-      # an empty list binds all interfaces, overriding the proxy loopback default
+      # An empty list binds all interfaces, overriding the proxy’s loopback default.
       network.localNetworkAddresses = [ ];
       apiKey._secret = config.age.secrets."nixflix-jellyfin-apikey".path;
       users = {
@@ -213,17 +160,17 @@ in {
           mutable = false;
           policy = {
             isAdministrator = true;
-            # the Pi cannot transcode fast enough for playback
+            # Keep direct play until hardware transcoding is configured.
             enableVideoPlaybackTranscoding = false;
             enableAudioPlaybackTranscoding = false;
-            # remuxing changes the container without re-encoding
+            # Container remuxing does not re-encode the video.
             enablePlaybackRemuxing = true;
           };
           password._secret = config.age.secrets."nixflix-jellyfin-admin-password".path;
         };
       };
 
-      # preview generation stalls library scans on the Pi
+      # Skip preview generation during library scans.
       libraries = {
         Movies = {
           enableTrickplayImageExtraction = false;
@@ -248,7 +195,7 @@ in {
 
   };
 
-  # create category dirs before the first download; see nixflix#135
+  # Create category directories before the first download; see nixflix#135.
   systemd.tmpfiles.settings."10-sabnzbd" =
     let
       completeDir = config.nixflix.usenetClients.sabnzbd.settings.misc.complete_dir;
@@ -260,7 +207,7 @@ in {
       "${completeDir}/prowlarr" = categoryDir;
     };
 
-  # Seerr uses HOST to set its listening address
+  # Seerr uses HOST to select its listening address.
   systemd.services.seerr.environment.HOST = lib.mkForce "0.0.0.0";
 
 }

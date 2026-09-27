@@ -3,7 +3,6 @@
 let
   stateDir = "/var/lib/sparkyfitness";
   repoUrl = "https://github.com/CodeWithCJ/SparkyFitness";
-  # GitHub and Docker image tags both use the v prefix
   version = "v1.6.0";
   repoDir = "${stateDir}/repo";
   composeDir = "${repoDir}/docker";
@@ -11,19 +10,19 @@ let
 
   overrideFile = "/etc/sparkyfitness/docker-compose.override.yml";
 
-  # use absolute paths because the repo is cloned at first start
+  # Use absolute paths because the repository is cloned at service startup.
   compose = "${pkgs.docker-compose}/bin/docker-compose -p sparkyfitness"
     + " -f ${composeDir}/docker-compose.prod.yml -f ${overrideFile} --env-file ${secretsEnv}";
 
-  # upstream compose maps port 3004 to nginx port 80
+  # Upstream Compose publishes the frontend on host port 3004.
   frontendPort = 3004;
 
   fqdn = (import ../../modules/tailnet.nix).fqdnFor config.networking.hostName;
 in {
-  # separate root-only env file from the shared user-readable secrets
+  # Root-only copy of the shared database, auth and encryption secrets.
   age.secrets.sparkyfitness-env.file = ../../secrets/sparkyfitness-secrets.age;
 
-  # pin images because upstream compose hardcodes latest
+  # Pin the application images; upstream Compose uses latest.
   environment.etc."sparkyfitness/docker-compose.override.yml".text = ''
     services:
       sparkyfitness-server:
@@ -41,7 +40,7 @@ in {
 
     path = [ pkgs.git pkgs.docker pkgs.docker-compose ];
 
-    # keep data outside the clone so re-cloning preserves the database
+    # Keep persistent data outside the repository so recloning preserves it.
     environment = {
       SPARKY_FITNESS_DB_NAME = "sparkyfitness";
       SPARKY_FITNESS_DB_USER = "sparky";
@@ -51,7 +50,7 @@ in {
       SERVER_UPLOADS_PATH = "${stateDir}/uploads";
     };
 
-    # fetch tags and check out the pinned release on each start
+    # Fetch tags and check out the pinned release before starting Compose.
     preStart = ''
       set -e
       if [ ! -e "${repoDir}/.git" ]; then
@@ -69,19 +68,19 @@ in {
 
     serviceConfig = {
       Type =
-        "simple"; # keep compose in the foreground for systemd
+        "simple"; # Keep Compose in the foreground for systemd.
       StateDirectory = "sparkyfitness"; # creates/owns /var/lib/sparkyfitness
-      WorkingDirectory = stateDir; # always exists (StateDirectory)
+      WorkingDirectory = stateDir;
       ExecStart = "${compose} up";
       ExecStop = "${compose} down";
       Restart = "on-failure";
       RestartSec = 10;
-      # allow time for the first clone and image pulls
+      # Allow time for the initial clone and image downloads.
       TimeoutStartSec = "infinity";
     };
   };
 
-  # requires HTTPS certificates enabled in the tailscale admin console
+  # Requires Tailscale HTTPS certificates to be enabled in the admin console.
   systemd.services.tailscale-serve = {
     description = "Tailscale Serve → SparkyFitness frontend";
     after = [ "tailscaled.service" "sparkyfitness.service" ];
@@ -98,7 +97,4 @@ in {
     };
   };
 
-  # add provider keys from sparkyfitness-manual.age and llm-gemini-key.age in the UI
-
-  # update the FatSecret IP allowlist when the home IP changes
 }

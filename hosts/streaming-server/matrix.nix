@@ -1,31 +1,29 @@
-# single-user SQLite homeserver; see ADR-009
 { pkgs, config, ... }:
 
 let
   serverName = "jollof.chat";
   fqdn = (import ../../modules/tailnet.nix).fqdnFor config.networking.hostName;
-  # SparkyFitness already uses HTTPS port 443
+  # SparkyFitness uses HTTPS port 443.
   matrixPort = 8448;
 in {
-  # allow the bridges to use libolm
+  # The bridges still depend on libolm.
   nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
 
   services.matrix-synapse = {
     enable = true;
     settings = {
       server_name = serverName;
-      # tailscale serve terminates TLS
       public_baseurl = "https://${fqdn}:${toString matrixPort}/";
       registration_shared_secret_path =
         config.age.secrets.matrix-registration.path;
-      # double puppeting syncs read receipts; see ADR-011
+      # Double puppeting syncs read receipts as @jollof; see ADR-011.
       app_service_config_files =
         [
           config.age.secrets.matrix-doublepuppet.path
           config.age.secrets.mautrix-imessage-registration.path
         ];
       database.name = "sqlite3";
-      # tailscale serve proxies to this localhost listener
+      # Tailscale Serve terminates HTTPS and proxies to this listener.
       listeners = [{
         port = 8008;
         bind_addresses = [ "127.0.0.1" ];
@@ -41,7 +39,8 @@ in {
   };
 
   services.mautrix-telegram = {
-    enable = true; # also registers the bridge with synapse
+    enable = true;
+    # Telegram credentials and double-puppet login settings come from this env file.
     environmentFile = config.age.secrets.mautrix-telegram-env.path;
     settings = {
       homeserver = {
@@ -53,28 +52,26 @@ in {
         api_hash = "";
       }; # real values via environmentFile
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
-      # Telegram double-puppet token goes in mautrix-telegram-env.age; see ADR-011
     };
   };
 
   services.mautrix-whatsapp = {
     enable = true;
     environmentFile =
-      config.age.secrets.matrix-doublepuppet-env.path; # ADR-011: DOUBLEPUPPET_AS_TOKEN
+      config.age.secrets.matrix-doublepuppet-env.path;
     settings = {
       homeserver = {
         address = "http://localhost:8008";
         domain = serverName;
       };
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
-      # envsubst injects the read-receipt token at startup; see ADR-011
       double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
     };
   };
 
   services.mautrix-signal = {
     enable = true;
-    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011
+    environmentFile = config.age.secrets.matrix-doublepuppet-env.path;
     settings = {
       homeserver = {
         address = "http://localhost:8008";
@@ -85,7 +82,7 @@ in {
     };
   };
 
-  # TODO: drop this Facebook fix once nixpkgs has mautrix-meta 26.08.1
+  # TODO: Remove this override when nixpkgs includes the Facebook fix in 26.08.1.
   services.mautrix-meta.package = pkgs.mautrix-meta.overrideAttrs (old: {
     version = "26.08.1";
     src = pkgs.fetchFromGitHub {
@@ -95,27 +92,27 @@ in {
       hash = "sha256-xTfbLtQ1lo6ukWlGjNwjxYaLMod6hljhQEcwdSgoBcQ=";
     };
     vendorHash = "sha256-CCGF13D0QO2GAE+kN/7xl924rSloqikDoGPr00clofI=";
-    # override the baked-in tag so --version reports the pinned release
+    # Override the embedded version tag along with the source.
     ldflags = [ "-s" "-w" "-X" "main.Tag=v0.2608.1" ];
   });
 
   services.mautrix-meta.instances.facebook = {
     enable = true;
-    environmentFile = config.age.secrets.matrix-doublepuppet-env.path; # ADR-011
+    environmentFile = config.age.secrets.matrix-doublepuppet-env.path;
     settings = {
       homeserver = {
         address = "http://localhost:8008";
         domain = serverName;
       };
       bridge.permissions = { "@jollof:${serverName}" = "admin"; };
-      # allow plain commands without requiring E2EE
+      # Allow plain commands to the Facebook bridge.
       encryption = {
         allow = false;
         default = false;
         require = false;
       };
       double_puppet.secrets.${serverName} = "as_token:$DOUBLEPUPPET_AS_TOKEN";
-      # catch up on messages missed during downtime
+      # Catch up on messages received during downtime.
       backfill = {
         enabled = true;
         max_initial_messages = 50;
@@ -151,10 +148,10 @@ in {
   };
   age.secrets.matrix-doublepuppet = {
     file =
-      ../../secrets/matrix-doublepuppet.age; # doublepuppet.yaml registration
-    owner = "matrix-synapse"; # synapse reads it directly
+      ../../secrets/matrix-doublepuppet.age;
+    owner = "matrix-synapse";
   };
-  # systemd reads this env file as root; bridge users do not need access
+  # Systemd reads this env file as root; bridge users do not need access.
   age.secrets.matrix-doublepuppet-env.file =
     ../../secrets/matrix-doublepuppet-env.age;
   age.secrets.mautrix-imessage-registration = {
@@ -162,7 +159,7 @@ in {
     owner = "matrix-synapse";
   };
 
-  # restart synapse when appservice registrations change
+  # Restart Synapse when appservice registrations change.
   systemd.services.matrix-synapse.restartTriggers =
     [
       ../../secrets/matrix-doublepuppet.age
