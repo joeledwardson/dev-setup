@@ -21,5 +21,11 @@
   "transition-time": 200,
   "hide-on-clear": false,
   "hide-on-action": true,
-  "script-fail-notify": true
+  "script-fail-notify": true,
+  "scripts": {
+    "stash-code": {
+      "body": "\\d{4,8}",
+      "exec": "/home/claude/.config/swaync/stash-code.sh"
+    }
+  }
 }

@@ -14,7 +14,7 @@
 # python cache files
 **/__pycache__
 
-# worktrees (tmux agent sidebar)
-.worktrees/
-# worktrees (git wt)
+# worktrees (git wt + tmux agent sidebar, both pointed at .wt)
 .wt/
+# legacy sidebar default, until existing .worktrees/ dirs are moved
+.worktrees/
