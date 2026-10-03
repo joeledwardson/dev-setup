@@ -2,9 +2,6 @@
 
 let
   serverName = "jollof.chat";
-  fqdn = (import ../../modules/tailnet.nix).fqdnFor config.networking.hostName;
-  # SparkyFitness uses HTTPS port 443.
-  matrixPort = 8448;
 in {
   # The bridges still depend on libolm.
   nixpkgs.config.permittedInsecurePackages = [ "olm-3.2.16" ];
@@ -13,7 +10,8 @@ in {
     enable = true;
     settings = {
       server_name = serverName;
-      public_baseurl = "https://${fqdn}:${toString matrixPort}/";
+      # served by caddy, see caddy.nix
+      public_baseurl = "https://matrix.joels-netflix.com/";
       registration_shared_secret_path =
         config.age.secrets.matrix-registration.path;
       # Double puppeting syncs read receipts as @jollof; see ADR-011.
@@ -23,7 +21,6 @@ in {
           config.age.secrets.mautrix-imessage-registration.path
         ];
       database.name = "sqlite3";
-      # Tailscale Serve terminates HTTPS and proxies to this listener.
       listeners = [{
         port = 8008;
         bind_addresses = [ "127.0.0.1" ];
@@ -120,21 +117,6 @@ in {
         unread_hours_threshold = 720;
         threads.max_initial_messages = 50;
       };
-    };
-  };
-
-  systemd.services.matrix-tailscale-serve = {
-    description = "tailscale serve -> synapse :8448";
-    after = [ "tailscaled.service" "matrix-synapse.service" ];
-    wants = [ "tailscaled.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=${
-          toString matrixPort
-        } http://localhost:8008";
-      Restart = "on-failure";
-      RestartSec = 10;
     };
   };
 

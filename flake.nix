@@ -129,10 +129,6 @@
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/pi-box/configuration.nix
-            ./hosts/pi-box/sparkyfitness.nix
-            ./hosts/pi-box/matrix.nix
-            # lets give nixflix a try!
-            nixflix.nixosModules.default
           ];
         };
 
@@ -141,11 +137,11 @@
           system = x86System;
           specialArgs = mkArgs x86System;
           modules = [
+            nixflix.nixosModules.default
             inputs.agenix.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
-            nixflix.nixosModules.default
             ./hosts/streaming-server/configuration.nix
             ./modules/nixos-hermes.nix
           ];

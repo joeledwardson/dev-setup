@@ -125,8 +125,8 @@ in {
           # Port 8080 is used by mautrix-telegram.
           port = 8081;
           host = "0.0.0.0";
-          # Accept requests using the proxy, LAN and tailnet hostnames.
-          host_whitelist = "sabnzbd.nixflix,${config.networking.hostName},${tailnetFqdn}";
+          # Accept requests using the proxy, LAN, tailnet and caddy hostnames.
+          host_whitelist = "sabnzbd.nixflix,${config.networking.hostName},${tailnetFqdn},sabnzbd.joels-netflix.com";
           api_key._secret = config.age.secrets."nixflix-sabnzbd-apikey".path;
           nzb_key._secret = config.age.secrets."nixflix-sabnzbd-nzbkey".path;
           username._secret = config.age.secrets."nixflix-sabnzbd-username".path;

@@ -3,7 +3,6 @@
 let
   ssh-keys = import ../../secrets/host-keys.nix;
   liteLLMPort = 9177;
-  liteLLMHttpsPort = 8443; # SparkyFitness owns :443; Matrix owns :8448.
 
 in {
   imports = [
@@ -12,6 +11,7 @@ in {
     ./matrix.nix
     ./sparkyfitness.nix
     ./nixflix.nix
+    ./caddy.nix
 
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
@@ -127,21 +127,5 @@ in {
       fi
     '')
   ];
-
-  # Remote clients use HTTPS port 8443; the local API stays on 9177.
-  systemd.services.litellm-tailscale-serve = {
-    description = "tailscale serve :${toString liteLLMHttpsPort} -> litellm proxy";
-    after = [ "tailscaled.service" "litellm.service" ];
-    wants = [ "tailscaled.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --https=${toString liteLLMHttpsPort} http://localhost:${
-          toString liteLLMPort
-        }";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-  };
 
 }

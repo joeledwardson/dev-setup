@@ -78,6 +78,9 @@ in
   "nixflix-usenet-eweka-password.age".publicKeys = allHosts;
   "nixflix-indexer-nzbgeek.age".publicKeys = allHosts;
 
+  # cloudflare token for caddy on streaming-server (DNS challenge)
+  "caddy-cloudflare-env.age".publicKeys = allHosts;
+
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
   # needs my personal email adding as "test user" in audience: https://console.cloud.google.com/auth/audience
