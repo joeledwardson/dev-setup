@@ -234,6 +234,7 @@ hl.bind(mainMod .. '+F', function()
   end
 end)
 hl.bind(mainMod .. '+V', hl.dsp.exec_cmd 'cliphist list | fuzzel --dmenu | cliphist decode | wl-copy')
+hl.bind(mainMod .. '+SHIFT+C', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/copy-code.sh'))
 hl.bind(mainMod .. '+space', hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. '+backspace', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/shutdown.sh'))
 hl.bind(mainMod .. '+I', hl.dsp.layout 'togglesplit')

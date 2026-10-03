@@ -1,3 +1,4 @@
+# Configures worker207's hardware, networking and desktop services.
 { pkgs, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
@@ -42,6 +43,11 @@ in
   networking.hostName = "worker207";
   my.ssh.defaultUser = "claude";
 
+  # Keep the Intel Wi-Fi adapter continuously active for interactive SSH.
+  boot.extraModprobeConfig = ''
+    options iwlmvm power_scheme=1
+  '';
+
   # wayvnc remote desktop
   networking.firewall.allowedTCPPorts = [ 5900 ];
 
@@ -68,7 +74,9 @@ in
 
   # kitty terminal support for SSH
   environment.systemPackages = with pkgs; [
+    cdrkit # Builds the cloud-init seed ISO used by local Packer images.
     kitty.terminfo
+    qemu_kvm # Runs the local Packer image build with KVM acceleration.
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
   ];

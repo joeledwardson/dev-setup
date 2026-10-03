@@ -473,9 +473,13 @@ if [[ "$IS_SANDBOX_MACHINE" == "1" ]]; then
     print
 fi
 
+# Turso (keeps adding it it's really annoying so i'm leaving it...)
+export PATH="$PATH:/home/claude/.turso"
+
 if [[ -n "$ZSH_DEBUGRC" ]]; then
     zprof
 fi
 
 # Reset terminal settings left broken by pagers (moor) exiting uncleanly
 tty -s && stty sane 2>/dev/null
+

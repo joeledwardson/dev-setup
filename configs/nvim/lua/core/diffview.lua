@@ -24,6 +24,17 @@ vim.keymap.set('n', '<leader>tv', function()
     vim.cmd 'DiffviewOpen'
   end
 end, { desc = 'Toggle diff view' })
+vim.keymap.set('n', '<leader>tr', function()
+  -- DiffviewRefresh is a silent no-op when no view is open, so check first
+  -- rather than report a refresh that didn't happen
+  local lib = require 'diffview.lib'
+  if not lib.get_current_view() then
+    vim.notify('No diff view open', vim.log.levels.WARN)
+    return
+  end
+  vim.cmd 'DiffviewRefresh'
+  vim.notify 'Diff view refreshed'
+end, { desc = 'Refresh diff view' })
 vim.keymap.set('n', '<leader>tg', function()
   local lib = require 'diffview.lib'
   if lib.get_current_view() then

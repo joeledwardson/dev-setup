@@ -52,9 +52,9 @@ vim.api.nvim_create_user_command('PrintFoldLevel', function()
   vim.api.nvim_echo({ { 'Fold level on line ' .. line .. ' is ' .. level } }, true, {})
 end, {})
 
--- foo.yaml.j2 -> filetype yaml
+-- foo.yaml.j2 -> filetype yaml, config.alloy.tftpl -> filetype alloy
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
-  pattern = '*.j2',
+  pattern = { '*.j2', '*.tftpl' },
   callback = function()
     local inner = vim.fn.expand('%:r'):match '%.([^.]+)$'
     if inner then

@@ -118,5 +118,10 @@
   "preferredNotifChannel": "iterm2",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false
+  "viMode": false,
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  }
 }
