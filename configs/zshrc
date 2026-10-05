@@ -482,4 +482,11 @@ fi
 
 # Reset terminal settings left broken by pagers (moor) exiting uncleanly
 tty -s && stty sane 2>/dev/null
+<<<<<<< Updated upstream
 
+||||||| Stash base
+=======
+
+# Turso
+export PATH="$PATH:/home/joelyboy/.turso"
+>>>>>>> Stashed changes
