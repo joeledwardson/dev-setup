@@ -53,7 +53,7 @@
       "/run/current-system"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "PermissionRequest": [
       {
@@ -92,17 +92,9 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true,
-    "sentry-mcp@sentry-mcp": true,
     "tmux-agent-sidebar@hiroppy": true
   },
   "extraKnownMarketplaces": {
-    "sentry-mcp": {
-      "source": {
-        "source": "github",
-        "repo": "getsentry/sentry-mcp"
-      }
-    },
     "hiroppy": {
       "source": {
         "source": "directory",
@@ -111,6 +103,11 @@
     }
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "default",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
@@ -118,10 +115,5 @@
   "preferredNotifChannel": "iterm2",
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "viMode": false,
-  "modelSettings": {
-    "claude-opus-5": {
-      "effortLevel": "high"
-    }
-  }
+  "viMode": false
 }
