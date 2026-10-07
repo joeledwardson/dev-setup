@@ -9,8 +9,7 @@
     foot
     ghostty
 
-    ### browsers
-    firefox
+    ### browsers 
     google-chrome
 
     ### communication
@@ -56,6 +55,16 @@
     vault
 
   ];
+
+  # firefox with right sidebar
+  programs.firefox = {
+    enable = true;
+    preferences = {
+      "sidebar.verticalTabs" = true;
+      "sidebar.position_start" = false;
+    };
+    preferencesStatus = "user";
+  };
 
   # use gnome keywring in remmina
   services.gnome.gnome-keyring.enable = true;
