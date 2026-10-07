@@ -165,7 +165,7 @@ tasks:
     desc: Create personal, work and ibankroll Firefox profile directories
     cmds:
       - |
-        for profile in personal-profile work-profile ibankroll-profile; do
+        for profile in personal-profile work-profile ibankroll-profile octane-profile; do
           mkdir -p "$HOME/.mozilla/firefox/$profile"
         done
 
