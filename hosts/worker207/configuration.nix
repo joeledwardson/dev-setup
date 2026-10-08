@@ -1,5 +1,5 @@
 # Configures worker207's hardware, networking and desktop services.
-{ pkgs, commonGroups, ... }:
+{ pkgs, lib, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
 in
@@ -101,7 +101,8 @@ in
         command = "uwsm start hyprland-uwsm.desktop";
         user = "claude";
       };
-      default_session = {
+      # mkForce: override nixos-extended-desktop's tuigreet prompt, this box has no one at the keyboard
+      default_session = lib.mkForce {
         command = "uwsm start hyprland-uwsm.desktop";
         user = "claude";
       };

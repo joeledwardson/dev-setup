@@ -170,6 +170,7 @@
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
+            ./modules/nixos-extended-desktop.nix
             ./modules/nixos-sandbox.nix
             ./hosts/worker207/configuration.nix
           ];

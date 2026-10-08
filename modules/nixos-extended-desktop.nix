@@ -46,7 +46,8 @@
 
     ### utilities
     scrcpy # android screen copy tool
-    nomachine-client
+    # TODO: nomachine currently broken on nixos, hash mismatch
+    # nomachine-client
     wifi-qr
 
     ### work (rarely used so don't put in base)
