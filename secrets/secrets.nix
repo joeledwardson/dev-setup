@@ -28,9 +28,9 @@ in
   "sparkyfitness-secrets.age".publicKeys = allKeys;
 
   # gatus env file, KEY=value lines (systemd EnvironmentFile syntax):
-  # 1. TELEGRAM_BOT_TOKEN - from @BotFather on telegram, /newbot
-  # 2. TELEGRAM_CHAT_ID - message the bot, then read message.chat.id from https://api.telegram.org/bot<TOKEN>/getUpdates
-  # 3. GATUS_BACKUP_TOKEN - `openssl rand -hex 24`, pi-box sends it with backup results
+  # 1. TELEGRAM_BOT_TOKEN - from @BotFather on telegram (i.e. its API key)
+  # 2. TELEGRAM_CHAT_ID - ID of chat (bot needs permissions) - I did #1 create channel #2 add bot as admin to channel #3 call curl "https://api.telegram.org.bot/api$BOT_TOKEN/getUpdates" to get ID
+  # 3. GATUS_BACKUP_TOKEN - random hex key (for pi to authenticate)
   "gatus-env.age".publicKeys = allKeys;
 
   # plain text file for sparkyfitness related secrets

@@ -26,7 +26,7 @@ in {
         path = "/var/lib/gatus/data.db";
       };
 
-      # see secrets.nix for how to get both values
+      # see secrets.nix for how to get both values (see https://gatus.io/docs/alerting-telegram)
       alerting.telegram = {
         token = "\${TELEGRAM_BOT_TOKEN}";
         id = "\${TELEGRAM_CHAT_ID}";
