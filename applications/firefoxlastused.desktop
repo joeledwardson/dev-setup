@@ -1,0 +1,14 @@
+# no dashes in this filename: it is linked under applications/custom, so its id is
+# custom-firefoxlastused.desktop, and xdg-mime only resolves that back to
+# custom/firefoxlastused.desktop when the id has a single dash (used as default browser in mimeapps.list)
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Firefox (Last Used Profile)
+Comment=Open links in the Firefox profile you used last
+Icon=firefox
+Exec=firefox-open-url %u
+Categories=Network;WebBrowser;
+Terminal=false
+NoDisplay=true
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/about;x-scheme-handler/unknown;x-scheme-handler/webcal;
