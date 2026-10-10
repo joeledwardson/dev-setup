@@ -3,7 +3,7 @@
 let
   stateDir = "/var/lib/sparkyfitness";
   repoUrl = "https://github.com/CodeWithCJ/SparkyFitness";
-  version = "v1.6.0";
+  version = "v1.8.0";
   repoDir = "${stateDir}/repo";
   composeDir = "${repoDir}/docker";
   secretsEnv = config.age.secrets.sparkyfitness-env.path;
