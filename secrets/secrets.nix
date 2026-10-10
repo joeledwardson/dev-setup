@@ -33,8 +33,16 @@ in
   # 3. GATUS_BACKUP_TOKEN - random hex key (for pi to authenticate)
   "gatus-env.age".publicKeys = allKeys;
 
-  # plain text file for sparkyfitness related secrets
+  # unstructured plain text file for sparkyfitness related secrets
   "sparkyfitness-manual.age".publicKeys = allKeys;
+  # created from the dashboard (cant drive declaratively)
+  "sparkyfitness-api-key.age".publicKeys = allKeys;
+
+  # telegram bot for sparkyfitness (~/calories-app)
+  # 1. telegram-token - API token from the sparkyfitness bot i create (see @botfather)
+  # 3. allowed-id - my telegram ID (so no one else can message my bot, get from @rawdatabot)
+  "sparky-bot-telegram-token.age".publicKeys = allKeys;
+  "sparky-bot-allowed-id.age".publicKeys = allKeys;
 
   # matrix registration secret key - just a generated random string
   "matrix-registration.age".publicKeys = allKeys;
