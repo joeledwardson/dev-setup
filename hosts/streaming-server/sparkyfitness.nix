@@ -40,6 +40,8 @@ in {
     environment = {
       SPARKY_FITNESS_DB_NAME = "sparkyfitness";
       SPARKY_FITNESS_DB_USER = "sparky";
+      # the existing role from v1.6, v1.8 would otherwise create a new "sparky_app"
+      SPARKY_FITNESS_APP_DB_USER = "sparkyapp";
       # served by caddy, see caddy.nix
       SPARKY_FITNESS_FRONTEND_URL = "https://sparky.joels-netflix.com";
       DB_PATH = "${stateDir}/postgresql";

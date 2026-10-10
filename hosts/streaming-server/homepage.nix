@@ -21,7 +21,7 @@ in {
 
     # homepage rejects requests whose Host header isn't listed here, so the caddy
     # vhost name has to appear or every page comes back blank
-    allowedHosts = "home.${domain}";
+    allowedHosts = "${domain},home.${domain}";
 
     settings = {
       title = "joels-netflix";
@@ -33,6 +33,12 @@ in {
         Infra = { style = "row"; columns = 3; };
       };
     };
+
+    # the page has no heading of its own, `title` only sets the browser tab, so the
+    # text across the top has to come from the greeting widget
+    widgets = [
+      { greeting = { text_size = "3xl"; text = "Joels Home Lab"; }; }
+    ];
 
     # groups match the ones in gatus.nix so both dashboards sort things the same way.
     # icon names come from https://github.com/homarr-labs/dashboard-icons
