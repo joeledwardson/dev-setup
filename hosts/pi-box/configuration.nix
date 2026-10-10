@@ -7,6 +7,8 @@ in {
     # build image: nix build .#nixosConfigurations.pi-box.config.system.build.sdImage
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
 
+    ./sparkyfitness-backup.nix
+
     # shared secrets are readable by claude; service secrets stay root-only
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
@@ -23,10 +25,13 @@ in {
   my.ssh.defaultUser = "claude";
   # home Wi-Fi reserves 192.168.1.250 for TV access
 
+  # sandboxes can only ssh to other sandboxes (see tailscale/acl.hujson)
+  programs.ssh.knownHosts = ssh-keys.sandboxKnownHosts;
+
   users.users = {
     claude = {
       isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allHosts;
+      openssh.authorizedKeys.keys = ssh-keys.allKeys;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;

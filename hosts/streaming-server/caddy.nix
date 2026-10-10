@@ -32,6 +32,17 @@ in {
       respond 404
     '';
 
+    # the bare domain needs its own tls block: a `*.${domain}` cert doesn't cover the
+    # apex, so caddy has to go get a second cert, and dns-01 is the only challenge
+    # that works against a 100.x address
+    virtualHosts.${domain}.extraConfig = ''
+      tls {
+        dns cloudflare {env.CF_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}
+    '';
+    virtualHosts."home.${domain}".extraConfig =
+      "reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}";
     virtualHosts."jellyfin.${domain}".extraConfig =
       "reverse_proxy localhost:${toString config.nixflix.jellyfin.network.internalHttpPort}";
     virtualHosts."sonarr.${domain}".extraConfig =
@@ -50,6 +61,8 @@ in {
       "reverse_proxy localhost:${toString config.services.litellm.port}";
     virtualHosts."matrix.${domain}".extraConfig =
       "reverse_proxy localhost:8008";
+    virtualHosts."gatus.${domain}".extraConfig =
+      "reverse_proxy localhost:${toString config.services.gatus.settings.web.port}";
     virtualHosts."beszel.${domain}".extraConfig =
       "reverse_proxy localhost:${toString config.services.beszel.hub.port}";
     # sparkyfitness uses port 3004

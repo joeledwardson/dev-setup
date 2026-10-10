@@ -10,8 +10,11 @@ in {
 
     ./matrix.nix
     ./sparkyfitness.nix
+    ./sparky-bot.nix
     ./nixflix.nix
     ./caddy.nix
+    ./gatus.nix
+    ./homepage.nix
 
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
@@ -51,10 +54,13 @@ in {
   networking.hostName = "streaming-server";
   my.ssh.defaultUser = "claude";
 
+  # sandboxes can only ssh to other sandboxes (see tailscale/acl.hujson)
+  programs.ssh.knownHosts = ssh-keys.sandboxKnownHosts;
+
   users.users = {
     claude = {
       isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allHosts;
+      openssh.authorizedKeys.keys = ssh-keys.allKeys;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;
