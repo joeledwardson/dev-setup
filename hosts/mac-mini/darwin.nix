@@ -27,7 +27,9 @@ in
 
   # LAN fallback if Tailscale is unavailable. From a source machine, use:
   # sudo ssh -i /etc/ssh/ssh_host_ed25519_key jollof@<mac-lan-ip>
-  users.users.${user}.openssh.authorizedKeys.keys = ssh-keys.trustedHosts;
+  users.users.${user}.openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
+  # trusted machines can ssh anywhere, so know every host's key
+  programs.ssh.knownHosts = ssh-keys.allKnownHosts;
 
   # Keep Nix builds isolated from the rest of the machine.
   nix.settings = {

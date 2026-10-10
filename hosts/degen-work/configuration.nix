@@ -61,10 +61,13 @@ in
   # =======================================
   # Accounts Configuration
   # =======================================
+  # trusted machines can ssh anywhere, so know every host's key
+  programs.ssh.knownHosts = ssh-keys.allKnownHosts;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.jollof = {
     isNormalUser = true;
-    openssh.authorizedKeys.keys = ssh-keys.trustedHosts;
+    openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
     description = "jollof";
     initialPassword = "password";
     extraGroups = commonGroups;

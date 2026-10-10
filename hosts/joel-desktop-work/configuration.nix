@@ -152,10 +152,13 @@ in
   # With powerManagement.enable=false, it causes suspend to fail (error -5), leaving
   # the NVIDIA driver in a corrupted state that causes full system hangs hours later.
 
+  # trusted machines can ssh anywhere, so know every host's key
+  programs.ssh.knownHosts = ssh-keys.allKnownHosts;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {
     isNormalUser = true;
-    openssh.authorizedKeys.keys = ssh-keys.trustedHosts;
+    openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
     description = "joelyboy";
     initialPassword = "password";
     # add libvrtd groups (see https://wiki.nixos.org/wiki/Virt-manager)

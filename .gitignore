@@ -6,6 +6,7 @@ scratchpads
 .claude
 # claude synced skills?
 configs/claude/skills/synced/
+configs/claude/skills/.trash/
 
 # simpler to put all repos clonsed for inspiration in a combined sub-dir
 third-party
