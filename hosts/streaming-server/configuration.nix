@@ -10,9 +10,11 @@ in {
 
     ./matrix.nix
     ./sparkyfitness.nix
+    ./sparky-bot.nix
     ./nixflix.nix
     ./caddy.nix
     ./gatus.nix
+    ./homepage.nix
 
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];

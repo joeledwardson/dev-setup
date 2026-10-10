@@ -32,6 +32,8 @@ in {
       respond 404
     '';
 
+    virtualHosts."home.${domain}".extraConfig =
+      "reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}";
     virtualHosts."jellyfin.${domain}".extraConfig =
       "reverse_proxy localhost:${toString config.nixflix.jellyfin.network.internalHttpPort}";
     virtualHosts."sonarr.${domain}".extraConfig =
