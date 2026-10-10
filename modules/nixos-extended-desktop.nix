@@ -17,6 +17,7 @@
     cinny-desktop
     pkgs-unstable.iamb
     gcalcli
+    aerc
 
     ### productivity
     libreoffice
