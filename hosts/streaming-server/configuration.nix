@@ -64,7 +64,7 @@ in {
       openssh.authorizedKeys.keys = ssh-keys.allKeys;
       description = "claude-code";
       initialPassword = "password";
-      extraGroups = commonGroups;
+      extraGroups = commonGroups ++ [ "immich" ];
     };
   };
   # Allow these users to configure Nix builds through devenv.
