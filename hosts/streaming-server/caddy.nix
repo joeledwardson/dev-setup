@@ -68,6 +68,9 @@ in {
     # sparkyfitness uses port 3004
     virtualHosts."sparky.${domain}".extraConfig =
       "reverse_proxy localhost:3004";
+    # the immich iphone app needs a publicly-trusted cert to back up in the background
+    virtualHosts."photos.${domain}".extraConfig =
+      "reverse_proxy localhost:${toString config.services.immich.port}";
   };
 
   age.secrets.caddy-cloudflare-env.file = ../../secrets/caddy-cloudflare-env.age;

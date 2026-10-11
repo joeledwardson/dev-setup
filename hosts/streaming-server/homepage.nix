@@ -56,6 +56,7 @@ in {
       }
       {
         Apps = [
+          (link { name = "photos"; icon = "immich.svg"; description = "camera roll"; })
           (link { name = "sparky"; icon = "sparky-fitness.png"; description = "food log"; })
           # there's no litellm icon upstream, so fall back to a material design icon
           (link { name = "litellm"; icon = "mdi-robot"; description = "llm proxy"; })

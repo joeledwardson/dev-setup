@@ -12,6 +12,7 @@ in {
     ./sparkyfitness.nix
     ./sparky-bot.nix
     ./nixflix.nix
+    ./immich.nix
     ./caddy.nix
     ./gatus.nix
     ./homepage.nix
