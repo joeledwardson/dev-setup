@@ -34,8 +34,8 @@ port = 22
 key_file = "~/.ssh/id_ed25519"
 custom_key = "m"
 
-[sftp.desktop-work]
-host = "desktop-work"
+[sftp.joel-desktop-work]
+host = "joel-desktop-work"
 user = "joelyboy"
 port = 22
 key_file = "~/.ssh/id_ed25519"
