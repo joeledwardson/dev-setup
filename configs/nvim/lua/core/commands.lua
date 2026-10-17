@@ -95,3 +95,7 @@ function PrintBufs(log)
     end
   end
 end
+
+-- :glg -> fugitive graph log, mirroring the zsh alias of the same name.
+vim.api.nvim_create_user_command('Glg', 'Git log --oneline --graph --all', {})
+vim.cmd [[cnoreabbrev <expr> glg getcmdtype() ==# ':' && getcmdline() ==# 'glg' ? 'Glg' : 'glg']]
