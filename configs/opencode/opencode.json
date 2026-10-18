@@ -87,14 +87,14 @@
     },
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
+      "name": "Ollama (this machine, local)",
       "options": {
-        "baseURL": "http://desktop-work:11434/v1",
+        "baseURL": "http://127.0.0.1:11434/v1",
         "apiKey": "ollama-dummy-key"
       },
       "models": {
         "gpt-oss:20b": { "name": "gpt-oss 20b", "limit": { "context": 32768, "output": 8192 } },
-        "qwen3:30b-a3b": { "name": "qwen3 30b a3b", "limit": { "context": 32768, "output": 8192 } }
+        "qwen3:4b": { "name": "qwen3 4b", "limit": { "context": 32768, "output": 8192 } }
       }
     }
   }
