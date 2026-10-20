@@ -28,6 +28,7 @@ require('conform').setup {
     zsh = { 'shfmt', 'shellcheck' },
     sh = { 'shfmt', 'shellcheck' },
     python = { 'ruff_format' },
+    rust = { 'rustfmt' },
   },
   formatters = {
     sql_formatter = {

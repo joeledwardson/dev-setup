@@ -4,9 +4,11 @@ cmp.setup {
   keymap = {
     preset = 'default',
     -- <CR> is deliberately unmapped: Enter always means newline, never accept. Tab accepts.
-    -- prioritise snippets with tab first, otherwise accept suggestion
-    ['<Tab>'] = { 'snippet_forward', 'select_and_accept', 'fallback' },
-    ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+    ['<Tab>'] = { 'select_and_accept', 'fallback' },
+    ['<S-Tab>'] = { 'select_prev', 'fallback' },
+    -- snippet jumps get their own keys so they never fight Tab-accept; outside a snippet they fall back to window nav
+    ['<C-l>'] = { 'snippet_forward', 'fallback' },
+    ['<C-h>'] = { 'snippet_backward', 'fallback' },
   },
   fuzzy = { implementation = 'rust' },
   completion = {

@@ -5,6 +5,7 @@
 {
   config,
   pkgs,
+  pkgs-unstable,
   commonGroups,
   ...
 }:
@@ -102,7 +103,26 @@ in
     libmtp
     jmtpfs
     go-mtpfs
+
+    # rust things
+    rustc
+    rustc.doc  # has rust-docs
+    cargo
+    clippy # rust linter
+    rustfmt # for neovim formatting
+    rust-analyzer # for neovim LSP
+    rustlings # rust beginner guide
+
+    # rust wasm stuf... probably needs a trim
+    trunk # wasm builder for trunk
+    wasm-bindgen-cli # post wasm generator in rust....?
+    cargo-leptos
+    lld # wasm32 builds link via lld; rustc does not bundle a usable one
   ];
+
+  # The doc output lands in the system path but nothing points a browser at it.
+  environment.shellAliases.rust-docs =
+    "xdg-open ${pkgs.rustc.doc}/share/doc/docs/html/index.html";
 
   # =======================================
   # Accounts Configuration
@@ -128,9 +148,33 @@ in
   # =======================================
   # Ollama (local LLMs)
   # =======================================
+  # The Radeon 880M (gfx1150) has no ROCm support, and the plain `ollama`
+  # package resolves to `ollama-cpu` - which is why the logs showed
+  # total_vram="0 B" and every model ran on the CPU. The vulkan variant drives
+  # the iGPU through RADV and sets OLLAMA_VULKAN=1 via its wrapper.
+  # It comes from unstable because 26.05 pins 0.24.0, which the registry
+  # rejects current models against with "412: requires a newer version".
   services.ollama = {
     enable = true;
-    loadModels = [ "qwen3:4b" ];
+    package = pkgs-unstable.ollama-vulkan;
+    # These are the models actually on disk. loadModels pulls on EVERY
+    # activation and the loader runs them in PARALLEL via GNU parallel, so a
+    # big model listed here means a multi-GB download starting unprompted on
+    # whatever connection is to hand - mobile tether included. Only list what
+    # is already pulled, and add new ones deliberately while on wifi.
+    # gpt-oss:20b is 13GB and fits inside the 15.7GB the iGPU exposes, so it
+    # runs entirely on the GPU. It is MoE with ~3.6B active params: on an iGPU
+    # sharing system RAM, speed tracks active params, not the total.
+    loadModels = [
+      "qwen3:4b"
+      "gpt-oss:20b"
+    ];
+    environmentVariables = {
+      # 0.40.3 skips integrated GPUs unless this is set, so the Radeon 880M was
+      # detected at startup but never used - models silently loaded onto the CPU
+      # at ~11 tok/s. 0.24.0 had no such flag and offloaded without it.
+      OLLAMA_IGPU_ENABLE = "1";
+    };
   };
 
   # =======================================

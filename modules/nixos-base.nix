@@ -24,6 +24,7 @@ let
       terraform-ls
       systemd-lsp
       gopls
+      rust-analyzer
       ansible-language-server
     ];
     formatters = with pkgs-unstable; [
@@ -33,6 +34,7 @@ let
       shellcheck
       sql-formatter
       nixfmt
+      rustfmt
     ];
     debugAdapters = with pkgs-unstable; [
       vscode-js-debug # provides `js-debug`
@@ -55,6 +57,7 @@ let
       nix
       python
       regex
+      rust
       scss
       sql
       svelte

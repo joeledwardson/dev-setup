@@ -8,6 +8,7 @@ vim.lsp.enable {
   'mdx_analyzer',
   'ruff',
   'gopls',
+  'rust_analyzer',
   'ansiblels',
   'systemd_ls',
 }
