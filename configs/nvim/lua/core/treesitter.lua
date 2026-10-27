@@ -1,3 +1,7 @@
+-- Neovim has no mdx filetype or parser: detect .mdx and parse it as markdown.
+vim.filetype.add { extension = { mdx = 'mdx' } }
+vim.treesitter.language.register('markdown', 'mdx')
+
 -- Use available parsers and queries (the desktop gets additional languages from Nix).
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('treesitter-highlight', { clear = true }),

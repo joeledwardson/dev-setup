@@ -80,4 +80,3 @@ require 'plugins.lua-console'
 
 require 'custom.keymaps'
 require 'custom.commands'
-require('custom.mdx').setup()

@@ -92,7 +92,8 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "tmux-agent-sidebar@hiroppy": true
+    "tmux-agent-sidebar@hiroppy": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "hiroppy": {
