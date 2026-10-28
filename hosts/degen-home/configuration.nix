@@ -174,6 +174,11 @@ in
       # detected at startup but never used - models silently loaded onto the CPU
       # at ~11 tok/s. 0.24.0 had no such flag and offloaded without it.
       OLLAMA_IGPU_ENABLE = "1";
+      # The 4096 default silently truncates opencode's system prompt + tool
+      # definitions, so the model never sees its tools. The /v1 endpoint ignores
+      # per-request num_ctx, so it has to be set server-side. gpt-oss:20b's KV
+      # cache at 32k is ~0.8GB, still inside the iGPU's 15.7GB with the weights.
+      OLLAMA_CONTEXT_LENGTH = "32768";
     };
   };
 

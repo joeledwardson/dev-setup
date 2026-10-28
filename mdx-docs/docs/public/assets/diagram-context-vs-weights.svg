@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 940" font-family="DejaVu Sans, sans-serif">
+  <style>
+    .title { font-size: 26px; font-weight: bold; fill: #ecf0f1; }
+    .h { font-size: 20px; font-weight: bold; fill: #ecf0f1; }
+    .t { font-size: 15px; fill: #d5dbdb; }
+    .s { font-size: 13px; fill: #aab7b8; }
+    .lbl { font-size: 14px; fill: #1a252f; text-anchor: middle; }
+    .lblw { font-size: 15px; fill: #ffffff; text-anchor: middle; font-weight: bold; }
+  </style>
+  <rect width="1200" height="940" fill="#17202a"/>
+
+  <text x="40" y="42" class="title">gpt-oss:20b on your laptop - how the pieces fit</text>
+
+  <!-- ===== 1. what goes in the context ===== -->
+  <text x="40" y="88" class="h">1. Context = everything sent to the model in ONE request (measured in tokens)</text>
+  <text x="40" y="112" class="t">opencode re-sends ALL of this every turn. Sizes are rough.</text>
+
+  <rect x="40"  y="128" width="170" height="48" fill="#5dade2" stroke="#2471a3"/>
+  <text x="125" y="157" class="lbl">system prompt</text>
+  <rect x="210" y="128" width="280" height="48" fill="#c39bd3" stroke="#7d3c98"/>
+  <text x="350" y="150" class="lbl">tool definitions</text>
+  <text x="350" y="168" class="lbl">"you can call read, edit, bash..."</text>
+  <rect x="490" y="128" width="280" height="48" fill="#aab7b8" stroke="#7f8c8d"/>
+  <text x="630" y="150" class="lbl">chat history</text>
+  <text x="630" y="168" class="lbl">old messages + replies</text>
+  <rect x="770" y="128" width="250" height="48" fill="#52be80" stroke="#196f3d"/>
+  <text x="895" y="150" class="lbl">tool results</text>
+  <text x="895" y="168" class="lbl">e.g. full README text</text>
+  <rect x="1020" y="128" width="140" height="48" fill="#f9e79f" stroke="#d4ac0d"/>
+  <text x="1090" y="157" class="lbl">new message</text>
+
+  <rect x="40" y="190" width="260" height="36" fill="none" stroke="#f1948a" stroke-width="4"/>
+  <text x="170" y="214" class="lblw">4,096 tokens (~6 pages)</text>
+  <text x="315" y="214" class="t">&lt;- current default. The rest doesn't fit and Ollama truncates it.</text>
+
+  <rect x="40" y="238" width="1120" height="36" fill="none" stroke="#52be80" stroke-width="4"/>
+  <text x="600" y="262" class="lblw">32,768 tokens (~50 pages) - proposed. Everything fits, room for history to grow.</text>
+
+  <!-- ===== 2. one token ===== -->
+  <text x="40" y="325" class="h">2. Why one token costs ~25 KB of memory</text>
+  <rect x="40" y="342" width="150" height="44" fill="#f9e79f" stroke="#d4ac0d"/>
+  <text x="115" y="370" class="lbl">"hello" = 1 token</text>
+  <text x="205" y="370" class="t">-&gt;</text>
+  <rect x="240" y="342" width="920" height="44" fill="#f1948a" stroke="#c0392b"/>
+  <text x="700" y="362" class="lbl">model's notes on that token: a list of numbers per layer describing what it means here</text>
+  <text x="700" y="379" class="lbl">12 layers x 2 lists (key + value) x 512 numbers x 2 bytes = ~25 KB.  This is the "KV cache".</text>
+  <text x="40" y="408" class="s">The text is ~5 bytes. The model keeps its working-out instead, so it doesn't redo it for every new word.</text>
+
+  <!-- ===== 3. laptop RAM ===== -->
+  <text x="40" y="458" class="h">3. Your laptop's 30 GB RAM (from btop, with opencode running)</text>
+  <!-- scale: 1 GB = 36 px, bar from x=40, 30.4 GB = 1094 px -->
+  <rect x="40"  y="475" width="468" height="50" fill="#85c1e9" stroke="#2471a3"/>
+  <text x="274" y="497" class="lbl">llama-server: model weights 13 GB</text>
+  <text x="274" y="515" class="lbl">(the "brain" - must be fully loaded)</text>
+  <rect x="508" y="475" width="4" height="50" fill="#c0392b"/>
+  <rect x="512" y="475" width="288" height="50" fill="#aab7b8" stroke="#7f8c8d"/>
+  <text x="656" y="497" class="lbl">everything else ~8 GB</text>
+  <text x="656" y="515" class="lbl">firefox, 2x opencode, rust-analyzer...</text>
+  <rect x="800" y="475" width="334" height="50" fill="#1c2833" stroke="#52be80" stroke-dasharray="6,4"/>
+  <text x="967" y="505" class="lblw">available ~9.4 GB</text>
+
+  <text x="40" y="550" class="t">KV notes at 4k tokens = ~0.1 GB (the thin red line).  At 32k tokens = ~0.8 GB:</text>
+  <rect x="40"  y="562" width="468" height="30" fill="#85c1e9" stroke="#2471a3"/>
+  <text x="274" y="583" class="lbl">weights 13 GB (unchanged)</text>
+  <rect x="508" y="562" width="29" height="30" fill="#f1948a" stroke="#c0392b"/>
+  <text x="552" y="583" class="t">+0.8 GB - fits easily in the 9.4 GB free</text>
+  <text x="40" y="617" class="s">The real cost of 32k on a CPU is speed: reading a long request before the first reply word can take a while.</text>
+
+  <!-- ===== 4. max context ===== -->
+  <text x="40" y="668" class="h">4. What limits the maximum context? (not the 13 GB)</text>
+  <rect x="40" y="685" width="360" height="120" rx="6" fill="#5dade2" stroke="#2471a3"/>
+  <text x="220" y="712" class="lbl">Training</text>
+  <text x="220" y="737" class="lbl">The model only learned to track</text>
+  <text x="220" y="756" class="lbl">word positions up to a limit.</text>
+  <text x="220" y="781" class="lbl">gpt-oss-20b: 128k tokens max</text>
+
+  <rect x="420" y="685" width="360" height="120" rx="6" fill="#f1948a" stroke="#c0392b"/>
+  <text x="600" y="712" class="lbl">Memory for the notes</text>
+  <text x="600" y="737" class="lbl">Grows with every token.</text>
+  <text x="600" y="756" class="lbl">Ollama's 4k default is about this,</text>
+  <text x="600" y="775" class="lbl">not about the model.</text>
+
+  <rect x="800" y="685" width="360" height="120" rx="6" fill="#f9e79f" stroke="#d4ac0d"/>
+  <text x="980" y="712" class="lbl">Speed and quality</text>
+  <text x="980" y="737" class="lbl">More tokens = slower replies.</text>
+  <text x="980" y="756" class="lbl">Small models also get worse at</text>
+  <text x="980" y="775" class="lbl">using stuff far back in the context.</text>
+
+  <rect x="40" y="830" width="1120" height="80" rx="8" fill="#1c2833" stroke="#4d5d6e"/>
+  <text x="60" y="860" class="t">Claude "1M context" = trained to handle 1M tokens, running on datacenter GPUs with enough memory for the notes.</text>
+  <text x="60" y="887" class="t">Weights = the brain (fixed). Context = the desk it reads from. A bigger brain doesn't mean a bigger desk.</text>
+</svg>
