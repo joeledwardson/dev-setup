@@ -283,7 +283,7 @@ tasks:
     desc: Serve the Rspress (MDX) docs locally on port 9653 (live reload + search)
     dir: mdx-docs
     cmds:
-      - test -d node_modules || npm install
+      - npm install
       - npx rspress dev --host 0.0.0.0 --port 9653
 
   port-dash:serve:
@@ -312,6 +312,12 @@ tasks:
     desc: update secrets with recipients list
     dir: ./secrets
     cmd: sudo agenix -r -i /etc/ssh/ssh_host_ed25519_key
+
+  # install the published latest version from GitHub into $HOME/go/bin
+  llm-reviewer:install:
+    cmds:
+      - go install github.com/joels-claude-bot/llm-site-reviewer@latest
+
 
   gcalcli:init:
     desc: Initialise gcalcli using the agenix client ID and secret
