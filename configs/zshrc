@@ -364,6 +364,14 @@ function lP() {
 alias ta='tmux attach'         # Attach to a session
 alias ts='tmux new-session -s' # Start new session with name
 alias tl='tmux list-sessions'  # List all sessions
+# Restore the last resurrect snapshot and attach. resurrect's restore runs
+# inside the server, so a detached session is started if none is running;
+# resurrect replaces that throwaway session itself (single-pane restore).
+trestore() {
+    tmux has-session 2>/dev/null || tmux new-session -d
+    tmux run-shell "$(tmux show -gv @resurrect-restore-script-path)"
+    [[ -n $TMUX ]] || tmux attach
+}
 
 # OSC52 copy - works over SSH/containers where wl-copy doesn't
 # see https://terminalguide.namepad.de/seq/osc-52/
