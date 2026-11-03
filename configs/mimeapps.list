@@ -1,5 +1,15 @@
 [Added Associations]
 video/mp4=mpv-7.desktop;mpv-6.desktop;mpv-5.desktop;mpv-3.desktop;mpv-2.desktop;
+x-scheme-handler/http=firefox.desktop;
+x-scheme-handler/https=firefox.desktop;
+x-scheme-handler/chrome=firefox.desktop;
+text/html=firefox.desktop;
+application/x-extension-htm=firefox.desktop;
+application/x-extension-html=firefox.desktop;
+application/x-extension-shtml=firefox.desktop;
+application/xhtml+xml=firefox.desktop;
+application/x-extension-xhtml=firefox.desktop;
+application/x-extension-xht=firefox.desktop;
 
 [Default Applications]
 image/jpeg=gimp.desktop
@@ -21,3 +31,10 @@ x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 application/vnd.jgraph.mxfile=drawio.desktop
 x-scheme-handler/slack=slack.desktop
 x-scheme-handler/beeper=beepertexts.desktop
+x-scheme-handler/chrome=firefox.desktop
+application/x-extension-htm=firefox.desktop
+application/x-extension-html=firefox.desktop
+application/x-extension-shtml=firefox.desktop
+application/xhtml+xml=firefox.desktop
+application/x-extension-xhtml=firefox.desktop
+application/x-extension-xht=firefox.desktop

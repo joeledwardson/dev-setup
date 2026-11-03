@@ -64,6 +64,8 @@
     preferences = {
       "sidebar.verticalTabs" = true;
       "sidebar.position_start" = false;
+      "sidebar.visibility" = "always-show"; # old profiles keep "hide-sidebar" → vertical tabs invisible
+      "sidebar.verticalTabs.dragToPinPromo.dismissed" = true; # hide "drag important tabs here" promo
     };
     preferencesStatus = "user";
   };
