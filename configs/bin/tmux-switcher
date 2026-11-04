@@ -15,8 +15,10 @@ PREVIOUS = Path("/tmp/tmux-previous-target")
 
 
 class Target(NamedTuple):
+    """A bookmark that outlives a detach. Session ids are reassigned when a tmux
+    server restarts, so a remote reboot would silently repoint them; names do not."""
     host: str = ""
-    session_id: str = ""
+    session_name: str = ""
 
 
 class Row(NamedTuple):
@@ -26,7 +28,6 @@ class Row(NamedTuple):
     window_index: int = 0
     pane_index: int = 0
     pane_id: str = "-"
-    session_id: str = ""
     agent: str = ""
     state: str = ""
     updated: int = 0
@@ -46,13 +47,13 @@ class Row(NamedTuple):
                     f"{self.window_name:<14.14} "
                     f"{self.agent:<10.10} {self.state or '—':<12.12} {update_text}")
         # fzf hides the first three columns; they identify the pane to preview/attach.
-        print(f"{self.host}\t{self.pane_id}\t{self.session_id}\t{text}", flush=True)
+        print(f"{self.host}\t{self.pane_id}\t{self.session_name}\t{text}", flush=True)
 
     @classmethod
     def parse_fzf_line(cls, line: str) -> "Row":
         """Recover the attachment target and display without decoding its labels."""
-        host, pane_id, session_id, display = line.split("\t", 3)
-        return cls(host=host, pane_id=pane_id, session_id=session_id, display=display)
+        host, pane_id, session_name, display = line.split("\t", 3)
+        return cls(host=host, pane_id=pane_id, session_name=session_name, display=display)
 
 
 def relative_age(updated: int) -> str:
@@ -105,7 +106,7 @@ done
 
 def panes_on_host(host: str) -> list[Row]:
     fields = (
-        "pane_id", "session_id", "session_name", "window_index", "window_name", "pane_index",
+        "pane_id", "session_name", "window_index", "window_name", "pane_index",
         "pane_current_command", "@agent_state", "@agent_name", "@agent_updated",
         "@pane_agent", "@pane_status", "@pane_started_at",
     )
@@ -127,7 +128,6 @@ def panes_on_host(host: str) -> list[Row]:
             window_index=int(pane["window_index"]),
             pane_index=int(pane["pane_index"]),
             pane_id=pane["pane_id"],
-            session_id=pane["session_id"],
             agent=pane["@pane_agent"] or pane["@agent_name"] or pane["pane_current_command"],
             state=pane["@pane_status"] or pane["@agent_state"],
             updated=max(times.get(pane["pane_id"], 0),
@@ -150,7 +150,7 @@ def print_rows() -> None:
     # Sort globally: a recent remote agent must precede an older local agent.
     for row in sorted(rows, key=lambda row: (
         bool(row.error), -row.updated,
-        (row.host, row.session_id) != current, row.host,
+        (row.host, row.session_name) != current, row.host,
         row.session_name, row.window_name, row.window_index, row.pane_index,
     )):
         row.print_fzf_line()
@@ -187,14 +187,14 @@ def preview(host: str, pane: str) -> None:
 
 def read_target(path: Path) -> Target:
     try:
-        host, _, session_id = path.read_text().strip().partition("\t")
-        return Target(host, session_id)
+        host, _, session_name = path.read_text().strip().partition("\t")
+        return Target(host, session_name)
     except FileNotFoundError:
         return Target()
 
 
 def write_target(path: Path, target: Target) -> None:
-    _ = path.write_text(f"{target.host}\t{target.session_id}\n")
+    _ = path.write_text(f"{target.host}\t{target.session_name}\n")
 
 
 def current_tmux_session() -> str:
@@ -204,7 +204,7 @@ def current_tmux_session() -> str:
         return ""
     try:
         return run_on_host(
-            "local", "tmux", "-u", "display-message", "-p", "-t", pane, "#{session_id}"
+            "local", "tmux", "-u", "display-message", "-p", "-t", pane, "#{session_name}"
         ).strip()
     except (RuntimeError, subprocess.TimeoutExpired):
         return ""
@@ -216,7 +216,8 @@ def attach(host: str, pane: str = "", session: str = "") -> int:
         command += ["select-window", "-t", pane, ";", "select-pane", "-t", pane, ";"]
     command += ["attach-session"]
     if session:
-        command += ["-t", session]
+        # "=" forces an exact name match, so "api" cannot resolve to "api-staging".
+        command += ["-t", "=" + session]
     if host != "local":
         command = ["env", "SWITCHER_CONTROLLER=1", *command]
         command = ["ssh", "-t", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
@@ -268,18 +269,18 @@ def main() -> None:
             target = read_target(CURRENT)
             if not target.host:
                 return
-            exit_code = attach(target.host, session=target.session_id)
+            exit_code = attach(target.host, session=target.session_name)
         elif key == "ctrl-o":
             target = read_target(PREVIOUS)
             if not target.host:
                 continue
-            exit_code = attach(target.host, session=target.session_id)
+            exit_code = attach(target.host, session=target.session_name)
         else:
             selected = Row.parse_fzf_line(row)
             if selected.pane_id == "-":  # Unavailable host: nothing to attach to.
                 continue
-            target = Target(selected.host, selected.session_id)
-            exit_code = attach(target.host, selected.pane_id, target.session_id)
+            target = Target(selected.host, selected.session_name)
+            exit_code = attach(target.host, selected.pane_id, target.session_name)
 
         if exit_code not in (0, 10):
             continue
