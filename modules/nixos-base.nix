@@ -251,6 +251,7 @@ in {
     tabiew # CSV terminal viewer (tw is program)
     caligula # TUI for disk imaging ISO burning to USB etc
     systemd-manager-tui
+    process-compose
 
     ### CLI tools
     tldr
