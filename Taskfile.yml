@@ -2,9 +2,6 @@
 version: "3"
 
 vars:
-  BRAVE_DIR: "{{.HOME}}/.config/BraveSoftware/Brave-Browser"
-  BRAVE_FILE: "{{.BRAVE_DIR}}/Default/Preferences"
-  BRAVE_LOCAL_STATE: "{{.BRAVE_DIR}}/Local State"
   REMMINA_PREF: "{{.HOME}}/.config/remmina/remmina.pref"
   CODEX_CONFIG: "{{.HOME}}/.codex/config.toml"
   LUA_LS: "{{.HOME}}/.local/share/nvim/mason/bin/lua-language-server"
@@ -29,7 +26,6 @@ tasks:
       - task: tmux:tpm-install
       - task: tmux:tpm-setup
       - task: tmux:reload
-      - task: brave:apply
       - task: firefox:profiles
       - task: hyprland:reload
 
@@ -168,38 +164,6 @@ tasks:
         for profile in personal-profile work-profile ibankroll-profile octane-profile; do
           mkdir -p "$HOME/.mozilla/firefox/$profile"
         done
-
-  brave:apply:
-    desc: Apply custom configs to every Brave profile listed in Local State
-    # skip (don't fail) if Brave has never been launched here, so no Local State yet
-    if: 'test -f "{{.BRAVE_LOCAL_STATE}}"'
-    preconditions:
-      - sh: "pgrep -x brave >/dev/null && exit 1 || exit 0"
-        msg: "Brave is running — close it first. Brave rewrites Preferences from memory on exit, which would undo this apply."
-    cmds:
-      - |
-        # jq can't parse JSONC comments, so blank out whole-line // comments into
-        # a plain-JSON temp file first. Only leading-// lines are stripped, so
-        # mid-string // (e.g. https:// in favicon URLs) is left intact.
-        custom_json=$(mktemp)
-        sed 's|^[[:space:]]*//.*||g' ./configs/brave/custom.jsonc > "$custom_json"
-
-        # Brave persists profile dir names (e.g. "Default", "Profile 1") under
-        # profile.info_cache in Local State. Iterate those rather than guessing
-        # names like "Work-Profile" — profile dir != display name.
-        jq -r '.profile.info_cache | keys[]' "{{.BRAVE_LOCAL_STATE}}" | while IFS= read -r profile_dir; do
-          prefs="{{.BRAVE_DIR}}/$profile_dir/Preferences"
-          if [ ! -f "$prefs" ]; then
-            echo "SKIP: $profile_dir (no Preferences file)"
-            continue
-          fi
-          tmpfile=$(mktemp)
-          echo "using tmp file for brave: $tmpfile"
-          jq -s '.[0] * .[1]' "$prefs" "$custom_json" > "$tmpfile"
-          mv "$tmpfile" "$prefs"
-          echo "OK:   $profile_dir"
-        done
-        rm -f "$custom_json"
 
   remmina:diff:
     desc: Show what differs between the Remmina profiles in this repo and the ones in ~/.local/share/remmina
