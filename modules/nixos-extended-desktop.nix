@@ -61,6 +61,8 @@
   # firefox with right sidebar
   programs.firefox = {
     enable = true;
+    # unstable for 159+, which fixes ChatGPT tabs eating all RAM on AMD graphics
+    package = pkgs-unstable.firefox;
     preferences = {
       "sidebar.verticalTabs" = true;
       "sidebar.position_start" = false;

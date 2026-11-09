@@ -8,14 +8,10 @@ if [[ ! -d $WALLPAPER_DIR ]]; then
 fi
 
 
-# get active wallpaper
-CURRENT_WALL=$(hyprctl hyprpaper listloaded)
-echo "got current wallpaper to be: $CURRENT_WALL"
-
-
-# Get a random wallpaper that is not the current one
-WALLPAPER=$(find "$WALLPAPER_DIR" -type f ! -name "$(basename "$CURRENT_WALL")" | shuf -n 1)
+# Get a random wallpaper
+# (hyprpaper 0.8 removed `listloaded`, so we can no longer exclude the current one)
+WALLPAPER=$(find "$WALLPAPER_DIR" -type f | shuf -n 1)
 echo "found  a random wallpaper: $WALLPAPER"
 
-# Apply the selected wallpaper
-hyprctl hyprpaper reload ,"$WALLPAPER"
+# Apply the selected wallpaper to all monitors (hyprpaper 0.8 removed `reload`; `wallpaper` replaces it)
+hyprctl hyprpaper wallpaper ",$WALLPAPER"
