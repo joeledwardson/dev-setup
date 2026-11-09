@@ -84,6 +84,24 @@
             "command": "$HOME/.claude/scripts/notify-if-unfocused.sh"
           }
         ]
+      },
+      {
+        "matcher": "permission_prompt|elicitation_dialog|agent_needs_input",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf waiting > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt|agent_completed",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf idle > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -103,6 +121,14 @@
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_HOOK_HARNESS=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf idle > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -111,6 +137,14 @@
           {
             "type": "command",
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_HOOK_HARNESS=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c '[ -n \"$AOE_INSTANCE_ID\" ] || exit 0; [ -n \"$AOE_HOOK_BIN\" ] || exit 0; [ -x \"$AOE_HOOK_BIN\" ] || exit 0; \"$AOE_HOOK_BIN\" __extract-session-id --field session-id --agent claude 2>/dev/null; exit 0 # aoe-hooks'"
           }
         ]
       }
@@ -133,6 +167,18 @@
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_HOOK_HARNESS=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c '[ -n \"$AOE_INSTANCE_ID\" ] || exit 0; [ -n \"$AOE_HOOK_BIN\" ] || exit 0; [ -x \"$AOE_HOOK_BIN\" ] || exit 0; \"$AOE_HOOK_BIN\" __extract-session-id --field session-id --agent claude 2>/dev/null; exit 0 # aoe-hooks'"
+          },
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf running > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
       }
     ],
     "StopFailure": [
@@ -141,6 +187,14 @@
           {
             "type": "command",
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_HOOK_HARNESS=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf idle > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
           }
         ]
       }
@@ -174,6 +228,15 @@
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && SUPERSET_HOOK_HARNESS=claude \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
           }
         ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf running > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
       }
     ],
     "PostToolUseFailure": [
@@ -196,6 +259,24 @@
             "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/artifact-guard.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/artifact-guard.sh\" || true"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; S=running; case \"$IN\" in *\\\"tool_name\\\":\\\"AskUserQuestion\\\"*) S=waiting ;; esac; printf %s \"$S\" > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
+      }
+    ],
+    "ElicitationResult": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'unset IFS; set -f; umask 077; [ -n \"$AOE_INSTANCE_ID\" ] || exit 0; case \"$AOE_INSTANCE_ID\" in *[!0-9a-zA-Z_-]*) exit 0 ;; esac; B=/tmp/aoe-hooks-1002; mkdir -p \"$B\" 2>/dev/null || exit 0; LS=$(LC_ALL=C ls -ldn \"$B\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; ME=$(id -u 2>/dev/null) || exit 0; [ \"$3\" = \"$ME\" ] || exit 0; D=\"$B/$AOE_INSTANCE_ID\"; mkdir -p \"$D\" 2>/dev/null; LS=$(LC_ALL=C ls -ldn \"$D\" 2>/dev/null) || exit 0; set -- $LS; M=\"$1\"; case \"$M\" in drwx------|drwx------.|drwx------+|drwx------@) ;; *) exit 0 ;; esac; [ \"$3\" = \"$ME\" ] || exit 0; IN=$(cat 2>/dev/null); SID=; L=session_id; [ -z \"${AOE_SESSION_SOURCE:-}\" ] || L=\"session_id.$AOE_SESSION_SOURCE\"; case \"$L\" in *[!0-9a-z._-]*) ;; *) { read SID < \"$D/$L\"; } 2>/dev/null ;; esac; case \"$SID\" in \"\"|-*|*[!0-9a-zA-Z._-]*) ;; *) [ \"${#SID}\" -gt 256 ] || case \"$IN\" in *\\\"session_id\\\":\\\"$SID\\\"*) ;; *) exit 0 ;; esac ;; esac; printf running > \"$D/status\" 2>/dev/null; exit 0 # aoe-hooks'"
+          }
+        ]
       }
     ]
   },
@@ -209,7 +290,7 @@
     "hiroppy": {
       "source": {
         "source": "directory",
-        "path": "$HOME/.config/tmux/plugins/tmux-agent-sidebar"
+        "path": "~/.config/tmux/plugins/tmux-agent-sidebar"
       }
     }
   },

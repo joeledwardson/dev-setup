@@ -1,4 +1,4 @@
-{ pkgs, config, commonGroups, ... }:
+{ pkgs, lib, config, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
 in
@@ -63,6 +63,8 @@ in
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
+  # tailscale off on this host for now (nixos-base.nix enables it everywhere)
+  services.tailscale.enable = lib.mkForce false;
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
   # Delegate `tailscale serve` to the claude user so it runs without sudo

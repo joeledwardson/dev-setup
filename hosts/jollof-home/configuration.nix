@@ -4,6 +4,7 @@
 
 {
   pkgs,
+  pkgs-unstable,
   inputs,
   config,
   commonGroups,
@@ -47,6 +48,8 @@ in
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI
     trayscale # Tailscale tray GUI — coloured connected/disconnected icon
+    (callPackage ../../pkgs/aoe.nix { }) # agent of empires
+    pkgs-unstable.claude-agent-acp # lets aoe's structured view drive claude
   ];
 
   # =======================================
