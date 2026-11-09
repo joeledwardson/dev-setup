@@ -220,9 +220,12 @@ def attach(host: str, pane: str = "", session: str = "") -> int:
         command += ["-t", "=" + session]
     if host != "local":
         command = ["env", "SWITCHER_CONTROLLER=1", *command]
+        # Quote every word: shlex.join leaves "=name" bare, and the remote zsh
+        # expands a leading "=" into a command path ("zsh: mac not found").
+        remote_command = " ".join("'" + part.replace("'", "'\\''") + "'" for part in command)
         command = ["ssh", "-t", "-o", "BatchMode=yes", "-o", "ConnectTimeout=3",
                    "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1",
-                   host, shlex.join(command)]
+                   host, remote_command]
     # Wait until detach. If session discovery failed, tmux chooses its session.
     result = subprocess.run(command, check=False, env={**os.environ, "SWITCHER_CONTROLLER": "1"})
     return result.returncode
