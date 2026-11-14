@@ -3,11 +3,11 @@
 # Prebuilt release binary; upstream's flake compiles from source (10+ min).
 stdenv.mkDerivation rec {
   pname = "aoe";
-  version = "1.22.3";
+  version = "1.23.0";
 
   src = fetchzip {
     url = "https://github.com/agent-of-empires/agent-of-empires/releases/download/v${version}/aoe-linux-amd64.tar.gz";
-    hash = "sha256-Ri7zBTXd6EARecrZSlhU0fHYFXnRCwTRUSu4QybV7+M=";
+    hash = "sha256-MstRafJMBY6CfqC+iAKPTxptiz7QJ6LSqQUcAjaPz5Q=";
     stripRoot = false;
   };
 
