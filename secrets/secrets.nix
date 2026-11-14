@@ -95,6 +95,10 @@ in
   # cloudflare token for caddy on streaming-server (DNS challenge)
   "caddy-cloudflare-env.age".publicKeys = allKeys;
 
+  # agent of empires dashboard login, one passphrase shared by every aoe box
+  # KEY=value line (systemd EnvironmentFile syntax): AOE_SERVE_PASSPHRASE - random, `openssl rand -hex 24`
+  "aoe-env.age".publicKeys = allKeys;
+
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
   # needs my personal email adding as "test user" in audience: https://console.cloud.google.com/auth/audience

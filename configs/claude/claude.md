@@ -25,3 +25,7 @@
   ```
 - New project: `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"`. Add a preflight that fails loudly if port is held (print pid+cmdline). Don't pick a fallback — fix the conflict.
 - Dev servers run in named cowork panes (`<project>-<service>`). List panes and reuse before spawning a new one.
+
+# Pages
+- if `/srv/pages` exists (worker207), anything better shown than told - comparisons, charts, reports, diagrams - goes in a single self-contained html file there, then give me the link `https://worker-pages.joels-netflix.com/<file>.html`
+- keep the chat answer short and point to the page, don't repeat it
