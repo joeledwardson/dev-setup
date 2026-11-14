@@ -1,4 +1,4 @@
-# agent of empires dashboard, run as claude. the host puts https in front of it (caddy -> localhost:port)
+# agent of empires dashboard, run as claude, at https://<hostName> (needs tailnet-caddy.nix for the cert)
 # login: --auth passphrase shows a login page instead of a token URL, the passphrase comes from AOE_SERVE_PASSPHRASE (see `aoe serve --help`)
 # read it with `sudo cat /run/agenix/aoe-env`
 { hostName, port }:
@@ -34,4 +34,6 @@ in {
       KillMode = "process";
     };
   };
+
+  services.caddy.virtualHosts.${hostName}.extraConfig = "reverse_proxy localhost:${toString port}";
 }
