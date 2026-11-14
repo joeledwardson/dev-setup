@@ -24,6 +24,7 @@
     postman
     remmina # RDP tool
     gparted # for when im lazy and dont want to use terminal
+    mise
 
     ### coding editors
     vscode

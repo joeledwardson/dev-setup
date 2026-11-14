@@ -96,6 +96,10 @@ in
     };
   };
 
+  # target box with autologin → keyring can never unlock at login; only the client needs it (remmina)
+  services.gnome.gnome-keyring.enable = lib.mkForce false;
+  security.pam.services.greetd.enableGnomeKeyring = lib.mkForce false; # else PAM auto_starts the daemon anyway
+
   # auto-login claude and launch Hyprland via UWSM (activates graphical-session.target)
   services.greetd = {
     enable = true;
