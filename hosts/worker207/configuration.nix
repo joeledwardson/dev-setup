@@ -70,6 +70,8 @@ in
     "claude"
   ];
 
+  # tailscale off on this host for now (nixos-base.nix enables it everywhere)
+  services.tailscale.enable = lib.mkForce false;
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
   # Delegate `tailscale serve` to the claude user so it runs without sudo

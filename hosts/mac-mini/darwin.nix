@@ -49,16 +49,8 @@ in
       KbdInteractiveAuthentication no
     '';
   };
-  services.tailscale.enable = true;
-  # nix-darwin has no extraSetFlags option. Retry until tailscaled is ready.
-  launchd.daemons.tailscale-ssh = {
-    command = "${config.services.tailscale.package}/bin/tailscale set --ssh";
-    serviceConfig = {
-      RunAtLoad = true;
-      KeepAlive.SuccessfulExit = false;
-      ThrottleInterval = 30;
-    };
-  };
+  # tailscale off on this host for now
+  services.tailscale.enable = false;
 
   age.secrets.mautrix-imessage-config = {
     file = ../../secrets/mautrix-imessage-config.age;

@@ -5,6 +5,7 @@
 {
   config,
   pkgs,
+  lib,
   commonGroups,
   ...
 }:
@@ -110,6 +111,9 @@ in
 
   };
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 11434 ];
+
+  # tailscale off on this host for now (nixos-base.nix enables it everywhere)
+  services.tailscale.enable = lib.mkForce false;
 
   # =======================================
   # Bluetooth Configuration

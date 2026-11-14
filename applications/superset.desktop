@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Superset
+Comment=Run parallel coding agents
+Icon=superset
+Exec=superset %U
+StartupWMClass=superset
+Categories=Development;
+MimeType=x-scheme-handler/superset;
+Terminal=false
+StartupNotify=true
