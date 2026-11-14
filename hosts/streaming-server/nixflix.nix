@@ -191,6 +191,8 @@ in {
       enable = true;
       openFirewall = true; # tcp 5055
       apiKey._secret = config.age.secrets."nixflix-seerr-apikey".path;
+      # "play on jellyfin" links, default is nixflix's internal http://jellyfin.nixflix
+      jellyfin.externalHostname = "https://jellyfin.joels-netflix.com";
     };
 
   };
