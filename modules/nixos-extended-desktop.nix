@@ -1,5 +1,11 @@
 # Extended desktop: additional GUI apps, extra terminals, productivity tools
-{ pkgs, pkgs-unstable, inputs, ... }: {
+{
+  pkgs,
+  pkgs-unstable,
+  inputs,
+  ...
+}:
+{
   environment.systemPackages = with pkgs; [
     ### printing (GTK front-end; CUPS web UI also at http://localhost:631)
     system-config-printer
@@ -9,7 +15,7 @@
     foot
     ghostty
 
-    ### browsers 
+    ### browsers
     google-chrome
 
     ### communication
@@ -66,6 +72,7 @@
     # unstable for 159+, which fixes ChatGPT tabs eating all RAM on AMD graphics
     package = pkgs-unstable.firefox;
     preferences = {
+      "browser.quitShortcut.disabled" = true; # Ctrl+Q no longer quits, so aoe's live-mode exit key works
       "sidebar.verticalTabs" = true;
       "sidebar.position_start" = false;
       "sidebar.visibility" = "always-show"; # old profiles keep "hide-sidebar" → vertical tabs invisible
@@ -92,7 +99,6 @@
       host   all       all     ::1/128         trust
     '';
   };
-
 
   # postgresql.target is WantedBy=multi-user.target by default, putting it on
   # the graphical.target critical chain. Adding After=multi-user.target keeps
@@ -128,8 +134,7 @@
     enable = true;
     settings = {
       default_session = {
-        command =
-          "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd 'uwsm start hyprland-uwsm.desktop'";
         user = "greeter";
       };
     };
