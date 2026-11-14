@@ -35,7 +35,6 @@
     ### coding editors
     vscode
     code-cursor
-    (callPackage ../pkgs/superset.nix { })
 
     ### media
     mpv # new video player
