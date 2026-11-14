@@ -1,5 +1,5 @@
 # Configures worker207's hardware, networking and desktop services.
-{ pkgs, lib, commonGroups, ... }:
+{ pkgs, pkgs-unstable, lib, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
   user-keys = import ../../secrets/user-keys.nix;
@@ -7,6 +7,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ./aoe.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 
@@ -83,6 +84,8 @@ in
     qemu_kvm # Runs the local Packer image build with KVM acceleration.
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
+    (callPackage ../../pkgs/aoe.nix { }) # agent of empires
+    pkgs-unstable.claude-agent-acp # lets aoe's structured view drive claude
   ];
 
   # auto-start wayvnc when Hyprland is running

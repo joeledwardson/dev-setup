@@ -31,6 +31,7 @@ in {
         Media = { style = "row"; columns = 4; };
         Apps = { style = "row"; columns = 3; };
         Infra = { style = "row"; columns = 3; };
+        Coding = { style = "row"; columns = 3; };
       };
     };
 
@@ -68,6 +69,12 @@ in {
         Infra = [
           (link { name = "gatus"; icon = "gatus.svg"; description = "uptime"; })
           (link { name = "beszel"; icon = "beszel.svg"; description = "host metrics"; })
+        ];
+      }
+      {
+        # hosted on other machines, not this one. each sets up its own DNS record and cert
+        Coding = [
+          (link { name = "worker-aoe"; icon = "mdi-console"; description = "agents on worker207"; })
         ];
       }
     ];
