@@ -158,9 +158,9 @@ in {
   # Enable tailscale at startup
   services.tailscale = {
     enable = true;
-    # enable tailscale ssh authentication so I don't have to copy my ssh key across
-    # (see the acl.hujson file, SSH must be enabled in tailscale side for this to work)
-    extraSetFlags = [ "--ssh" ];
+    # tailscale ssh off, openssh + keys in secrets/user-keys.nix instead
+    # (explicit =false, prefs persist so dropping --ssh would leave it on)
+    extraSetFlags = [ "--ssh=false" ];
   };
 
   # Enable swap (8GB universal size for all systems)

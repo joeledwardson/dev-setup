@@ -9,6 +9,7 @@ let
   user = "jollof";
   mautrix-imessage = pkgs.callPackage ../../pkgs/mautrix-imessage.nix { };
   ssh-keys = import ../../secrets/host-keys.nix;
+  user-keys = import ../../secrets/user-keys.nix;
 in
 {
   imports = [ ./bluebubbles.nix ];
@@ -27,7 +28,7 @@ in
 
   # LAN fallback if Tailscale is unavailable. From a source machine, use:
   # sudo ssh -i /etc/ssh/ssh_host_ed25519_key jollof@<mac-lan-ip>
-  users.users.${user}.openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
+  users.users.${user}.openssh.authorizedKeys.keys = ssh-keys.trustedKeys ++ user-keys.trustedKeys;
   # trusted machines can ssh anywhere, so know every host's key
   programs.ssh.knownHosts = ssh-keys.allKnownHosts;
 
@@ -49,8 +50,17 @@ in
       KbdInteractiveAuthentication no
     '';
   };
-  # tailscale off on this host for now
-  services.tailscale.enable = false;
+  services.tailscale.enable = true;
+  # nix-darwin has no extraSetFlags option. Retry until tailscaled is ready.
+  # explicit =false, prefs persist so dropping --ssh would leave it on
+  launchd.daemons.tailscale-ssh = {
+    command = "${config.services.tailscale.package}/bin/tailscale set --ssh=false";
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive.SuccessfulExit = false;
+      ThrottleInterval = 30;
+    };
+  };
 
   age.secrets.mautrix-imessage-config = {
     file = ../../secrets/mautrix-imessage-config.age;

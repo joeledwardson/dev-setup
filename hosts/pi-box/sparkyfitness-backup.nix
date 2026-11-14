@@ -47,7 +47,7 @@ in {
 
     serviceConfig = {
       Type = "oneshot";
-      # Tailscale SSH lets claude in on streaming-server, and the backup files there are world-readable
+      # claude@pi-box's key is authorized on streaming-server (secrets/user-keys.nix), and the backup files there are world-readable
       User = "claude";
       StateDirectory = "sparkyfitness-backups";
       EnvironmentFile = config.age.secrets.gatus-env.path;

@@ -1,6 +1,7 @@
-{ pkgs, lib, config, commonGroups, ... }:
+{ pkgs, config, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
+  user-keys = import ../../secrets/user-keys.nix;
 in
 {
   imports = [
@@ -48,14 +49,14 @@ in
   users.users = {
     jollof = {
       isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allKeys;
+      openssh.authorizedKeys.keys = ssh-keys.allKeys ++ user-keys.allKeys;
       description = "jollof";
       initialPassword = "password";
       extraGroups = commonGroups;
     };
     claude = {
       isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allKeys;
+      openssh.authorizedKeys.keys = ssh-keys.allKeys ++ user-keys.allKeys;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;
@@ -63,8 +64,6 @@ in
   };
   # this stops devenv complaing every time we enter into a shell
   nix.settings.trusted-users = [ "root" "jollof" "claude" ];
-  # tailscale off on this host for now (nixos-base.nix enables it everywhere)
-  services.tailscale.enable = lib.mkForce false;
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:sandbox" ];
   services.tailscale.permitCertUid = "claude";
   # Delegate `tailscale serve` to the claude user so it runs without sudo

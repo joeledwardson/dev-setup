@@ -5,12 +5,12 @@
 {
   config,
   pkgs,
-  lib,
   commonGroups,
   ...
 }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
+  user-keys = import ../../secrets/user-keys.nix;
 in
 {
   imports = [
@@ -112,9 +112,6 @@ in
   };
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 11434 ];
 
-  # tailscale off on this host for now (nixos-base.nix enables it everywhere)
-  services.tailscale.enable = lib.mkForce false;
-
   # =======================================
   # Bluetooth Configuration
   # =======================================
@@ -162,7 +159,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.joelyboy = {
     isNormalUser = true;
-    openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
+    openssh.authorizedKeys.keys = ssh-keys.trustedKeys ++ user-keys.trustedKeys;
     description = "joelyboy";
     initialPassword = "password";
     # add libvrtd groups (see https://wiki.nixos.org/wiki/Virt-manager)

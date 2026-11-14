@@ -2,6 +2,7 @@
 
 let
   ssh-keys = import ../../secrets/host-keys.nix;
+  user-keys = import ../../secrets/user-keys.nix;
   liteLLMPort = 9177;
 
 in {
@@ -61,7 +62,7 @@ in {
   users.users = {
     claude = {
       isNormalUser = true;
-      openssh.authorizedKeys.keys = ssh-keys.allKeys;
+      openssh.authorizedKeys.keys = ssh-keys.allKeys ++ user-keys.allKeys;
       description = "claude-code";
       initialPassword = "password";
       extraGroups = commonGroups;

@@ -12,6 +12,7 @@
 }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
+  user-keys = import ../../secrets/user-keys.nix;
 in
 {
   imports = [
@@ -145,7 +146,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.jollof = {
     isNormalUser = true;
-    openssh.authorizedKeys.keys = ssh-keys.trustedKeys;
+    openssh.authorizedKeys.keys = ssh-keys.trustedKeys ++ user-keys.trustedKeys;
     description = "jollof";
     initialPassword = "password";
     extraGroups = commonGroups;

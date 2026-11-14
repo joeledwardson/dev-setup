@@ -23,7 +23,7 @@ rec {
   # Used for shared secrets and fallback SSH login to sandbox machines.
   allKeys = builtins.attrValues allHosts;
 
-  # for programs.ssh.knownHosts, so ssh can check it's the right machine (Tailscale SSH serves these keys)
+  # for programs.ssh.knownHosts, so ssh can check it's the right machine
   allKnownHosts = builtins.mapAttrs (hostName: publicKey: { inherit publicKey; }) allHosts;
   sandboxKnownHosts = builtins.mapAttrs (hostName: publicKey: { inherit publicKey; }) sandboxHosts;
 }
