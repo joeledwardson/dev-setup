@@ -75,6 +75,7 @@ in {
         # hosted on other machines, not this one. each sets up its own DNS record and cert
         Coding = [
           (link { name = "worker-aoe"; icon = "mdi-console"; description = "agents on worker207"; })
+          (link { name = "aoe-streaming"; icon = "mdi-console"; description = "agents on streaming-server"; })
         ];
       }
     ];
