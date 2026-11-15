@@ -87,6 +87,14 @@ in
     (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, trial attaching to the codeg server
   ];
 
+  # zed remote dev: zed looks for ~/.zed_server/zed-remote-server-stable-<version> and otherwise downloads
+  # a prebuilt one that won't run on NixOS, so link the nixpkgs build. client must be the same nixpkgs zed-editor
+  # https://zed.dev/docs/remote-development
+  systemd.tmpfiles.rules = [
+    "d /home/claude/.zed_server 0755 claude users -"
+    "L+ /home/claude/.zed_server/zed-remote-server-stable-${pkgs.zed-editor.version}+stable - - - - ${pkgs.zed-editor.remote_server}/bin/zed-remote-server-stable-${pkgs.zed-editor.version}+stable"
+  ];
+
   # auto-start wayvnc when Hyprland is running
   systemd.user.services.wayvnc = {
     description = "wayvnc VNC server";
