@@ -100,6 +100,8 @@ in
   "aoe-env.age".publicKeys = allKeys;
   # codeg web login, KEY=value line: CODEG_TOKEN - random, `openssl rand -hex 24`
   "codeg-env.age".publicKeys = allKeys;
+  # openhands agent canvas login, KEY=value line: LOCAL_BACKEND_API_KEY - random, `openssl rand -hex 24`
+  "agent-canvas-env.age".publicKeys = allKeys;
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
