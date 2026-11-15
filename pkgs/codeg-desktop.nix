@@ -17,6 +17,12 @@ in
 appimageTools.wrapType2 {
   inherit pname version src;
 
+  # WebKitGTK's DMA-BUF renderer aborts on the NVIDIA GPU with "Could not create GBM EGL display"
+  # https://github.com/tauri-apps/tauri/issues/9394
+  profile = ''
+    export WEBKIT_DISABLE_DMABUF_RENDERER=1
+  '';
+
   # launcher entry + icon, the binary is named after pname so point Exec at it
   extraInstallCommands = ''
     install -Dm444 ${extracted}/codeg.desktop $out/share/applications/codeg.desktop
