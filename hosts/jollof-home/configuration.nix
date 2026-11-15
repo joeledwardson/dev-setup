@@ -51,6 +51,7 @@ in
     trayscale # Tailscale tray GUI — coloured connected/disconnected icon
     (callPackage ../../pkgs/aoe.nix { }) # agent of empires
     (pkgs-unstable.callPackage ../../pkgs/claude-agent-acp.nix { }) # lets aoe's structured view drive claude
+    (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, attaches to the worker207 codeg server as a remote workspace
   ];
 
   # =======================================

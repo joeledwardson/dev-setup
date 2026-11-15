@@ -84,6 +84,7 @@ in
     qemu_kvm # Runs the local Packer image build with KVM acceleration.
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
+    (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, trial attaching to the codeg server
   ];
 
   # auto-start wayvnc when Hyprland is running
