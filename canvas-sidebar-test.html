@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Canvas sidebar test</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #111; color: #ddd; padding: 2rem; }
+  h1 { color: #4ade80; }
+  table { border-collapse: collapse; margin-top: 1rem; }
+  td, th { border: 1px solid #444; padding: 0.4rem 0.8rem; }
+  button { margin-top: 1rem; padding: 0.4rem 1rem; }
+</style>
+</head>
+<body>
+  <h1>Hello from agent-canvas</h1>
+  <p>If you can read this in the sidebar, the HTML preview works.</p>
+  <table>
+    <tr><th>Check</th><th>Result</th></tr>
+    <tr><td>CSS applied (green heading)</td><td>look above</td></tr>
+    <tr><td>JavaScript runs</td><td id="js-result">no</td></tr>
+  </table>
+  <button onclick="this.textContent = 'clicked at ' + new Date().toLocaleTimeString()">click me</button>
+  <script>document.getElementById('js-result').textContent = 'yes';</script>
+</body>
+</html>
