@@ -98,6 +98,8 @@ in
   # agent of empires dashboard login, one passphrase shared by every aoe box
   # KEY=value line (systemd EnvironmentFile syntax): AOE_SERVE_PASSPHRASE - random, `openssl rand -hex 24`
   "aoe-env.age".publicKeys = allKeys;
+  # codeg web login, KEY=value line: CODEG_TOKEN - random, `openssl rand -hex 24`
+  "codeg-env.age".publicKeys = allKeys;
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients

@@ -1,13 +1,12 @@
-# agent of empires dashboard at https://aoe-streaming.joels-netflix.com
-# the *.joels-netflix.com wildcard record and cert already point here, so this only adds a vhost to caddy.nix's caddy
+# agent of empires dashboard at https://streaming-aoe.joels-netflix.com
+# plus html pages agents write to /srv/pages, at https://streaming-pages.joels-netflix.com
+# the *.joels-netflix.com wildcard record and cert already point here, so these only add vhosts to caddy.nix's caddy
 { ... }:
 
-let
-  hostName = "aoe-streaming.joels-netflix.com";
-  # 8080-8082 are taken (mautrix bridges, homepage)
-  aoePort = 8083;
-in {
-  imports = [ (import ../../modules/aoe-dashboard.nix { inherit hostName; port = aoePort; }) ];
-
-  services.caddy.virtualHosts.${hostName}.extraConfig = "reverse_proxy localhost:${toString aoePort}";
+{
+  imports = [
+    # 8080-8082 are taken (mautrix bridges, homepage)
+    (import ../../modules/aoe-dashboard.nix { hostName = "streaming-aoe.joels-netflix.com"; port = 8083; })
+    (import ../../modules/pages.nix { hostName = "streaming-pages.joels-netflix.com"; })
+  ];
 }

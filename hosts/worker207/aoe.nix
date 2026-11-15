@@ -1,86 +1,19 @@
 # agent of empires dashboard at https://worker-aoe.joels-netflix.com
 # plus html pages agents write to /srv/pages, at https://worker-pages.joels-netflix.com
-# this box points its own DNS record at itself and gets its own cert, so nothing here depends on streaming-server
-{ pkgs, config, ... }:
+# plus codeg (trial, alongside aoe) at https://worker-codeg.joels-netflix.com
+# this box points its own DNS records at itself and gets its own certs, so nothing here depends on streaming-server
+{ ... }:
 
 let
-  zone = "joels-netflix.com";
-  hostName = "worker-aoe.${zone}";
-  pagesHostName = "worker-pages.${zone}";
-  aoePort = 8080;
+  aoeHostName = "worker-aoe.joels-netflix.com";
+  pagesHostName = "worker-pages.joels-netflix.com";
+  codegHostName = "worker-codeg.joels-netflix.com";
 in {
-  imports = [ (import ../../modules/aoe-dashboard.nix { inherit hostName; port = aoePort; }) ];
-
-  # holds CF_API_TOKEN (zone read + DNS edit), shared with streaming-server's caddy
-  age.secrets.caddy-cloudflare-env.file = ../../secrets/caddy-cloudflare-env.age;
-
-  # ---- pages ----
-  # agents write self-contained html here, caddy serves it below. outside /home because home is 0700 and caddy can't read it
-  systemd.tmpfiles.rules = [ "d /srv/pages 0755 claude users -" ];
-
-  # ---- https ----
-  services.caddy = {
-    enable = true;
-    package = pkgs.caddy.withPlugins {
-      plugins = [ "github.com/caddy-dns/cloudflare@v0.2.4" ];
-      hash = "sha256-bzMqxWTqrJ1skZmRTXyEMCKStXpljbqe5r0Ve2cnBfM=";
-    };
-    environmentFile = config.age.secrets.caddy-cloudflare-env.path;
-    # dns-01, because let's encrypt can't reach a 100.x address
-    virtualHosts.${hostName}.extraConfig = ''
-      tls {
-        dns cloudflare {env.CF_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString aoePort}
-    '';
-    # no login: only reachable over tailscale (firewall below)
-    virtualHosts.${pagesHostName}.extraConfig = ''
-      tls {
-        dns cloudflare {env.CF_API_TOKEN}
-      }
-      root * /srv/pages
-      file_server browse
-    '';
-  };
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 443 ];
-
-  # ---- dns ----
-  # points worker-aoe and worker-pages at this box's tailscale IP, overriding the *.joels-netflix.com wildcard (which points at streaming-server)
-  # runs every boot, so it follows the IP if the box ever rejoins the tailnet
-  systemd.services.self-dns = {
-    description = "point ${hostName} and ${pagesHostName} at this machine's tailscale IP";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "tailscaled.service" "network-online.target" ];
-    wants = [ "network-online.target" ];
-    path = [ config.services.tailscale.package pkgs.httpie pkgs.jq ];
-    # https://developers.cloudflare.com/api/resources/dns/subresources/records/
-    script = ''
-      api="https://api.cloudflare.com/client/v4"
-      auth="Authorization:Bearer $CF_API_TOKEN"
-
-      # fails until tailscale is logged in, Restart below retries
-      tailscaleIp=$(tailscale ip -4)
-
-      zoneId=$(http --check-status --ignore-stdin GET "$api/zones" name==${zone} "$auth" | jq -r '.result[0].id')
-
-      for recordName in ${hostName} ${pagesHostName}; do
-        recordId=$(http --check-status --ignore-stdin GET "$api/zones/$zoneId/dns_records" type==A name==$recordName "$auth" | jq -r '.result[0].id // empty')
-
-        # proxied=false: cloudflare's proxy can't reach a 100.x address
-        if [ -z "$recordId" ]; then
-          http --check-status --ignore-stdin POST "$api/zones/$zoneId/dns_records" "$auth" \
-            type=A name=$recordName content="$tailscaleIp" ttl:=300 proxied:=false
-        else
-          http --check-status --ignore-stdin PUT "$api/zones/$zoneId/dns_records/$recordId" "$auth" \
-            type=A name=$recordName content="$tailscaleIp" ttl:=300 proxied:=false
-        fi
-      done
-    '';
-    serviceConfig = {
-      Type = "oneshot";
-      EnvironmentFile = config.age.secrets.caddy-cloudflare-env.path;
-      Restart = "on-failure";
-      RestartSec = 30;
-    };
-  };
+  imports = [
+    (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ aoeHostName pagesHostName codegHostName ]; })
+    (import ../../modules/aoe-dashboard.nix { hostName = aoeHostName; port = 8080; })
+    (import ../../modules/pages.nix { hostName = pagesHostName; })
+    # port from 9000 + crc32("codeg") % 900
+    (import ../../modules/codeg.nix { hostName = codegHostName; port = 9788; })
+  ];
 }

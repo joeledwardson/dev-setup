@@ -27,5 +27,5 @@
 - Dev servers run in named cowork panes (`<project>-<service>`). List panes and reuse before spawning a new one.
 
 # Pages
-- if `/srv/pages` exists (worker207), anything better shown than told - comparisons, charts, reports, diagrams - goes in a single self-contained html file there, then give me the link `https://worker-pages.joels-netflix.com/<file>.html`
+- if `$PAGES_URL` is set (worker207, streaming-server), anything better shown than told - comparisons, charts, reports, diagrams - goes in a single self-contained html file in `/srv/pages`, then give me the link `$PAGES_URL/<file>.html`
 - keep the chat answer short and point to the page, don't repeat it
