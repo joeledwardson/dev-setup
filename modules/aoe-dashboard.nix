@@ -13,6 +13,7 @@ in {
   environment.systemPackages = [
     aoe
     (pkgs-unstable.callPackage ../pkgs/claude-agent-acp.nix { }) # lets aoe's structured view drive claude
+    pkgs-unstable.codex-acp # lets aoe's structured view drive codex
   ];
 
   # localhost only. --behind-proxy marks cookies Secure and trusts caddy's X-Forwarded-* headers
