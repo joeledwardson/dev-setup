@@ -24,6 +24,18 @@ RUN curl -fL "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION
     ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim && \
     rm /tmp/nvim.tar.gz
 
+# ccmux agent picker (tmux.conf binds Alt-p and prefix S to it). Pinned, checksum-verified binary.
+ARG CCMUX_VERSION=1.4.6
+ARG CCMUX_SHA256=a4f0677c7238cdc6794ed637917436af7ca928faa7e7ff341061c496e9ee3ec5
+RUN curl -fL "https://github.com/epilande/ccmux/releases/download/v${CCMUX_VERSION}/ccmux-linux-x64" -o /usr/local/bin/ccmux && \
+    echo "${CCMUX_SHA256}  /usr/local/bin/ccmux" | sha256sum -c - && \
+    chmod 755 /usr/local/bin/ccmux
+# Claude hooks give ccmux exact session-to-pane matching (writes ~/.claude/settings.json).
+RUN ccmux setup --agent claude
+# If the ccmux daemon starts before this dir exists (fresh container, Claude never run),
+# it never tracks Claude sessions, even once the dir appears. Seen on v1.4.6.
+RUN mkdir -p /root/.claude/projects
+
 ENV SHELL=/bin/zsh
 ENV PATH="$HOME/.local/bin:$PATH"
 ENV EDITOR=nvim

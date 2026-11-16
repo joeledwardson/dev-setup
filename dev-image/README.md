@@ -11,7 +11,7 @@ can be installed for the project that needs them.
 | Fuzzy completion, history and search | fzf, fd, ripgrep |
 | Git and aliases, `lg` | git, git-delta, lazygit, openssh |
 | Reading files and help | bat, less, man-db, file |
-| Terminal multiplexer | tmux |
+| Terminal multiplexer, agent picker (`Alt-p`) | tmux, ccmux (pinned GitHub release binary) |
 | JSON helpers and downloads | jq, curl |
 
 Neovim 0.12.5 is installed from the official x86-64 release archive and checked

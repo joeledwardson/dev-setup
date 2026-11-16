@@ -337,6 +337,9 @@ in {
     # try llm again for quick access to gemini
     (pkgs-unstable.llm.withPlugins { llm-gemini = true; })
 
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
+    # agent session picker for tmux; upstream only ships an x86-64 Linux binary (not pi-box)
+    (callPackage ../pkgs/ccmux.nix { })
   ];
 
   # enable docker
