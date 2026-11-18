@@ -248,6 +248,8 @@ hl.bind(mainMod .. '+ALT+m', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/wind
 hl.bind(mainMod .. '+b', hl.dsp.exec_cmd 'rofimoji --action clipboard')
 hl.bind(mainMod .. '+comma', hl.dsp.exec_cmd 'ydotool mousemove -w -x 0 -y -1')
 hl.bind(mainMod .. '+period', hl.dsp.exec_cmd 'ydotool mousemove -w -x 0 -y 1')
+-- click the centre of the active window
+hl.bind(mainMod .. '+SHIFT+M', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/click-window-centre.sh'))
 hl.bind(mainMod .. '+u', hl.dsp.exec_cmd(HOME .. '/.config/hypr/scripts/toggle_hyprwhspr.sh'))
 
 -- Move focus
