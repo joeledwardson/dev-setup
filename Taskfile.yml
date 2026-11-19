@@ -5,6 +5,7 @@ vars:
   REMMINA_PREF: "{{.HOME}}/.config/remmina/remmina.pref"
   CODEX_CONFIG: "{{.HOME}}/.codex/config.toml"
   LUA_LS: "{{.HOME}}/.local/share/nvim/mason/bin/lua-language-server"
+  FIREFOX_PROFILES: "personal-profile work-profile ibankroll-profile octane-profile"
 
 tasks:
   hyprland:reload:
@@ -161,8 +162,49 @@ tasks:
     desc: Create personal, work and ibankroll Firefox profile directories
     cmds:
       - |
-        for profile in personal-profile work-profile ibankroll-profile octane-profile; do
+        for profile in {{.FIREFOX_PROFILES}}; do
           mkdir -p "$HOME/.mozilla/firefox/$profile"
+        done
+
+  # not in os:all - firefox is usually open, and this refuses to run while it is
+  firefox:shortcuts:
+    desc: Apply extension keyboard shortcuts from configs/firefox/extension-shortcuts.json to every Firefox profile
+    preconditions:
+      # on NixOS the main process is named ".firefox-wrappe" (nix wrapper name, cut to 15 chars), elsewhere "firefox"
+      - sh: "pgrep -x .firefox-wrappe >/dev/null && exit 1 || exit 0"
+        msg: "Firefox is running - close it first. Firefox rewrites extension-settings.json from memory on exit, which would undo this."
+      - sh: "pgrep -x firefox >/dev/null && exit 1 || exit 0"
+        msg: "Firefox is running - close it first. Firefox rewrites extension-settings.json from memory on exit, which would undo this."
+    cmds:
+      - |
+        # firefox keeps user-set extension shortcuts in <profile>/extension-settings.json under .commands,
+        # keyed by command name, with one precedenceList entry per extension. Firefox Sync does not sync them.
+        now_ms=$(date +%s%3N)
+        for profile in {{.FIREFOX_PROFILES}}; do
+          profile_dir="$HOME/.mozilla/firefox/$profile"
+          settings_file="$profile_dir/extension-settings.json"
+          if [ ! -d "$profile_dir" ]; then
+            echo "SKIP: $profile (no profile directory - run task firefox:profiles)"
+            continue
+          fi
+          # firefox treats a missing file as an empty store, so start from {} if needed
+          if [ -f "$settings_file" ]; then
+            current_json=$(cat "$settings_file")
+          else
+            current_json='{}'
+          fi
+          tmpfile=$(mktemp)
+          # for each shortcut: drop any existing entry for that extension, then add ours
+          echo "$current_json" | jq \
+            --slurpfile shortcuts ./configs/firefox/extension-shortcuts.json \
+            --argjson now "$now_ms" \
+            'reduce $shortcuts[0][] as $entry (.;
+              .commands[$entry.command].precedenceList =
+                [(.commands[$entry.command].precedenceList // [])[] | select(.id != $entry.extension_id)]
+                + [{id: $entry.extension_id, installDate: $now, value: {shortcut: $entry.shortcut}, enabled: true}]
+            )' > "$tmpfile"
+          mv "$tmpfile" "$settings_file"
+          echo "OK:   $profile"
         done
 
   remmina:diff:
