@@ -11,9 +11,8 @@ let
   };
   baseSecrets = {
     beszel-agent-env = mkSecret ../secrets/beszel-agent-env.age;
-    llm-gemini-key = mkSecret ../secrets/llm-gemini-key.age;
+    ollama-api-key = mkSecret ../secrets/ollama-api-key.age;
     litellm-env = mkSecret ../secrets/litellm-env.age;
-    hermes-env = mkSecret ../secrets/hermes-env.age;
     ntfy-token = mkSecret ../secrets/ntfy-token.age;
     sparkyfitness-secrets = mkSecret ../secrets/sparkyfitness-secrets.age;
     sparkyfitness-manual = mkSecret ../secrets/sparkyfitness-manual.age;

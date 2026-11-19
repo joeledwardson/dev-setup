@@ -21,7 +21,6 @@ tasks:
       - task: remmina:push
       - task: remmina:configure
       - task: codex:configure
-      - task: llm:keys
       - task: zsh:sheldon-lock
       - task: yazi:pkg
       - task: tmux:tpm-install
@@ -298,11 +297,6 @@ tasks:
     # `task` — restores it on restart. Re-runs `task port-dash:serve`, cwd-independent.
     cmds:
       - "{{.HOME}}/.local/bin/port-dash"
-
-  llm:keys:
-    desc: Set LLM API keys from agenix secrets
-    cmds:
-      - llm keys set gemini --value "$(cat /run/agenix/llm-gemini-key)"
 
   secrets:edit:
     desc: |

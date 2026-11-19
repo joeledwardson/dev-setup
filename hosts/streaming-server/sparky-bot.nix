@@ -1,23 +1,29 @@
-{ ... }:
+{ config, pkgs, ... }:
 
 # Telegram bot for SparkyFitness MCP
 # NOTE: this needs to built with go first or this wont work - this just scaffolds the systemd service
 let
   repoDir = "/home/claude/calories-app";
   binary = "${repoDir}/sparky-bot";
-  # the bot reads each secret from a file in here (see readSecret in main.go)
-  secretsDir = "/home/claude/.sparky-bot";
+  secrets = config.age.secrets;
+
+  # the bot only reads env vars - this turns the agenix secret files into env vars at launch
+  launcher = pkgs.writeShellScript "sparky-bot-launch" ''
+    export TELEGRAM_TOKEN="$(cat ${secrets.sparky-bot-telegram-token.path})"
+    export ALLOWED_ID="$(cat ${secrets.sparky-bot-allowed-id.path})"
+    export SF_API_KEY="$(cat ${secrets.sparkyfitness-api-key.path})"
+    export OLLAMA_API_KEY="$(cat ${secrets.ollama-api-key.path})"
+    exec ${binary}
+  '';
 in {
-  # agenix symlinks each secret to where the bot already looks for it
+  # sparkyfitness-api-key + ollama-api-key come from modules/nixos-secrets.nix
   age.secrets = {
     sparky-bot-telegram-token = {
       file = ../../secrets/sparky-bot-telegram-token.age;
-      path = "${secretsDir}/telegram-token";
       owner = "claude";
     };
     sparky-bot-allowed-id = {
       file = ../../secrets/sparky-bot-allowed-id.age;
-      path = "${secretsDir}/allowed-id";
       owner = "claude";
     };
   };
@@ -34,10 +40,7 @@ in {
     serviceConfig = {
       User = "claude";
       WorkingDirectory = repoDir;
-      ExecStart = binary;
-      # same log file as `task bot:logs` reads
-      StandardOutput = "append:${secretsDir}/bot.log";
-      StandardError = "append:${secretsDir}/bot.log";
+      ExecStart = launcher;
       Restart = "on-failure";
       RestartSec = 10;
     };

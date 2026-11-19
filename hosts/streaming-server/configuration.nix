@@ -97,14 +97,6 @@ in {
     settings.include = [ "/var/lib/litellm/models.yaml" ];
     settings.model_list = [
       {
-        model_name = "gemini-flash";
-        litellm_params = {
-          model =
-            "gemini/gemini-2.5-flash"; # Google AI Studio (API-key) provider
-          api_key = "os.environ/GEMINI_API_KEY";
-        };
-      }
-      {
         model_name = "qwen-vl";
         litellm_params = {
           model = "ollama/qwen2.5vl:3b";

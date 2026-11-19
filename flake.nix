@@ -14,7 +14,6 @@
     };
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
   };
 
   # inputs are resolved to flakes. 
@@ -39,7 +38,6 @@
         "docker" # non root access to docker
         "ydotool" # access the ydotoold socket to inject synthetic input (Wayland automation)
         "netbird-wt0" # netbird daemon socket access for the tray UI. NB: this group only exists on the host running the netbird client; other hosts log a harmless "unknown group" warning on activation and skip it.
-        "hermes" # lets the interactive `hermes` CLI read the hermes-agent service's shared HERMES_HOME. Same deal as netbird-wt0: only exists on hosts importing nixos-hermes.nix; harmless "unknown group" warning elsewhere.
       ];
       mkArgs = sys: {
         pkgs-unstable = mkPkgs sys;
@@ -100,7 +98,6 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
-            ./modules/nixos-hermes.nix
             ./hosts/jollof-home/configuration.nix
           ];
         };
@@ -143,7 +140,6 @@
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
             ./hosts/streaming-server/configuration.nix
-            ./modules/nixos-hermes.nix
           ];
         };
 
@@ -156,7 +152,6 @@
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-sandbox.nix
-            ./modules/nixos-hermes.nix
             ./hosts/degen-bot/configuration.nix
           ];
         };

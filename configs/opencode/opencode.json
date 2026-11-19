@@ -17,10 +17,6 @@
           "name": "qwen3-vl-32b (openrouter)",
           "limit": { "context": 131072, "output": 16384 }
         },
-        "gemini-flash": {
-          "name": "gemini-2.5-flash",
-          "limit": { "context": 1000000, "output": 16384 }
-        },
         "qwen35-35b": {
           "name": "qwen3.5-35b-a3b (openrouter)",
           "limit": { "context": 262144, "output": 16384 }
