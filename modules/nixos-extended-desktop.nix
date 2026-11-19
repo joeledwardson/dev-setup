@@ -78,6 +78,57 @@
       "sidebar.verticalTabs.dragToPinPromo.dismissed" = true; # hide "drag important tabs here" promo
     };
     preferencesStatus = "user";
+    # auto-install extensions into every profile (policies apply to all profiles, can't target one)
+    # "normal_installed" = installed on launch but can still be disabled per profile
+    # keys are extension IDs - look one up with https://addons.mozilla.org/api/v5/addons/addon/<slug>/ (field "guid")
+    # extension keyboard shortcuts aren't a policy - see `task firefox:shortcuts`
+    policies.ExtensionSettings = {
+      # Bitwarden Password Manager
+      "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+      };
+      # uBlock Origin - ad blocker
+      "uBlock0@raymondhill.net" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+      };
+      # Vimium C - vim-style keyboard navigation (settings sync via firefox account)
+      "vimium-c@gdh1995.cn" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
+      };
+      # Dark Reader - dark mode for every site
+      "addon@darkreader.org" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+      };
+      # Privacy Badger - tracker blocker
+      "jid1-MnnxcxisBPnSXQ@jetpack" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi";
+      };
+      # I don't care about cookies - hides cookie banners
+      "jid1-KKzOGWgsW3Ao4Q@jetpack" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/i-dont-care-about-cookies/latest.xpi";
+      };
+      # Focus Finder - highlights the focused element
+      "{a2d591da-352b-4a8b-8a47-071542f81a62}" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/focus-finder/latest.xpi";
+      };
+      # Focus input element - shortcut to jump to the next input field
+      "{8221b638-0d82-43e0-a040-0e19dc0397d7}" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/focus-input-element/latest.xpi";
+      };
+      # WASD Navigator - virtual cursor / link hopping with WASD
+      "wasd@thepreviousone" = {
+        installation_mode = "normal_installed";
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/wasd-navigator/latest.xpi";
+      };
+    };
   };
 
   # use gnome keywring in remmina
