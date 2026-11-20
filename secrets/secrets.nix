@@ -99,6 +99,11 @@ in
   "codeg-env.age".publicKeys = allKeys;
   # openhands agent canvas login, KEY=value line: LOCAL_BACKEND_API_KEY - random, `openssl rand -hex 24`
   "agent-canvas-env.age".publicKeys = allKeys;
+  # paseo daemon login, KEY=value line: PASEO_PASSWORD - random, `openssl rand -hex 24`
+  "paseo-env.age".publicKeys = allKeys;
+  # cloudcli web login, not read by the service (cloudcli keeps its own account db), kept here so it can be looked up
+  # two KEY=value lines: CLOUDCLI_USERNAME, CLOUDCLI_PASSWORD - random, `openssl rand -hex 24`
+  "cloudcli-login.age".publicKeys = allKeys;
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
