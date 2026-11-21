@@ -14,6 +14,11 @@
     };
     nixarr.url = "github:rasmus-kirk/nixarr";
     agenix.url = "github:ryantm/agenix";
+    # live tree of pending systemd units on the boot console (https://codeberg.org/wvhulle/bootvine)
+    bootvine = {
+      url = "git+https://codeberg.org/wvhulle/bootvine";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # inputs are resolved to flakes. 
@@ -70,6 +75,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            inputs.bootvine.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
