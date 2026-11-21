@@ -220,10 +220,12 @@ hl.bind(mainMod .. '+T', hl.dsp.window.float())
 -- strip, which never re-expands on exit (upstream bug brave-browser#33136). We
 -- give Brave "internal" fullscreen instead (fills the monitor, client state left
 -- at 0), so Brave is never told it went fullscreen and leaves the tabs alone.
+-- Firefox gets the same treatment: told it's fullscreen, it hides the URL bar
+-- and sidebar; internal-only keeps both visible while filling the monitor.
 -- Every other app keeps the normal toggle.
 hl.bind(mainMod .. '+F', function()
   local active = hl.get_active_window()
-  if active and active.class == 'brave-browser' then
+  if active and (active.class == 'brave-browser' or active.class == 'firefox') then
     if active.fullscreen ~= 0 then
       hl.dispatch(hl.dsp.window.fullscreen_state { internal = 0, client = 0 })
     else
