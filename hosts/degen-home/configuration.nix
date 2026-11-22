@@ -41,6 +41,9 @@ in
     };
   };
 
+  # tree of still-starting units on the boot console instead of scrolling log lines
+  services.bootvine.enable = true;
+
   # Define your hostname.
   networking.hostName = "degen-home";
   my.ssh.defaultUser = "jollof";
