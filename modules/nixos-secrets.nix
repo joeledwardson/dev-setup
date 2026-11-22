@@ -20,6 +20,7 @@ let
     sandbox-tailscale-authkey = mkSecret ../secrets/sandbox-tailscale-authkey.age;
     sandbox-github-token = mkSecret ../secrets/sandbox-github-token.age;
     sandbox-gitlab-token = mkSecret ../secrets/sandbox-gitlab-token.age;
+    travel-logins = mkSecret ../secrets/travel-logins.age;
   };
   gCalSecrets =
     if enableGcal then
