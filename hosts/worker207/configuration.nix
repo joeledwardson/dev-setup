@@ -8,6 +8,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ./aoe.nix
+    ./trajectory.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 
@@ -82,7 +83,6 @@ in
     cdrkit # Builds the cloud-init seed ISO used by local Packer images.
     kitty.terminfo
     qemu_kvm # Runs the local Packer image build with KVM acceleration.
-    (callPackage ../../pkgs/trajectory.nix { }) # on-demand local coding-agent session viewer
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
     (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, trial attaching to the codeg server
