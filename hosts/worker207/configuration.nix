@@ -8,6 +8,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ./aoe.nix
+    ./trajectory.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 

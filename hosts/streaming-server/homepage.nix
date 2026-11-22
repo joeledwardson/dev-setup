@@ -6,9 +6,9 @@ let
   # every tile is just a link, so name + icon is all a service needs. tiles can also
   # carry a `widget` block that polls the app's own api for live stats (queue depth,
   # who's streaming), but that needs each app's api key, so none of these have one.
-  link = { name, icon, description }: {
+  link = { name, icon, description, path ? "" }: {
     ${name} = {
-      href = "https://${name}.${domain}";
+      href = "https://${name}.${domain}${path}";
       inherit icon description;
     };
   };
@@ -75,6 +75,7 @@ in {
         # hosted on other machines, not this one. each sets up its own DNS record and cert
         Coding = [
           (link { name = "worker-aoe"; icon = "mdi-console"; description = "agents on worker207"; })
+          (link { name = "worker-trajectory"; icon = "mdi-chart-timeline-variant"; description = "agent session traces on worker207"; path = "/viewer/"; })
           (link { name = "streaming-aoe"; icon = "mdi-console"; description = "agents on streaming-server"; })
         ];
       }
