@@ -67,6 +67,9 @@ in
   # gitlab API (all access) token for joels-claude-bot - expires 21-05-2027
   "sandbox-gitlab-token.age".publicKeys = allKeys;
 
+  # travel account logins, readable on trusted and sandbox NixOS hosts
+  "travel-logins.age".publicKeys = allKeys;
+
   # nixflix media server secrets (randomly generated keys for seeding)
   "nixflix-sonarr-apikey.age".publicKeys = allKeys;
   "nixflix-sonarr-password.age".publicKeys = allKeys;
