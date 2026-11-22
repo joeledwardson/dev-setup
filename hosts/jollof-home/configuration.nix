@@ -4,7 +4,6 @@
 
 {
   pkgs,
-  pkgs-unstable,
   inputs,
   config,
   commonGroups,
@@ -49,9 +48,6 @@ in
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI
     trayscale # Tailscale tray GUI — coloured connected/disconnected icon
-    (callPackage ../../pkgs/aoe.nix { }) # agent of empires
-    (pkgs-unstable.callPackage ../../pkgs/claude-agent-acp.nix { }) # lets aoe's structured view drive claude
-    (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, attaches to the worker207 codeg server as a remote workspace
     zed-editor # remote dev into worker207; must stay the same nixpkgs as worker207's zed remote server (exact version match)
   ];
 

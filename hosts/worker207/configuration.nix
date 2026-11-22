@@ -7,7 +7,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    ./aoe.nix
+    ./web.nix
     ./trajectory.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
@@ -85,7 +85,6 @@ in
     qemu_kvm # Runs the local Packer image build with KVM acceleration.
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
-    (callPackage ../../pkgs/codeg-desktop.nix { }) # codeg desktop app, trial attaching to the codeg server
   ];
 
   # zed remote dev: zed looks for ~/.zed_server/zed-remote-server-stable-<version> and otherwise downloads
