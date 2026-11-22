@@ -5,7 +5,7 @@
 ### 3. run task secrets:update to re-key all secrets
 ### 4. add it to the list in ../modules/nixos-secrets.nix and add it to the list of names to be automatically added to each host
 let
-  inherit (import ./host-keys.nix) trustedKeys allKeys;
+  inherit (import ./host-keys.nix) trustedKeys allKeys sandboxHosts;
 in
 {
   # NOTE: these universal token + key must be be one-off grabbed from beszel dashboard, not possible to scaffold with nixos 😠
@@ -107,6 +107,10 @@ in
   # cloudcli web login, not read by the service (cloudcli keeps its own account db), kept here so it can be looked up
   # two KEY=value lines: CLOUDCLI_USERNAME, CLOUDCLI_PASSWORD - random, `openssl rand -hex 24`
   "cloudcli-login.age".publicKeys = allKeys;
+
+  # Langfuse and its traced coding agents run on worker207.
+  "langfuse-server-env.age".publicKeys = trustedKeys ++ [ sandboxHosts.worker207 ];
+  "langfuse-client-env.age".publicKeys = trustedKeys ++ [ sandboxHosts.worker207 ];
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients

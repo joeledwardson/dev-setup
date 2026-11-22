@@ -8,6 +8,8 @@ in
   imports = [
     ./hardware-configuration.nix
     ./aoe.nix
+    ./langfuse.nix
+    ./langfuse-server.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 

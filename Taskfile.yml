@@ -244,6 +244,18 @@ tasks:
           '.features.hooks = true | del(.features.codex_hooks) | .tui.vim_mode_default = true | .tui.alternate_screen = "never"' \
           "{{.CODEX_CONFIG}}"
 
+  langfuse:client:install:
+    desc: Install Langfuse tracing plugins on worker207 (credentials come from agenix at runtime)
+    cmds:
+      - codex plugin marketplace add langfuse/codex-observability-plugin
+      - codex plugin add tracing@codex-observability-plugin
+      - |
+        yq -i -p toml -o toml \
+          '.features.hooks = true | .plugins."tracing@codex-observability-plugin".enabled = true' \
+          "{{.CODEX_CONFIG}}"
+      - claude plugin marketplace add langfuse/Claude-Observability-Plugin
+      - claude plugin install langfuse-observability@langfuse-observability
+
   dev:build:
     desc: Build dev container
     cmd: docker build --file dev-image/Dockerfile.dev -t dev-image --progress=plain .

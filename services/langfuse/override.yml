@@ -1,0 +1,32 @@
+# Docker Compose v5 supports !override. Only Caddy can reach these loopback ports.
+services:
+  langfuse-web:
+    ports: !override
+      - "127.0.0.1:9394:3000"
+    environment:
+      NEXTAUTH_URL: https://worker-langfuse.joels-netflix.com
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: https://worker-langfuse-media.joels-netflix.com
+      LANGFUSE_S3_BATCH_EXPORT_EXTERNAL_ENDPOINT: https://worker-langfuse-media.joels-netflix.com
+
+  langfuse-worker:
+    ports: !override []
+    environment:
+      NEXTAUTH_URL: https://worker-langfuse.joels-netflix.com
+      TELEMETRY_ENABLED: "false"
+
+  langfuse-ai-gateway:
+    ports: !override []
+
+  clickhouse:
+    ports: !override []
+
+  minio:
+    ports: !override
+      - "127.0.0.1:9395:9000"
+
+  redis:
+    ports: !override []
+
+  postgres:
+    ports: !override []

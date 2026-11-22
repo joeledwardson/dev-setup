@@ -13,9 +13,11 @@ let
   canvasHostName = "worker-canvas.joels-netflix.com";
   paseoHostName = "worker-paseo.joels-netflix.com";
   cloudcliHostName = "worker-cloudcli.joels-netflix.com";
+  langfuseHostName = "worker-langfuse.joels-netflix.com";
+  langfuseMediaHostName = "worker-langfuse-media.joels-netflix.com";
 in {
   imports = [
-    (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ aoeHostName pagesHostName codegHostName canvasHostName paseoHostName cloudcliHostName ]; })
+    (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ aoeHostName pagesHostName codegHostName canvasHostName paseoHostName cloudcliHostName langfuseHostName langfuseMediaHostName ]; })
     (import ../../modules/aoe-dashboard.nix { hostName = aoeHostName; port = 8080; })
     (import ../../modules/pages.nix { hostName = pagesHostName; })
     # port from 9000 + crc32("codeg") % 900
