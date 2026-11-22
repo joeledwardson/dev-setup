@@ -71,7 +71,6 @@
     # unstable for 159+, which fixes ChatGPT tabs eating all RAM on AMD graphics
     package = pkgs-unstable.firefox;
     preferences = {
-      "browser.quitShortcut.disabled" = true; # Ctrl+Q no longer quits, so aoe's live-mode exit key works
       "sidebar.verticalTabs" = true;
       "sidebar.position_start" = false;
       "sidebar.visibility" = "always-show"; # old profiles keep "hide-sidebar" → vertical tabs invisible

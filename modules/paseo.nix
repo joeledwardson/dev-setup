@@ -1,5 +1,4 @@
 # paseo daemon and its web UI, run as claude, at https://<hostName> (needs tailnet-caddy.nix for the cert)
-# trial next to aoe, codeg and agent canvas
 # login: add a direct connection to https://<hostName> in the web UI, password from `sudo cat /run/agenix/paseo-env`
 # runs the daemon the same way paseo's docker image does: https://github.com/getpaseo/paseo/blob/main/docs/docker.md
 # not in nixpkgs, and the server package has no bin for npx, so npm installs the pinned version into /var/lib/paseo

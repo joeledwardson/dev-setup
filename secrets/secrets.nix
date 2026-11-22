@@ -95,18 +95,8 @@ in
   # cloudflare token for caddy on streaming-server (DNS challenge)
   "caddy-cloudflare-env.age".publicKeys = allKeys;
 
-  # agent of empires dashboard login, one passphrase shared by every aoe box
-  # KEY=value line (systemd EnvironmentFile syntax): AOE_SERVE_PASSPHRASE - random, `openssl rand -hex 24`
-  "aoe-env.age".publicKeys = allKeys;
-  # codeg web login, KEY=value line: CODEG_TOKEN - random, `openssl rand -hex 24`
-  "codeg-env.age".publicKeys = allKeys;
-  # openhands agent canvas login, KEY=value line: LOCAL_BACKEND_API_KEY - random, `openssl rand -hex 24`
-  "agent-canvas-env.age".publicKeys = allKeys;
   # paseo daemon login, KEY=value line: PASEO_PASSWORD - random, `openssl rand -hex 24`
   "paseo-env.age".publicKeys = allKeys;
-  # cloudcli web login, not read by the service (cloudcli keeps its own account db), kept here so it can be looked up
-  # two KEY=value lines: CLOUDCLI_USERNAME, CLOUDCLI_PASSWORD - random, `openssl rand -hex 24`
-  "cloudcli-login.age".publicKeys = allKeys;
 
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
