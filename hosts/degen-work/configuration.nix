@@ -44,6 +44,9 @@ in
   # The nvidia powerManagement services below handle dGPU state across S3.
   boot.kernelParams = [ "mem_sleep_default=deep" ];
 
+  # tree of still-starting units on the boot console instead of scrolling log lines
+  services.bootvine.enable = true;
+
   # Define your hostname.
   networking.hostName = "degen-work";
   my.ssh.defaultUser = "jollof";

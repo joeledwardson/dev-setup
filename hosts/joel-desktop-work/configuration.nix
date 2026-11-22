@@ -64,6 +64,9 @@ in
     ];
   };
 
+  # tree of still-starting units on the boot console instead of scrolling log lines
+  services.bootvine.enable = true;
+
   networking.hostName = "joel-desktop-work"; # Define your hostname.
   my.ssh.defaultUser = "joelyboy";
 

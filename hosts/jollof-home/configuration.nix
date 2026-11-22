@@ -87,6 +87,9 @@ in
   #   ];
   # };
 
+  # tree of still-starting units on the boot console instead of scrolling log lines
+  services.bootvine.enable = true;
+
   # =======================================
   # Networking Configuration
   # =======================================

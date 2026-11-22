@@ -56,6 +56,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            inputs.bootvine.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
@@ -100,6 +101,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            inputs.bootvine.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
@@ -114,6 +116,7 @@
           specialArgs = mkArgs x86System;
           modules = [
             inputs.agenix.nixosModules.default
+            inputs.bootvine.nixosModules.default
             ./modules/nixos-beszel-agent.nix
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
