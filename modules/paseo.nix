@@ -1,8 +1,9 @@
-# paseo daemon and its web UI, run as claude, at https://<hostName> (needs tailnet-caddy.nix for the cert)
-# login: add a direct connection to https://<hostName> in the web UI, password from `sudo cat /run/agenix/paseo-env`
+# paseo daemon and its web UI, run as <user>, at https://<hostName> via caddy (needs tailnet-caddy.nix for the cert)
+# without caddy enabled the vhost is inert: use hostName "localhost" and open http://localhost:<port>
+# login: add a direct connection to the web UI's own URL, password from `sudo cat /run/agenix/paseo-env`
 # runs the daemon the same way paseo's docker image does: https://github.com/getpaseo/paseo/blob/main/docs/docker.md
 # not in nixpkgs, and the server package has no bin for npx, so npm installs the pinned version into /var/lib/paseo
-{ hostName, port }:
+{ hostName, port, user }:
 { pkgs, config, ... }:
 
 let
@@ -19,7 +20,7 @@ in {
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
     # agents (claude, codex, git...) launch from here, so give it the same tools a login shell gets
-    path = [ nodejs "/run/current-system/sw" "/etc/profiles/per-user/claude" ];
+    path = [ nodejs "/run/current-system/sw" "/etc/profiles/per-user/${user}" ];
     environment = {
       # localhost only, caddy does the https
       PASEO_LISTEN = "127.0.0.1:${toString port}";
@@ -28,7 +29,7 @@ in {
       PASEO_HOSTNAMES = hostName;
     };
     serviceConfig = {
-      User = "claude";
+      User = user;
       StateDirectory = "paseo";
       # quick no-op once this version is installed
       ExecStartPre = "${nodejs}/bin/npm install --no-fund --no-audit --prefix /var/lib/paseo @getpaseo/cli@${version}";

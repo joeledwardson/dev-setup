@@ -13,6 +13,6 @@ in {
     (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ pagesHostName paseoHostName trajectoryHostName ]; })
     (import ../../modules/pages.nix { hostName = pagesHostName; })
     # port from 9000 + crc32("paseo") % 900
-    (import ../../modules/paseo.nix { hostName = paseoHostName; port = 9810; })
+    (import ../../modules/paseo.nix { hostName = paseoHostName; port = 9810; user = "claude"; })
   ];
 }

@@ -5,6 +5,7 @@
 {
   config,
   pkgs,
+  pkgs-unstable,
   commonGroups,
   ...
 }:
@@ -20,6 +21,9 @@ in
       owner = "joelyboy";
       enableGcal = true;
     })
+    # port from 9000 + crc32("paseo") % 900
+    # no caddy here: open http://localhost:9810 directly, browsers treat localhost as secure
+    (import ../../modules/paseo.nix { hostName = "localhost"; port = 9810; user = "joelyboy"; })
   ];
 
   # Build pi-box locally using QEMU to run ARM64 build steps.
@@ -78,7 +82,10 @@ in
   };
 
   # add VM support
-  environment.systemPackages = with pkgs; [ vagrant ];
+  environment.systemPackages = with pkgs; [
+    vagrant
+    zed-editor # remote dev into worker207; must stay the same nixpkgs as worker207's zed remote server (exact version match)
+  ];
   virtualisation = {
     libvirtd = {
       enable = true;
@@ -106,7 +113,7 @@ in
     enable = true;
     loadModels = [ "gpt-oss:20b" ];
     host = "0.0.0.0";
-    package = pkgs.ollama-cuda;
+    package = pkgs-unstable.ollama-cuda;
     environmentVariables = {
       OLLAMA_FLASH_ATTENTION = "1"; # my card (RTX 3060) is modern enough for this
       OLLAMA_KV_CACHE_TYPE = "q8_0"; # free up some VRAM
