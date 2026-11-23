@@ -1,6 +1,6 @@
 {
   "shortcuts": {
-    "comment": "Hotkey is bound in Hyprland (SUPER+ALT+R -> `hyprwhspr-rs record toggle`), not here. hyprwhspr's built-in grabber reads /dev/input directly and needs the 'input' group; the Hyprland bind avoids that.",
+    "comment": "Hotkey is bound in Hyprland (SUPER+U -> toggle_hyprwhspr.sh), not here. hyprwhspr's built-in grabber reads /dev/input directly and needs the 'input' group; the Hyprland bind avoids that.",
     "press": null
   },
   "word_overrides": {},
@@ -26,7 +26,7 @@
     "volatility_decrease_threshold": 0.12
   },
   "transcription": {
-    "provider": "whisper_cpp",
+    "provider": "parakeet",
     "request_timeout_secs": 45,
     "max_retries": 2,
     "whisper_cpp": {

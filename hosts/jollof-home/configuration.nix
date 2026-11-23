@@ -21,7 +21,6 @@ in
       owner = "jollof";
       enableGcal = true;
     })
-    ../../modules/nixos-dictation.nix # local voice dictation (hyprwhspr-rs)
     ../../modules/nixos-netbird.nix # netbird mesh VPN client (wt0) — manual connect/disconnect
   ];
 
