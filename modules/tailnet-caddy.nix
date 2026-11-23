@@ -18,7 +18,7 @@ in {
     enable = true;
     package = pkgs.caddy.withPlugins {
       plugins = [ "github.com/caddy-dns/cloudflare@v0.2.4" ];
-      hash = "sha256-bzMqxWTqrJ1skZmRTXyEMCKStXpljbqe5r0Ve2cnBfM=";
+      hash = "sha256-tubXIDCJnO2mvdnPlZclwDhNGaeeYLSt7lnni3+pXDo=";
     };
     environmentFile = config.age.secrets.caddy-cloudflare-env.path;
     # https://caddyserver.com/docs/caddyfile/options#acme-dns
