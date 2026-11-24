@@ -35,9 +35,13 @@
   },
   "theme_overrides": {
     "One Light": {
+      "border.focused": "#005FCC",
+      "panel.focused_border": "#005FCC",
       "pane.focused_border": "#005FCC"
     },
     "One Dark": {
+      "border.focused": "#66CCFF",
+      "panel.focused_border": "#66CCFF",
       "pane.focused_border": "#66CCFF"
     }
   }
