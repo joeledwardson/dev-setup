@@ -61,6 +61,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
+            ./modules/nixos-dictation.nix
             ./hosts/degen-work/configuration.nix
             ./modules/nixos-netbird.nix
             # laptop keyboard
@@ -81,6 +82,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
+            ./modules/nixos-dictation.nix
             ./hosts/degen-home/configuration.nix
             ./modules/nixos-netbird.nix
             # laptop keyboard
@@ -106,6 +108,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
+            ./modules/nixos-dictation.nix
             ./hosts/jollof-home/configuration.nix
           ];
         };
@@ -121,6 +124,7 @@
             ./modules/nixos-base.nix
             ./modules/nixos-core-desktop.nix
             ./modules/nixos-extended-desktop.nix
+            ./modules/nixos-dictation.nix
             ./hosts/joel-desktop-work/configuration.nix
           ];
         };
