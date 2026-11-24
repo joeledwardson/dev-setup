@@ -1,6 +1,7 @@
 // Zed settings shared by desktop hosts.
 // https://zed.dev/docs/configuring-zed
 {
+  "cli_default_open_behavior": "existing_window",
   "ssh_connections": [
     {
       "host": "worker207",
@@ -22,8 +23,8 @@
     "expand_terminal_card": false
   },
   "active_pane_modifiers": {
-    "border_size": 2.0,
-    "inactive_opacity": 0.82
+    "border_size": 3.0,
+    "inactive_opacity": 0.75
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
@@ -31,5 +32,13 @@
     "mode": "system",
     "light": "One Light",
     "dark": "One Dark"
+  },
+  "theme_overrides": {
+    "One Light": {
+      "pane.focused_border": "#005FCC"
+    },
+    "One Dark": {
+      "pane.focused_border": "#66CCFF"
+    }
   }
 }
