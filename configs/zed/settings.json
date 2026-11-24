@@ -1,6 +1,14 @@
 // Zed settings shared by desktop hosts.
 // https://zed.dev/docs/configuring-zed
 {
+  "ssh_connections": [
+    {
+      "host": "worker207",
+      "args": [],
+      "projects": []
+    }
+  ],
+  "use_system_path_prompts": false,
   "vim_mode": true,
   "agent_servers": {
     "codex-acp": {
