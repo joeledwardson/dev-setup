@@ -1,5 +1,9 @@
 # Core desktop: minimum packages for a functional Hyprland desktop
-{ pkgs, inputs, ... }: {
+{ pkgs, inputs, ... }:
+let
+  xa11y = pkgs.callPackage ../packages/xa11y.nix { };
+in
+{
 
   # block list for vimium sites (handled at the brave level NOT at the vimium extension config level)
   environment.etc."brave/policies/managed/vimium.json".text =
@@ -15,7 +19,10 @@
   environment.systemPackages = with pkgs; [
     ### terminal + browser
     kitty
-    brave
+    # Chromium normally hides its accessibility tree on Linux. Keep it enabled
+    # so xa11y can address controls by role/name instead of screen coordinates.
+    (brave.override { commandLineArgs = "--force-renderer-accessibility"; })
+    xa11y
 
     ### desktop core (referenced by hyprland.conf)
     networkmanagerapplet # nm-applet tray icon
@@ -198,6 +205,12 @@
   # ydotool: Wayland input simulation. Runs ydotoold (root UID but sandboxed to
   # /dev/uinput only) and gates the client socket behind the `ydotool` group.
   programs.ydotool.enable = true;
+  # xa11y normally invokes widgets through AT-SPI. Gestures and global shortcuts
+  # fall back to a virtual input device, so reuse the already privileged ydotool
+  # group rather than granting the broader input group to every desktop user.
+  services.udev.extraRules = ''
+    KERNEL=="uinput", GROUP="ydotool", MODE="0660", OPTIONS+="static_node=uinput"
+  '';
   programs.waybar = { enable = true; };
   programs.hyprland = {
     enable = true;
@@ -219,5 +232,13 @@
 
   # wayland variable (should) make chromium/electron apps run better, see here
   # https://nixos.wiki/wiki/Wayland
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  # Linux's Android-UIAutomator equivalent: applications publish semantic UI
+  # trees over the AT-SPI D-Bus service for inspection and native actions.
+  services.gnome.at-spi2-core.enable = true;
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    AT_SPI_CLIENT = "true";
+    ACCESSIBILITY_ENABLED = "1";
+    MOZ_ACCESSIBILITY_ATK2 = "1";
+  };
 }

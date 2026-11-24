@@ -16,7 +16,7 @@
     ghostty
 
     ### browsers
-    google-chrome
+    (google-chrome.override { commandLineArgs = "--force-renderer-accessibility"; })
 
     ### communication
     slack
@@ -33,8 +33,8 @@
     mise
 
     ### coding editors
-    vscode
-    code-cursor
+    (vscode.override { commandLineArgs = "--force-renderer-accessibility"; })
+    (code-cursor.override { commandLineArgs = "--force-renderer-accessibility"; })
 
     ### media
     mpv # new video player
