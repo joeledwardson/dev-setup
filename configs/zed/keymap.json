@@ -1,0 +1,103 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    },
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-h": "workspace::ActivatePaneLeft"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-k ctrl-left": "workspace::ActivatePaneLeft"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-k ctrl-right": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-j": "workspace::ActivatePaneDown"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-k ctrl-down": "workspace::ActivatePaneDown"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "alt-k": "workspace::ActivatePaneUp"
+    }
+  },
+  {
+    "context": "Workspace",
+    "unbind": {
+      "ctrl-k ctrl-up": "workspace::ActivatePaneUp"
+    }
+  },
+  {
+    "context": "AcpThread",
+    "bindings": {
+      "alt-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      "alt-h": "workspace::ActivatePaneLeft",
+      "alt-j": "workspace::ActivatePaneDown",
+      "alt-k": "workspace::ActivatePaneUp",
+      "alt-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "bindings": {
+      "alt-shift-e": "agent::OpenActiveThreadAsMarkdown"
+    }
+  },
+  {
+    // Open Thread as Markdown creates a buffer without a file extension.
+    "context": "Editor && mode == full && vim_mode == normal && (extension == md || !extension)",
+    "bindings": {
+      "] u": [
+        "vim::FindCommand",
+        { "query": "https?://", "backwards": false }
+      ],
+      "[ u": [
+        "vim::FindCommand",
+        { "query": "https?://", "backwards": true }
+      ]
+    }
+  }
+]

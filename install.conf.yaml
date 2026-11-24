@@ -67,3 +67,4 @@
     ~/.config/aerc/aerc.conf: ./configs/aerc/aerc.conf
     ~/.config/aerc/binds.conf: ./configs/aerc/binds.conf
     ~/.config/zed/settings.json: ./configs/zed/settings.json
+    ~/.config/zed/keymap.json: ./configs/zed/keymap.json

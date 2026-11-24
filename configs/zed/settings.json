@@ -1,7 +1,11 @@
 // Zed settings shared by desktop hosts.
 // https://zed.dev/docs/configuring-zed
 {
+  "vim_mode": true,
   "agent_servers": {
+    "codex-acp": {
+      "type": "registry"
+    },
     "claude-acp": {
       "type": "registry"
     }
