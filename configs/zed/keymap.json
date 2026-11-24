@@ -1,0 +1,8 @@
+[
+  {
+    "bindings": {
+      "space [": "pane::ActivatePreviousItem",
+      "space ]": "pane::ActivateNextItem"
+    }
+  }
+]
