@@ -66,3 +66,4 @@
     ~/.config/opencode/opencode.json: ./configs/opencode/opencode.json
     ~/.config/aerc/aerc.conf: ./configs/aerc/aerc.conf
     ~/.config/aerc/binds.conf: ./configs/aerc/binds.conf
+    ~/.config/zed/settings.json: ./configs/zed/settings.json
