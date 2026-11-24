@@ -125,6 +125,13 @@ hl.config {
   },
 }
 
+-- keep logging to stdout so uwsm puts it in the persistent journal (default log lives in /run, lost on reboot)
+hl.config {
+  debug = {
+    enable_stdout_logs = true,
+  },
+}
+
 hl.config {
   dwindle = {
     preserve_split = true,

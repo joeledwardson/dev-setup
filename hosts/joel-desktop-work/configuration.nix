@@ -43,6 +43,20 @@ in
     "processor.max_cstate=1"
   ];
 
+  # turn silent CPU lockups into panics so pstore captures them, then auto-reboot after 30s
+  boot.kernel.sysctl = {
+    "kernel.softlockup_panic" = 1;
+    "kernel.hardlockup_panic" = 1;
+    "kernel.panic" = 30;
+  };
+
+  # stream kernel log over UDP to worker207 (receiver: `journalctl -u netconsole-receiver` there).
+  # survives hard hangs the disk journal never sees. module loaded in boot.kernelModules below.
+  # format: <src-port>@<src-ip>/<iface>,<dst-port>@<dst-ip>/<dst-mac>
+  boot.extraModprobeConfig = ''
+    options netconsole netconsole=6665@10.144.0.15/enp7s0,6666@10.144.50.107/70:15:fb:84:30:aa
+  '';
+
   boot.loader = {
     grub = {
       enable = true;
@@ -99,8 +113,8 @@ in
   # =======================================
   # Ollama (local LLMs)
   # =======================================
-  # force the CUDA module up at boot, not lazily on first use
-  boot.kernelModules = [ "nvidia_uvm" ];
+  # force the CUDA module up at boot, not lazily on first use; netconsole for crash capture (see top)
+  boot.kernelModules = [ "nvidia_uvm" "netconsole" ];
 
   # don't start Ollama until the NVIDIA driver is initialised
   # previously I got total_vram="0 B" in the logs on startup? indicating it couldn't see the VRAM?

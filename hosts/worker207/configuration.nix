@@ -54,6 +54,19 @@ in
   # wayvnc remote desktop
   networking.firewall.allowedTCPPorts = [ 5900 ];
 
+  # receive joel-desktop-work's kernel log (netconsole) into this journal, timestamped per line
+  networking.firewall.allowedUDPPorts = [ 6666 ];
+  systemd.services.netconsole-receiver = {
+    description = "netconsole kernel log from joel-desktop-work";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.socat}/bin/socat -u UDP-RECV:6666 STDOUT";
+      DynamicUser = true;
+      Restart = "always";
+    };
+  };
+
   # =======================================
   # Users
   # =======================================
