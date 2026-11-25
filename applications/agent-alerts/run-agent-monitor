@@ -30,6 +30,12 @@ fi
 
 prompt=$(cat "$prompt_path")
 
+# Use a dedicated workspace ID to avoid piling up workspaces; set in RunWisp task env or leave empty.
+WORKSPACE_FLAG=()
+if [[ -n ${AGENT_ALERTS_WORKSPACE:-} ]]; then
+  WORKSPACE_FLAG=(--workspace "$AGENT_ALERTS_WORKSPACE")
+fi
+
 # A forced test prepends an override so the agent always creates a finding.
 if [[ $force == --force ]]; then
   prompt=$'ALWAYS NOTIFY — this is a test.\n\n'"$prompt"
@@ -39,6 +45,7 @@ result=$("$paseo" run \
   --provider claude \
   --cwd "$ROOT" \
   --title "agent-alert-$job" \
+  "${WORKSPACE_FLAG[@]}" \
   --output-schema "$schema" \
   "$prompt")
 
@@ -72,6 +79,21 @@ while read -r notice; do
   summary=$(echo "$notice" | jq -r '.summary')
   echo "NEW_FINDING: $title"
   echo "  $summary"
+
+  # When forced, also publish directly to ntfy to prove the full pipeline.
+  if [[ $force == --force ]]; then
+    ntfy_token=$(cat "${AGENT_ALERTS_NTFY_TOKEN_FILE:-/run/agenix/ntfy-token}" 2>/dev/null || true)
+    if [[ -n $ntfy_token ]]; then
+      curl -fsS -m 10 \
+        -H "Authorization: Bearer $ntfy_token" \
+        -H "Title: $job: $title" \
+        -H "Priority: default" \
+        -H "Tags: agent-alert,test" \
+        -d "$summary" \
+        "https://ntfy.sh/jollof-alerts" >/dev/null 2>&1 && \
+        echo "  → ntfy sent" || echo "  → ntfy failed" >&2
+    fi
+  fi
 done < <(echo "$notices" | jq -c '.[]')
 
 exit "$has_errors"

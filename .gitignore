@@ -39,6 +39,9 @@ devenv.local.yaml
 # env args
 .env
 
+# transient state from agent alert monitors (dedup token files)
+applications/agent-alerts/notified/
+
 # go-task fingerprint cache — transient build state
 .task
 
