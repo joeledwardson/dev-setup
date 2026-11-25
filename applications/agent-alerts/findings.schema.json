@@ -1,0 +1,47 @@
+{
+  "title": "Generic agent monitor notices",
+  "type": "object",
+  "required": ["notices"],
+  "additionalProperties": false,
+  "properties": {
+    "notices": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "title", "summary", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "Stable identifier used to suppress duplicate findings across runs."
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["finding", "error"]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"]
+          }
+        }
+      }
+    }
+  }
+}

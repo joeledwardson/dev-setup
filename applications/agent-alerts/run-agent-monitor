@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Run one prompt through Paseo and print findings for RunWisp to catch.
+set -euo pipefail
+
+ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+  echo "usage: $0 <job-name> [--force]" >&2
+  exit 64
+fi
+
+job=$1
+force=${2:-}
+prompt_path="$ROOT/jobs/$job.prompt.md"
+schema="$ROOT/findings.schema.json"
+
+[[ -f $prompt_path ]] || { echo "no such job: $job" >&2; exit 64; }
+
+# Pick the paseo binary — works on worker207 without a NixOS rebuild.
+if [[ -n ${PASEO_BIN:-} ]]; then
+  paseo=$PASEO_BIN
+elif command -v paseo >/dev/null 2>&1; then
+  paseo=$(command -v paseo)
+elif [[ -x /var/lib/paseo/node_modules/.bin/paseo ]]; then
+  paseo=/var/lib/paseo/node_modules/.bin/paseo
+else
+  echo "paseo CLI not found" >&2
+  exit 69
+fi
+
+prompt=$(cat "$prompt_path")
+
+# A forced test prepends an override so the agent always creates a finding.
+if [[ $force == --force ]]; then
+  prompt=$'ALWAYS NOTIFY — this is a test.\n\n'"$prompt"
+fi
+
+result=$("$paseo" run \
+  --provider claude \
+  --cwd "$ROOT" \
+  --title "agent-alert-$job" \
+  --output-schema "$schema" \
+  "$prompt")
+
+# Parse the structured notices and surface them for RunWisp's output matcher.
+notices=$(echo "$result" | jq -c '.notices // []')
+[[ $notices == '[]' ]] && { echo "NO FINDINGS"; exit 0; }
+
+mkdir -p "$ROOT/notified"
+has_errors=0
+
+while read -r notice; do
+  [[ -z $notice ]] && continue
+  kind=$(echo "$notice" | jq -r '.kind')
+  id=$(echo "$notice" | jq -r '.id')
+
+  if [[ $kind == error ]]; then
+    summary=$(echo "$notice" | jq -r '.summary')
+    echo "AGENT_REPORTED_ERROR: $id — $summary" >&2
+    has_errors=1
+    continue
+  fi
+
+  # Skip duplicates unless forced.
+  if [[ $force != --force && -f "$ROOT/notified/$id" ]]; then
+    echo "DUPLICATE: $id"
+    continue
+  fi
+
+  touch "$ROOT/notified/$id"
+  title=$(echo "$notice" | jq -r '.title')
+  summary=$(echo "$notice" | jq -r '.summary')
+  echo "NEW_FINDING: $title"
+  echo "  $summary"
+done < <(echo "$notices" | jq -c '.[]')
+
+exit "$has_errors"

@@ -1,0 +1,28 @@
+[daemon]
+name = "agent-alerts"
+check_updates = false
+timezone = "Europe/London"
+
+[notifiers.phone]
+type = "ntfy"
+topic = "jollof-alerts"
+token = "${file:/run/agenix/ntfy-token}"
+
+[tasks.lotr]
+description = "Future Lord of the Rings concerts at the Royal Albert Hall"
+cron = "0 9 * * 0"   # 09:00 every Sunday
+timeout = "10m"
+shell = "/bin/bash"
+working_dir = "."
+run = "./run-agent-monitor lotr"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
+
+[tasks.notification-test]
+description = "Force a test notification to verify the pipeline"
+shell = "/bin/bash"
+working_dir = "."
+timeout = "10m"
+run = "./run-agent-monitor notification-test --force"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING"]
