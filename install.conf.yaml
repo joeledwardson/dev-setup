@@ -51,6 +51,10 @@
     ~/.claude/keybindings.json: ./configs/claude/keybindings.json
     ~/.claude/skills: ./configs/claude/skills
     ~/.codex/hooks.json: ./configs/codex/hooks.json
+    ~/.codex/skills/:
+      glob: true
+      path: configs/codex/skills/*
+      exclude: [configs/codex/skills/.system]
     ~/.local/bin/port-dash: ./configs/bin/port-dash
     ~/.local/bin/tmux-switcher: ./configs/bin/tmux-switcher
     ~/.local/bin/firefox-open-url: ./configs/hypr/scripts/firefox-open-url.sh
