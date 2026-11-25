@@ -101,5 +101,11 @@
         { "query": "https?://", "backwards": true }
       ]
     }
+  },
+  {
+    "context": "GitGraph",
+    "bindings": {
+      "ctrl-enter": "git_graph::OpenCommitView"
+    }
   }
 ]
