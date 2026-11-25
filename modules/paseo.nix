@@ -7,7 +7,7 @@
 { pkgs, config, ... }:
 
 let
-  version = "0.16.0";
+  version = "0.17.4";
   # node-pty is compiled for the node that installs it, so install and run with the same one
   nodejs = pkgs.nodejs_22;
 in {
