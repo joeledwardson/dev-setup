@@ -85,6 +85,8 @@
   },
   {
     "bindings": {
+      "alt-[": "multi_workspace::PreviousThread",
+      "alt-]": "multi_workspace::NextThread",
       "alt-shift-e": "agent::OpenActiveThreadAsMarkdown"
     }
   },

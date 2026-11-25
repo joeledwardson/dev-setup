@@ -28,6 +28,29 @@
     }
   },
   "agent": {
+    "sandbox_permissions": {
+      "network_hosts": [
+        "zed.dev"
+      ]
+    },
+    "tool_permissions": {
+      "tools": {
+        "fetch": {
+          "default": "allow"
+        },
+        "terminal": {
+          "default": "allow"
+        }
+      }
+    },
+    "profiles": {
+      "joels-yolo": {
+        "name": "joels-yolo",
+        "tools": {},
+        "enable_all_context_servers": false,
+        "context_servers": {}
+      }
+    },
     "default_model": {
       "provider": "openai-subscribed",
       "model": "gpt-6.2-sol",
