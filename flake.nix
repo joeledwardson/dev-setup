@@ -156,19 +156,6 @@
           ];
         };
 
-        # degen laptop (sandbox/claude bot machine)
-        "degen-bot" = nixpkgs.lib.nixosSystem {
-          system = x86System;
-          specialArgs = mkArgs x86System;
-          modules = [
-            inputs.agenix.nixosModules.default
-            ./modules/nixos-beszel-agent.nix
-            ./modules/nixos-base.nix
-            ./modules/nixos-sandbox.nix
-            ./hosts/degen-bot/configuration.nix
-          ];
-        };
-
         # worker207 — sandbox box with a desktop, driven over VNC/PiKVM
         "worker207" = nixpkgs.lib.nixosSystem {
           system = x86System;

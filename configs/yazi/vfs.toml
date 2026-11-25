@@ -1,17 +1,10 @@
-# these 3 hostnames require tailscale and magic DNS resolution
+# These connections require Tailscale and MagicDNS.
 [sftp.streaming-server]
 host = "streaming-server"
 user = "claude"
 port = 22
 key_file = "~/.ssh/id_ed25519"
 custom_key = "s"
-
-[sftp.degen-bot]
-host = "degen-bot"
-user = "claude"
-port = 22
-key_file = "~/.ssh/id_ed25519"
-custom_key = "b"
 
 [sftp.pi-box]
 host = "pi-box"
