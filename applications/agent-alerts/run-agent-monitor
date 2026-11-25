@@ -30,10 +30,19 @@ fi
 
 prompt=$(cat "$prompt_path")
 
-# Use a dedicated workspace ID to avoid piling up workspaces; set in RunWisp task env or leave empty.
+# Auto-create and reuse a workspace so we don't pile them up.
+# Cache the ID in a small file; no manual setup needed.
 WORKSPACE_FLAG=()
 if [[ -n ${AGENT_ALERTS_WORKSPACE:-} ]]; then
   WORKSPACE_FLAG=(--workspace "$AGENT_ALERTS_WORKSPACE")
+elif [[ -f $ROOT/.workspace-id ]]; then
+  WORKSPACE_FLAG=(--workspace "$(cat "$ROOT/.workspace-id")")
+else
+  ws_id=$("$paseo" workspace create --isolation local --path "$ROOT" --title "agent-alerts" 2>/dev/null | grep -oE 'wks_[a-z0-9]+' | head -1)
+  if [[ -n $ws_id ]]; then
+    echo "$ws_id" > "$ROOT/.workspace-id"
+    WORKSPACE_FLAG=(--workspace "$ws_id")
+  fi
 fi
 
 # A forced test prepends an override so the agent always creates a finding.
