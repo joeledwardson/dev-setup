@@ -1,5 +1,5 @@
 # Configures worker207's hardware, networking and desktop services.
-{ pkgs, lib, commonGroups, ... }:
+{ config, pkgs, lib, inputs, commonGroups, ... }:
 let
   ssh-keys = import ../../secrets/host-keys.nix;
   user-keys = import ../../secrets/user-keys.nix;
@@ -90,6 +90,26 @@ in
   services.tailscale.permitCertUid = "claude";
   # Delegate `tailscale serve` to the claude user so it runs without sudo
   services.tailscale.extraSetFlags = [ "--operator=claude" ];
+
+  services.windmill = {
+    enable = true;
+    serverPort = 8765;
+    baseUrl = "https://worker207.rove-lydian.ts.net:8447";
+    # This nixpkgs pin includes the fixes missing from the system package.
+    package = inputs.windmill-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.windmill;
+  };
+
+  # This host deliberately starts postgresql.target after multi-user.target.
+  # Windmill only needs the database and roles provisioned by the setup unit.
+  systemd.services.windmill-initdb = {
+    requires = lib.mkForce [ "postgresql-setup.service" ];
+    after = lib.mkForce [ "postgresql-setup.service" ];
+  };
+
+  systemd.services.windmill-server.environment = {
+    SERVER_BIND_ADDR = "127.0.0.1";
+    BASE_URL = config.services.windmill.baseUrl;
+  };
 
   # kitty terminal support for SSH
   environment.systemPackages = with pkgs; [
