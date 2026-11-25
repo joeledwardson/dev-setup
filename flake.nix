@@ -23,7 +23,7 @@
     };
   };
 
-  # inputs are resolved to flakes. 
+  # inputs are resolved to flakes.
   outputs = inputs@{ nixpkgs, nixpkgs-unstable, nixflix, ... }:
     let
       x86System = "x86_64-linux";
@@ -90,7 +90,7 @@
             # laptop keyboard
             (import ./modules/nixos-keyd.nix {
               keyboardIds = [
-                # built in keyboard 
+                # built in keyboard
                 "0001:0001:09b4e68d"
                 # home external keyboard from Tim's bedroom
                 "1c4f:0002:3c76615e"

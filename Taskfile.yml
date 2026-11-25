@@ -318,6 +318,9 @@ tasks:
     cmds:
       - go install github.com/joels-claude-bot/llm-site-reviewer@latest
 
+  agent-alerts:test:
+    desc: Run a forced agent alert notification through Paseo → Claude → ntfy (needs /run/agenix/ntfy-token)
+    cmd: ./applications/agent-alerts/run-agent-monitor notification-test --force
 
   gcalcli:init:
     desc: Initialise gcalcli using the agenix client ID and secret
