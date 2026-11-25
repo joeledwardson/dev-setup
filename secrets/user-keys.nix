@@ -12,7 +12,6 @@ rec {
     streaming-server = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJPES2xNIK4PmEmJueDngkuDkpcb62P4c2ZTQSfuvKur claude@streaming-server";
     pi-box = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGhsvk7qq3t8CjBCqvzb9QaQsuHo4Rsm+w6P3P0V2LiF claude@pi-box";
     worker207 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGuqpUMI0yT0jLtuDz4lbyqtmVbMkq9IK6RqaUlQRWhZ claude@worker207";
-    # degen-bot: not collected yet (unreachable)
   };
 
   # mirrors tailscale/acl.hujson: trusted -> anywhere, sandbox -> sandbox only

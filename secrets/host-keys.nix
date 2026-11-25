@@ -10,7 +10,6 @@ rec {
 
   sandboxHosts = {
     streaming-server = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUkogBNkR3QnTAxF4zKoCjdp1G0mp1rcD6e9X1H+BtD root@streaming-server";
-    degen-bot = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM7SSAY8M48OOXk8KBD50YSHqDzrCB1EEv4mBxR2yCXY root@degen-bot";
     pi-box = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF57D+XGQUT/kBI5fGdpL3fo9SPCfmc4XXk/1NiLiZjI root@pi-box";
     worker207 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII7r/NHO2TiSXW5LHA3S/VQVUmOeNtS2WNdKr6sH7ZO8 root@worker207";
   };

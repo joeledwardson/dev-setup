@@ -145,7 +145,7 @@ in
   };
 
   # Fonts only matter on hosts that actually draw glyphs, so they live here
-  # rather than in nixos-base.nix (pi-box and degen-bot are headless).
+  # rather than in nixos-base.nix.
   # symbols-only carries every Nerd Font icon glyph; fontconfig falls back to it
   # for codepoints the text font lacks, so tmux/eza/yazi icons survive whichever
   # monospace is picked below — including an unpatched font.
