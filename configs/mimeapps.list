@@ -39,3 +39,4 @@ application/xhtml+xml=firefox.desktop
 application/x-extension-xhtml=firefox.desktop
 application/x-extension-xht=firefox.desktop
 x-scheme-handler/codeg=codeg-handler.desktop
+x-scheme-handler/t3code=com.t3tools.T3Code.desktop
