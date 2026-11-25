@@ -51,11 +51,42 @@ in
   };
 
   # stream kernel log over UDP to worker207 (receiver: `journalctl -u netconsole-receiver` there).
-  # survives hard hangs the disk journal never sees. module loaded in boot.kernelModules below.
+  # survives hard hangs the disk journal never sees.
   # format: <src-port>@<src-ip>/<iface>,<dst-port>@<dst-ip>/<dst-mac>
   boot.extraModprobeConfig = ''
     options netconsole netconsole=6665@10.144.0.15/enp7s0,6666@10.144.50.107/70:15:fb:84:30:aa
   '';
+  # loaded once enp7s0 exists — loading at early boot fails ("enp7s0 doesn't exist") as udev hasn't renamed the NIC yet
+  systemd.services.netconsole = {
+    description = "load netconsole once enp7s0 exists";
+    wants = [ "sys-subsystem-net-devices-enp7s0.device" ];
+    after = [ "sys-subsystem-net-devices-enp7s0.device" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.kmod}/bin/modprobe netconsole";
+    };
+  };
+
+  # DIAGNOSTIC: core 6 (threads cpu6 + cpu14) threw identical uncorrected MCEs (Bank 5, data fabric sync flood
+  # reset) on 2026-11-24 and 2026-11-25, on two BIOS/microcode versions. take it offline to confirm it's faulty.
+  systemd.services.offline-core-6 = {
+    description = "take suspected faulty CPU core 6 offline";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = [
+        "${pkgs.bash}/bin/bash -c 'echo 0 > /sys/devices/system/cpu/cpu14/online'"
+        "${pkgs.bash}/bin/bash -c 'echo 0 > /sys/devices/system/cpu/cpu6/online'"
+      ];
+      ExecStop = [
+        "${pkgs.bash}/bin/bash -c 'echo 1 > /sys/devices/system/cpu/cpu6/online'"
+        "${pkgs.bash}/bin/bash -c 'echo 1 > /sys/devices/system/cpu/cpu14/online'"
+      ];
+    };
+  };
 
   boot.loader = {
     grub = {
@@ -113,8 +144,8 @@ in
   # =======================================
   # Ollama (local LLMs)
   # =======================================
-  # force the CUDA module up at boot, not lazily on first use; netconsole for crash capture (see top)
-  boot.kernelModules = [ "nvidia_uvm" "netconsole" ];
+  # force the CUDA module up at boot, not lazily on first use
+  boot.kernelModules = [ "nvidia_uvm" ];
 
   # don't start Ollama until the NVIDIA driver is initialised
   # previously I got total_vram="0 B" in the logs on startup? indicating it couldn't see the VRAM?
