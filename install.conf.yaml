@@ -49,12 +49,11 @@
     ~/.claude/settings.json: ./configs/claude/settings.json
     ~/.claude/scripts: ./configs/claude/scripts
     ~/.claude/keybindings.json: ./configs/claude/keybindings.json
-    ~/.claude/skills: ./configs/claude/skills
+    # One skills tree for every agent. `.agents/skills` is the cross-tool
+    # convention; Claude Code still only looks in `.claude/skills`.
+    ~/.agents/skills: ./configs/agents/skills
+    ~/.claude/skills: ./configs/agents/skills
     ~/.codex/hooks.json: ./configs/codex/hooks.json
-    ~/.codex/skills/:
-      glob: true
-      path: configs/codex/skills/*
-      exclude: [configs/codex/skills/.system]
     ~/.local/bin/port-dash: ./configs/bin/port-dash
     ~/.local/bin/tmux-switcher: ./configs/bin/tmux-switcher
     ~/.local/bin/firefox-open-url: ./configs/hypr/scripts/firefox-open-url.sh
