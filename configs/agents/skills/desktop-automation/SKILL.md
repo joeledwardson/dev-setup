@@ -194,6 +194,40 @@ const { result } = await send('Runtime.evaluate', { expression: 'document.title'
 
 ---
 
+## Persistent agent browser (worker207)
+
+Use the shared browser instead of writing a new Playwright/CDP driver for each task.
+
+```sh
+applications/agent-browser/agent-browser status
+applications/agent-browser/agent-browser start
+applications/agent-browser/agent-browser show   # toggle special:agent-browser
+applications/agent-browser/agent-browser hide   # move it back to the special workspace
+applications/agent-browser/agent-browser stop
+```
+
+- It is a normal headful Brave with a persistent, dedicated profile at `~/.local/state/agent-browser/profile`.
+- CDP listens on `127.0.0.1:9222`.
+- Its window lives on hidden workspace `special:agent-browser`.
+- Use it when `webfetch` returns empty content, bot protection, or needs JavaScript.
+
+The Playwright MCP server attaches to that same browser. Use its tools directly instead of writing CDP or Playwright code:
+
+```text
+browser_navigate  https://www.royalalberthall.com/...
+browser_wait_for  time: 10
+browser_find      text: "Lord of the Rings"
+```
+
+That is the intended “write a scraper in plain steps” path:
+
+1. navigate;
+2. wait for the page or text;
+3. search the accessibility snapshot;
+4. click or fill only when the task needs it.
+
+Use `browser_find` before `browser_snapshot`. Do not dump the whole page unless the task genuinely needs the full structure.
+
 ## When not to use this
 
 - Don't automate the user's accounts, messaging apps, or anything touching their identity

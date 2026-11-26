@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run one prompt through Paseo and print findings for RunWisp to catch.
+# Run one prompt through OpenCode and print findings for RunWisp to catch.
 set -euo pipefail
 
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
@@ -12,54 +12,54 @@ fi
 job=$1
 force=${2:-}
 prompt_path="$ROOT/jobs/$job.prompt.md"
-schema="$ROOT/findings.schema.json"
+schema_path="$ROOT/findings.schema.json"
 
 [[ -f $prompt_path ]] || { echo "no such job: $job" >&2; exit 64; }
+[[ -r $schema_path ]] || { echo "missing schema: $schema_path" >&2; exit 66; }
 
-# Pick the paseo binary — works on worker207 without a NixOS rebuild.
-if [[ -n ${PASEO_BIN:-} ]]; then
-  paseo=$PASEO_BIN
-elif command -v paseo >/dev/null 2>&1; then
-  paseo=$(command -v paseo)
-elif [[ -x /var/lib/paseo/node_modules/.bin/paseo ]]; then
-  paseo=/var/lib/paseo/node_modules/.bin/paseo
-else
-  echo "paseo CLI not found" >&2
-  exit 69
-fi
+OPENCODE_BIN=${OPENCODE_BIN:-opencode}
+MODEL=${AGENT_ALERTS_MODEL:-ollama-cloud/deepseek-v4.1-flash}
+OLLAMA_KEY_FILE=${AGENT_ALERTS_OLLAMA_KEY_FILE:-/run/agenix/ollama-api-key}
+
+[[ -r $OLLAMA_KEY_FILE ]] || { echo "ollama API key not readable: $OLLAMA_KEY_FILE" >&2; exit 69; }
 
 prompt=$(cat "$prompt_path")
-
-# Auto-create and reuse a workspace so we don't pile them up.
-# Cache the ID in a small file; no manual setup needed.
-WORKSPACE_FLAG=()
-if [[ -n ${AGENT_ALERTS_WORKSPACE:-} ]]; then
-  WORKSPACE_FLAG=(--workspace "$AGENT_ALERTS_WORKSPACE")
-elif [[ -f $ROOT/.workspace-id ]]; then
-  WORKSPACE_FLAG=(--workspace "$(cat "$ROOT/.workspace-id")")
-else
-  ws_id=$("$paseo" workspace create --isolation local --path "$ROOT" --title "agent-alerts" 2>/dev/null | grep -oE 'wks_[a-z0-9]+' | head -1)
-  if [[ -n $ws_id ]]; then
-    echo "$ws_id" > "$ROOT/.workspace-id"
-    WORKSPACE_FLAG=(--workspace "$ws_id")
-  fi
-fi
 
 # A forced test prepends an override so the agent always creates a finding.
 if [[ $force == --force ]]; then
   prompt=$'ALWAYS NOTIFY — this is a test.\n\n'"$prompt"
 fi
 
-result=$("$paseo" run \
-  --provider claude \
-  --cwd "$ROOT" \
-  --title "agent-alert-$job" \
-  "${WORKSPACE_FLAG[@]}" \
-  --output-schema "$schema" \
-  "$prompt")
+# OpenCode has no --output-schema, so put the contract in the prompt and
+# validate the final message below before treating it as structured output.
+full_prompt="$prompt"$'\n\nReturn only JSON matching this JSON Schema:\n\n'"$(cat "$schema_path")"
 
-# Parse the structured notices and surface them for RunWisp's output matcher.
-notices=$(echo "$result" | jq -c '.notices // []')
+raw=$(mktemp)
+errors=$(mktemp)
+trap 'rm -f "$raw" "$errors"' EXIT
+
+if ! OLLAMA_API_KEY="$(cat "$OLLAMA_KEY_FILE")" \
+  "$OPENCODE_BIN" run \
+  --standalone \
+  --model "$MODEL" \
+  --format json \
+  --auto \
+  "$full_prompt" >"$raw" 2>"$errors"; then
+  echo "opencode run failed:" >&2
+  tail -n 50 "$errors" >&2
+  exit 1
+fi
+
+# The final text event is the agent's response; reject anything that is not
+# the agreed object before looking for notices.
+result=$(jq -sr '[.[] | select(.type == "text") | .part.text] | last // empty' "$raw")
+if ! jq -e 'type == "object" and (.notices | type == "array")' <<<"$result" >/dev/null 2>&1; then
+  echo "agent returned invalid structured output:" >&2
+  printf '%s\n' "$result" >&2
+  exit 1
+fi
+
+notices=$(jq -c '.notices' <<<"$result")
 [[ $notices == '[]' ]] && { echo "NO FINDINGS"; exit 0; }
 
 mkdir -p "$ROOT/notified"
@@ -67,25 +67,28 @@ has_errors=0
 
 while read -r notice; do
   [[ -z $notice ]] && continue
-  kind=$(echo "$notice" | jq -r '.kind')
-  id=$(echo "$notice" | jq -r '.id')
+  kind=$(jq -r '.kind' <<<"$notice")
+  id=$(jq -r '.id' <<<"$notice")
 
   if [[ $kind == error ]]; then
-    summary=$(echo "$notice" | jq -r '.summary')
+    summary=$(jq -r '.summary' <<<"$notice")
     echo "AGENT_REPORTED_ERROR: $id — $summary" >&2
     has_errors=1
     continue
   fi
 
+  # Hash IDs because they are usually URLs, which contain slashes.
+  fingerprint=$(printf '%s' "$id" | sha256sum | cut -d' ' -f1)
+
   # Skip duplicates unless forced.
-  if [[ $force != --force && -f "$ROOT/notified/$id" ]]; then
+  if [[ $force != --force && -f "$ROOT/notified/$fingerprint" ]]; then
     echo "DUPLICATE: $id"
     continue
   fi
 
-  touch "$ROOT/notified/$id"
-  title=$(echo "$notice" | jq -r '.title')
-  summary=$(echo "$notice" | jq -r '.summary')
+  touch "$ROOT/notified/$fingerprint"
+  title=$(jq -r '.title' <<<"$notice")
+  summary=$(jq -r '.summary' <<<"$notice")
   echo "NEW_FINDING: $title"
   echo "  $summary"
 
@@ -103,6 +106,6 @@ while read -r notice; do
         echo "  → ntfy sent" || echo "  → ntfy failed" >&2
     fi
   fi
-done < <(echo "$notices" | jq -c '.[]')
+done < <(jq -c '.[]' <<<"$notices")
 
 exit "$has_errors"
