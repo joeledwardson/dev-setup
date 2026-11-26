@@ -5,8 +5,8 @@ scratchpads
 # claude code
 .claude
 # claude synced skills?
-configs/claude/skills/synced/
-configs/claude/skills/.trash/
+configs/agents/skills/synced/
+configs/agents/skills/.trash/
 
 # simpler to put all repos clonsed for inspiration in a combined sub-dir
 third-party
