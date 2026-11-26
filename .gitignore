@@ -39,9 +39,11 @@ devenv.local.yaml
 # env args
 .env
 
-# transient state from agent alert monitors (dedup workspace cache)
+# transient state from agent alert monitors (dedup token files)
 applications/agent-alerts/notified/
-applications/agent-alerts/.workspace-id
+
+# Playwright MCP snapshots and console logs
+.playwright-mcp/
 
 # go-task fingerprint cache — transient build state
 .task

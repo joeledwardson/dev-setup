@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+# Lifecycle only: start, stop, status and reveal the persistent agent browser.
+set -euo pipefail
+
+STATE_DIR=${AGENT_BROWSER_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/agent-browser}
+PROFILE_DIR="$STATE_DIR/profile"
+LOG_FILE="$STATE_DIR/browser.log"
+PID_FILE="$STATE_DIR/browser.pid"
+PORT=${AGENT_BROWSER_PORT:-9222}
+CDP="http://127.0.0.1:$PORT"
+SPECIAL_WORKSPACE=agent-browser
+
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
+if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
+  for socket in "$XDG_RUNTIME_DIR"/wayland-[0-9]*; do
+    if [[ -S $socket ]]; then
+      WAYLAND_DISPLAY=$(basename "$socket")
+      break
+    fi
+  done
+fi
+export WAYLAND_DISPLAY
+export DISPLAY=${DISPLAY:-:0}
+export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
+if [[ -z ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+  HYPRLAND_INSTANCE_SIGNATURE=$(find "$XDG_RUNTIME_DIR/hypr" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -1)
+  export HYPRLAND_INSTANCE_SIGNATURE
+fi
+
+is_running() {
+  local endpoint
+  for endpoint in "http://127.0.0.1:$PORT" "http://[::1]:$PORT"; do
+    if curl -fsS --max-time 2 "$endpoint/json/version" >/dev/null 2>&1; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+kill_profile_processes() {
+  local pid
+  for pid in $(pgrep -f -- "--user-data-dir=$PROFILE_DIR" || true); do
+    [[ $pid == "$$" ]] && continue
+    kill "$pid" 2>/dev/null || true
+  done
+  for _ in {1..20}; do
+    pgrep -f -- "--user-data-dir=$PROFILE_DIR" >/dev/null 2>&1 || return 0
+    sleep 0.25
+  done
+  for pid in $(pgrep -f -- "--user-data-dir=$PROFILE_DIR" || true); do
+    [[ $pid == "$$" ]] && continue
+    kill -9 "$pid" 2>/dev/null || true
+  done
+}
+
+window_address() {
+  local pid=$1 pids
+  pids=$( { echo "$pid"; pgrep -P "$pid" || true; } | paste -sd, -)
+  hyprctl clients -j 2>/dev/null |
+    jq -r --argjson pids "[$pids]" '.[] | select(.pid as $p | $pids | index($p)) | .address' |
+    head -1
+}
+
+hide_window() {
+  local pid=$1 address
+  for _ in {1..40}; do
+    address=$(window_address "$pid")
+    if [[ -n $address ]]; then
+      hyprctl dispatch "hl.dsp.window.move({ workspace='special:$SPECIAL_WORKSPACE', follow=false, window='address:$address' })" >/dev/null
+      return 0
+    fi
+    sleep 0.25
+  done
+  echo "browser window not found; leaving it on the current workspace" >&2
+}
+
+start() {
+  if is_running; then
+    echo "agent-browser already running at $CDP"
+    return 0
+  fi
+
+  mkdir -p "$PROFILE_DIR"
+  rm -f "$PID_FILE"
+  kill_profile_processes
+  setsid brave \
+    --remote-debugging-port="$PORT" \
+    --remote-debugging-address=127.0.0.1 \
+    --user-data-dir="$PROFILE_DIR" \
+    --no-first-run \
+    --no-default-browser-check \
+    --no-restore-last-session \
+    --window-size=1280,900 \
+    --class=agent-browser \
+    about:blank >"$LOG_FILE" 2>&1 &
+  local pid=$!
+  echo "$pid" >"$PID_FILE"
+
+  for _ in {1..60}; do
+    if is_running; then
+      hide_window "$pid"
+      echo "agent-browser started at $CDP (profile: $PROFILE_DIR)"
+      return 0
+    fi
+    if ! kill -0 "$pid" 2>/dev/null; then
+      echo "agent-browser exited during startup; see $LOG_FILE" >&2
+      return 1
+    fi
+    sleep 0.25
+  done
+
+  echo "agent-browser did not open its CDP port; see $LOG_FILE" >&2
+  return 1
+}
+
+stop() {
+  local pid
+  if [[ -f $PID_FILE ]]; then
+    pid=$(cat "$PID_FILE")
+    kill -- "-$pid" 2>/dev/null || true
+    for _ in {1..20}; do
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 0.25
+    done
+    rm -f "$PID_FILE"
+  fi
+  kill_profile_processes
+  if is_running; then
+    echo "agent-browser is still listening on $CDP; stop the owning process manually" >&2
+    return 1
+  fi
+  echo "agent-browser stopped"
+}
+
+status() {
+  if is_running; then
+    echo "agent-browser running at $CDP"
+    if [[ -f $PID_FILE ]]; then echo "pid: $(cat "$PID_FILE")"; fi
+    echo "profile: $PROFILE_DIR"
+    return 0
+  fi
+  echo "agent-browser stopped"
+  return 1
+}
+
+show() {
+  hyprctl dispatch "hl.dsp.workspace.toggle_special('$SPECIAL_WORKSPACE')" >/dev/null
+  echo "toggled special:$SPECIAL_WORKSPACE"
+}
+
+hide() {
+  local address
+  address=$(hyprctl clients -j 2>/dev/null | jq -r '.[] | select(.class == "agent-browser") | .address' | head -1)
+  if [[ -z $address ]]; then
+    echo "agent-browser window not found" >&2
+    return 1
+  fi
+  hyprctl dispatch "hl.dsp.window.move({ workspace='special:$SPECIAL_WORKSPACE', follow=false, window='address:$address' })" >/dev/null
+  echo "hid agent-browser on special:$SPECIAL_WORKSPACE"
+}
+
+case ${1:-} in
+  start) start ;;
+  stop) stop ;;
+  restart) stop; start ;;
+  status) status ;;
+  show) show ;;
+  hide) hide ;;
+  *)
+    echo "usage: $0 {start|stop|restart|status|show|hide}" >&2
+    exit 64
+    ;;
+esac
