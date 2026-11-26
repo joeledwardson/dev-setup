@@ -118,7 +118,6 @@ in
     qemu_kvm # Runs the local Packer image build with KVM acceleration.
     wtype # Wayland text input
     wayvnc # Wayland VNC server for remote check-ins
-    zed-editor # Graphical client for validating Zed configuration on worker207.
   ];
 
   # zed remote dev: zed looks for ~/.zed_server/zed-remote-server-stable-<version> and otherwise downloads
