@@ -35,6 +35,8 @@
     ### coding editors
     (vscode.override { commandLineArgs = "--force-renderer-accessibility"; })
     (code-cursor.override { commandLineArgs = "--force-renderer-accessibility"; })
+    # remote dev into worker207; must stay the same nixpkgs as worker207's zed remote server (exact version match)
+    zed-editor
 
     ### media
     mpv # new video player

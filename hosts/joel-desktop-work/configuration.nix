@@ -129,7 +129,6 @@ in
   # add VM support
   environment.systemPackages = with pkgs; [
     vagrant
-    zed-editor # remote dev into worker207; must stay the same nixpkgs as worker207's zed remote server (exact version match)
   ];
   virtualisation = {
     libvirtd = {
