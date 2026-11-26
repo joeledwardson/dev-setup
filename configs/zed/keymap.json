@@ -19,9 +19,31 @@
     },
   },
   {
+    "context": "Editor && mode == full && vim_mode == normal && !menu",
+    "bindings": {
+      "space [": "pane::ActivatePreviousItem",
+      "space ]": "pane::ActivateNextItem",
+      "space f": "file_finder::Toggle",
+      "space g": "pane::DeploySearch",
+      "space k k": "zed::OpenKeymap",
+      "space shift-e": "pane::RevealInProjectPanel",
+      "space t v": "git::Diff",
+      "space t g": "git::FileHistory",
+      "space t shift-g": "git_graph::Open",
+      "space t l": "outline_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "space shift-e": "project_panel::Toggle"
+    }
+  },
+  {
     "context": "Workspace",
     "bindings": {
-      "alt-h": "workspace::ActivatePaneLeft"
+      "alt-h": "workspace::ActivatePaneLeft",
+      "alt-z": "workspace::ToggleZoom"
     }
   },
   {

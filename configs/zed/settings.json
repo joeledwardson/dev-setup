@@ -29,17 +29,32 @@
   },
   "agent": {
     "sandbox_permissions": {
-      "network_hosts": [
-        "zed.dev"
-      ]
+      "allow_all_hosts": true,
     },
     "tool_permissions": {
+      "default": "confirm",
       "tools": {
         "fetch": {
           "default": "allow"
         },
         "terminal": {
-          "default": "allow"
+          "default": "confirm",
+          // patterns must start with ^ - chained commands only auto-run if every part matches
+          "always_allow": [
+            { "pattern": "^readlink(?:[ \\t]+-f)?(?:[ \\t]+[A-Za-z0-9_./][A-Za-z0-9_./-]*)+[ \\t]*\\z" },
+            { "pattern": "^(?:tofu|terraform)(?:[ \\t]+-chdir=[A-Za-z0-9_./-]+)?[ \\t]+validate[ \\t]*\\z" },
+            { "pattern": "^(?:tofu|terraform)[ \\t]+fmt(?:[ \\t]+-(?:recursive|diff))*[ \\t]+-check(?:[ \\t]+-(?:recursive|diff))*(?:[ \\t]+[A-Za-z0-9_./][A-Za-z0-9_./-]*\\.tf)?[ \\t]*\\z" },
+            { "pattern": "^sed[ \\t]+-n[ \\t]+(?:'[0-9]+(?:,[0-9]+)?p'|\"[0-9]+(?:,[0-9]+)?p\"|[0-9]+(?:,[0-9]+)?p)(?:[ \\t]+[A-Za-z0-9_./][A-Za-z0-9_./-]*)+[ \\t]*\\z" },
+            { "pattern": "^(find|ls|pwd|cat|head|tail|wc|file|stat|which|tree|du|df|rg|grep|fd)(\\s|$)" },
+            { "pattern": "^git[ \\t]+(?:--no-pager[ \\t]+)?(?:--no-optional-locks[ \\t]+)?(?:status|log|diff|show|blame|rev-parse|ls-files)([ \\t]|$)", "case_sensitive": true },
+            { "pattern": "^command[ \\t]+-v[ \\t]+[A-Za-z0-9_][A-Za-z0-9_.+-]*[ \\t]*\\z", "case_sensitive": true },
+            { "pattern": "^gh\\s+(pr|issue|run|repo|release)\\s+(view|list|diff|checks|status)(\\s|$)" }
+          ],
+          "always_confirm": [
+            { "pattern": "^rg\\b.*\\s--pre\\b" },
+            { "pattern": "^git\\s+push\\b" },
+            { "pattern": "^sudo\\b" }
+          ]
         }
       }
     },
