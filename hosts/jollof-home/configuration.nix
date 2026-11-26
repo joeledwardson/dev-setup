@@ -47,7 +47,6 @@ in
     vagrant
     inputs.agenix.packages.${pkgs.system}.default # agenix CLI
     trayscale # Tailscale tray GUI — coloured connected/disconnected icon
-    zed-editor # remote dev into worker207; must stay the same nixpkgs as worker207's zed remote server (exact version match)
   ];
 
   # =======================================
