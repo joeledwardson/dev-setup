@@ -11,6 +11,7 @@ in {
 
     ./matrix.nix
     ./sparkyfitness.nix
+    ./sparky-fitness-ui.nix
     ./sparky-bot.nix
     ./nixflix.nix
     ./immich.nix

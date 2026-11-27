@@ -59,6 +59,7 @@ in {
         Apps = [
           (link { name = "photos"; icon = "immich.svg"; description = "camera roll"; })
           (link { name = "sparky"; icon = "sparky-fitness.png"; description = "food log"; })
+          (link { name = "exercises"; icon = "mdi-dumbbell"; description = "exercise history"; })
           # there's no litellm icon upstream, so fall back to a material design icon
           (link { name = "litellm"; icon = "mdi-robot"; description = "llm proxy"; })
           # synapse's client api, not a web ui — the browser just gets json back
