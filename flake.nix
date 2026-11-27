@@ -8,7 +8,7 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    paseo.url = "github:getpaseo/paseo/v0.17.4";
+    paseo.url = "github:getpaseo/paseo/v0.17.5";
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs";

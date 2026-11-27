@@ -7,7 +7,17 @@
 
 let
   nodejs = pkgs.nodejs_22;
-  paseo = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.paseo;
+  upstream = inputs.paseo.packages.${pkgs.stdenv.hostPlatform.system}.paseo;
+  # 0.17.5 ships a mismatched npm dependency hash. Later releases use their own hash.
+  paseoWithDeps = if upstream.version == "0.17.5" then upstream.override {
+    npmDepsHash = "sha256-B2hX/4xDGTtFC2LBRL/0US3YERfM/cDXvu8cjztpsd8=";
+  } else upstream;
+  paseo = paseoWithDeps.overrideAttrs (old: {
+    # Paseo's Nix build skips postinstall, which patches bottom-sheet before bundling the web UI.
+    preBuild = (old.preBuild or "") + ''
+      npm run postinstall
+    '';
+  });
 in {
   # holds PASEO_PASSWORD, needed by every web, phone or CLI client
   age.secrets.paseo-env.file = ../secrets/paseo-env.age;

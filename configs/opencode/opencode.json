@@ -1,18 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "trajectory": {
-      "command": [
-        "trajectory",
-        "mcp"
-      ],
-      "enabled": true,
-      "type": "local"
-    }
-  },
-  "plugin": [
-    "~/.config/opencode/plugins/trajectory"
-  ],
   "policies": [
     {
       "action": "provider.use",

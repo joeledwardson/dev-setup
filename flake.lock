@@ -304,16 +304,16 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1795468378,
-        "narHash": "sha256-KELKb9ZE+f0VApAObUd8iFxlkdvEOsOKuokTWmhHcJY=",
+        "lastModified": 1795675327,
+        "narHash": "sha256-JnfKWg/ti8Jyfbh0SQUTqFXhLI7A9T9NUyEkRAkPe9k=",
         "owner": "getpaseo",
         "repo": "paseo",
-        "rev": "2b3559b107243306986176b80beb0e779f9fe53e",
+        "rev": "713b6dbbfe3ea5d395da569dca08fd31b2f8a0f8",
         "type": "github"
       },
       "original": {
         "owner": "getpaseo",
-        "ref": "v0.17.4",
+        "ref": "v0.17.5",
         "repo": "paseo",
         "type": "github"
       }

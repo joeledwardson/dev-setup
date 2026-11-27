@@ -12,7 +12,7 @@ This is a living document — equal parts technical reference and developer jour
 ## Current agent tools
 
 - **[Paseo](https://worker-paseo.joels-netflix.com)** opens coding-agent sessions on worker207.
-- **[Trajectory](https://worker-trajectory.joels-netflix.com/viewer/)** shows the captured session history.
+- **[OpenCode Dashboard](https://worker-usage.joels-netflix.com)** shows sessions, tool calls and token usage from OpenCode, Claude Code and Codex on worker207.
 
 The older [orchestration research](/appendix/adr/001-claude-code-orchestration) records tools we considered and trialled. Its Agent of Empires recommendation is historical; that service has been removed from the current Nix configuration.
 

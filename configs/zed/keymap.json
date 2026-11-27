@@ -26,6 +26,7 @@
       "space f": "file_finder::Toggle",
       "space g": "pane::DeploySearch",
       "space k k": "zed::OpenKeymap",
+      "space y": "editor::CopyFileLocation",
       "space shift-e": "pane::RevealInProjectPanel",
       "space t v": "git::Diff",
       "space t g": "git::FileHistory",

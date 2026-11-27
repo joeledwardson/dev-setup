@@ -9,7 +9,6 @@ in
     ./hardware-configuration.nix
     ./web.nix
     ./agent-browser.nix
-    ./trajectory.nix
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
   ];
 
