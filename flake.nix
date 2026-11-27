@@ -127,6 +127,7 @@
             ./modules/nixos-extended-desktop.nix
             ./modules/nixos-dictation.nix
             ./hosts/joel-desktop-work/configuration.nix
+            ./modules/nixos-netbird.nix
           ];
         };
 
