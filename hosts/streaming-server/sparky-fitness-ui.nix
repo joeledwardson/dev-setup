@@ -57,7 +57,9 @@ in {
     wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
 
-    path = [ pkgs.git nodejs pkgs.gh ];
+    # explicit path replaces systemd's default, so include bash (provides `sh`,
+    # which npm scripts spawn) and coreutils, not just git/node/gh.
+    path = [ pkgs.git nodejs pkgs.gh pkgs.bash pkgs.coreutils ];
 
     serviceConfig = {
       User = "claude";
