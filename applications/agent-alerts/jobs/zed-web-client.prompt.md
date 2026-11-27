@@ -12,7 +12,8 @@ Start by running `date -u +%F`, then look for changes from the last 14 days.
   is not.
 - A third party shipping a genuinely usable browser-hosted Zed (for example a
   Docker image that serves the GPUI editor with a working filesystem, terminal
-  and agent). Report it once, and say it is not official.
+  and agent). Report it when a new build passes that bar, say it is not
+  official, and do not repeat the same build.
 - Delta's browser surface leaving private beta, since it is the same idea under
   a different product name. Say clearly that it is Delta and not Zed.
 
