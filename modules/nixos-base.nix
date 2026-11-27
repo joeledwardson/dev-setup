@@ -332,6 +332,7 @@ in {
     pkgs-unstable.gemini-cli # latest gemini
     pkgs-unstable.codex
     pkgs-unstable.pi-coding-agent # `pi` harness (earendil-works/pi), upstream of oh-my-pi
+    pkgs-unstable.goose # goose coding agent
     pkgs-unstable.fzf # tmax complaining it wants v0.73+
     pkgs-unstable.just # justfile
 
