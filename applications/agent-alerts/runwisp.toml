@@ -18,6 +18,58 @@ run = "./run-agent-monitor lotr"
 notify = ["phone"]
 failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
 
+# Zed feature tracking — one weekly job per question, staggered so the alerts
+# arrive in order. Each job keeps its own dedupe state so the same release can
+# be reported by two jobs without one of them suppressing the other.
+
+[tasks.zed-keyboard-prompts]
+description = "Zed releases that make dialogs and notification prompts answerable by keyboard"
+group = "Zed"
+cron = "30 7 * * 1"   # 07:30 every Monday
+timeout = "20m"
+shell = "/bin/bash"
+working_dir = "."
+env = { AGENT_ALERTS_STATE_DIR = "/var/lib/runwisp/agent-alerts/zed-keyboard-prompts" }
+run = "./run-agent-monitor zed-keyboard-prompts"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
+
+[tasks.zed-extension-install]
+description = "Zed extensions and ACP agents installable by CLI or keyboard"
+group = "Zed"
+cron = "40 7 * * 1"   # 07:40 every Monday
+timeout = "20m"
+shell = "/bin/bash"
+working_dir = "."
+env = { AGENT_ALERTS_STATE_DIR = "/var/lib/runwisp/agent-alerts/zed-extension-install" }
+run = "./run-agent-monitor zed-extension-install"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
+
+[tasks.zed-remote-sessions]
+description = "Zed agent threads surviving disconnects and following the user between machines"
+group = "Zed"
+cron = "50 7 * * 1"   # 07:50 every Monday
+timeout = "20m"
+shell = "/bin/bash"
+working_dir = "."
+env = { AGENT_ALERTS_STATE_DIR = "/var/lib/runwisp/agent-alerts/zed-remote-sessions" }
+run = "./run-agent-monitor zed-remote-sessions"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
+
+[tasks.zed-web-client]
+description = "Zed usable from a browser, officially or otherwise"
+group = "Zed"
+cron = "0 8 * * 1"   # 08:00 every Monday
+timeout = "20m"
+shell = "/bin/bash"
+working_dir = "."
+env = { AGENT_ALERTS_STATE_DIR = "/var/lib/runwisp/agent-alerts/zed-web-client" }
+run = "./run-agent-monitor zed-web-client"
+notify = ["phone"]
+failures = ["+output:NEW_FINDING", "+output:AGENT_REPORTED_ERROR"]
+
 [tasks.notification-test]
 description = "Force a test notification to verify the pipeline"
 shell = "/bin/bash"

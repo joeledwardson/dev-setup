@@ -53,6 +53,8 @@ fi
 # The final text event is the agent's response; reject anything that is not
 # the agreed object before looking for notices.
 result=$(jq -sr '[.[] | select(.type == "text") | .part.text] | last // empty' "$raw")
+# Models sometimes wrap the object in a markdown fence even when told not to.
+result=$(sed -e '1{/^```[a-zA-Z]*$/d;}' -e '$ {/^```$/d;}' <<<"$result")
 if ! jq -e 'type == "object" and (.notices | type == "array")' <<<"$result" >/dev/null 2>&1; then
   echo "agent returned invalid structured output:" >&2
   printf '%s\n' "$result" >&2
