@@ -35,6 +35,7 @@ in {
       # no alerts on these, add `alerts = [ { type = "telegram"; } ];` to one if it should page
       endpoints = [
         (httpCheck { name = "sparky"; group = "apps"; path = "/api/health"; })
+        (httpCheck { name = "exercises"; group = "apps"; path = "/"; })
         (httpCheck { name = "matrix"; group = "apps"; path = "/health"; })
         (httpCheck { name = "litellm"; group = "apps"; path = "/health/liveliness"; })
         (httpCheck { name = "jellyfin"; group = "media"; path = "/health"; })
