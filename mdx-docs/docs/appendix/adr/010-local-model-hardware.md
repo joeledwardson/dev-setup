@@ -6,6 +6,7 @@ title: "ADR-010 Local LLMs"
 
 **Status:** **Proposed** — pricing researched 2026-07-15 (see [Pricing & verdict](#pricing--verdict-researched-2026-07-15)). Nothing bought yet; leaning toward a used NVIDIA GPU.
 **Date:** 2026-07-15
+**Update 2026-11-28:** for running a big coding model (DeepSeek V4.1 Flash or GLM-5.3-Flash) see [ADR-014](./014-self-hosting-coding-model). It revisits the Mac as a separate model server.
 
 **Goal:** start running open models locally. I know two things going in — RAM is expensive right now, and NVIDIA cards are pricey. I keep hearing "Strix Halo" but have no idea what it actually is. I want the trade-offs laid out honestly against a cheap cloud model (**Gemini Flash**), not a sales pitch for buying a GPU. My workflow is **NixOS**, which quietly rules some options in and out.
 
