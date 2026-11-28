@@ -184,20 +184,13 @@
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "tmux-agent-sidebar@hiroppy": true,
-    "superpowers@claude-plugins-official": true,
-    "trajectory@trajectory": true
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "hiroppy": {
       "source": {
         "source": "directory",
         "path": "~/.config/tmux/plugins/tmux-agent-sidebar"
-      }
-    },
-    "trajectory": {
-      "source": {
-        "source": "directory",
-        "path": "/tmp/opencode/traj-home/.trajectory/claude-marketplace"
       }
     }
   },
