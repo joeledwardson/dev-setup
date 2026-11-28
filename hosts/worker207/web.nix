@@ -10,7 +10,7 @@ let
   wispHostName = "worker-wisp.joels-netflix.com";
   openKnowledgeHostName = "worker-openknowledge.joels-netflix.com";
   # the docs folder openknowledge treats as its project
-  docsDir = "/home/claude/docs-editor-trial";
+  docsDir = "/home/claude/openknowledge";
 in {
   imports = [
     (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ pagesHostName paseoHostName usageHostName wispHostName openKnowledgeHostName ]; })
