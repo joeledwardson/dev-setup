@@ -78,6 +78,8 @@ in {
           (link { name = "worker-paseo"; icon = "mdi-console"; description = "coding agents on worker207"; })
           (link { name = "worker-usage"; icon = "mdi-chart-timeline-variant"; description = "agent sessions and tool calls on worker207"; })
           (link { name = "worker-wisp"; icon = "mdi-bell-ring"; description = "scheduled agent alerts on worker207"; })
+          (link { name = "worker-silverbullet"; icon = "mdi-notebook-outline"; description = "markdown docs server on worker207"; })
+          (link { name = "worker-pages"; icon = "mdi-file-document-multiple-outline"; description = "html pages on worker207"; })
         ];
       }
     ];
