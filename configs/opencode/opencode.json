@@ -26,5 +26,13 @@
       "effect": "allow",
       "resource": "ollama-cloud"
     }
-  ]
+  ],
+  "mcp": {
+    "servers": {
+      "agentmail": {
+        "type": "remote",
+        "url": "https://mcp.agentmail.to/mcp"
+      }
+    }
+  }
 }
