@@ -98,12 +98,6 @@ in
   # paseo daemon login, KEY=value line: PASEO_PASSWORD - random, `openssl rand -hex 24`
   "paseo-env.age".publicKeys = allKeys;
 
-  # silverbullet login, KEY=value line: SB_USER=claude:<password> - password random, `openssl rand -hex 24`
-  "silverbullet-env.age".publicKeys = allKeys;
-
-  # collabmd login, KEY=value lines: AUTH_PASSWORD (the web password) and AUTH_SESSION_SECRET (signs the login cookie)
-  "collabmd-env.age".publicKeys = allKeys;
-
   # client ID and secret for gcalcli, on my personal google account
   # Createdvia the GCP clients portal https://console.cloud.google.com/auth/clients
   # needs my personal email adding as "test user" in audience: https://console.cloud.google.com/auth/audience
