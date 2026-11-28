@@ -18,6 +18,7 @@ in {
     ./caddy.nix
     ./gatus.nix
     ./homepage.nix
+    ./glance.nix
     ./pages.nix
 
     (import ../../modules/nixos-secrets.nix { owner = "claude"; })
