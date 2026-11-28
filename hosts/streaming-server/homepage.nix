@@ -58,6 +58,7 @@ in {
       {
         Apps = [
           (link { name = "photos"; icon = "immich.svg"; description = "camera roll"; })
+          (link { name = "news"; icon = "glance.svg"; description = "feeds and releases"; })
           (link { name = "sparky"; icon = "sparky-fitness.png"; description = "food log"; })
           (link { name = "exercises"; icon = "mdi-dumbbell"; description = "exercise history"; })
           # there's no litellm icon upstream, so fall back to a material design icon

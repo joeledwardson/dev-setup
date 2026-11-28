@@ -24,6 +24,8 @@ in {
       "reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}";
     virtualHosts."home.${domain}".extraConfig =
       "reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}";
+    virtualHosts."news.${domain}".extraConfig =
+      "reverse_proxy localhost:${toString config.services.glance.settings.server.port}";
     virtualHosts."jellyfin.${domain}".extraConfig =
       "reverse_proxy localhost:${toString config.nixflix.jellyfin.network.internalHttpPort}";
     virtualHosts."sonarr.${domain}".extraConfig =
