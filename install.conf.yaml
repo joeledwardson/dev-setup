@@ -53,6 +53,10 @@
     # convention; Claude Code still only looks in `.claude/skills`.
     ~/.agents/skills: ./configs/agents/skills
     ~/.claude/skills: ./configs/agents/skills
+    # One shared instruction file. Claude Code imports it from
+    # `configs/claude/claude.md`; Codex and OpenCode read it directly.
+    ~/.codex/AGENTS.md: ./configs/agents/AGENTS.md
+    ~/.config/opencode/AGENTS.md: ./configs/agents/AGENTS.md
     ~/.codex/hooks.json: ./configs/codex/hooks.json
     ~/.local/bin/port-dash: ./configs/bin/port-dash
     ~/.local/bin/tmux-switcher: ./configs/bin/tmux-switcher

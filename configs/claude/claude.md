@@ -1,31 +1,13 @@
-# Workflow
-- preserve user sanity - before requesting permissions to read files outside directory, any invokations at all - have you read the /read-the-damn-docs skill? you can fetch freely...
-- this is with the exception of invokations you are allowed to make (fetch already noted, git log etc..) - the other exception is if IS_SANDBOX_MACHINE:1 env is set you are free to run whatever you like
-- Be concise: lead with a one-line plain-language answer ("what happened / why / next step"), expand acronyms on first use in a new topic, then give the detail
-- always remember to think "in english please" that a stupid human can understand
-- Where possible, give links to documentation and online sources
-- Expand acronyms on first use in any topic (`SDE (Seller's Discretionary Earnings)`). For anything complex or research-heavy, use the `/research` skill.
-- Be brutally honest, don't be a yes man. If I am wrong, point it out bluntly. 
-- Do NOT add additional code I did not specify - ask yourself is this actually required according to the question
-- Default to boring, explicit code: one decision per branch, complete SQL statements (never assembled from fragments), duplication over abstraction for ≤2 adjacent variants. Clever/compressed constructs (tuple-compares, DISTINCT ON tricks, dynamic param numbering) are a smell — DRY applies to knowledge, not text (see lessons.md).
-- **Before writing any code: read `~/.claude/lessons.md`.** It contains accumulated anti-patterns with concrete examples. Apply patterns from it without being asked.
-- **Before editing `AGENTS.md` / `CLAUDE.md` / rules sections: read lessons.md "Rules files: intent, not recipe".** Intent + rule, one example, no call signatures or magic numbers, 3-5 bullets per topic.
-- for reading files - prefer Read/Glob/Greb over awk/sed as you gave permissions to the former
-- Nix dependencies resolve into `/nix/store` (readable, no prompt). When a build or activation log prints a store path, read that path directly - do not search the filesystem for the source, it usually isn't in the repo. For the script behind a failing unit: `systemctl cat <unit>` names its store path.
-- do not use single letter variable names
-- prefer grep and rg (blank permissions applied) over awk/sed for search operations - the latter requires approval
-- where possible - do NOT pipe bash commands - then it ignores any pre-set permissions i have given for Find:* Grep:* etc
+# Claude Code
 
-# Per-project ports
-- Each project gets a deterministic port block: base = `9000 + CRC32(<name>) % 900`, then api=base, frontend=base+1, storybook=base+2, observability=base+3. Compute once, write into `justfile`/`docker-compose.yml`. Never hardcode conventional defaults, never auto-pick.
-- `9999` reserved for `port-dash`. Every repo needs a `.registered-ports.toml` at root — that's how port-dash discovers services. use one line for each service that has its own port (replace with the actual name and actual port, e.g. api = 9000 if you have an API serving on port 9000)
-  ```toml
-  <service_name>          = <port_number>
-  <another_service_name>  = <another_port_number>
-  ```
-- New project: `uv run python -c "import zlib; print(9000 + zlib.crc32(b'<project>') % 900)"`. Add a preflight that fails loudly if port is held (print pid+cmdline). Don't pick a fallback — fix the conflict.
-- Dev servers run in named cowork panes (`<project>-<service>`). List panes and reuse before spawning a new one.
+@../agents/AGENTS.md
 
-# Pages
-- if `$PAGES_URL` is set (worker207, streaming-server), anything better shown than told - comparisons, charts, reports, diagrams - goes in a single self-contained html file in `/srv/pages`, then give me the link `$PAGES_URL/<file>.html`
-- keep the chat answer short and point to the page, don't repeat it
+## Permissions
+
+- Preserve my sanity: before asking permission to read files outside the
+  directory, or to run anything at all, check whether the action is already
+  allowed (fetch and the rest of the allow list are). You may fetch freely.
+- Exception: if `IS_SANDBOX_MACHINE:1` is set, run whatever you like.
+- Prefer the Read / Glob / Grep tools, which are permitted, over `awk`/`sed`.
+- Do not pipe bash commands where a direct command works. A pipe drops the
+  pre-approved `Find:*` / `Grep:*` permissions.
