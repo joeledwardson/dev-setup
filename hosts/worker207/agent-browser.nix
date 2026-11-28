@@ -25,4 +25,30 @@ in {
     # the system profile on worker207.
     path = [ "/run/current-system/sw" ];
   };
+
+  # Visibility only, no browser lifecycle: these units run to completion and
+  # stay inactive, so `systemctl --user start` works every time (unlike the main
+  # unit, a oneshot with RemainAfterExit). Both verbs are idempotent.
+  #
+  #   systemctl --user start agent-browser-show    # bring into view
+  #   systemctl --user start agent-browser-hide    # put away
+  systemd.user.services.agent-browser-show = {
+    description = "Reveal the agent-browser special workspace";
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${script} reveal";
+    };
+    path = [ "/run/current-system/sw" ];
+  };
+
+  systemd.user.services.agent-browser-hide = {
+    description = "Hide the agent-browser special workspace";
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash ${script} conceal";
+    };
+    path = [ "/run/current-system/sw" ];
+  };
 }

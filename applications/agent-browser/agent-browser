@@ -23,8 +23,16 @@ export WAYLAND_DISPLAY
 export DISPLAY=${DISPLAY:-:0}
 export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
 if [[ -z ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
-  HYPRLAND_INSTANCE_SIGNATURE=$(find "$XDG_RUNTIME_DIR/hypr" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | head -1)
-  export HYPRLAND_INSTANCE_SIGNATURE
+  # Old sessions can leave stale socket dirs behind, and the user manager runs
+  # without HYPRLAND_INSTANCE_SIGNATURE, so don't just take the first dir —
+  # keep the newest one that actually answers hyprctl.
+  for candidate in $(ls -1dt "$XDG_RUNTIME_DIR"/hypr/*/ 2>/dev/null | xargs -r -n1 basename); do
+    if HYPRLAND_INSTANCE_SIGNATURE=$candidate hyprctl monitors -j >/dev/null 2>&1; then
+      HYPRLAND_INSTANCE_SIGNATURE=$candidate
+      export HYPRLAND_INSTANCE_SIGNATURE
+      break
+    fi
+  done
 fi
 
 is_running() {
@@ -148,6 +156,34 @@ show() {
   echo "toggled special:$SPECIAL_WORKSPACE"
 }
 
+# Unlike show/hide, these are idempotent: reveal only acts when the workspace is
+# off screen and conceal only when it is on screen, so systemd units and scripts
+# can call them without tracking state. toggle_special acts on the focused
+# monitor, so the check looks at the focused monitor too.
+focused_special_visible() {
+  hyprctl monitors -j 2>/dev/null |
+    jq -e --arg n "special:$SPECIAL_WORKSPACE" \
+      '.[] | select(.focused == true) | .specialWorkspace.name == $n' >/dev/null
+}
+
+reveal() {
+  if focused_special_visible; then
+    echo "special:$SPECIAL_WORKSPACE already visible"
+    return 0
+  fi
+  hyprctl dispatch "hl.dsp.workspace.toggle_special('$SPECIAL_WORKSPACE')" >/dev/null
+  echo "showing special:$SPECIAL_WORKSPACE"
+}
+
+conceal() {
+  if ! focused_special_visible; then
+    echo "special:$SPECIAL_WORKSPACE already hidden"
+    return 0
+  fi
+  hyprctl dispatch "hl.dsp.workspace.toggle_special('$SPECIAL_WORKSPACE')" >/dev/null
+  echo "hiding special:$SPECIAL_WORKSPACE"
+}
+
 hide() {
   local address
   address=$(hyprctl clients -j 2>/dev/null | jq -r '.[] | select(.class == "agent-browser") | .address' | head -1)
@@ -166,8 +202,10 @@ case ${1:-} in
   status) status ;;
   show) show ;;
   hide) hide ;;
+  reveal) reveal ;;
+  conceal) conceal ;;
   *)
-    echo "usage: $0 {start|stop|restart|status|show|hide}" >&2
+    echo "usage: $0 {start|stop|restart|status|show|hide|reveal|conceal}" >&2
     exit 64
     ;;
 esac
