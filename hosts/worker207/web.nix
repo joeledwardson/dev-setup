@@ -3,6 +3,8 @@
 # Agent usage at https://worker-usage.joels-netflix.com
 # RunWisp at https://worker-wisp.joels-netflix.com
 # SilverBullet docs at https://worker-silverbullet.joels-netflix.com
+# docs editor trials: collabmd at https://worker-collabmd.joels-netflix.com
+# and openknowledge at https://worker-openknowledge.joels-netflix.com
 # this box points its own DNS records at itself and gets its own certs, so nothing here depends on streaming-server
 { pkgs, ... }:
 
@@ -13,15 +15,23 @@ let
   dashboard = pkgs.callPackage ../../pkgs/opencode-dashboard.nix { };
   wispHostName = "worker-wisp.joels-netflix.com";
   silverbulletHostName = "worker-silverbullet.joels-netflix.com";
+  collabmdHostName = "worker-collabmd.joels-netflix.com";
+  openKnowledgeHostName = "worker-openknowledge.joels-netflix.com";
+  # collabmd, openknowledge and silverbullet all edit this folder
+  docsTrialDir = "/home/claude/docs-editor-trial";
 in {
   imports = [
-    (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ pagesHostName paseoHostName usageHostName wispHostName silverbulletHostName ]; })
+    (import ../../modules/tailnet-caddy.nix { selfDnsNames = [ pagesHostName paseoHostName usageHostName wispHostName silverbulletHostName collabmdHostName openKnowledgeHostName ]; })
     (import ../../modules/pages.nix { hostName = pagesHostName; })
     # port from 9000 + crc32("paseo") % 900
     (import ../../modules/paseo.nix { hostName = paseoHostName; port = 9810; user = "claude"; })
     (import ../../modules/runwisp.nix { hostName = wispHostName; port = 9477; user = "claude"; })
     # port from 9000 + crc32("silverbullet") % 900
-    (import ../../modules/silverbullet.nix { hostName = silverbulletHostName; port = 9764; spaceDir = "/home/claude/docs-editor-trial"; })
+    (import ../../modules/silverbullet.nix { hostName = silverbulletHostName; port = 9764; spaceDir = docsTrialDir; })
+    # port from 9000 + crc32("collabmd") % 900
+    (import ../../modules/collabmd.nix { hostName = collabmdHostName; port = 9891; vaultDir = docsTrialDir; })
+    # port from 9000 + crc32("open-knowledge") % 900
+    (import ../../modules/open-knowledge.nix { hostName = openKnowledgeHostName; port = 9573; vaultDir = docsTrialDir; })
   ];
 
   # Read the session files written by the agents running as claude.
