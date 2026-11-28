@@ -4,7 +4,8 @@
   "cli_default_open_behavior": "existing_window",
   "auto_install_extensions": {
     "terraform": true,
-    "git-firefly": true
+    "git-firefly": true,
+    "nix": true
   },
   "ssh_connections": [
     {
