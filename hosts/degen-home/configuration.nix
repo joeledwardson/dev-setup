@@ -21,6 +21,9 @@ in
       owner = "jollof";
       enableGcal = true;
     })
+    # port from 9000 + crc32("paseo") % 900
+    # no caddy here: open http://localhost:9810 directly, browsers treat localhost as secure
+    (import ../../modules/paseo.nix { hostName = "localhost"; port = 9810; user = "jollof"; })
   ];
 
   services.tailscale.extraUpFlags = [ "--advertise-tags=tag:trusted" ];

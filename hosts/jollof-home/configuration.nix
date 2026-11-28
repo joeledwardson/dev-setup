@@ -22,6 +22,9 @@ in
       enableGcal = true;
     })
     ../../modules/nixos-netbird.nix # netbird mesh VPN client (wt0) — manual connect/disconnect
+    # port from 9000 + crc32("paseo") % 900
+    # no caddy here: open http://localhost:9810 directly, browsers treat localhost as secure
+    (import ../../modules/paseo.nix { hostName = "localhost"; port = 9810; user = "jollof"; })
   ];
 
   # =======================================
